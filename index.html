@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wind Farm Power Output Convergence Curves</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #04080f;
+    --surface: #0a1628;
+    --card: #0d1f3c;
+    --border: #1a3a6e;
+    --accent: #00d4ff;
+    --accent2: #00ff9d;
+    --accent3: #ff6b35;
+    --text: #c8e0ff;
+    --muted: #4a6a9a;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 10%, rgba(0,80,160,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,180,100,0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 20px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .header-tag {
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2.4rem);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 2px;
+    line-height: 1.2;
+    text-shadow: 0 0 30px rgba(0,212,255,0.5);
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .tab-nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .tab-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 10px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.25s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    text-transform: uppercase;
+  }
+
+  .tab-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,255,0.05);
+  }
+
+  .tab-btn.active {
+    background: rgba(0,212,255,0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+  }
+
+  .chart-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 40px; height: 40px;
+    border-top: 2px solid var(--accent);
+    border-left: 2px solid var(--accent);
+  }
+
+  .corner-br {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 40px; height: 40px;
+    border-bottom: 2px solid var(--accent);
+    border-right: 2px solid var(--accent);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .card-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 2px;
+  }
+
+  .card-meta {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 0.6rem;
+    padding: 4px 10px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .badge-radius {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.4);
+    color: var(--accent);
+  }
+
+  .badge-dataset {
+    background: rgba(0,255,157,0.08);
+    border: 1px solid rgba(0,255,157,0.35);
+    color: var(--accent2);
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 420px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .stat-value {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .stat-unit {
+    font-size: 0.55rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .all-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    gap: 30px;
+  }
+
+  .info-strip {
+    background: rgba(0,212,255,0.04);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-left: 3px solid var(--accent);
+    padding: 12px 18px;
+    margin-bottom: 30px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    line-height: 1.8;
+  }
+
+  .info-strip span {
+    color: var(--accent);
+    font-weight: bold;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="container">
+
+  <header>
+    <div class="header-tag">QA-SSA Research // Wind Farm Layout Optimization</div>
+    <h1>POWER OUTPUT CONVERGENCE CURVES</h1>
+    <div class="subtitle">Tables 2-7 // All Algorithms // All Turbine Counts</div>
+  </header>
+
+  <div class="info-strip">
+    <span>LEGEND:</span> Each curve shows mean power output (kW) vs number of turbines. Ideal Power = theoretical max.
+    <span>ALGORITHMS:</span> EA, ACO, PF, BBO, SSA, QA-SSA (where available per table).
+    Y-axis shows actual power achieved. X-axis = turbine count (N).
+  </div>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('t2')">TABLE 2</button>
+    <button class="tab-btn" onclick="showTab('t3')">TABLE 3</button>
+    <button class="tab-btn" onclick="showTab('t4')">TABLE 4</button>
+    <button class="tab-btn" onclick="showTab('t5')">TABLE 5</button>
+    <button class="tab-btn" onclick="showTab('t6')">TABLE 6</button>
+    <button class="tab-btn" onclick="showTab('t7')">TABLE 7</button>
+    <button class="tab-btn" onclick="showTab('all')">ALL TABLES</button>
+  </nav>
+
+  <!-- TABLE 2 -->
+  <div id="tab-t2" class="tab-content active">
+    <div class="chart-card">
+      <div class="corner-br"></div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">TABLE 2 // POWER OUTPUT CONVERGENCE</div>
+          <div class="card-meta">500 m Radius Wind Farm // Wind Data Set I</div>
+        </div>
+        <div class="badges">
+          <span class="badge badge-radius">R = 500 m</span>
+          <span class="badge badge-dataset">Dataset I</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-t2"></canvas></div>
+      <div class="stats-row" id="stats-t2"></div>
+    </div>
+  </div>
+
+  <!-- TABLE 3 -->
+  <div id="tab-t3" class="tab-content">
+    <div class="chart-card">
+      <div class="corner-br"></div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">TABLE 3 // POWER OUTPUT CONVERGENCE</div>
+          <div class="card-meta">500 m Radius Wind Farm // Wind Data Set II</div>
+        </div>
+        <div class="badges">
+          <span class="badge badge-radius">R = 500 m</span>
+          <span class="badge badge-dataset">Dataset II</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-t3"></canvas></div>
+      <div class="stats-row" id="stats-t3"></div>
+    </div>
+  </div>
+
+  <!-- TABLE 4 -->
+  <div id="tab-t4" class="tab-content">
+    <div class="chart-card">
+      <div class="corner-br"></div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">TABLE 4 // POWER OUTPUT CONVERGENCE</div>
+          <div class="card-meta">750 m Radius Wind Farm // Wind Data Set I</div>
+        </div>
+        <div class="badges">
+          <span class="badge badge-radius">R = 750 m</span>
+          <span class="badge badge-dataset">Dataset I</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-t4"></canvas></div>
+      <div class="stats-row" id="stats-t4"></div>
+    </div>
+  </div>
+
+  <!-- TABLE 5 -->
+  <div id="tab-t5" class="tab-content">
+    <div class="chart-card">
+      <div class="corner-br"></div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">TABLE 5 // POWER OUTPUT CONVERGENCE</div>
+          <div class="card-meta">750 m Radius Wind Farm // Wind Data Set II</div>
+        </div>
+        <div class="badges">
+          <span class="badge badge-radius">R = 750 m</span>
+          <span class="badge badge-dataset">Dataset II</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-t5"></canvas></div>
+      <div class="stats-row" id="stats-t5"></div>
+    </div>
+  </div>
+
+  <!-- TABLE 6 -->
+  <div id="tab-t6" class="tab-content">
+    <div class="chart-card">
+      <div class="corner-br"></div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">TABLE 6 // POWER OUTPUT CONVERGENCE</div>
+          <div class="card-meta">1000 m Radius Wind Farm // Wind Data Set I</div>
+        </div>
+        <div class="badges">
+          <span class="badge badge-radius">R = 1000 m</span>
+          <span class="badge badge-dataset">Dataset I</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-t6"></canvas></div>
+      <div class="stats-row" id="stats-t6"></div>
+    </div>
+  </div>
+
+  <!-- TABLE 7 -->
+  <div id="tab-t7" class="tab-content">
+    <div class="chart-card">
+      <div class="corner-br"></div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">TABLE 7 // POWER OUTPUT CONVERGENCE</div>
+          <div class="card-meta">1000 m Radius Wind Farm // Wind Data Set II</div>
+        </div>
+        <div class="badges">
+          <span class="badge badge-radius">R = 1000 m</span>
+          <span class="badge badge-dataset">Dataset II</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chart-t7"></canvas></div>
+      <div class="stats-row" id="stats-t7"></div>
+    </div>
+  </div>
+
+  <!-- ALL TABLES -->
+  <div id="tab-all" class="tab-content">
+    <div class="all-charts-grid" id="all-grid"></div>
+  </div>
+
+</div>
+
+<script>
+// ─── DATA DEFINITIONS ────────────────────────────────────────────────────────
+
+const TABLES = {
+  t2: {
+    title: "Table 2",
+    subtitle: "500m / Dataset I",
+    labels: [2,3,4,5,6,7,8,9,10],
+    algorithms: {
+      "Ideal":   [28091.47,42137.21,56182.95,70228.69,84274.42,98320.16,112365.9,126411.64,140457.37],
+      "EA":      [28083.42,42101.06,56057.77,69922.97,83758.79,null,null,null,null],
+      "ACO":     [28091.47,42130.87,56128,70086.29,84006.37,97822.66,111414.82,null,null],
+      "PF":      [28091.47,42128.32,56135.28,70085.66,84007.84,97869.73,111498.83,null,null],
+      "BBO":     [28091.47,42137.21,56171.1,70207.2,84167.4,98280.5,111894,null,null],
+      "SSA":     [28091.47,42137.21,56178.91,70217.01,84253.05,98295.47,112337.18,126377.75,140416.93],
+      "QA-SSA":  [28091.47,42137.21,56180.53,70220.05,84259.46,98300.54,112340.78,126381.47,140422.38]
+    }
+  },
+  t3: {
+    title: "Table 3",
+    subtitle: "500m / Dataset II",
+    labels: [2,3,4,5,6,7,8,9,10],
+    algorithms: {
+      "Ideal":   [14631.37,21947.06,29262.75,36578.44,43894.12,51209.81,58525.5,65841.19,73156.87],
+      "EA":      [14631.21,21925.16,29113.71,36316.23,43195.84,null,null,null,null],
+      "ACO":     [14631.37,21928.07,29174.20,36256.10,43125.19,49763.76,56316.15,null,null],
+      "PF":      [14631.37,21915.78,29182.38,36284.07,43181.70,49819.71,56498.03,null,null],
+      "BBO":     [14631.37,42137.21,29232.54,36507.35,43795.59,50993.02,58128.58,null,null],
+      "SSA":     [14631.37,42137.21,29258.67,36565.01,43871.89,51184.62,58474.89,65806.67,73115.87],
+      "QA-SSA":  [14631.37,42137.61,29259.7,36568.09,43882.03,51193.68,58502.38,65815.24,73123.49]
+    }
+  },
+  t4: {
+    title: "Table 4",
+    subtitle: "750m / Dataset I",
+    labels: [2,3,4,5,6,7,8,9,10,11,12],
+    algorithms: {
+      "Ideal":   [28091.47,42137.21,56182.95,70228.69,84274.42,98320.16,112365.9,126411.64,140457.37,154503.11,168548.85],
+      "BBO":     [28091.47,42137.21,56182.95,70228.69,84261.58,98298.66,112319.27,126313.25,140303.54,154111.64,167967.46],
+      "SSA":     [28091.47,42137.21,56182.95,70228.69,84258.76,98300.81,112341.61,126383.16,140423.18,154456.46,168485.01],
+      "QA-SSA":  [28091.47,42137.21,56182.95,70228.69,84264,98303.55,112345.89,126387.31,140428.31,154466.09,168503.8]
+    }
+  },
+  t5: {
+    title: "Table 5",
+    subtitle: "750m / Dataset II",
+    labels: [2,3,4,5,6,7,8,9,10,11,12],
+    algorithms: {
+      "Ideal":   [14631.37,21947.06,29262.75,36578.44,43894.12,51209.81,58525.5,65841.19,73156.87,80472.56,87788.25],
+      "BBO":     [14631.37,21947.06,29262.75,36578.44,43852.33,51154.82,58428.48,65742.68,72942.28,80090.17,87276.02],
+      "SSA":     [14631.37,21947.06,29262.75,36578.44,43872.74,51185.54,58495.95,65807.22,73115.97,80419.72,87721.94],
+      "QA-SSA":  [14631.37,21947.06,29262.75,36578.44,43882.5,51194.31,58505.13,65816.24,73124.62,80430.53,87738.37]
+    }
+  },
+  t6: {
+    title: "Table 6",
+    subtitle: "1000m / Dataset I",
+    labels: [2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+    algorithms: {
+      "Ideal":   [28091.47,42137.21,56182.95,70228.69,84274.42,98320.16,112365.9,126411.64,140457.37,154503.11,168548.85,182594.59,196640.33,210686.07],
+      "BBO":     [28091.47,42137.21,56182.95,70228.69,84274.42,98320.16,112338.35,126333.03,140354.84,154379.54,168355.41,182304.01,196264.54,210237.57],
+      "SSA":     [28091.47,42137.21,56182.95,70228.69,84274.42,98320.16,112342.13,126383.73,140423.71,154464.94,168500.49,182536.11,196561.88,210587.47],
+      "QA-SSA":  [28091.47,42137.21,56182.95,70228.69,84274.42,98320.16,112346.73,126388.17,140428.7,154470.54,168508.47,182547.42,196582.23,210606.02]
+    }
+  },
+  t7: {
+    title: "Table 7",
+    subtitle: "1000m / Dataset II",
+    labels: [2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+    algorithms: {
+      "Ideal":   [14631.37,21947.06,29262.75,36578.44,43894.12,51209.81,58525.5,65841.19,73156.87,80472.56,87788.25,95103.94,102419.63,109735.32],
+      "BBO":     [14631.37,21947.06,29262.75,36578.44,43894.12,51209.81,58463.52,65719.84,73023.36,80138.79,87190.74,94132.56,101042.18,107915.44],
+      "SSA":     [14631.37,21947.06,29262.75,36578.44,43894.12,51209.81,58499.18,65806.45,73112.36,80412.21,87700.54,95001.23,102291.45,109551.78],
+      "QA-SSA":  [14631.37,21947.06,29262.75,36578.44,43894.12,51209.81,58504.91,65814.37,73121.84,80428.62,87735.19,95024.38,102310.72,109588.45]
+    }
+  }
+};
+
+// ─── COLOR PALETTE ───────────────────────────────────────────────────────────
+const COLORS = {
+  "Ideal":  { line: "#ffffff", bg: "rgba(255,255,255,0.07)", dash: [6,4] },
+  "EA":     { line: "#ff4d6d", bg: "rgba(255,77,109,0.08)", dash: [] },
+  "ACO":    { line: "#ff9500", bg: "rgba(255,149,0,0.08)",   dash: [] },
+  "PF":     { line: "#bf5af2", bg: "rgba(191,90,242,0.08)", dash: [] },
+  "BBO":    { line: "#30d5c8", bg: "rgba(48,213,200,0.08)", dash: [] },
+  "SSA":    { line: "#30d158", bg: "rgba(48,209,88,0.08)",  dash: [] },
+  "QA-SSA": { line: "#00d4ff", bg: "rgba(0,212,255,0.12)",  dash: [] }
+};
+
+// ─── CHART DEFAULTS ──────────────────────────────────────────────────────────
+Chart.defaults.color = "#4a6a9a";
+Chart.defaults.font.family = "'Share Tech Mono', monospace";
+Chart.defaults.font.size = 11;
+
+function buildDatasets(tableKey) {
+  const tbl = TABLES[tableKey];
+  return Object.entries(tbl.algorithms).map(([name, data]) => {
+    const c = COLORS[name] || { line: "#aaa", bg: "rgba(170,170,170,0.1)", dash: [] };
+    return {
+      label: name,
+      data: data,
+      borderColor: c.line,
+      backgroundColor: c.bg,
+      borderWidth: name === "QA-SSA" ? 2.5 : name === "Ideal" ? 1.5 : 1.8,
+      borderDash: c.dash,
+      pointRadius: name === "Ideal" ? 3 : 4,
+      pointHoverRadius: 7,
+      pointBackgroundColor: c.line,
+      pointBorderColor: "#04080f",
+      pointBorderWidth: 1.5,
+      tension: 0.35,
+      fill: false,
+      spanGaps: false
+    };
+  });
+}
+
+function buildChart(canvasId, tableKey) {
+  const tbl = TABLES[tableKey];
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  return new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: tbl.labels,
+      datasets: buildDatasets(tableKey)
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top',
+          align: 'end',
+          labels: {
+            color: '#8aadcc',
+            boxWidth: 22,
+            boxHeight: 2,
+            padding: 14,
+            font: { size: 10.5, family: "'Share Tech Mono', monospace" },
+            usePointStyle: false,
+            pointStyle: 'line'
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(10,22,40,0.96)',
+          borderColor: 'rgba(0,212,255,0.4)',
+          borderWidth: 1,
+          titleColor: '#00d4ff',
+          bodyColor: '#c8e0ff',
+          padding: 12,
+          callbacks: {
+            title: ctx => `Turbines: N = ${ctx[0].label}`,
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return v == null ? `  ${ctx.dataset.label}: N/A (Infeasible)` :
+                `  ${ctx.dataset.label}: ${v.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} kW`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Number of Turbines (N)',
+            color: '#4a6a9a',
+            font: { size: 11 },
+            padding: { top: 10 }
+          },
+          ticks: { color: '#4a6a9a', stepSize: 1 },
+          grid: { color: 'rgba(26,58,110,0.4)', lineWidth: 1 },
+          border: { color: 'rgba(26,58,110,0.6)' }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Power Output (kW)',
+            color: '#4a6a9a',
+            font: { size: 11 },
+            padding: { bottom: 10 }
+          },
+          ticks: {
+            color: '#4a6a9a',
+            callback: v => (v >= 1000 ? (v/1000).toFixed(0) + 'k' : v)
+          },
+          grid: { color: 'rgba(26,58,110,0.35)', lineWidth: 1 },
+          border: { color: 'rgba(26,58,110,0.6)' }
+        }
+      }
+    }
+  });
+}
+
+function buildStats(containerId, tableKey) {
+  const tbl = TABLES[tableKey];
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const qassa = tbl.algorithms["QA-SSA"];
+  const ideal = tbl.algorithms["Ideal"];
+  const maxN = tbl.labels.length;
+  const maxIdeal = ideal[ideal.length - 1];
+  const maxQA = qassa[qassa.length - 1];
+  const efficiency = ((maxQA / maxIdeal) * 100).toFixed(2);
+
+  // find best competitor at max N
+  const competitors = Object.entries(tbl.algorithms)
+    .filter(([k]) => k !== "Ideal" && k !== "QA-SSA")
+    .map(([k,v]) => ({ name: k, val: v[v.length - 1] }))
+    .filter(x => x.val != null)
+    .sort((a,b) => b.val - a.val);
+
+  const bestComp = competitors[0];
+  const improvement = bestComp ? (maxQA - bestComp.val).toFixed(2) : "N/A";
+
+  container.innerHTML = `
+    <div class="stat-box">
+      <div class="stat-label">Max Turbines</div>
+      <div class="stat-value">${maxN}</div>
+      <div class="stat-unit">turbines</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Ideal Max</div>
+      <div class="stat-value">${(maxIdeal/1000).toFixed(1)}k</div>
+      <div class="stat-unit">kW</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">QA-SSA Max</div>
+      <div class="stat-value" style="color:#00d4ff">${(maxQA/1000).toFixed(1)}k</div>
+      <div class="stat-unit">kW</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Efficiency</div>
+      <div class="stat-value" style="color:#00ff9d">${efficiency}%</div>
+      <div class="stat-unit">vs ideal</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">vs Best Rival</div>
+      <div class="stat-value" style="color:#ff9500">+${improvement}</div>
+      <div class="stat-unit">kW over ${bestComp ? bestComp.name : '-'}</div>
+    </div>
+  `;
+}
+
+// ─── TAB SWITCHING ───────────────────────────────────────────────────────────
+const chartInstances = {};
+
+function showTab(key) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + key).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  if (key === 'all') {
+    buildAllGrid();
+    return;
+  }
+
+  if (!chartInstances[key]) {
+    chartInstances[key] = buildChart('chart-' + key, key);
+    buildStats('stats-' + key, key);
+  }
+}
+
+function buildAllGrid() {
+  if (document.getElementById('all-grid').children.length > 0) return;
+  const grid = document.getElementById('all-grid');
+  Object.keys(TABLES).forEach(key => {
+    const tbl = TABLES[key];
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    card.style.position = 'relative';
+    card.innerHTML = `
+      <div class="corner-br"></div>
+      <div class="card-header">
+        <div>
+          <div class="card-title">${tbl.title.toUpperCase()} // CONVERGENCE</div>
+          <div class="card-meta">${tbl.subtitle.replace('/',' // ')}</div>
+        </div>
+      </div>
+      <div style="position:relative;height:280px"><canvas id="mini-${key}"></canvas></div>
+    `;
+    grid.appendChild(card);
+    setTimeout(() => {
+      if (!chartInstances['mini-' + key]) {
+        chartInstances['mini-' + key] = buildChart('mini-' + key, key);
+      }
+    }, 50);
+  });
+}
+
+// ─── INIT FIRST TAB ──────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  chartInstances['t2'] = buildChart('chart-t2', 't2');
+  buildStats('stats-t2', 't2');
+});
+</script>
+</body>
+</html>

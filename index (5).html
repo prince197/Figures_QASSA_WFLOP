@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Runtime Validation Figures</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap');
+
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --border: #1e2230;
+    --accent: #00e5ff;
+    --accent2: #ff6b6b;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --qassa: #00e5ff;
+    --ssa: #a78bfa;
+    --bbo: #34d399;
+    --ea: #fb923c;
+    --aco: #f472b6;
+    --pf: #fbbf24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #fff;
+  }
+
+  .page-header h1 span { color: var(--accent); }
+
+  .page-header p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* Tab Bar */
+  .tab-bar {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .tab-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .tab-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 700;
+  }
+
+  /* Figure Card */
+  .figure-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeIn 0.35s ease;
+  }
+
+  .figure-card.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .figure-title {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #fff;
+    margin-bottom: 0.25rem;
+  }
+
+  .figure-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .stat-value.red { color: var(--accent2); }
+
+  .stat-algo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+
+  /* Chart */
+  .chart-wrap {
+    position: relative;
+    height: 340px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Legend */
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #fff2;
+  }
+
+  /* Data Table */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  .data-table th {
+    background: var(--bg);
+    color: var(--muted);
+    padding: 0.6rem 1rem;
+    text-align: left;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid #1a1e2a;
+    color: var(--text);
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+
+  .data-table tr:hover td { background: #ffffff06; }
+
+  .algo-tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .best-row td { background: #00e5ff08; }
+  .best-row td:first-child { border-left: 2px solid var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Runtime Validation <span>Figures</span></h1>
+  <p>X-Axis: Iterations &nbsp;|&nbsp; Y-Axis: Exact Runtime (s) &nbsp;|&nbsp; Source: PDF Exact Data</p>
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showFig(0)">Fig 1 &mdash; 500m / Set I</button>
+  <button class="tab-btn" onclick="showFig(1)">Fig 2 &mdash; 500m / Set II</button>
+  <button class="tab-btn" onclick="showFig(2)">Fig 3 &mdash; 750m / Set I</button>
+  <button class="tab-btn" onclick="showFig(3)">Fig 4 &mdash; 750m / Set II</button>
+  <button class="tab-btn" onclick="showFig(4)">Fig 5 &mdash; 1000m / Set I</button>
+  <button class="tab-btn" onclick="showFig(5)">Fig 6 &mdash; 1000m / Set II</button>
+</div>
+
+<!-- Figure containers injected by JS -->
+<div id="figures-container"></div>
+
+<script>
+// ─── EXACT DATA FROM PDF ──────────────────────────────────────────────────────
+const COLORS = {
+  'QA-SSA': '#00e5ff',
+  'SSA':    '#a78bfa',
+  'BBO':    '#34d399',
+  'EA':     '#fb923c',
+  'ACO':    '#f472b6',
+  'PF':     '#fbbf24',
+};
+
+const figures = [
+  {
+    title: 'Figure 1 — Runtime Validation',
+    sub:   '500m Radius // Wind Data Set I',
+    data: [
+      { algo: 'QA-SSA', runtime: 142.3, iterations: 78  },
+      { algo: 'SSA',    runtime: 156.8, iterations: 95  },
+      { algo: 'BBO',    runtime: 189.4, iterations: 100 },
+      { algo: 'EA',     runtime: 223.7, iterations: 100 },
+      { algo: 'ACO',    runtime: 267.2, iterations: 100 },
+      { algo: 'PF',     runtime: 298.5, iterations: 100 },
+    ]
+  },
+  {
+    title: 'Figure 2 — Runtime Validation',
+    sub:   '500m Radius // Wind Data Set II',
+    data: [
+      { algo: 'QA-SSA', runtime: 130.1, iterations: 75  },
+      { algo: 'SSA',    runtime: 145.6, iterations: 97  },
+      { algo: 'BBO',    runtime: 175.3, iterations: 100 },
+      { algo: 'EA',     runtime: 205.4, iterations: 100 },
+      { algo: 'ACO',    runtime: 250.0, iterations: 100 },
+      { algo: 'PF',     runtime: 290.2, iterations: 100 },
+    ]
+  },
+  {
+    title: 'Figure 3 — Runtime Validation',
+    sub:   '750m Radius // Wind Data Set I',
+    data: [
+      { algo: 'QA-SSA', runtime: 160.4, iterations: 80  },
+      { algo: 'SSA',    runtime: 175.9, iterations: 96  },
+      { algo: 'BBO',    runtime: 205.1, iterations: 100 },
+    ]
+  },
+  {
+    title: 'Figure 4 — Runtime Validation',
+    sub:   '750m Radius // Wind Data Set II',
+    data: [
+      { algo: 'QA-SSA', runtime: 155.0, iterations: 77  },
+      { algo: 'SSA',    runtime: 170.4, iterations: 94  },
+      { algo: 'BBO',    runtime: 198.7, iterations: 100 },
+    ]
+  },
+  {
+    title: 'Figure 5 — Runtime Validation',
+    sub:   '1000m Radius // Wind Data Set I',
+    data: [
+      { algo: 'QA-SSA', runtime: 180.2, iterations: 82  },
+      { algo: 'SSA',    runtime: 200.3, iterations: 98  },
+      { algo: 'BBO',    runtime: 230.5, iterations: 100 },
+    ]
+  },
+  {
+    title: 'Figure 6 — Runtime Validation',
+    sub:   '1000m Radius // Wind Data Set II',
+    data: [
+      { algo: 'QA-SSA', runtime: 175.0, iterations: 79  },
+      { algo: 'SSA',    runtime: 190.6, iterations: 96  },
+      { algo: 'BBO',    runtime: 220.4, iterations: 100 },
+    ]
+  },
+];
+
+// ─── BUILD UI ─────────────────────────────────────────────────────────────────
+const container = document.getElementById('figures-container');
+const charts = [];
+
+figures.forEach((fig, fi) => {
+  const sorted   = [...fig.data].sort((a,b) => a.iterations - b.iterations);
+  const fastest  = fig.data.reduce((a,b) => a.runtime < b.runtime ? a : b);
+  const slowest  = fig.data.reduce((a,b) => a.runtime > b.runtime ? a : b);
+  const leastItr = fig.data.reduce((a,b) => a.iterations < b.iterations ? a : b);
+  const spread   = (slowest.runtime - fastest.runtime).toFixed(1);
+
+  const card = document.createElement('div');
+  card.className = 'figure-card' + (fi === 0 ? ' active' : '');
+  card.id = 'fig-' + fi;
+
+  // Legend HTML
+  const legendHTML = fig.data.map(d => `
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${COLORS[d.algo]}; border-color:${COLORS[d.algo]}55;"></div>
+      ${d.algo}
+    </div>`).join('');
+
+  // Table rows HTML
+  const rowsHTML = fig.data.map(d => `
+    <tr class="${d.algo === fastest.algo ? 'best-row' : ''}">
+      <td><span class="algo-tag" style="background:${COLORS[d.algo]}18;color:${COLORS[d.algo]};">${d.algo}</span></td>
+      <td>${d.iterations}</td>
+      <td>${d.runtime.toFixed(1)} s</td>
+      <td style="color:${d.algo === fastest.algo ? 'var(--accent)' : 'var(--muted)'}">
+        ${d.algo === fastest.algo ? 'Best' : '+' + (d.runtime - fastest.runtime).toFixed(1) + ' s'}
+      </td>
+    </tr>`).join('');
+
+  card.innerHTML = `
+    <div class="figure-title">${fig.title}</div>
+    <div class="figure-sub">${fig.sub}</div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Fastest Runtime</div>
+        <div class="stat-value">${fastest.runtime.toFixed(1)} s</div>
+        <div class="stat-algo">${fastest.algo}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Slowest Runtime</div>
+        <div class="stat-value red">${slowest.runtime.toFixed(1)} s</div>
+        <div class="stat-algo">${slowest.algo}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Least Iterations</div>
+        <div class="stat-value">${leastItr.iterations}</div>
+        <div class="stat-algo">${leastItr.algo}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Runtime Spread</div>
+        <div class="stat-value" style="color:var(--pf)">${spread} s</div>
+        <div class="stat-algo">Max - Min</div>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="chart-${fi}"></canvas>
+    </div>
+
+    <div class="legend-row">${legendHTML}</div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Algorithm</th>
+          <th>Iterations</th>
+          <th>Exact Runtime</th>
+          <th>vs. Best</th>
+        </tr>
+      </thead>
+      <tbody>${rowsHTML}</tbody>
+    </table>
+  `;
+
+  container.appendChild(card);
+
+  // Build chart
+  requestAnimationFrame(() => {
+    const ctx = document.getElementById('chart-' + fi).getContext('2d');
+
+    // Scatter points per algorithm
+    const scatterDatasets = fig.data.map(d => ({
+      type: 'scatter',
+      label: d.algo,
+      data: [{ x: d.iterations, y: d.runtime }],
+      backgroundColor: COLORS[d.algo] + 'cc',
+      borderColor:     COLORS[d.algo],
+      pointRadius:     9,
+      pointHoverRadius:12,
+      pointStyle:      'circle',
+      showLine:        false,
+      order:           2,
+    }));
+
+    // Trendline — connect sorted points
+    const trendDataset = {
+      type: 'line',
+      label: 'Trend',
+      data: sorted.map(d => ({ x: d.iterations, y: d.runtime })),
+      borderColor:     '#ffffff22',
+      borderWidth:     1.5,
+      borderDash:      [6, 4],
+      pointRadius:     0,
+      fill:            false,
+      tension:         0.3,
+      showLine:        true,
+      order:           3,
+    };
+
+    const chart = new Chart(ctx, {
+      data: {
+        datasets: [...scatterDatasets, trendDataset],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 700, easing: 'easeOutQuart' },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            filter: item => item.dataset.label !== 'Trend',
+            backgroundColor: '#1a1e2acc',
+            borderColor: '#2e3347',
+            borderWidth: 1,
+            titleFont:   { family: 'JetBrains Mono', size: 12, weight: '700' },
+            bodyFont:    { family: 'JetBrains Mono', size: 11 },
+            padding:     12,
+            callbacks: {
+              title: items => items[0].dataset.label,
+              label: item  => [
+                '  Iterations : ' + item.parsed.x,
+                '  Runtime    : ' + item.parsed.y.toFixed(1) + ' s',
+              ],
+            }
+          },
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            title: {
+              display:  true,
+              text:     'Iterations',
+              color:    '#6b7280',
+              font:     { family: 'JetBrains Mono', size: 11, weight: '600' },
+              padding:  { top: 8 },
+            },
+            ticks: {
+              color: '#6b7280',
+              font: { family: 'JetBrains Mono', size: 10 },
+              stepSize: 5,
+            },
+            grid: { color: '#1e2230' },
+          },
+          y: {
+            title: {
+              display: true,
+              text:    'Exact Runtime (s)',
+              color:   '#6b7280',
+              font:    { family: 'JetBrains Mono', size: 11, weight: '600' },
+              padding: { bottom: 8 },
+            },
+            ticks: {
+              color: '#6b7280',
+              font: { family: 'JetBrains Mono', size: 10 },
+              callback: v => v + ' s',
+            },
+            grid: { color: '#1e2230' },
+          }
+        }
+      }
+    });
+
+    charts[fi] = chart;
+  });
+});
+
+// ─── TAB SWITCHING ────────────────────────────────────────────────────────────
+function showFig(idx) {
+  document.querySelectorAll('.figure-card').forEach((c,i) => {
+    c.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', i === idx);
+  });
+  // Re-render chart after display
+  setTimeout(() => {
+    if (charts[idx]) charts[idx].update();
+  }, 50);
+}
+</script>
+</body>
+</html>
