@@ -203,7 +203,7 @@ Data set & $r$ (m) & Cases & SSA & PSO & DE & VNS & MS-SLSQP \\
     order = np.argsort(avg)
     tex.append(r"""\begin{table}[!t]
 \centering
-\caption{Case-level Friedman analysis over all 68 benchmark cases (blocks: cases; ranks of the mean feasible objective, 1 = best). Friedman $\chi^2_F=%.1f$ (5 d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$. Holm-adjusted $p$ values of the average-rank $z$ test against the best-ranked method (%s) and against LX-SSA; ``Best'': cases with the highest mean; ``Feas.'': percentage of feasible runs.}
+\caption{Case-level Friedman analysis over all 68 benchmark cases (blocks: cases; ranks of the mean feasible objective, 1 = best). Friedman $\chi^2_F=%.1f$ (5 d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$. Holm-adjusted $p$ values of the average-rank $z$ test against the best-ranked method (%s) and against LX-SSA; ``Best'': cases in which the method alone has the highest mean (seven cases are ties); ``Feas.'': percentage of feasible runs.}
 \label{tab:friedman68}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccccc}

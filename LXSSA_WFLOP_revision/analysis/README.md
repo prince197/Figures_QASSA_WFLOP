@@ -1,5 +1,20 @@
 # Analysis supporting the revised manuscript
 
+## Fresh numerical study (Sections VI–VIII of the current manuscript)
+
+| Script | Purpose | Output |
+|---|---|---|
+| `full_grid_experiments.py grid` | 68 cases × 6 methods × 30 seeds, 6,030 calls, convergence recording (~2.2 h on 4 cores) | `fresh_grid.csv` |
+| `full_grid_experiments.py hr16` / `hr80` | Horns Rev 1 site case, 16 and 80 turbines | `fresh_hr16.csv`, `fresh_hr80.csv` |
+| `fresh_results.py` | All result tables, statistics and figures | `fresh_tables.tex`, `fresh_summary.json`, `fresh_case_tests.csv`, `fresh_best_layouts_maxN.csv`, `../figures_fresh/*.pdf` |
+| `robustness_fresh.py` | Cubic power curve / Gaussian wake re-evaluation of all fresh layouts | `fresh_robust_table.tex`, `fresh_reevaluation.csv` |
+| `build_fresh_manuscript.py` | Writes Sections VI–XI and the appendix of the manuscript from the outputs above | – |
+| `sec_setup.tex` | Text of the Experimental Setup section | – |
+
+Libraries used by the fresh study: `authors_optimizers.py`, `authors_objective.py` (exact `objective.py` penalty), `objective_original.py`, `extra_baselines.py` (VNS, MS-SLSQP), `wflop_model.py`, `hornsrev_model.py`. The spacing table uses `authors_runs_spacing.csv` (from `authors_experiments.py spacing`) and the capacity table `packing_capacity.csv`.
+
+## Earlier analyses (superseded; not used in the current manuscript)
+
 All scripts run with Python 3.11, NumPy, SciPy and pandas, from inside this folder.
 Input: `../selected_30_run_data.csv` (720 stored follow-up runs with coordinates).
 
