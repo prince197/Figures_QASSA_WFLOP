@@ -36,7 +36,7 @@
 
 
 \begin{abstract}
-The Wind Farm Layout Optimization Problem (WFLOP) is a nonlinear constrained optimization problem in which turbine locations interact through wake-induced velocity deficits. This study employs the Laplacian Salp Swarm Algorithm (LX-SSA), previously introduced by Solanki and Deep in 2023~\cite{Solanki2023}, for continuous WFLOP; LX-SSA is neither proposed nor redesigned in the present paper. The contribution is therefore application-level: the published optimizer is coupled to a continuous turbine-coordinate representation, Jensen wake interactions, direction-dependent Weibull wind statistics, and explicit farm-boundary and minimum-spacing constraints. Two established benchmark wind scenarios, three circular farm radii, and multiple prescribed turbine counts are considered. Thirty stochastic runs are summarized by mean and standard deviation in the original tables, while classical SSA provides the principal mechanism-level baseline. A distinct follow-up DS1/DS2 dataset provides run-level evidence for SSA, LX-SSA, PSO and DE at unequal objective-evaluation budgets; it is analyzed with Kruskal--Wallis, Holm-corrected Mann--Whitney and case-level Friedman tests, bootstrap confidence intervals and effect sizes. Using an independent evaluator that reproduces all 720 stored follow-up objective values, the stored layouts are re-evaluated under a nonlinear power curve and a Gaussian wake model, and a 4D/5D/6D spacing sensitivity study is reported. Published EA/ACO/PF/BBO results are retained only as historical benchmark context. The results show small changes in the benchmark power objective but more visible changes in wake loss for several studied cases; the algorithm ordering is largely preserved under the alternative power-curve and wake models, whereas the absolute energy estimate is strongly model-dependent. Accordingly, the conclusions are limited to the stated benchmark model and do not claim a new optimization algorithm, a new wake model, or universal superiority over modern WFLO methods.
+The Wind Farm Layout Optimization Problem (WFLOP) is a nonlinear constrained optimization problem in which turbine locations interact through wake-induced velocity deficits. This study employs the Laplacian Salp Swarm Algorithm (LX-SSA), previously introduced by Solanki and Deep in 2023~\cite{Solanki2023}, for continuous WFLOP; LX-SSA is neither proposed nor redesigned in the present paper. The contribution is therefore application-level: the published optimizer is coupled to a continuous turbine-coordinate representation, Jensen wake interactions, direction-dependent Weibull wind statistics, and explicit farm-boundary and minimum-spacing constraints. Two established benchmark wind scenarios, three circular farm radii, and multiple prescribed turbine counts are considered. Thirty stochastic runs are summarized by mean and standard deviation in the original tables, while classical SSA provides the principal mechanism-level baseline. A distinct follow-up DS1/DS2 dataset provides run-level evidence for SSA, LX-SSA, PSO and DE at unequal objective-evaluation budgets. The original implementations are therefore re-run at equal budgets with seed-paired initial populations and analyzed with Friedman and Holm-corrected Wilcoxon signed-rank tests. A measured wind climate (Horns Rev~1) and the most crowded turbine counts are also examined. Using an independent evaluator that reproduces all 720 stored follow-up objective values, the stored layouts are re-evaluated under a nonlinear power curve and a Gaussian wake model, and a 4D/5D/6D spacing sensitivity study is reported. Published EA/ACO/PF/BBO results are retained only as historical benchmark context. At equal budgets LX-SSA is competitive with SSA and PSO and clearly better than DE, but it does not outperform SSA or PSO: its advantage in the unequal-budget data is explained by its doubled evaluation budget. The SSA family is markedly more reliable than PSO and DE in reaching feasible layouts for crowded farms. The algorithm ordering is largely preserved under the alternative power-curve and wake models, whereas the absolute energy estimate is strongly model-dependent. Accordingly, the conclusions are limited to the stated benchmark model and do not claim a new optimization algorithm, a new wake model, or universal superiority over modern WFLO methods.
 \end{abstract}
 
 
@@ -61,8 +61,9 @@ Accordingly, the novelty claimed here is application-level rather than algorithm
 \item formulation of a continuous turbine-coordinate representation that permits the previously published LX-SSA~\cite{Solanki2023} to be employed for WFLOP under explicit farm-boundary and minimum-spacing constraints;
 \item implementation of LX-SSA within the standard Jensen--Weibull WFLOP benchmark framework, without claiming novelty in the wake, wind-resource, or turbine-power models themselves;
 \item evaluation over multiple wind-farm radii and turbine-count cases using repeated stochastic runs to examine solution quality, wake-loss behavior, and run-to-run variability (Tables~\ref{tab:500mI}--\ref{tab:1000mII});
-\item comparison with classical SSA as the direct algorithmic baseline, together with a separately identified run-level follow-up experiment involving SSA, PSO and DE at stated evaluation budgets, analyzed with nonparametric tests, multiplicity correction, confidence intervals and effect sizes (Section~\ref{sec:additional-runlevel}, Tables~\ref{tab:followup-results}--\ref{tab:friedman}); and
-\item robustness checks of the benchmark assumptions with an independently validated evaluator: a nonlinear power curve, a Gaussian wake model, and $4D$/$5D$/$6D$ minimum spacing (Section~\ref{sec:robustness}, Tables~\ref{tab:powercurve}--\ref{tab:spacing-reopt}).
+\item comparison with classical SSA as the direct algorithmic baseline, together with a separately identified run-level follow-up experiment involving SSA, PSO and DE at stated evaluation budgets, analyzed with nonparametric tests, multiplicity correction, confidence intervals and effect sizes (Section~\ref{sec:additional-runlevel}, Tables~\ref{tab:followup-results}--\ref{tab:friedman});
+\item controlled, seed-paired re-runs of the original SSA, LX-SSA, PSO and DE code at equal objective-evaluation budgets, including the most crowded turbine counts and a measured wind climate (Horns Rev~1) (Section~\ref{sec:equalbudget}, Tables~\ref{tab:equalbudget}--\ref{tab:hornsrev}); and
+\item robustness checks of the benchmark assumptions with an independently validated evaluator: a nonlinear power curve, a Gaussian wake model, and $4D$/$5D$/$6D$ minimum spacing (Section~\ref{sec:robustness}, Tables~\ref{tab:powercurve}--\ref{tab:spacing-authors}).
 \end{itemize}
 Historical EA/ACO/PF/BBO values are used only as literature context and are not treated as controlled comparisons.
 
@@ -95,7 +96,7 @@ This section motivates the use of the previously published LX-SSA~\cite{Solanki2
 
 In the 2023 LX-SSA, the standard SSA follower dynamics are supplemented by a Laplace-distribution-based candidate update and greedy retention~\cite{Solanki2023,Deep2007}. The heavy-tailed Laplace perturbation can generate both short and occasional longer moves, which provides a plausible mechanism for exploring spatially separated layout configurations. This is a \emph{motivation for testing} LX-SSA on WFLOP rather than proof that it must outperform other algorithms.
 
-The present experiments therefore ask an application question: when the already-developed LX-SSA is placed inside the same WFLOP model used for the SSA baseline, does the additional Laplace-based search step produce reproducible changes in the attained benchmark objective and wake loss? The comparison with SSA is treated as a mechanism-level baseline because the principal algorithmic distinction is the additional LX-SSA update. A separate run-level follow-up experiment supplies PSO and DE comparisons at stated, unequal objective-evaluation budgets; broader comparisons to gradient, surrogate, and data-driven WFLO methods remain literature context.
+The present experiments therefore ask an application question: when the already-developed LX-SSA is placed inside the same WFLOP model used for the SSA baseline, does the additional Laplace-based search step produce reproducible changes in the attained benchmark objective and wake loss? The comparison with SSA is treated as a mechanism-level baseline because the principal algorithmic distinction is the additional LX-SSA update. A separate run-level follow-up experiment supplies PSO and DE comparisons, and controlled re-runs compare all four algorithms at equal objective-evaluation budgets (Section~\ref{sec:equalbudget}); broader comparisons to gradient, surrogate, and data-driven WFLO methods remain literature context.
 
 The remainder of the paper presents the benchmark model, summarizes the previously published optimizer only to the extent needed for reproducibility, defines its WFLOP mapping and constraint handling, reports the experimental results, and finally states the limitations of the evidence.
 
@@ -307,50 +308,37 @@ The numerical tables retain the historical discretization convention of the adop
 \subsection{Constraint Handling Mechanism}
 \label{sec:constraints}
 
-The WFLOP search must satisfy the circular farm boundary and the minimum inter-turbine spacing. The present implementation uses a deterministic repair only for the farm boundary and uses explicit violation measures plus feasibility-based selection for pairwise spacing. This removes ambiguity about when and how candidate layouts are made feasible.
+The WFLOP search must satisfy the circular farm boundary and the minimum inter-turbine spacing. The implementation used for all reported runs handles both constraints with two explicit operations: a box repair of the decision variables and a large additive penalty in the minimized objective. No other repair or displacement operator is applied.
 
-\subsubsection{Boundary Repair}
-For each turbine,
-\[
-\rho_i^2+\sigma_i^2\le r^2.
-\]
-If a generated coordinate violates the circular boundary, it is projected radially onto the boundary:
-\[
-(\rho_i,\sigma_i)\leftarrow
-\frac{r}{\sqrt{\rho_i^2+\sigma_i^2}}(\rho_i,\sigma_i),
-\qquad
-\text{when }\rho_i^2+\sigma_i^2>r^2.
-\]
-Thus every candidate passed to the wake model satisfies the farm-boundary constraint.
+\subsubsection{Box Repair}
+Every coordinate of every candidate is clipped to the bounding square of the farm after each position update,
+\begin{align*}
+\rho_i&\leftarrow\min\{\max\{\rho_i,-r\},r\},\\
+\sigma_i&\leftarrow\min\{\max\{\sigma_i,-r\},r\}.
+\end{align*}
+This guarantees bounded decision variables but not the circular constraint $\rho_i^2+\sigma_i^2\le r^2$, which is enforced through the penalty below.
 
-\subsubsection{Spacing-Violation Measure}
-The benchmark spacing requirement is
-\[
-(\rho_i-\rho_j)^2+(\sigma_i-\sigma_j)^2\ge64R^2,\qquad i\ne j.
-\]
-Its aggregate violation is
+\subsubsection{Violation Measure}
+The benchmark constraints are $d_{ij}=\sqrt{(\rho_i-\rho_j)^2+(\sigma_i-\sigma_j)^2}\ge d_{\min}=8R$ for all $i\ne j$ and $\sqrt{\rho_i^2+\sigma_i^2}\le r$ for all $i$. Their aggregate violation is
 \begin{equation}
-V_d=\sum_{i<j}\max\!\left\{0,\,
-64R^2-\left[(\rho_i-\rho_j)^2+(\sigma_i-\sigma_j)^2\right]\right\}.
+V=\sum_{i<j}\max\{0,\,d_{\min}-d_{ij}\}+\sum_{i=1}^{N}\max\Bigl\{0,\,\sqrt{\rho_i^2+\sigma_i^2}-r\Bigr\},
 \label{eq:spacingviolation}
 \end{equation}
-A layout is spacing-feasible if and only if $V_d=0$. Unlike the boundary condition, no unspecified ``slight displacement'' operator is assumed here; spacing feasibility is handled by the measured violation and the selection rules below.
+and a layout is feasible if and only if $V=0$.
 
-\subsubsection{Penalized Score and Feasibility Rules}
-For diagnostic ranking of infeasible candidates, the penalized score is
+\subsubsection{Penalized Objective}
+All optimizers minimize the penalized wake loss
 \begin{equation}
-F_p=\sum_{i=1}^{N}E(P_i)-\lambda V_d,
+F_p=\Bigl(N E_{\rm ideal}-\sum_{i=1}^{N}E(P_i)\Bigr)+\lambda V,\qquad \lambda=10^{10},
 \label{eq:penalty}
 \end{equation}
-where $\lambda>0$ controls the penalty magnitude. Candidate replacement follows feasibility-first rules:
+where $N E_{\rm ideal}$ is the wake-free value of the objective, so the first term is the wake loss reported in the tables. Because $\lambda$ exceeds any attainable wake loss by many orders of magnitude, comparing $F_p$ values implements feasibility-first selection:
 \begin{itemize}
 \item any feasible candidate is preferred to an infeasible one;
-\item between two feasible candidates, the candidate with the larger objective value is preferred;
-\item between two infeasible candidates, the candidate with the smaller $V_d$ is preferred; the penalized score is used only as a secondary tie-breaking indicator.
+\item between two feasible candidates, the one with the smaller wake loss (larger objective) is preferred;
+\item between two infeasible candidates, the one with the smaller total violation $V$ is preferred.
 \end{itemize}
-The numerical value of $\lambda$ must match the implementation used to generate the archived results; it is therefore listed in the reproducibility checklist supplied with this revision rather than invented retrospectively.
-
-This constraint-handling sequence is invoked after every LX-SSA position update in Algorithm~\ref{alg:lx-ssa-wflop}. It makes explicit which operations enforce boundary feasibility and which operations govern minimum-spacing feasibility.
+Box repair is applied after every position update and $F_p$ is used in every comparison, sort and greedy selection of Algorithms~\ref{alg:lx-ssa} and~\ref{alg:lx-ssa-wflop}. The same objective, including the penalty, is used for SSA, LX-SSA, PSO and DE. Section~\ref{sec:equalbudget} shows that a radial projection onto the circle, used instead of box clipping, changes the attained objective values, so the boundary-handling rule is part of the experimental protocol.
 
 \section{\textbf{Previously Developed Laplacian Salp Swarm Algorithm (LX-SSA)}}
 
@@ -381,12 +369,11 @@ where $x_j^i$ is the current follower coordinate and
 \begin{align}\label{eq16}
 \gamma(z,\phi,\chi)=
 \begin{cases}
-\phi-\chi\log z, & z\le0.5,\\
-\phi+\chi\log z, & z>0.5,
+\phi+\chi\ln(2z), & z\le0.5,\\
+\phi-\chi\ln\bigl(2(1-z)\bigr), & z>0.5,
 \end{cases}
-\qquad z\sim U(0,1).
 \end{align}
-The location parameter $\phi$ centers the Laplace variate, whereas the scale parameter $\chi>0$ controls its dispersion and therefore the perturbation magnitude. Smaller $\chi$ concentrates moves near the center; larger $\chi$ increases the probability of longer exploratory moves. In the present WFLOP application these parameters are not optimized, re-tuned or re-designed: the fixed parameterization of the previously published LX-SSA implementation~\cite{Solanki2023} is retained unchanged for every WFLOP case, and no WFLOP-specific sensitivity analysis of $\phi$ and $\chi$ was carried out. Consequently, the reported LX-SSA results should be read as those of the published default configuration, not of a configuration tuned to WFLOP.
+with $z\sim U(0,1)$, which is the inverse-distribution-function sample of a Laplace variable with location $\phi$ and scale $\chi$ (mean $\phi$, variance $2\chi^2$). The location parameter $\phi$ centers the Laplace variate, whereas the scale parameter $\chi>0$ controls its dispersion and therefore the perturbation magnitude. Smaller $\chi$ concentrates moves near the center; larger $\chi$ increases the probability of longer exploratory moves. All experiments use $\phi=0$ and $\chi=1$, so that $\gamma$ is symmetric about zero with $P(|\gamma|>1)=e^{-1}\approx0.37$: most follower candidates move towards $H$ ($\gamma>0$) or away from it ($\gamma<0$) by a fraction of the current distance, while a heavy tail occasionally produces moves beyond $H$ or well away from it. These values are fixed for every WFLOP case and are not tuned to WFLOP; no WFLOP-specific sensitivity analysis of $\phi$ and $\chi$ was carried out. Because each follower evaluates both candidates before the population is re-evaluated, one LX-SSA iteration costs $N_p/2\times2+N_p=2N_p$ objective calls, twice the $N_p$ calls of an SSA iteration; comparisons at equal numbers of calls are therefore reported in Section~\ref{sec:equalbudget}.
 
 Algorithm~\ref{alg:lx-ssa} follows the published leader/follower logic and avoids the earlier ambiguity in which a follower update appeared inside the leader branch. It also avoids hard-coding a minimization inequality; ``better'' is determined by the objective sense and, for WFLOP, by the feasibility rules in Section~\ref{sec:constraints}.
 
@@ -423,32 +410,26 @@ The published LX-SSA~\cite{Solanki2023} is employed without algorithmic redesign
 \]
 The optimizer therefore searches only the turbine coordinates; $N$ is fixed during a run. The objective and constraint calculations are the WFLOP model described above.
 
-Algorithm~\ref{alg:lx-ssa-wflop} makes the implementation sequence explicit. In particular, the candidate coordinates are updated first, the deterministic circular-boundary repair is applied, wake deficits and Weibull-scale adjustments are recomputed, spacing violation is measured, and the incumbent/candidate comparison uses feasibility-first selection. This ordering is essential because the objective depends on the layout-dependent wake field.
+Algorithm~\ref{alg:lx-ssa-wflop} makes the implementation sequence explicit. In particular, the candidate coordinates are updated first, box repair is applied, wake deficits and Weibull-scale adjustments are recomputed, the constraint violation is measured, and all comparisons use the penalized objective $F_p$, which implements feasibility-first selection (Section~\ref{sec:constraints}). This ordering is essential because the objective depends on the layout-dependent wake field.
 
 \begin{algorithm}
 \caption{Application of LX-SSA to WFLOP for a prescribed turbine count $N$}
 \label{alg:lx-ssa-wflop}
 \begin{algorithmic}[1]
-\Require Farm radius $r$, prescribed $N$, wind data, turbine/wake parameters, $N_p=5(2N)$, maximum iterations $T$
-\State Set dimension $d=2N$ and initialize $N_p$ candidate coordinate vectors.
+\Require Farm radius $r$, prescribed $N$, wind data, turbine/wake parameters, population size $N_p$, maximum iterations $T$, $\phi$, $\chi$
+\State Set dimension $d=2N$, bounds $[-r,r]^d$, and draw $N_p$ coordinate vectors uniformly in the bounds.
 \For{each candidate}
-    \State Apply circular-boundary projection to every turbine.
-    \State Compute $V_d$ from \eqref{eq:spacingviolation}.
     \State For each wind-direction bin, compute wake deficits $\delta s_i(\theta)$.
     \State Set $\psi_i(\theta)$ using \eqref{eq:weibull-scale} and compute $E(P_i)$.
-    \State Store total objective $\sum_i E(P_i)$ and feasibility information.
+    \State Compute $V$ from \eqref{eq:spacingviolation} and the penalized objective $F_p$ from \eqref{eq:penalty}.
 \EndFor
-\State Select the best candidate using the feasibility-first rules and set it as food source $H$.
+\State Sort the population by $F_p$ and set the best candidate as food source $H$.
 \For{$t=1$ to $T$}
-    \State Generate LX-SSA candidates using the update logic of Algorithm~\ref{alg:lx-ssa}.
-    \For{each generated candidate}
-        \State Apply circular-boundary projection.
-        \State Recompute $V_d$, wake deficits, $\psi_i(\theta)$ and $\sum_i E(P_i)$.
-        \State Compare generated candidate with its incumbent using feasibility-first selection.
-    \EndFor
-    \State Update $H$ from the best retained feasible candidate (or smallest-violation candidate if none is feasible).
+    \State Generate the leader and follower candidates of Algorithm~\ref{alg:lx-ssa}, applying box repair to each; followers keep the better of their two candidates by $F_p$.
+    \State Apply box repair, evaluate $F_p$ for the new population and sort it.
+    \State If the best new candidate has a smaller $F_p$ than $H$, replace $H$.
 \EndFor
-\State \Return $H$ and its turbine coordinates, objective value, and wake-loss measures.
+\State \Return $H$ and its turbine coordinates, objective value, wake loss and feasibility status.
 \end{algorithmic}
 \end{algorithm}
 
@@ -553,9 +534,12 @@ To assess the effectiveness of LX-SSA, the following experimental framework is e
     \item Linear model parameters: $\lambda' = 140.86$, $\eta = -500$
     \item Thrust coefficient, $c_T = 0.8$
     \item Wake spreading constant, $K = 0.075$
+    \item LX-SSA Laplace parameters: $\phi=0$, $\chi=1$; constraint penalty $\lambda=10^{10}$
 \end{itemize}
 
-The minimum spacing is $4D=8R=308$~m under the benchmark convention. All stochastic summary values in the tables are based on the archived 30-run summaries. The original six result tables lack their individual run-level vectors, seeds and wall-clock logs. A distinct DS1/DS2 follow-up archive does contain labelled seeds, individual solutions, coordinates and aggregate per-case wall-clock times; however, it does not provide the exact numerical values of every inherited LX-SSA control parameter (notably $\phi$, $\chi$, and the spacing-penalty coefficient $\lambda$), full initialization details, or the hardware/software configuration. These items could not be recovered from the archived experiment records and are therefore not reported rather than reconstructed. To support reproducibility within these limits, the revision supplies the stored follow-up run records with final coordinates, the best-layout coordinates of the selected cases (Appendix~\ref{app:coordinates}), and an independent evaluator that reproduces the recorded objective values (Section~\ref{sec:validation}).
+The follow-up and controlled experiments (Sections~\ref{sec:additional-runlevel} and~\ref{sec:equalbudget}) use a population of 30 for all algorithms, PSO with inertia weight $w=0.7$ and acceleration coefficients $c_1=c_2=2$ (velocities unbounded, positions clipped to the bounds), and DE/rand/1/bin with $F=0.5$ and $CR=0.9$. All algorithms draw their initial population uniformly in $[-r,r]^{2N}$ and use the same penalized objective~\eqref{eq:penalty}.
+
+The minimum spacing is $4D=8R=308$~m under the benchmark convention. All stochastic summary values in the tables are based on the archived 30-run summaries. The original six result tables lack their individual run-level vectors, seeds and wall-clock logs. A distinct DS1/DS2 follow-up archive does contain labelled seeds, individual solutions, coordinates and aggregate per-case wall-clock times; the optimizer settings listed above were taken from the implementation, whereas the hardware/software configuration of the archived runs is not recorded. The controlled re-runs of Section~\ref{sec:equalbudget} were therefore timed on a documented machine. To support reproducibility within these limits, the revision supplies the stored follow-up run records with final coordinates, the best-layout coordinates of the selected cases (Appendix~\ref{app:coordinates}), and an independent evaluator that reproduces the recorded objective values (Section~\ref{sec:validation}).
 
 In this study, wind speed is categorized into $N_s = 20$ intervals, each with a width of 0.5 m/s, starting from cut-in wind speed $s_{\text{cut-in}}$ up to rated wind speed $s_{\text{rated}}$. Similarly, wind direction is categorized into $N_{\theta} = 24$ intervals, each covering $15^{\circ}$, encompassing a total of $360^{\circ}$.
 
@@ -584,9 +568,9 @@ Tables~\ref{tab:750mI} and~\ref{tab:750mII} contain the 750~m results for prescr
 Tables~\ref{tab:1000mI} and~\ref{tab:1000mII} report the largest benchmark cases considered here, with prescribed turbine counts through $N=15$. LX-SSA remains numerically competitive with SSA in these cases, with the same caution that ``15 turbines'' is only the largest value tested and is not a universal feasibility limit for a 1000~m circular farm. Since the largest case still contains only 15 turbines, the present evidence should not be interpreted as a large-scale scalability demonstration. The archived layouts are shown in Figs.~\ref{fig:layout1000I} and~\ref{fig:layout1000II}.
 
 \subsection{Interpretation of the SSA--LX-SSA Comparison}
-SSA is the most informative ablation-style baseline available in the present archive because LX-SSA inherits the SSA framework and adds the Laplace-based candidate mechanism. Thus, comparing SSA and LX-SSA under the same WFLOP formulation provides evidence about the practical effect of that additional mechanism on this application. The tabulated differences in the benchmark power objective are generally small in relative terms, while wake-loss differences are more visible in a number of cases. The manuscript therefore avoids phrases such as ``significantly outperforms'' unless a formal test is supported by run-level data.
+SSA is the most informative ablation-style baseline available in the present archive because LX-SSA inherits the SSA framework and adds the Laplace-based candidate mechanism. Thus, comparing SSA and LX-SSA under the same WFLOP formulation provides evidence about the practical effect of that additional mechanism on this application. The tabulated differences in the benchmark power objective are generally small in relative terms, while wake-loss differences are more visible in a number of cases. The manuscript therefore avoids phrases such as ``significantly outperforms'' unless a formal test is supported by run-level data. The equal-budget re-runs of Section~\ref{sec:equalbudget} provide this mechanism-level test directly and show no equal-cost advantage of LX-SSA over SSA.
 
-QA-SSA~\cite{SolankiQA2024} is retained as an additional SSA-family comparator where values are available. EA, ACO, PF, and BBO entries are literature benchmarks and should not be interpreted as a controlled head-to-head experiment. A separate PSO/DE run-level comparison is reported in Section~\ref{sec:additional-runlevel}, with its unequal evaluation budgets stated. VNS, gradient/pseudo-gradient approaches, and surrogate/data-driven methods remain important baselines for future benchmarking~\cite{Cazzaro2022,Quaeghebeur2021,Yang2023,Wang2024,Li2025}.
+QA-SSA~\cite{SolankiQA2024} is retained as an additional SSA-family comparator where values are available. EA, ACO, PF, and BBO entries are literature benchmarks and should not be interpreted as a controlled head-to-head experiment. PSO/DE run-level comparisons are reported in Section~\ref{sec:additional-runlevel} (recorded, unequal budgets) and Section~\ref{sec:equalbudget} (controlled, equal budgets). VNS, gradient/pseudo-gradient approaches, and surrogate/data-driven methods remain important baselines for future benchmarking~\cite{Cazzaro2022,Quaeghebeur2021,Yang2023,Wang2024,Li2025}.
 
 \begin{table*}[!t]
 \centering
@@ -1604,11 +1588,174 @@ DE & 4.00 & 3.801 & $4.32\times10^{-4}$ \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:friedman} shows that the four algorithms are not ranked equally across the selected cases ($\chi^2_F=15.80$, $p=0.0012$). LX-SSA has the best average rank (1.17; first in five cases and second in Dataset~I, 500~m/4), but after Holm correction only the difference from DE is significant ($p_{\rm Holm}=4.3\times10^{-4}$); the differences from PSO ($p_{\rm Holm}=0.051$) and SSA ($p_{\rm Holm}=0.26$) are not. With only six blocks the case-level test has low power, and the cases were selected post hoc, so these results are exploratory. They agree with the run-level analysis: across the 18 LX-SSA--baseline comparisons in Table~\ref{tab:exploratory-tests}, the Holm-adjusted test does not distinguish LX-SSA from its comparator at the 5\% level in six (SSA in Dataset~I at 500~m/4, 750~m/8 and 1000~m/8 and in Dataset~II at 750~m/8; PSO at 500~m/4 in both datasets), and the bootstrap intervals of $\Delta$ against SSA include zero in four of the six cases. The practically relevant effect sizes are therefore large against DE ($r_{rb}\geq0.71$), moderate against PSO in the 8-turbine cases ($r_{rb}\approx0.52$--$0.62$), and small against SSA ($|r_{rb}|\leq0.36$).
+Table~\ref{tab:friedman} shows that the four algorithms are not ranked equally across the selected cases ($\chi^2_F=15.80$, $p=0.0012$). LX-SSA has the best average rank (1.17; first in five cases and second in Dataset~I, 500~m/4), but after Holm correction only the difference from DE is significant ($p_{\rm Holm}=4.3\times10^{-4}$); the differences from PSO ($p_{\rm Holm}=0.051$) and SSA ($p_{\rm Holm}=0.26$) are not. With only six blocks the case-level test has low power, and the cases were selected post hoc, so these results are exploratory. They agree with the run-level analysis of the recorded data: across the 18 LX-SSA--baseline comparisons in Table~\ref{tab:exploratory-tests}, the Holm-adjusted test does not distinguish LX-SSA from its comparator at the 5\% level in six (SSA in Dataset~I at 500~m/4, 750~m/8 and 1000~m/8 and in Dataset~II at 750~m/8; PSO at 500~m/4 in both datasets), and the bootstrap intervals of $\Delta$ against SSA include zero in four of the six cases. The practically relevant effect sizes are therefore large against DE ($r_{rb}\geq0.71$), moderate against PSO in the 8-turbine cases ($r_{rb}\approx0.52$--$0.62$), and small against SSA ($|r_{rb}|\leq0.36$). All of these recorded comparisons, however, give LX-SSA twice the evaluation budget; Section~\ref{sec:equalbudget} shows that the advantage over SSA and PSO disappears at equal cost.
 
 The selected results show a mixed mechanism-level comparison. For Dataset~I at 500~m/4, SSA exceeds LX-SSA by 2.06 objective units in sample mean and the Holm-adjusted comparison does not distinguish their run distributions ($p=0.6735$). At 750~m/8, the LX-SSA mean exceeds SSA by 164.45 and 87.89 units for Datasets~I and II, respectively, while neither SSA comparison survives the within-case Holm adjustment ($p=0.2398$ and $p=0.3042$). Dataset~II at 1000~m/8 shows a higher LX-SSA mean than SSA by 154.65 units ($p_{\mathrm{Holm}}=0.01988$); this difference remains confounded by LX-SSA's larger evaluation budget. The larger observed differences against DE and PSO cannot establish relative efficiency under equal computational effort.
 
-These post hoc, unequal-budget tests are a limited diagnostic, not a basis for a universal superiority claim. In more crowded cases, the workbooks contain infeasible layouts with penalty-scale values in the \texttt{WakeLoss} column; reporting those raw means as physical wake deficits would be misleading. Equal-budget reruns, documented matched-seed initialization, feasibility-rate reporting for every case, and a verified objective definition are needed before the additional data can replace the historical tables or support definitive comparative claims.
+These post hoc, unequal-budget tests are a limited diagnostic, not a basis for a universal superiority claim. In more crowded cases, the workbooks contain infeasible layouts with penalty-scale values in the \texttt{WakeLoss} column; reporting those raw means as physical wake deficits would be misleading. Section~\ref{sec:equalbudget} therefore repeats the comparison with the original code at equal budgets, seed-paired initial populations and full feasibility reporting.
+
+\section{Controlled Re-runs with the Original Implementation}
+\label{sec:equalbudget}
+The follow-up data of Section~\ref{sec:additional-runlevel} compare algorithms at unequal budgets. To remove this confound, the original implementations of SSA, LX-SSA, PSO and DE, i.e., the code that produced the follow-up data, were re-run on the validated evaluator of Section~\ref{sec:validation} with the penalized objective~\eqref{eq:penalty}.
+
+\subsection{Protocol and Calibration}
+\label{sec:rerun-protocol}
+\emph{Calibration.} At the recorded budgets (6,030 calls for LX-SSA, 3,030 for the others), the re-runs reproduce the recorded follow-up distributions. In 22 of the 24 algorithm--case comparisons, a Mann--Whitney test does not distinguish re-run from recorded objective values at the 5\% level (smallest $p=0.0015$, for SSA in Data Set~I at 500~m/4), and the largest relative difference between re-run and recorded means is 0.22\%. The counted objective calls are exactly 3,030 and 6,030, as recorded. This confirms that the reported LX-SSA results correspond to $\phi=0$ and $\chi=1$. One difference remains: in the 750-m eight-turbine cases, 22 (PSO) and 26 (DE) of the 30 re-runs end feasible, whereas all recorded runs in these cases were feasible.
+
+\emph{Design.} Each algorithm uses a population of 30 and seeds 1--30. Every optimizer seeds the random-number generator and draws its initial population first, so runs with the same seed start from the \emph{same} initial population for all four algorithms (verified numerically). The runs are therefore paired by seed, which justifies the Wilcoxon signed-rank and run-level Friedman tests that the independent-sample analysis of Section~\ref{sec:additional-runlevel} could not use. Two budgets are matched in counted objective calls: 3,030 (LX-SSA 50 iterations; SSA, PSO and DE 100) and 6,030 (LX-SSA 100 iterations; the others 200). For ranking, a feasible run beats an infeasible one; infeasible runs are compared by their spacing shortfall.
+
+\subsection{Equal-Budget Comparison}
+\begin{table*}[!t]
+\centering
+\caption{Controlled equal-budget re-runs with the authors' optimizer code: benchmark objective (mean $\pm$ SD of the feasible runs among 30 seed-paired runs). Budget = objective-function calls per run (LX-SSA 50 or 100 iterations; SSA, PSO and DE 100 or 200 iterations; population 30). Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; infeasible runs are excluded from the mean.}
+\label{tab:equalbudget}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{cccccccc}
+\toprule
+Budget & DS & Radius (m) & $N$ & LX-SSA & SSA & PSO & DE \\
+\midrule
+3,030 & 1 & 500 & 4 & 56070.0 $\pm$ 20.3 & 56061.7 $\pm$ 25.0 & \textbf{56080.4 $\pm$ 19.4} & 56045.1 $\pm$ 16.5 \\
+3,030 & 1 & 750 & 8 & 111322.4 $\pm$ 445.1 & \textbf{111383.2 $\pm$ 419.0} & 110839.7 $\pm$ 982.4$^{22}$ & 109724.0 $\pm$ 915.4$^{26}$ \\
+3,030 & 1 & 1000 & 8 & 111791.5 $\pm$ 217.3 & \textbf{111860.0 $\pm$ 165.3} & 111719.0 $\pm$ 426.8$^{29}$ & 111402.9 $\pm$ 204.1 \\
+3,030 & 2 & 500 & 4 & 28966.6 $\pm$ 91.8 & 28957.2 $\pm$ 92.7 & \textbf{29031.6 $\pm$ 49.6} & 28923.9 $\pm$ 86.9 \\
+3,030 & 2 & 750 & 8 & 56567.9 $\pm$ 377.6 & \textbf{56744.1 $\pm$ 295.3} & 56370.7 $\pm$ 465.1$^{22}$ & 55520.8 $\pm$ 573.2$^{26}$ \\
+3,030 & 2 & 1000 & 8 & \textbf{57564.8 $\pm$ 215.3} & 57545.6 $\pm$ 220.5 & 57376.6 $\pm$ 192.2$^{29}$ & 56984.8 $\pm$ 143.6 \\
+\midrule
+6,030 & 1 & 500 & 4 & 56078.3 $\pm$ 26.4 & 56085.5 $\pm$ 18.7 & \textbf{56094.4 $\pm$ 12.3} & 56082.2 $\pm$ 26.4 \\
+6,030 & 1 & 750 & 8 & 111455.0 $\pm$ 284.4 & \textbf{111599.1 $\pm$ 314.1} & 111313.6 $\pm$ 718.6$^{29}$ & 110464.8 $\pm$ 657.0 \\
+6,030 & 1 & 1000 & 8 & 111896.7 $\pm$ 145.8 & \textbf{111942.7 $\pm$ 87.4} & 111932.8 $\pm$ 152.3 & 111566.5 $\pm$ 182.4 \\
+6,030 & 2 & 500 & 4 & 29016.4 $\pm$ 68.3 & 28994.0 $\pm$ 65.8 & \textbf{29099.1 $\pm$ 65.2} & 29049.7 $\pm$ 85.8 \\
+6,030 & 2 & 750 & 8 & 56709.7 $\pm$ 231.9 & \textbf{56805.1 $\pm$ 308.6} & 56804.1 $\pm$ 259.8$^{29}$ & 56104.7 $\pm$ 378.0 \\
+6,030 & 2 & 1000 & 8 & 57535.3 $\pm$ 200.3 & \textbf{57707.4 $\pm$ 182.0} & 57645.8 $\pm$ 228.6 & 57146.1 $\pm$ 177.0 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+\begin{table*}[!t]
+\centering
+\caption{Paired statistics for the equal-budget re-runs (runs paired by seed, i.e., by identical initial population). $\chi^2_F$, $p_F$: run-level Friedman test over the four algorithms (30 blocks); $\bar r$: average Friedman rank of LX-SSA (1 = best). Infeasible runs rank below feasible ones (and among themselves by spacing shortfall). For each baseline: difference of feasible-run means (LX-SSA minus baseline), LX-SSA wins/losses over the 30 pairs, Holm-adjusted two-sided Wilcoxon signed-rank $p$, and matched-pairs rank-biserial correlation (positive favors LX-SSA).}
+\label{tab:equalbudget-tests}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{cccccccccccc}
+\toprule
+Budget & DS & Radius & $N$ & $\chi^2_F$ & $p_F$ & $\bar r$ & Baseline & $\Delta$ & W/L & $p_{\rm Holm}$ & $r_{rb}$ \\
+\midrule
+3,030 & 1 & 500 & 4 & 29.32 & $1.92\times10^{-6}$ & 2.30 & SSA & +8.3 & 16/14 & 0.371 & +0.19 \\
+ & & & & & &  & PSO & -10.4 & 10/20 & 0.168 & -0.36 \\
+ & & & & & &  & DE & +24.8 & 25/5 & $3.18\times10^{-5}$ & +0.84 \\
+\midrule
+3,030 & 1 & 750 & 8 & 36.68 & $5.38\times10^{-8}$ & 1.87 & SSA & -60.8 & 15/15 & 0.543 & -0.13 \\
+ & & & & & &  & PSO & +482.7 & 19/11 & 0.002 & +0.66 \\
+ & & & & & &  & DE & +1598.4 & 30/0 & $5.59\times10^{-9}$ & +1.00 \\
+\midrule
+3,030 & 1 & 1000 & 8 & 42.12 & $3.78\times10^{-9}$ & 2.13 & SSA & -68.5 & 13/17 & 0.382 & -0.28 \\
+ & & & & & &  & PSO & +72.5 & 16/14 & 0.382 & +0.22 \\
+ & & & & & &  & DE & +388.6 & 27/3 & $1.06\times10^{-7}$ & +0.97 \\
+\midrule
+3,030 & 2 & 500 & 4 & 26.12 & $9.00\times10^{-6}$ & 2.53 & SSA & +9.4 & 17/13 & 0.543 & +0.13 \\
+ & & & & & &  & PSO & -65.0 & 8/22 & 0.014 & -0.58 \\
+ & & & & & &  & DE & +42.7 & 19/11 & 0.168 & +0.36 \\
+\midrule
+3,030 & 2 & 750 & 8 & 46.52 & $4.40\times10^{-10}$ & 2.03 & SSA & -176.2 & 10/20 & 0.084 & -0.36 \\
+ & & & & & &  & PSO & +197.1 & 21/9 & 0.001 & +0.69 \\
+ & & & & & &  & DE & +1047.1 & 28/2 & $2.79\times10^{-8}$ & +0.99 \\
+\midrule
+3,030 & 2 & 1000 & 8 & 52.44 & $2.41\times10^{-11}$ & 1.70 & SSA & +19.1 & 15/15 & 0.839 & +0.05 \\
+ & & & & & &  & PSO & +188.1 & 24/6 & 0.001 & +0.69 \\
+ & & & & & &  & DE & +580.0 & 30/0 & $5.59\times10^{-9}$ & +1.00 \\
+\midrule
+6,030 & 1 & 500 & 4 & 8.80 & 0.032 & 2.77 & SSA & -7.3 & 14/16 & 0.929 & -0.16 \\
+ & & & & & &  & PSO & -16.1 & 9/21 & 0.011 & -0.59 \\
+ & & & & & &  & DE & -3.9 & 14/16 & 0.929 & -0.07 \\
+\midrule
+6,030 & 1 & 750 & 8 & 39.92 & $1.11\times10^{-8}$ & 2.27 & SSA & -144.1 & 9/21 & 0.050 & -0.47 \\
+ & & & & & &  & PSO & +141.4 & 15/15 & 0.428 & +0.17 \\
+ & & & & & &  & DE & +990.2 & 28/2 & $2.79\times10^{-8}$ & +0.99 \\
+\midrule
+6,030 & 1 & 1000 & 8 & 49.68 & $9.35\times10^{-11}$ & 2.13 & SSA & -46.0 & 14/16 & 0.457 & -0.26 \\
+ & & & & & &  & PSO & -36.2 & 12/18 & 0.457 & -0.20 \\
+ & & & & & &  & DE & +330.2 & 30/0 & $5.59\times10^{-9}$ & +1.00 \\
+\midrule
+6,030 & 2 & 500 & 4 & 25.20 & $1.40\times10^{-5}$ & 2.80 & SSA & +22.4 & 17/13 & 0.368 & +0.28 \\
+ & & & & & &  & PSO & -82.6 & 6/24 & $3.18\times10^{-5}$ & -0.84 \\
+ & & & & & &  & DE & -33.3 & 13/17 & 0.368 & -0.28 \\
+\midrule
+6,030 & 2 & 750 & 8 & 34.36 & $1.66\times10^{-7}$ & 2.33 & SSA & -95.4 & 13/17 & 0.396 & -0.27 \\
+ & & & & & &  & PSO & -94.4 & 12/18 & 0.396 & -0.23 \\
+ & & & & & &  & DE & +605.1 & 25/5 & $2.50\times10^{-6}$ & +0.91 \\
+\midrule
+6,030 & 2 & 1000 & 8 & 55.64 & $5.01\times10^{-12}$ & 2.47 & SSA & -172.1 & 8/22 & 0.011 & -0.57 \\
+ & & & & & &  & PSO & -110.4 & 8/22 & 0.014 & -0.51 \\
+ & & & & & &  & DE & +389.2 & 30/0 & $5.59\times10^{-9}$ & +1.00 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+Tables~\ref{tab:equalbudget} and~\ref{tab:equalbudget-tests} show that the advantage of LX-SSA seen at unequal budgets does not persist at equal cost:
+\begin{itemize}
+\item \emph{LX-SSA vs.\ SSA (mechanism-level ablation).} At 3,030 calls the Holm-adjusted Wilcoxon test finds no difference in any of the six cases. At 6,030 calls SSA has the higher mean in five of six cases and is significantly better in two (Data Set~I, 750~m/8, $p_{\rm Holm}=0.050$; Data Set~II, 1000~m/8, $p_{\rm Holm}=0.011$). Under an equal number of objective calls, the Laplace follower candidate therefore does not improve on the SSA follower update for this problem. A plausible reason is that LX-SSA spends two calls per follower per iteration, so at a fixed budget it performs only half as many iterations.
+\item \emph{LX-SSA vs.\ PSO.} At 3,030 calls LX-SSA is significantly better in three of the four eight-turbine cases, and PSO is better in Data Set~II at 500~m/4. At 6,030 calls PSO is significantly better in three cases (both 500~m/4 cases and Data Set~II at 1000~m/8), with no significant difference in the other three.
+\item \emph{LX-SSA vs.\ DE.} LX-SSA is significantly better in five of six cases at 3,030 calls and in all four eight-turbine cases at 6,030 calls, with large effects ($r_{rb}\ge0.84$); the four-turbine cases show no significant difference at 6,030 calls.
+\end{itemize}
+Averaged over the six cases, the Friedman rank of LX-SSA is 2.09 at 3,030 calls (SSA 2.05, PSO 2.26, DE 3.59) and 2.46 at 6,030 calls (PSO 1.96, SSA 2.18, DE 3.39). LX-SSA is thus competitive with SSA and PSO and clearly better than DE, but equal-budget evidence does not support a claim that it outperforms SSA or PSO on this benchmark.
+
+\subsection{Crowded Cases and Feasibility}
+\begin{table*}[!t]
+\centering
+\caption{Equal-budget re-runs (6,030 calls) for the largest turbine count tabulated per radius: number of feasible final layouts out of 30 and mean benchmark objective of the feasible layouts.}
+\label{tab:crowded}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{ccccccccccc}
+\toprule
+& & & \multicolumn{2}{c}{LX-SSA} & \multicolumn{2}{c}{SSA} & \multicolumn{2}{c}{PSO} & \multicolumn{2}{c}{DE} \\
+\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}\cmidrule(lr){10-11}
+DS & Radius (m) & $N$ & Feas. & Objective & Feas. & Objective & Feas. & Objective & Feas. & Objective \\
+\midrule
+1 & 500 & 10 & 22/30 & 131797.3 & 25/30 & 133122.8 & 0/30 & -- & 2/30 & 135428.3 \\
+1 & 750 & 12 & 30/30 & 162767.5 & 30/30 & 163670.7 & 2/30 & 162719.7 & 0/30 & -- \\
+1 & 1000 & 15 & 30/30 & 204425.3 & 30/30 & 204948.8 & 0/30 & -- & 1/30 & 204165.1 \\
+2 & 500 & 10 & 22/30 & 66101.5 & 25/30 & 66447.2 & 0/30 & -- & 2/30 & 67317.9 \\
+2 & 750 & 12 & 30/30 & 81808.7 & 30/30 & 82320.7 & 2/30 & 81921.7 & 0/30 & -- \\
+2 & 1000 & 15 & 30/30 & 102880.2 & 30/30 & 103132.5 & 0/30 & -- & 1/30 & 102934.8 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+For the largest turbine count of each historical table, Table~\ref{tab:crowded} reports how often each algorithm returns a feasible layout at 6,030 calls. The two salp-swarm algorithms are far more reliable than PSO and DE: LX-SSA and SSA return feasible layouts in 22--30 and 25--30 of 30 runs, respectively, whereas PSO and DE succeed in at most two runs per case. This feasibility advantage of the SSA family is the most robust practical difference observed. Between the two, SSA attains the higher mean objective among feasible runs in all six crowded cases.
+
+\subsection{Measured Wind Climate: Horns Rev 1}
+\label{sec:hornsrev}
+\begin{table*}[!t]
+\centering
+\caption{Measured wind climate (Horns Rev~1 wind rose, 12 sectors): expected farm power in kW (mean $\pm$ SD of the feasible runs among 30 seed-paired runs, 6,030 calls each; a superscript gives the number of feasible runs when fewer than 30; AEP in MWh $=8.76\times$ kW). ``Ideal'' is the wake-free farm power. Bold: highest mean. $p_F$: run-level Friedman test; last three columns: Holm-adjusted Wilcoxon signed-rank $p$ of LX-SSA vs.\ SSA, PSO and DE.}
+\label{tab:hornsrev}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{cccccccccccc}
+\toprule
+& & & & & & & & \multicolumn{3}{c}{LX-SSA vs.\ ($p_{\rm Holm}$)} \\
+\cmidrule(lr){9-11}
+Radius (m) & $N$ & Ideal & LX-SSA & SSA & PSO & DE & $p_F$ & SSA & PSO & DE \\
+\midrule
+500 & 4 & 3157.9 & 3155.5 $\pm$ 5.0 & 3157.5 $\pm$ 1.8 & \textbf{3157.9 $\pm$ 0.0} & 3157.9 $\pm$ 0.0 & 0.003 & 0.109 & 0.094 & 0.094 \\
+750 & 8 & 6315.7 & 6240.1 $\pm$ 32.8 & \textbf{6248.0 $\pm$ 26.5} & 6211.7 $\pm$ 53.6$^{29}$ & 6116.4 $\pm$ 69.9 & $3.64\times10^{-9}$ & 0.328 & 0.020 & $1.40\times10^{-7}$ \\
+1000 & 8 & 6315.7 & 6273.2 $\pm$ 19.8 & \textbf{6282.3 $\pm$ 15.4} & 6265.2 $\pm$ 18.9 & 6217.8 $\pm$ 23.1 & $3.18\times10^{-11}$ & 0.146 & 0.146 & $2.79\times10^{-8}$ \\
+1000 & 15 & 11842.0 & 11279.6 $\pm$ 102.8 & \textbf{11367.5 $\pm$ 92.4} & --$^{0}$ & 11310.2$^{1}$ & $1.12\times10^{-15}$ & 0.002 & $5.59\times10^{-9}$ & $7.45\times10^{-9}$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+To address the use of synthetic wind data, the four algorithms were applied to the measured wind climate of the Horns Rev~1 offshore wind farm. The 12 directional sectors, with Weibull scale, shape and frequency per sector, are taken from the open-source PyWake distribution~\cite{PyWake}. Only the wind climate is site-measured: the benchmark turbine, the Jensen wake model and the circular farm are unchanged, so this is a test of the optimizers under a realistic, strongly directional wind rose rather than a reproduction of the Horns Rev~1 farm. The free-stream expected power is 789.5~kW per turbine (capacity factor 0.53 under the benchmark power curve).
+
+Table~\ref{tab:hornsrev} shows the same pattern as the synthetic data. SSA has the highest mean in the three larger cases. LX-SSA does not differ significantly from SSA except for 1000~m/15, where SSA is better ($p_{\rm Holm}=0.002$; mean wake losses 4.75\% vs.\ 4.01\% of the ideal, i.e., AEP of 98.8 vs.\ 99.6~GWh). LX-SSA is significantly better than DE in the three larger cases and better than PSO at 750~m/8 and 1000~m/15; at 1000~m/15 PSO finds no feasible layout and DE only one. In the four-turbine case PSO and DE reach the wake-free optimum in every run, while LX-SSA falls short by 2.3~kW on average (not significant after correction).
+
+\subsection{Measured Run Time}
+Each run was timed individually. At equal numbers of objective calls the four algorithms take essentially the same time: 0.39--0.46~ms per call on average (LX-SSA 0.39, SSA 0.40, PSO 0.41, DE 0.46~ms), i.e., 1.8--3.6~s per 6,030-call run depending on $N$. The run time is dominated by the objective evaluation, and the Laplace step adds no measurable overhead. The large per-run differences in the recorded batch times of Table~\ref{tab:followup-results} (up to 15 times longer for LX-SSA) are therefore not reproduced and are attributable to the undocumented recording conditions rather than to the algorithms. Environment: Linux container, Intel Xeon processor at 2.80~GHz, 4 virtual cores with four runs executed in parallel, Python~3.11.15, NumPy~2.4.6, SciPy~1.17.1.
+
+\subsection{Effect of Boundary Handling}
+The implementation clips coordinates to the bounding square and penalizes points outside the circle (Section~\ref{sec:constraints}). An otherwise identical SSA that instead projects every turbine radially onto the circle and ranks candidates by the feasibility-first rules attains higher mean objectives than the SSA re-runs in all six representative cases at 3,030 calls (by 40 to 507 objective units; for example 111774.0 vs.\ 111383.2 for Data Set~I at 750~m/8). The boundary-handling rule therefore affects results by more than the differences between the algorithms, and it must be held fixed, as here, in any comparison.
 
 \section{Robustness of the Benchmark Assumptions}
 \label{sec:robustness}
@@ -1704,19 +1851,21 @@ Radius (m) & $4D$ & $5D$ & $6D$ & Largest $N$ in \\
 
 \begin{table*}[!t]
 \centering
-\caption{Spacing sensitivity with the independent reference SSA (30 runs per cell, 3,030 objective evaluations per run unless stated). Entries are mean $\pm$ SD of the benchmark objective with mean wake loss as a percentage of the ideal objective in parentheses. All 540 final layouts are feasible for their spacing. The last column repeats the $4D$ case with 200 iterations (6,030 evaluations).}
-\label{tab:spacing-reopt}
-\footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{ccccccc}
+\caption{Minimum-spacing sensitivity with the authors' LX-SSA and SSA code (6,030 calls, 30 seed-paired runs per cell): mean benchmark objective, Wilcoxon signed-rank $p$ for LX-SSA vs.\ SSA, and the mean LX-SSA wake loss as a percentage of the ideal objective at $4D$ and $6D$. A superscript gives the number of feasible runs when fewer than 30.}
+\label{tab:spacing-authors}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{ccccccccccccc}
 \toprule
-DS & Radius (m) & $N$ & $4D$ & $5D$ & $6D$ & $4D$, 6,030 evaluations \\
+& & & \multicolumn{3}{c}{$4D$ (308 m)} & \multicolumn{3}{c}{$5D$ (385 m)} & \multicolumn{3}{c}{$6D$ (462 m)} & \\
+\cmidrule(lr){4-6}\cmidrule(lr){7-9}\cmidrule(lr){10-12}
+DS & Radius & $N$ & LX-SSA & SSA & $p$ & LX-SSA & SSA & $p$ & LX-SSA & SSA & $p$ & LX-SSA loss (\%) \\
 \midrule
-1 & 500 & 4 & $56101.7\pm16.5$ (0.14) & $56100.6\pm13.4$ (0.15) & $56099.5\pm15.6$ (0.15) & $56106.7\pm20.5$ (0.14) \\
-1 & 750 & 8 & $111774.0\pm179.1$ (0.53) & $111647.7\pm361.2$ (0.64) & $111023.9\pm868.9$ (1.19) & $111813.0\pm142.0$ (0.49) \\
-1 & 1000 & 8 & $112019.0\pm90.6$ (0.31) & $112041.3\pm88.0$ (0.29) & $111995.3\pm180.1$ (0.33) & $112093.8\pm54.3$ (0.24) \\
-2 & 500 & 4 & $29075.1\pm54.0$ (0.64) & $29072.9\pm63.6$ (0.64) & $29092.9\pm70.9$ (0.58) & $29100.6\pm58.9$ (0.55) \\
-2 & 750 & 8 & $57251.0\pm221.0$ (2.17) & $57059.8\pm228.2$ (2.50) & $56924.3\pm245.5$ (2.73) & $57358.3\pm163.5$ (1.99) \\
-2 & 1000 & 8 & $57887.2\pm153.9$ (1.09) & $57890.6\pm141.2$ (1.08) & $57747.7\pm166.6$ (1.32) & $57956.7\pm183.8$ (0.97) \\
+1 & 500 & 4 & 56078.3 & 56085.5 & 0.465 & 56082.4 & 56082.3 & 0.855 & 56071.5 & 56041.2 & 0.289 & 0.19 $\rightarrow$ 0.20 \\
+1 & 750 & 8 & 111455.0 & 111599.1 & 0.025 & 111141.0 & 111435.3 & 0.064 & 110828.0 & 110896.1 & 0.808 & 0.81 $\rightarrow$ 1.37 \\
+1 & 1000 & 8 & 111896.7 & 111942.7 & 0.229 & 111952.4 & 111894.4 & 0.730 & 111831.8 & 111878.7 & 0.318 & 0.42 $\rightarrow$ 0.48 \\
+2 & 500 & 4 & 29016.4 & 28994.0 & 0.184 & 28964.7 & 28999.6 & 0.135 & 28996.7 & 28999.0 & 0.935 & 0.84 $\rightarrow$ 0.90 \\
+2 & 750 & 8 & 56709.7 & 56805.1 & 0.198 & 56716.1 & 56773.2 & 0.570 & 56583.8 & 56790.0 & 0.007 & 3.10 $\rightarrow$ 3.31 \\
+2 & 1000 & 8 & 57535.3 & 57707.4 & 0.005 & 57523.8 & 57566.5 & 0.404 & 57452.2 & 57546.5 & 0.088 & 1.69 $\rightarrow$ 1.83 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1727,10 +1876,7 @@ The spacing assumption was examined in three complementary ways.
 
 \emph{Stored layouts.} The layouts optimized under $4D$ are frequently active at the spacing constraint. Of the 240 stored four-turbine layouts, 77.5\% also satisfy $5D$ and 40.4\% satisfy $6D$; of the 480 stored eight-turbine layouts, only 27.3\% satisfy $5D$ and 5.6\% satisfy $6D$ (none of the 750-m, eight-turbine layouts satisfies $6D$). The reported optimal layouts are therefore specific to the $4D$ rule and cannot be transferred to a site with larger spacing requirements without re-optimization.
 
-\emph{Re-optimization.} Because the numerical values of the LX-SSA parameters $\phi$ and $\chi$ are not available in the archive, LX-SSA itself could not be re-run under different spacings without guessing them. The spacing effect was therefore measured with an independent reference implementation of SSA that follows \eqref{eq12} and \eqref{eq14} exactly, uses the boundary projection and feasibility-first rules of Section~\ref{sec:constraints}, a population of 30, 100 iterations (3,030 evaluations, matching the follow-up SSA budget) and 30 independently seeded runs per cell. Table~\ref{tab:spacing-reopt} shows that increasing the spacing from $4D$ to $6D$ has no material effect on the four-turbine 500-m cases (changes smaller than one standard deviation) and a small effect on the 1000-m eight-turbine cases, but it lowers the mean objective of the 750-m eight-turbine cases by 750 units (0.67\%) for Data Set~I and 327 units (0.57\%) for Data Set~II, while the mean wake loss rises from 0.53\% to 1.19\% and from 2.17\% to 2.73\% of the ideal objective. Tighter spacing thus matters most when the farm is densely populated, which is exactly where the historical tables report their largest turbine counts.
-
-\emph{Calibration and budget effect.} The reference SSA also serves as a calibration check. At $4D$ and 3,030 evaluations it attains higher mean objectives than the recorded SSA runs \emph{and} the recorded LX-SSA runs in all six cases (Mann--Whitney $p\le0.008$ in every comparison; e.g., $+339$ and $+543$ units above the recorded LX-SSA mean for the 750-m cases of Data Sets~I and~II). A variant that retains a candidate only if it improves on its incumbent gave essentially the same results. Implementation details that are not documented in the archive (for example initialization, bound handling and the precise leader step) therefore affect the absolute results by more than the recorded LX-SSA--SSA differences. For this reason the reference runs are used only for comparisons \emph{within} one implementation and not to rank algorithms. Within the reference implementation, doubling the budget to 6,030 evaluations (last column of Table~\ref{tab:spacing-reopt}) raises the mean objective by 5 to 107 units, which is the same order as the recorded LX-SSA--SSA mean differences ($-2$ to $+164$ units). This quantifies why the unequal budgets of Section~\ref{sec:additional-runlevel} prevent any conclusion about relative efficiency and why an equal-budget rerun of the original implementations is required.
-
+\emph{Re-optimization.} The six representative cases were re-optimized with the original LX-SSA and SSA code at $5D$ and $6D$ (6,030 calls, 30 seed-paired runs; the $4D$ values are those of Section~\ref{sec:equalbudget}). All 720 re-optimized layouts are feasible. Table~\ref{tab:spacing-authors} shows that larger spacing has little effect in the four-turbine 500-m and eight-turbine 1000-m cases, but in the denser 750-m eight-turbine cases it lowers the mean LX-SSA objective from $4D$ to $6D$ by 627 units (0.56\%) for Data Set~I and 126 units (0.22\%) for Data Set~II, with the mean wake loss rising from 0.81\% to 1.37\% and from 3.10\% to 3.31\% of the ideal objective. The LX-SSA--SSA comparison is not reversed by the spacing rule: SSA has the higher mean in most cells, and the only significant differences (unadjusted Wilcoxon $p<0.05$) favor SSA, at $4D$ for Data Set~I at 750~m/8 and Data Set~II at 1000~m/8 and at $6D$ for Data Set~II at 750~m/8. Tighter spacing thus matters mainly for densely populated farms, which is exactly where the historical tables report their largest turbine counts.
 
 \section{\textbf{Computational Complexity and Evidence Strength}}
 
@@ -1746,10 +1892,10 @@ Evaluating all population members over $T$ iterations therefore gives
 Boundary projection is $\mathcal{O}(N_t)$ per candidate and pairwise spacing evaluation is $\mathcal{O}(N_t^2)$; both are dominated by the wake/objective evaluation. The additional Laplace draw and candidate update in LX-SSA are linear in the decision dimension, so they do not change the leading asymptotic order relative to SSA. This is an asymptotic statement only; actual wall-clock overhead must be measured empirically.
 
 \subsection{Run-to-Run Evidence and Statistical Limitations}
-The historical six-table results contain 30-run summaries but not the underlying individual observations, so inferential tests cannot be assigned retroactively to those displayed means. The DS1/DS2 Paper1 workbooks are a separate follow-up data source with 30 individual observations per selected algorithm/case. Section~\ref{sec:additional-runlevel} analyses representative feasible cases from these workbooks with explicit objective-evaluation budgets, independent-sample run-level tests, a case-level Friedman test, Holm correction, bootstrap confidence intervals and effect sizes. The follow-up evidence does not validate a paired-seed claim or close the equal-budget comparison requested by the reviewers; Section~\ref{sec:spacing} shows that a doubling of the budget changes the mean objective by an amount comparable to the observed LX-SSA--SSA differences.
+The historical six-table results contain 30-run summaries but not the underlying individual observations, so inferential tests cannot be assigned retroactively to those displayed means. The DS1/DS2 Paper1 workbooks are a separate follow-up data source with 30 individual observations per selected algorithm/case. Section~\ref{sec:additional-runlevel} analyses representative feasible cases from these workbooks with explicit objective-evaluation budgets, independent-sample run-level tests, a case-level Friedman test, Holm correction, bootstrap confidence intervals and effect sizes. Because the recorded follow-up budgets are unequal, the controlled re-runs of Section~\ref{sec:equalbudget} provide the equal-budget, seed-paired evidence: run-level Friedman tests, Holm-corrected Wilcoxon signed-rank tests, matched-pairs effect sizes and feasibility counts.
 
 \subsection{Runtime Evidence}
-Theoretical complexity does not establish practical computational efficiency. The original six-table archive does not contain standardized wall-clock records or complete hardware/software metadata. The separately supplied DS1/DS2 workbooks contain one elapsed time for each algorithm--case batch, repeated as a per-run average across its 30 records, together with objective-evaluation counts; these values are not 30 independent runtime replicates. Section~\ref{sec:additional-runlevel} reports these batch averages and counts and limits the interpretation accordingly. For the reference runs of Section~\ref{sec:spacing}, each run was timed individually on a single Linux container with an Intel Xeon processor at 2.80~GHz (4 virtual cores, runs executed sequentially), Python~3.11.15, NumPy~2.4.6 and SciPy~1.17.1; a 3,030-evaluation run took 0.20--0.79~s (mean 0.52~s) and a 6,030-evaluation run 0.40--1.57~s, with the cost growing with $N$ as expected from the $\mathcal{O}(N_t^2)$ pairwise wake evaluation. These timings characterize the evaluator and the reference implementation only and are not used to compare the speed of the archived algorithms. A controlled rerun of the original implementations should record individually timed runs on documented hardware.
+Theoretical complexity does not establish practical computational efficiency. The original six-table archive does not contain standardized wall-clock records or complete hardware/software metadata. The separately supplied DS1/DS2 workbooks contain one elapsed time for each algorithm--case batch, repeated as a per-run average across its 30 records, together with objective-evaluation counts; these values are not 30 independent runtime replicates. Section~\ref{sec:additional-runlevel} reports these batch averages and counts and limits the interpretation accordingly. The controlled re-runs of Section~\ref{sec:equalbudget} were timed individually on documented hardware: at equal numbers of objective calls the four algorithms need essentially the same time (0.39--0.46~ms per call), with the cost per call growing with $N$ as expected from the $\mathcal{O}(N_t^2)$ pairwise wake evaluation.
 
 \section{Scope, Limitations, and Validity of the Evidence}
 The results should be interpreted within the following boundaries:
@@ -1757,10 +1903,10 @@ The results should be interpreted within the following boundaries:
 \item \textbf{Wake-model fidelity:} Jensen's wake model is retained for benchmark comparability and computational efficiency. Gaussian, CFD-based and data-driven wake models can represent wake physics more accurately~\cite{Tao2020,Yang2023,Wang2024}. Re-evaluation with a Gaussian model (Section~\ref{sec:gaussian}) increases most wake losses and changes the ordering of individual layouts, although the algorithm with the lowest mean wake loss is unchanged in five of six cases; layouts were not re-optimized with the Gaussian model.
 \item \textbf{Spacing assumption:} $4D$ is retained as a legacy benchmark constraint~\cite{Kusiak2010,Bansal2017}. Larger project-specific spacing reduces the constructible turbine count (e.g., from 13 to 7 turbines for the 500-m farm between $4D$ and $6D$) and lowers the attainable objective in dense cases (Section~\ref{sec:spacing}); most stored eight-turbine layouts violate $5D$.
 \item \textbf{Power curve:} the benchmark piecewise-linear/rated model is not a manufacturer-specific power curve. Relative to a cubic curve it overstates expected power by about 17--18\% (Data Set~I) and 36--38\% (Data Set~II), while preserving the algorithm ordering in five of six cases (Section~\ref{sec:powercurve}). Absolute energy values are therefore benchmark values, not AEP predictions.
-\item \textbf{Wind data:} both wind scenarios in the present archive are synthetic/benchmark distributions. No claim of site-specific predictive validity is made; validation with measured wind-rose data is a necessary next step.
+\item \textbf{Wind data:} the two benchmark wind scenarios are synthetic. One measured wind climate (Horns Rev~1) is included, but with the benchmark turbine and a circular farm, so no site-specific AEP prediction is claimed.
 \item \textbf{Fixed turbine count:} $N$ is prescribed for every optimization run. The paper optimizes locations, not turbine count and locations simultaneously.
-\item \textbf{Algorithmic comparison:} SSA is the principal mechanism-level baseline in the original archive. Historical EA/ACO/PF/BBO numbers are contextual. The separate DS1/DS2 run-level data contain PSO/DE, but their 3,030 evaluation budgets differ from LX-SSA's 6,030; an equal-budget benchmark and other modern methods would strengthen comparative evidence. An independent SSA implementation attains higher objective values than both archived SSA and LX-SSA at equal budget (Section~\ref{sec:spacing}), so absolute results depend on undocumented implementation details, and the numerical LX-SSA parameters $\phi$ and $\chi$ must be reported with the code.
-\item \textbf{Statistics and runtime:} raw vectors of the historical table values are missing. The separately supplied DS1/DS2 follow-up workbooks support exploratory within-case tests, but their aggregate per-case time is not an independent per-run runtime record. Equal-budget and individually timed reruns are required for efficiency claims.
+\item \textbf{Algorithmic comparison:} SSA is the principal mechanism-level baseline in the original archive. Historical EA/ACO/PF/BBO numbers are contextual. Equal-budget re-runs (Section~\ref{sec:equalbudget}) cover SSA, PSO and DE; VNS, gradient-based and surrogate-assisted methods are discussed but not benchmarked. Results also depend on the boundary-handling rule, which is therefore fixed across algorithms. The LX-SSA parameters ($\phi=0$, $\chi=1$) are not tuned, and other settings could change its relative performance.
+\item \textbf{Statistics and runtime:} raw vectors of the historical table values are missing, so the historical tables remain descriptive. Inferential and runtime statements rest on the controlled, individually timed re-runs of Section~\ref{sec:equalbudget}, which use the validated evaluator and the penalized objective of Section~\ref{sec:constraints}.
 \item \textbf{Engineering scope:} terrain, heterogeneous turbines, electrical collector-system constraints, grid interaction, acoustic/environmental constraints, and detailed economic objectives are not modeled. The study is therefore a continuous aerodynamic-layout benchmark, not a complete wind-farm design tool.
 \end{itemize}
 
@@ -1770,11 +1916,11 @@ These limitations do not invalidate the benchmark comparison; they define the po
 
 This work applies the previously published Laplacian Salp Swarm Algorithm (LX-SSA)~\cite{Solanki2023} to continuous WFLOP. LX-SSA was developed in 2023 and is not proposed, redesigned, or claimed as a new algorithm here. The present contribution is the WFLOP application, including the continuous coordinate encoding, wake-coupled objective evaluation, and explicit geometric constraint handling.
 
-Across the examined 500, 750, and 1000~m circular benchmark farms and the two benchmark wind distributions, LX-SSA produces numerically competitive layouts relative to SSA. The changes in the benchmark power objective are generally small, whereas wake-loss differences are more visible for several cases. These observations support continued investigation of the Laplace-based search mechanism for constrained WFLOP, but the historical tables do not support significance claims, and the separate follow-up data do not support a claim of equal-budget or universal superiority.
+Across the examined 500, 750, and 1000~m circular benchmark farms and the two benchmark wind distributions, LX-SSA produces numerically competitive layouts relative to SSA. The changes in the benchmark power objective are generally small, whereas wake-loss differences are more visible for several cases. The historical tables do not support significance claims, because their run-level data are unavailable.
 
-In the separate run-level follow-up experiment, LX-SSA has the best average rank among SSA, LX-SSA, PSO and DE over six selected cases (Friedman $p=0.0012$), with large effect sizes against DE, moderate effects against PSO in the eight-turbine cases and small, mostly non-significant differences from SSA. Because LX-SSA used twice as many objective evaluations, and because doubling the budget of a reference SSA changes its mean objective by a similar amount, these results do not establish better performance at equal computational cost. The follow-up cases were selected post hoc and some crowded cases in the source workbooks contain infeasible solutions, so the tests are exploratory.
+In the recorded follow-up data LX-SSA has the best average rank among SSA, LX-SSA, PSO and DE, but it also used twice as many objective evaluations. Controlled, seed-paired re-runs of the original code at equal budgets show that this advantage is a budget effect. At equal cost LX-SSA is statistically indistinguishable from SSA in most cases, and SSA or PSO is significantly better in some; LX-SSA is consistently better than DE. The same pattern holds for the measured Horns Rev~1 wind climate. The clearest practical strength of both salp-swarm algorithms is reliability in crowded farms, where they return feasible layouts in most runs while PSO and DE almost never do. Under the tested settings ($\phi=0$, $\chi=1$), the Laplace follower candidate therefore does not provide an equal-budget improvement over SSA on this benchmark.
 
-The robustness checks show that the algorithm ordering is largely preserved when the stored layouts are re-evaluated with a cubic power curve or a Gaussian wake model, but that absolute energy estimates are strongly model-dependent (17--38\% lower with the cubic curve) and that the optimized layouts depend on the $4D$ spacing rule, which also governs the geometric capacity of the farm. The conclusions are therefore limited to the adopted Jensen--Weibull benchmark with synthetic wind distributions and prescribed turbine counts. Further work should compare the original implementations at equal evaluation budgets with documented parameters, re-optimize under higher-fidelity wake and power models, and validate the approach on a measured wind climate.
+The robustness checks show that the algorithm ordering is largely preserved when the stored layouts are re-evaluated with a cubic power curve or a Gaussian wake model, but that absolute energy estimates are strongly model-dependent (17--38\% lower with the cubic curve) and that the optimized layouts depend on the $4D$ spacing rule, which also governs the geometric capacity of the farm. The conclusions are therefore limited to the adopted Jensen--Weibull benchmark with synthetic wind distributions and prescribed turbine counts. Further work should examine whether tuned Laplace parameters or a cheaper selection step change the equal-budget comparison, re-optimize under higher-fidelity wake and power models, and model complete site conditions, including the real turbine type and farm boundary.
 
 \appendices
 \section{Archived Layout Visualizations}
@@ -1988,6 +2134,9 @@ Li, P., Che, Y., Hua, A., Wang, L., Zheng, M. and Guo, X. (2025). A data-physics
 
 \bibitem{Cao2022}
 Cao, L., Ge, M., Gao, X., Du, B., Li, B., Huang, Z. and Liu, Y. (2022). Wind farm layout optimization to minimize the wake induced turbulence effect on wind turbines, \textit{Applied Energy} \textbf{323}, 119599. doi:10.1016/j.apenergy.2022.119599.
+
+\bibitem{PyWake}
+DTU Wind Energy. PyWake: an open-source wind farm simulation tool, Python package \texttt{py\_wake} version 2.6.20 (Horns Rev~1 site data, \texttt{py\_wake/examples/data/hornsrev1.py}), MIT License. \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}.
 
 \bibitem{Carrillo2013}
 Carrillo, C., Obando Monta\~no, A.F., Cidr\'as, J. and D\'iaz-Dorado, E. (2013). Review of power curve modelling for wind turbines, \textit{Renewable and Sustainable Energy Reviews} \textbf{21}, 572--581. doi:10.1016/j.rser.2013.01.012.

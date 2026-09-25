@@ -23,6 +23,20 @@ DS2_W = np.array([0.0002, 0.008, 0.0227, 0.0242, 0.0225, 0.0339, 0.0423, 0.029, 
                   0.0012, 0.001, 0.0017, 0.0031, 0.0097, 0.0317])
 DATASETS = {1: (np.full(24, 2.0), DS1_PSI, DS1_W), 2: (np.full(24, 2.0), DS2_PSI, DS2_W)}
 
+# Dataset 3: measured Horns Rev 1 wind climate (12 x 30 deg sectors, Weibull A, k and sector
+# frequency; values as distributed with DTU PyWake, py_wake/examples/data/hornsrev1.py, MIT).
+# Sectors are meteorological "from" directions 0, 30, ..., 330 deg; the wind blows towards the
+# mathematical angle 270 - wd. The objective keeps the legacy factor 15, so that for every
+# dataset objective = 15 x expected farm power (kW).
+HR1_F = np.array([3.597152, 3.948682, 5.167395, 7.000154, 8.364547, 6.43485,
+                  8.643194, 11.77051, 15.15757, 14.73792, 10.01205, 5.165975])
+HR1_A = np.array([9.176929, 9.782334, 9.531809, 9.909545, 10.04269, 9.593921,
+                  9.584007, 10.51499, 11.39895, 11.68746, 11.63732, 10.08803])
+HR1_K = np.array([2.392578, 2.447266, 2.412109, 2.591797, 2.755859, 2.595703,
+                  2.583984, 2.548828, 2.470703, 2.607422, 2.626953, 2.326172])
+DATASETS[3] = (HR1_K, HR1_A, HR1_F / HR1_F.sum())
+THETAS = {1: THETA, 2: THETA, 3: np.deg2rad((270.0 - np.arange(0, 360, 30)) % 360)}
+
 
 def _wcdf_c(s, k, psi):
     """Weibull survival function exp(-(s/psi)^k)."""
@@ -98,7 +112,8 @@ def gaussian_deficits(xy, theta=THETA, kstar=0.04):
 def farm_objective(xy, dataset, wake="jensen", curve="linear", **kw):
     """Benchmark objective (legacy units: 15 x expected farm power in kW) and ideal value."""
     k, psi, w = DATASETS[dataset]
-    delta = jensen_deficits(xy) if wake == "jensen" else gaussian_deficits(xy, **kw)
+    th = THETAS[dataset]
+    delta = jensen_deficits(xy, th) if wake == "jensen" else gaussian_deficits(xy, th, **kw)
     psi_i = psi[:, None] * (1 - delta)
     kk = np.broadcast_to(k[:, None], psi_i.shape)
     if curve == "linear":

@@ -1,0 +1,12 @@
+budget 1440 runs in 628 s; calls by budget/alg: {(3030, 'DE'): array([3030]), (3030, 'LXSSA'): array([3030]), (3030, 'PSO'): array([3030]), (3030, 'SSA'): array([3030]), (6030, 'DE'): array([6030]), (6030, 'LXSSA'): array([6030]), (6030, 'PSO'): array([6030]), (6030, 'SSA'): array([6030])}
+crowded 720 runs in 563 s; calls by budget/alg: {(6030, 'DE'): array([6030]), (6030, 'LXSSA'): array([6030]), (6030, 'PSO'): array([6030]), (6030, 'SSA'): array([6030])}
+spacing 720 runs in 392 s; calls by budget/alg: {(6030, 'LXSSA'): array([6030]), (6030, 'SSA'): array([6030])}
+/home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/wflop_model.py:43: RuntimeWarning: invalid value encountered in power
+  return np.exp(-(s / psi) ** k)
+/home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/wflop_model.py:43: RuntimeWarning: invalid value encountered in power
+  return np.exp(-(s / psi) ** k)
+/home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/wflop_model.py:43: RuntimeWarning: invalid value encountered in power
+  return np.exp(-(s / psi) ** k)
+/home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/wflop_model.py:43: RuntimeWarning: invalid value encountered in power
+  return np.exp(-(s / psi) ** k)
+hornsrev 480 runs in 254 s; calls by budget/alg: {(6030, 'DE'): array([6030]), (6030, 'LXSSA'): array([6030]), (6030, 'PSO'): array([6030]), (6030, 'SSA'): array([6030])}
