@@ -1,0 +1,75 @@
+\begin{table*}[!t]
+\centering
+\caption{Re-evaluation of the 720 stored follow-up layouts with a nonlinear (cubic) power curve. $\bar P$ is the mean expected farm power of the LX-SSA layouts in kW (objective/15). $\Delta_{\rm c}$ and $\Delta_{\rm co}$ are the relative changes of the mean expected power (range over the four algorithms) for the cubic curve without and with a 25~m/s cut-out. The last two columns list the algorithms in decreasing order of mean expected power.}
+\label{tab:powercurve}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{cccccccc}
+\toprule
+DS & Radius (m) & $N$ & $\bar P$ linear (kW) & $\bar P$ cubic (kW) & $\Delta_{\rm c}$ (\%) & $\Delta_{\rm co}$ (\%) & Order: linear $\rightarrow$ cubic \\
+\midrule
+1 & 500 & 4 & 3738.7 & 3087.0 & [-17.5, -17.4] & [-21.4, -21.4] & SSA, LX, PSO, DE $\rightarrow$ SSA, LX, PSO, DE \\
+1 & 750 & 8 & 7429.0 & 6116.9 & [-18.3, -17.7] & [-21.8, -21.5] & LX, SSA, PSO, DE $\rightarrow$ LX, SSA, PSO, DE \\
+1 & 1000 & 8 & 7461.8 & 6155.5 & [-17.7, -17.5] & [-21.5, -21.4] & LX, SSA, PSO, DE $\rightarrow$ LX, SSA, PSO, DE \\
+2 & 500 & 4 & 1935.0 & 1230.2 & [-36.5, -36.4] & [-36.6, -36.6] & LX, PSO, SSA, DE $\rightarrow$ PSO, LX, SSA, DE \\
+2 & 750 & 8 & 3780.6 & 2379.6 & [-37.6, -37.1] & [-37.7, -37.2] & LX, SSA, PSO, DE $\rightarrow$ LX, SSA, PSO, DE \\
+2 & 1000 & 8 & 3844.1 & 2436.5 & [-36.9, -36.6] & [-37.1, -36.8] & LX, SSA, PSO, DE $\rightarrow$ LX, SSA, PSO, DE \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!t]
+\centering
+\caption{Mean wake loss (benchmark-objective units) of the stored follow-up layouts under the Jensen model used for optimization and under the Gaussian model of Bastankhah and Port\'e-Agel ($k^*=0.04$), 30 layouts per algorithm and case. The layouts were optimized with the Jensen model and are only re-evaluated here.}
+\label{tab:gaussian}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{ccccccccccc}
+\toprule
+& & & \multicolumn{4}{c}{Jensen wake loss} & \multicolumn{4}{c}{Gaussian wake loss ($k^*=0.04$)} \\
+\cmidrule(lr){4-7}\cmidrule(lr){8-11}
+DS & Radius (m) & $N$ & LX-SSA & SSA & PSO & DE & LX-SSA & SSA & PSO & DE \\
+\midrule
+1 & 500 & 4 & 102.6 & \textbf{100.6} & 109.8 & 145.4 & 183.2 & \textbf{170.6} & 199.2 & 213.7 \\
+1 & 750 & 8 & \textbf{930.9} & 1095.4 & 1652.5 & 2963.3 & \textbf{1369.4} & 1497.8 & 1719.9 & 3032.8 \\
+1 & 1000 & 8 & \textbf{438.7} & 479.8 & 621.6 & 1032.1 & \textbf{674.6} & 752.0 & 786.9 & 1081.9 \\
+2 & 500 & 4 & \textbf{237.1} & 289.8 & 238.0 & 364.3 & 332.3 & 351.7 & \textbf{316.9} & 430.7 \\
+2 & 750 & 8 & \textbf{1814.8} & 1902.6 & 2197.7 & 2955.8 & \textbf{2111.0} & 2153.0 & 2254.7 & 2781.6 \\
+2 & 1000 & 8 & \textbf{861.8} & 1016.4 & 1124.8 & 1537.4 & \textbf{1019.6} & 1226.5 & 1175.1 & 1531.5 \\
+\bottomrule
+\multicolumn{11}{l}{\footnotesize Bold: lowest mean wake loss in the case under the respective model.}
+\end{tabular}
+\end{table*}
+
+\begin{table}[!t]
+\centering
+\caption{Largest turbine count for which a layout satisfying the circular boundary and the minimum spacing was constructed (multi-start packing search; a constructive lower bound on geometric capacity), compared with the largest $N$ in the historical tables.}
+\label{tab:capacity}
+\footnotesize
+\begin{tabular}{ccccc}
+\toprule
+Radius (m) & $4D$ (308 m) & $5D$ (385 m) & $6D$ (462 m) & Largest $N$ tabulated \\
+\midrule
+500 & 13 & 8 & 7 & 10 \\
+750 & 26 & 19 & 13 & 12 \\
+1000 & 42 & 29 & 21 & 15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table*}[!t]
+\centering
+\caption{Spacing sensitivity with the independent reference SSA (30 runs per cell, 3,030 objective evaluations per run unless stated). Entries are mean $\pm$ SD of the benchmark objective with mean wake loss as a percentage of the ideal objective in parentheses. All 540 final layouts are feasible for their spacing. The last column repeats the $4D$ case with 200 iterations (6,030 evaluations).}
+\label{tab:spacing-reopt}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{ccccccc}
+\toprule
+DS & Radius (m) & $N$ & $4D$ & $5D$ & $6D$ & $4D$, 6,030 evaluations \\
+\midrule
+1 & 500 & 4 & $56101.7\pm16.5$ (0.14) & $56100.6\pm13.4$ (0.15) & $56099.5\pm15.6$ (0.15) & $56106.7\pm20.5$ (0.14) \\
+1 & 750 & 8 & $111774.0\pm179.1$ (0.53) & $111647.7\pm361.2$ (0.64) & $111023.9\pm868.9$ (1.19) & $111813.0\pm142.0$ (0.49) \\
+1 & 1000 & 8 & $112019.0\pm90.6$ (0.31) & $112041.3\pm88.0$ (0.29) & $111995.3\pm180.1$ (0.33) & $112093.8\pm54.3$ (0.24) \\
+2 & 500 & 4 & $29075.1\pm54.0$ (0.64) & $29072.9\pm63.6$ (0.64) & $29092.9\pm70.9$ (0.58) & $29100.6\pm58.9$ (0.55) \\
+2 & 750 & 8 & $57251.0\pm221.0$ (2.17) & $57059.8\pm228.2$ (2.50) & $56924.3\pm245.5$ (2.73) & $57358.3\pm163.5$ (1.99) \\
+2 & 1000 & 8 & $57887.2\pm153.9$ (1.09) & $57890.6\pm141.2$ (1.08) & $57747.7\pm166.6$ (1.32) & $57956.7\pm183.8$ (0.97) \\
+\bottomrule
+\end{tabular}
+\end{table*}
