@@ -136,7 +136,7 @@ Budget & DS & Radius (m) & $N$ & LX-SSA & SSA & PSO & DE \\
 \centering
 \caption{Paired statistics for the equal-budget re-runs (runs paired by seed, i.e., by identical initial population). $\chi^2_F$, $p_F$: run-level Friedman test over the four algorithms (30 blocks); $\bar r$: average Friedman rank of LX-SSA (1 = best). Infeasible runs rank below feasible ones (and among themselves by spacing shortfall). For each baseline: difference of feasible-run means (LX-SSA minus baseline), LX-SSA wins/losses over the 30 pairs, Holm-adjusted two-sided Wilcoxon signed-rank $p$, and matched-pairs rank-biserial correlation (positive favors LX-SSA).}
 \label{tab:equalbudget-tests}
-\scriptsize\setlength{\tabcolsep}{3pt}
+\scriptsize\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.93}
 \begin{tabular}{cccccccccccc}
 \toprule
 Budget & DS & Radius & $N$ & $\chi^2_F$ & $p_F$ & $\bar r$ & Baseline & $\Delta$ & W/L & $p_{\rm Holm}$ & $r_{rb}$ \\

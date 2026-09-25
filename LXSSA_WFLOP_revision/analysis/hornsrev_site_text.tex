@@ -1,0 +1,13 @@
+\subsection{Horns Rev 1 Site Case}
+\label{sec:hornsrev-site}
+TABLE_PLACEHOLDER
+To bring the validation closer to a real project, the Horns Rev~1 case was set up with its real turbine, wind climate and site outline: the installed layout of 80 Vestas V80 turbines (rotor diameter 80~m, 2~MW), the V80 power and thrust-coefficient curves and the measured wind climate, all from the PyWake distribution~\cite{PyWake}. The site outline is the parallelogram spanned by the installed turbines. The farm model keeps the Jensen top-hat wake (with $k=0.04$, a value commonly used offshore) and root-sum-square superposition. It uses the tabulated power curve with a 25~m/s cut-out, a speed-dependent thrust coefficient evaluated at the free-stream speed, 5$^\circ$ direction bins and 1~m/s speed bins. As an independent check, this model gives the installed layout an AEP of 664.6~GWh/yr with a wake loss of 10.95\%, compared with 662.5~GWh/yr and 10.96\% from PyWake's Jensen model with the same settings, a difference below 0.3\%. Two problems were solved at 6,030 calls with the $4D$ (320~m) minimum spacing of the benchmark: the 16-turbine block that PyWake uses as an example (30 seeds) and the complete 80-turbine farm (10 seeds, because one run takes about 100~s).
+
+Table~\ref{tab:hornsrev-site} leads to three observations.
+\begin{itemize}
+\item \emph{No method improves on the installed layout within the budget.} In the 16-turbine block the best method, VNS, reaches 137.97~GWh/yr on average (best run 138.85~GWh/yr) and LX-SSA 136.46~GWh/yr, compared with 139.51~GWh/yr for the installed $7D$ grid.
+\item \emph{The algorithm ordering matches the benchmark results.} VNS is significantly better than LX-SSA ($p_{\rm Holm}=1.7\times10^{-4}$); LX-SSA does not differ significantly from SSA or MS-SLSQP; and PSO and DE never find a feasible layout inside the parallelogram.
+\item \emph{The full farm exceeds what the penalty-based population methods can handle at this budget.} With 160 variables and 3,160 spacing constraints, none of the 50 runs of LX-SSA, SSA, PSO, DE and VNS returns a feasible layout. MS-SLSQP, which handles the constraints explicitly, is feasible in all ten runs, but its mean AEP (653.9~GWh/yr) remains 1.6\% below that of the installed layout.
+\end{itemize}
+The benchmark-scale conclusions therefore do not transfer directly to realistic farm sizes: such farms require larger budgets, feasible initialization or explicit constraint handling, and a regular installed layout is a strong reference that none of the tested methods beats within 6,030 calls.
+

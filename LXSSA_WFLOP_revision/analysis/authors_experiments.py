@@ -39,7 +39,7 @@ def build(alg, iters, seed):
 def run(task):
     exp, alg, budget, spacing, ds, rad, n, seed = task
     smin = {"4D": 8 * R, "5D": 10 * R, "6D": 12 * R}[spacing]
-    f = make_objective(ds, rad, smin=smin, penalty="linear")
+    f = make_objective(ds, rad, smin=smin)
     calls = [0]
 
     def counted(x):

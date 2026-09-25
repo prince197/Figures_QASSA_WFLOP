@@ -1,0 +1,67 @@
+\begin{table*}[!t]
+\centering
+\caption{Additional baselines requested by Reviewer~3: variable neighbourhood search (VNS) and multistart SLSQP (MS-SLSQP, gradient-based with explicit constraints), seed-paired with LX-SSA at equal numbers of objective calls. Entries: mean $\pm$ SD of the benchmark objective over the feasible runs (superscript: number of feasible runs when fewer than 30). Last two columns: Holm-adjusted Wilcoxon signed-rank $p$ of LX-SSA vs.\ the baseline (matched-pairs rank-biserial correlation in parentheses; positive favors LX-SSA).}
+\label{tab:vns-slsqp}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{ccccccccc}
+\toprule
+Budget & DS & Radius (m) & $N$ & LX-SSA & VNS & MS-SLSQP & vs.\ VNS & vs.\ MS-SLSQP \\
+\midrule
+3,030 & 1 & 500 & 4 & 56063.7 $\pm$ 23.0 & 56081.6 $\pm$ 26.1 & 56026.6 $\pm$ 74.9 & 0.002 (-0.66) & 0.114 (+0.33) \\
+3,030 & 1 & 750 & 8 & 111061.2 $\pm$ 706.9 & 111598.7 $\pm$ 263.3 & 111134.1 $\pm$ 321.9 & $1.12\times10^{-4}$ (-0.78) & 0.440 (+0.17) \\
+3,030 & 1 & 1000 & 8 & 111788.7 $\pm$ 232.4 & 111963.2 $\pm$ 136.6 & 111492.9 $\pm$ 394.1 & $1.77\times10^{-4}$ (-0.77) & 0.002 (+0.63) \\
+3,030 & 2 & 500 & 4 & 28955.8 $\pm$ 73.5 & 28991.1 $\pm$ 82.3 & 28953.7 $\pm$ 139.4 & 0.219 (-0.34) & 0.984 (-0.01) \\
+3,030 & 2 & 750 & 8 & 56454.4 $\pm$ 348.7 & 56832.1 $\pm$ 330.2 & 56608.6 $\pm$ 329.9 & $6.90\times10^{-4}$ (-0.71) & 0.092 (-0.35) \\
+3,030 & 2 & 1000 & 8 & 57495.3 $\pm$ 204.1 & 57724.9 $\pm$ 198.6 & 57292.5 $\pm$ 377.0 & $6.90\times10^{-4}$ (-0.71) & 0.006 (+0.57) \\
+\midrule
+6,030 & 1 & 500 & 4 & 56078.8 $\pm$ 22.6 & 56094.2 $\pm$ 28.5 & 56063.2 $\pm$ 30.9 & 0.020 (-0.49) & 0.020 (+0.53) \\
+6,030 & 1 & 750 & 8 & 111374.0 $\pm$ 460.8 & 111801.5 $\pm$ 162.3 & 111296.2 $\pm$ 217.8 & $6.91\times10^{-5}$ (-0.80) & 0.253 (+0.24) \\
+6,030 & 1 & 1000 & 8 & 111924.6 $\pm$ 164.7 & 112038.8 $\pm$ 78.6 & 111688.0 $\pm$ 181.9 & 0.001 (-0.65) & $6.48\times10^{-6}$ (+0.88) \\
+6,030 & 2 & 500 & 4 & 29004.2 $\pm$ 87.4 & 29028.5 $\pm$ 66.7 & 28998.9 $\pm$ 104.2 & 0.382 (-0.28) & 0.903 (+0.03) \\
+6,030 & 2 & 750 & 8 & 56659.2 $\pm$ 332.0 & 57063.0 $\pm$ 286.7 & 56752.4 $\pm$ 256.7 & $2.12\times10^{-5}$ (-0.84) & 0.271 (-0.23) \\
+6,030 & 2 & 1000 & 8 & 57645.1 $\pm$ 186.6 & 57854.1 $\pm$ 163.9 & 57560.8 $\pm$ 206.6 & $4.18\times10^{-4}$ (-0.73) & 0.058 (+0.40) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!t]
+\centering
+\caption{Crowded cases (largest tabulated $N$, 6,030 calls): number of feasible layouts out of 30 for all six methods, with the mean benchmark objective of the feasible layouts in parentheses.}
+\label{tab:crowded-all}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{ccccccccc}
+\toprule
+DS & Radius (m) & $N$ & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+\midrule
+1 & 500 & 10 & 13 (130967) & 12 (132616) & 0 & 1 (130995) & 27 (134085) & 30 (135461) \\
+1 & 750 & 12 & 28 (161630) & 30 (162904) & 7 (160855) & 0 & 30 (165107) & 30 (164664) \\
+1 & 1000 & 15 & 29 (203682) & 30 (204778) & 9 (201985) & 0 & 30 (206860) & 30 (206060) \\
+2 & 500 & 10 & 13 (65869) & 12 (65881) & 0 & 1 (64240) & 27 (67142) & 29 (67288) \\
+2 & 750 & 12 & 28 (81342) & 30 (81822) & 7 (80936) & 0 & 30 (82731) & 30 (82867) \\
+2 & 1000 & 15 & 29 (102327) & 30 (102746) & 9 (101805) & 0 & 30 (104036) & 30 (103853) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!t]
+\centering
+\caption{Horns Rev~1 site case with the real Vestas V80 power and thrust curves, the measured 12-sector wind climate and the installed farm outline (Jensen, $k=0.04$, minimum spacing $4D=320$~m). AEP in GWh/yr (mean $\pm$ SD over feasible runs; 6,030 calls per run; 30 seeds for the 16-turbine block, 10 for the 80-turbine farm) and mean wake loss relative to the wake-free AEP ("Loss", \%). $p_{\rm Holm}$: Holm-adjusted Wilcoxon signed-rank test of LX-SSA vs.\ each method for the 16-turbine block.}
+\label{tab:hornsrev-site}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lccccccc}
+\toprule
+& \multicolumn{4}{c}{16-turbine block (wake-free 149.26 GWh)} & \multicolumn{3}{c}{80-turbine farm (wake-free 746.3 GWh)} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-8}
+Layout / method & AEP & Loss & Feas. & $p_{\rm Holm}$ & AEP & Loss & Feas. \\
+\midrule
+Installed layout & 139.51 & 6.53 & -- & -- & 664.6 & 10.95 & -- \\
+\midrule
+LX-SSA & 136.46 $\pm$ 0.90 & 8.58 & 28/30 & -- & -- & -- & 0/10 \\
+SSA & 136.66 $\pm$ 1.00 & 8.44 & 30/30 & 0.262 & -- & -- & 0/10 \\
+PSO & -- & -- & 0/30 & $9.31\times10^{-9}$ & -- & -- & 0/10 \\
+DE & -- & -- & 0/30 & $9.31\times10^{-9}$ & -- & -- & 0/10 \\
+VNS & 137.97 $\pm$ 0.80 & 7.57 & 29/30 & $1.68\times10^{-4}$ & -- & -- & 0/10 \\
+MS-SLSQP & 136.80 $\pm$ 0.77 & 8.35 & 30/30 & 0.085 & 653.9 $\pm$ 2.6 & 12.39 & 10/10 \\
+\bottomrule
+\end{tabular}
+\end{table*}

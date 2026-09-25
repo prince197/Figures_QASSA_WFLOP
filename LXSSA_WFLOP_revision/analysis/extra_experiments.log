@@ -1,0 +1,4 @@
+extra 1080 runs in 649 s; calls: {'min': {'SLSQP': 3030, 'VNS': 3030}, 'max': {'SLSQP': 6030, 'VNS': 6030}}
+hr16 180 runs in 274 s; calls: {'min': {'DE': 6030, 'LXSSA': 6030, 'PSO': 6030, 'SLSQP': 6030, 'SSA': 6030, 'VNS': 6030}, 'max': {'DE': 6030, 'LXSSA': 6030, 'PSO': 6030, 'SLSQP': 6030, 'SSA': 6030, 'VNS': 6030}}
+hr80 60 runs in 1498 s; calls: {'min': {'DE': 6030, 'LXSSA': 6030, 'PSO': 6030, 'SLSQP': 6030, 'SSA': 6030, 'VNS': 6030}, 'max': {'DE': 6030, 'LXSSA': 6030, 'PSO': 6030, 'SLSQP': 6030, 'SSA': 6030, 'VNS': 6030}}
+ALLDONE
