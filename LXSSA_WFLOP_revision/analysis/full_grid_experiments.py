@@ -13,6 +13,7 @@ import numpy as np, pandas as pd
 from multiprocessing import Pool
 from authors_optimizers import SSA, LXSSA, PSO, DE
 from extra_baselines import VNS, MSSLSQP
+from hybrid_lxssa_vns import LXSSAVNS
 from authors_objective import make_objective
 from wflop_model import farm_objective, min_spacing, R
 import hornsrev_model as hr
@@ -55,7 +56,10 @@ def run_method(alg, seed, f, wake, feasible, dim, lb, ub, radius, smin, bcons=No
         v = wake(x)
         tr.see(x, v)
         return v
-    if alg == "VNS":
+    if alg.startswith("LXVNS"):
+        split = {"LXVNS": 0.5, "LXVNS25": 0.25, "LXVNS75": 0.75}[alg]
+        pos, _, _ = LXSSAVNS(30, BUDGET, split, 0.0, 1.0, radius, seed=seed).optimize(fp, dim, lb, ub)
+    elif alg == "VNS":
         pos, _, _ = VNS(30, BUDGET, radius, seed=seed).optimize(fp, dim, lb, ub)
     elif alg == "SLSQP":
         opt = MSSLSQP(wk, radius, smin, 30, BUDGET, seed=seed, boundary_cons=bcons)
@@ -123,8 +127,17 @@ def run_hr(task):
 
 if __name__ == "__main__":
     exp = sys.argv[1]
+    SPLITCASES = [(ds, r, n) for ds in (1, 2) for r, n in ((500, 6), (750, 8), (1000, 10), (500, 10), (750, 12), (1000, 15))]
     if exp == "grid":
         fn, tl = run_grid, [(a, *c, s) for c in GRID for a in ALGS for s in range(1, 31)]
+    elif exp == "hgrid":
+        fn, tl = run_grid, [("LXVNS", *c, s) for c in GRID for s in range(1, 31)]
+    elif exp == "hsplit":
+        fn, tl = run_grid, [(a, *c, s) for c in SPLITCASES for a in ("LXVNS25", "LXVNS75") for s in range(1, 31)]
+    elif exp == "hhr16":
+        fn, tl = run_hr, [("LXVNS", 16, s) for s in range(1, 31)]
+    elif exp == "hhr80":
+        fn, tl = run_hr, [("LXVNS", 80, s) for s in range(1, 11)]
     elif exp == "hr16":
         fn, tl = run_hr, [(a, 16, s) for a in ALGS for s in range(1, 31)]
     else:

@@ -1,6 +1,20 @@
 # Analysis supporting the revised manuscript
 
-## Fresh numerical study (Sections VI–VIII of the current manuscript)
+## Hybrid LX-SSA-VNS study (current manuscript, Sections VI–XI)
+
+| Script | Purpose | Output |
+|---|---|---|
+| `hybrid_lxssa_vns.py` | The proposed hybrid (LX-SSA phase + VNS phase, split rho) | library |
+| `full_grid_experiments.py hgrid` | 68 cases × LX-SSA-VNS × 30 seeds (paired with `fresh_grid.csv`) | `fresh_hgrid.csv` |
+| `full_grid_experiments.py hsplit` | Split ablation: rho = 25% / 75% on 12 cases | `fresh_hsplit.csv` |
+| `full_grid_experiments.py hhr16` / `hhr80` | Horns Rev 1 with the hybrid | `fresh_hhr16.csv`, `fresh_hhr80.csv` |
+| `hybrid_results.py` | Seven-method tables, statistics, ablation and figures | `hybrid_tables.tex`, `hybrid_summary.json`, `hybrid_case_tests.csv`, `hybrid_best_layouts_maxN.csv`, `../figures_hybrid/*.pdf` |
+| `robustness_hybrid.py` | Cubic power curve / Gaussian wake re-evaluation, seven methods | `hybrid_robust_table.tex`, `hybrid_robust_summary.json`, `hybrid_reevaluation.csv` |
+| `sec_hybrid.tex` | Section VI (algorithm) | – |
+| `build_hybrid_manuscript.py` | Writes Sections VI–XII and the appendix from the outputs above | – |
+| `hybrid_frontmatter.py` | Title, abstract, introduction and motivation section | – |
+
+## Six-method study (reference runs reused by the hybrid study)
 
 | Script | Purpose | Output |
 |---|---|---|

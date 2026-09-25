@@ -1,0 +1,45 @@
+\section{Hybrid LX-SSA-VNS Algorithm}
+\label{sec:hybrid}
+Population-based swarm methods such as LX-SSA spread their search over many regions of the layout space, but once the swarm has contracted around the food source, most remaining evaluations produce only small improvements. Trajectory-based local search behaves the other way round. Variable neighbourhood search (VNS)~\cite{Mladenovic1997} refines one incumbent very efficiently by systematically changing the size of its perturbations, but its result depends strongly on where it starts. This complementarity motivates a two-phase hybrid, LX-SSA-VNS, in which the previously published LX-SSA~\cite{Solanki2023} provides global exploration and VNS provides intensification.
+
+\subsection{Phase 1: Global Exploration by LX-SSA}
+For a budget of $B$ objective calls and a split fraction $\rho\in(0,1)$, LX-SSA (Algorithm~\ref{alg:lx-ssa-wflop}) runs with population $N_p$ for
+\[
+T_1=\operatorname{round}\!\left(\frac{\rho B-N_p}{2N_p}\right)
+\]
+iterations, because one LX-SSA iteration costs $2N_p$ calls. Its parameter $r_1$ decreases over these $T_1$ iterations, so the swarm moves from exploration to exploitation within Phase~1. The food source $H$ at the end of Phase~1 is the starting incumbent of Phase~2.
+
+\subsection{Phase 2: Intensification by VNS}
+Starting from $x=H$, VNS uses $k_{\max}=3$ nested neighbourhoods. In neighbourhood $k$, a \emph{shaking} step moves $k$ randomly chosen turbines by Gaussian steps with standard deviation $\sigma_k r$, where $(\sigma_1,\sigma_2,\sigma_3)=(0.05,0.15,0.40)$. The shaken layout $y$ is then improved by a first-improvement \emph{local search} of $L=10$ single-turbine Gaussian moves. Its step length is enlarged by a factor 1.5 after a successful move and reduced by a factor 0.8 after an unsuccessful one, and it is bounded between $10^{-3}r$ and $0.5r$. If the resulting layout improves on the incumbent according to $F_p$, it is accepted and the search returns to $k=1$; otherwise $k$ is increased cyclically. Phase~2 ends when the budget $B$ is exhausted. Box repair and the penalized objective~\eqref{eq:penalty} are used exactly as in LX-SSA, so the feasibility-first rules of Section~\ref{sec:constraints} apply in both phases.
+
+\begin{algorithm}
+\caption{Hybrid LX-SSA-VNS for a prescribed turbine count $N$}
+\label{alg:hybrid}
+\begin{algorithmic}[1]
+\Require budget $B$, split $\rho$, population $N_p$, LX-SSA parameters $\phi,\chi$, farm radius $r$
+\State $T_1\gets\operatorname{round}((\rho B-N_p)/(2N_p))$
+\State Run LX-SSA (Algorithm~\ref{alg:lx-ssa-wflop}) for $T_1$ iterations; let $H$ be its food source
+\State $x\gets H$, $k\gets1$, step $\gets0.1r$
+\While{fewer than $B$ objective calls have been used}
+    \State $y\gets x$ with $k$ random turbines moved by $\mathcal N(0,(\sigma_k r)^2)$; box repair
+    \For{$L$ local-search moves (while budget remains)}
+        \State $z\gets y$ with one random turbine moved by $\mathcal N(0,\mathrm{step}^2)$; box repair
+        \If{$F_p(z)<F_p(y)$}
+            \State $y\gets z$; step $\gets\min(1.5\,\mathrm{step},0.5r)$
+        \Else
+            \State step $\gets\max(0.8\,\mathrm{step},10^{-3}r)$
+        \EndIf
+    \EndFor
+    \If{$F_p(y)<F_p(x)$}
+        \State $x\gets y$; $k\gets1$
+    \Else
+        \State $k\gets k\bmod k_{\max}+1$
+    \EndIf
+\EndWhile
+\State \Return $x$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Parameters and Cost}
+The hybrid uses $N_p=30$, $\phi=0$, $\chi=1$ and the VNS settings above, and it has a single new parameter, the split $\rho$. The default $\rho=0.5$ assigns 3,030 of the 6,030 calls to LX-SSA ($T_1=50$) and the remaining 3,000 to VNS; its sensitivity is examined in Section~\ref{sec:ablation}. The per-call cost of both phases is dominated by the objective evaluation, so the hybrid has the same $\mathcal O(B\,N^2N_\theta N_s)$ cost as the other methods for a budget of $B$ calls. Because the random-number generator is seeded once and Phase~1 draws the initial population first, for a given seed the hybrid starts from the same initial population as all other methods, which keeps the comparisons paired.
+
