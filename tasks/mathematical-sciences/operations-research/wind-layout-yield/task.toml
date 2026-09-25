@@ -5,14 +5,14 @@ artifacts = ["/root/output/layout.csv", "/root/output/yield.json"]
 [task]
 name = "afterquery/wind-layout-yield"
 description = "Turn a raw two-level met-mast record into a hub-height wind climate, optimise a 24-turbine layout in a circular lease under a Jensen wake model, and report a net-yield estimate the layout actually delivers."
-authors = [{ name = "FILL_ME_AUTHOR_NAME", email = "princesolanki197@gmail.com" }]
+authors = [{ name = "Dr. Prince", email = "princesolanki197@gmail.com" }]
 keywords = ["wind farm layout optimization", "WFLOP", "Jensen wake model", "wind resource assessment", "met mast", "metaheuristics"]
 
 [metadata]
-author_name = "FILL_ME_AUTHOR_NAME"
+author_name = "Dr. Prince"
 author_email = "princesolanki197@gmail.com"
-author_organization = "FILL_ME_ORGANIZATION_OR_Independent Researcher"
-author_profile = "FILL_ME_GOOGLE_SCHOLAR_URL"
+author_organization = "IIT Roorkee"
+author_profile = "https://scholar.google.com/citations?user=5aKFLTAAAAAJ&hl=en"
 research_advisor = ""
 referred_by = ""
 conflicts_of_interest = "None"
