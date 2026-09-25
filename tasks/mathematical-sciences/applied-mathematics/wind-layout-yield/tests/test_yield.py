@@ -14,7 +14,7 @@ import re
 import numpy as np
 import pytest
 
-OUT = "/root/output"
+OUT = "/app/output"
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = json.load(open(os.path.join(HERE, "site.json")))
 BENCH = json.load(open(os.path.join(HERE, "benchmark.json")))

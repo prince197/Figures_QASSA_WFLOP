@@ -8,15 +8,15 @@ The only wind data available are ten years of hourly measurements from a met mas
 
 ## Input files
 
-- `/root/data/README.md` — read this first. It defines the columns, units, coordinate frame, and exact wake model used for grading.
-- `/root/data/mast_timeseries.csv` — hourly mast measurements.
-- `/root/data/power_curve.csv` — turbine power curve.
-- `/root/data/site.json` — turbine specifications, wake-model parameters, and lease limits.
+- `/app/data/README.md` — read this first. It defines the columns, units, coordinate frame, and exact wake model used for grading.
+- `/app/data/mast_timeseries.csv` — hourly mast measurements.
+- `/app/data/power_curve.csv` — turbine power curve.
+- `/app/data/site.json` — turbine specifications, wake-model parameters, and lease limits.
 
 ## Files to submit
 
-1. `/root/output/layout.csv` with the header `turbine_id,x_m,y_m` and exactly 24 turbine rows. Give coordinates in metres using the frame specified in the README.
-2. `/root/output/yield.json` containing a JSON object with these two numeric fields:
+1. `/app/output/layout.csv` with the header `turbine_id,x_m,y_m` and exactly 24 turbine rows. Give coordinates in metres using the frame specified in the README.
+2. `/app/output/yield.json` containing a JSON object with these two numeric fields:
    - `net_mean_power_kw`: estimated long-term mean electrical output of the submitted layout after wake losses, in kW.
    - `gross_mean_power_kw`: estimated long-term mean electrical output with wakes ignored, assuming 24 free-standing turbines, in kW.
 
@@ -38,4 +38,4 @@ The submitted layout is evaluated for every hour in the ten-year period using th
 - Wind direction uses the meteorological convention: the direction from which the wind blows, measured clockwise from north.
 - JSON numbers may be integers or floats. Extra keys in `yield.json` are ignored.
 
-You have 7200 seconds to complete this task. Do not cheat by using online solutions or hints specific to this task.
+You have 9000 seconds to complete this task. Do not cheat by using online solutions or hints specific to this task.

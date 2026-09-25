@@ -51,7 +51,7 @@ Gates, all required. In the table, "reference" and "independent" give the worst 
 
 Calibration used 30 regenerated seeds (reference, independent solver and truth-informed benchmark on each), with the full ablation ladder on 10 of them (`authoring/evidence/calibration/`). An earlier 5-year version of the record put the reference yield error within 1.3× of the gate. That is why the record is 10 years with shorter logger outages; both summaries are kept.
 
-The shipped instance was checked end to end in containers. The oracle scores reward 1 in 3 of 3 harbor runs and nop scores 0 in 3 of 3 (`authoring/evidence/harbor/`). Random, ring, 30°-sector, 10°-sector and no-QC outputs each fail the intended gate. The verifier never executes agent code; it parses one CSV and one JSON file.
+The shipped instance was checked end to end in containers. The oracle scores reward 1 in all 5 harbor runs and nop scores 0 in all 5: 3 each before the move to `/app` paths and 2 each after (`authoring/evidence/harbor/`). Random, ring, 30°-sector, 10°-sector and no-QC outputs each fail the intended gate. The verifier never executes agent code; it parses one CSV and one JSON file.
 
 ## Ablation ladder
 

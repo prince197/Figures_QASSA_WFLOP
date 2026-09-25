@@ -12,8 +12,8 @@ import sys
 
 import numpy as np
 
-DATA = os.environ.get("WLY_DATA", "/root/data")
-OUT = os.environ.get("WLY_OUT", "/root/output")
+DATA = os.environ.get("WLY_DATA", "/app/data")
+OUT = os.environ.get("WLY_OUT", "/app/output")
 SEED = int(os.environ.get("WLY_SEED", "20260925"))
 N_STARTS = int(os.environ.get("WLY_STARTS", "6"))
 ITERS = int(os.environ.get("WLY_ITERS", "60000"))

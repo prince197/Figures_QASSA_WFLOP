@@ -1,6 +1,6 @@
 schema_version = "1.4"
 
-artifacts = ["/root/output/layout.csv", "/root/output/yield.json"]
+artifacts = ["/app/output/layout.csv", "/app/output/yield.json"]
 
 [task]
 name = "afterquery/wind-layout-yield"
@@ -17,10 +17,10 @@ research_advisor = ""
 referred_by = ""
 conflicts_of_interest = "None"
 domain = "mathematical-sciences"
-field = "operations-research"
+field = "applied-mathematics"
 subfield = "Wind farm layout optimization (WFLOP) with wake models and metaheuristics"
 category = "Science"
-subcategory = "Operations Research & Optimization"
+subcategory = "Applied Mathematics & Scientific Computing"
 tags = ["wind farm layout optimization", "WFLOP", "Jensen wake model", "wind resource assessment", "met mast", "metaheuristics"]
 expert_time_estimate_hours = 5
 relevant_experience = "PhD research on wind farm layout optimization; developed QA-SSA and benchmarked it against SSA, BBO, EA, ACO and PF on the Kusiak-Song circular-farm WFLOP (500/750/1000 m radii, two wind data sets) under a Jensen wake model."
@@ -36,7 +36,7 @@ environment_mode = "separate"
 network_mode = "no-network"
 
 [agent]
-timeout_sec = 7200.0
+timeout_sec = 9000.0
 
 [environment]
 build_timeout_sec = 600.0

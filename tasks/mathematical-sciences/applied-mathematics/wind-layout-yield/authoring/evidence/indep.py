@@ -15,8 +15,8 @@ import numpy as np
 from scipy import stats
 from scipy.special import gamma as G_
 
-DATA = os.environ.get("WLY_DATA", "/root/data")
-OUT = os.environ.get("WLY_OUT", "/root/output")
+DATA = os.environ.get("WLY_DATA", "/app/data")
+OUT = os.environ.get("WLY_OUT", "/app/output")
 SEED = int(os.environ.get("WLY_SEED", "7"))
 SITE = json.load(open(os.path.join(DATA, "site.json")))
 D, HUB, CT, K = (SITE[k] for k in ("rotor_diameter_m", "hub_height_m", "thrust_coefficient",

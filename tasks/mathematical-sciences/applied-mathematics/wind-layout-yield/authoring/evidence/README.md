@@ -9,7 +9,7 @@
 | `calib.py`, `summarize.py` | Multi-seed calibration driver and gate summary. |
 | `calibration/` | Raw per-seed results and summaries. v1 is the 5-year record, which was rejected because the reference yield error came within 1.3x of the gate. v2 is the 10-year record as shipped, seeds 201-230. |
 | `shipped_layouts/` | Layouts and yields on the shipped instance (seed 2026). The P_best of 12,838.06 kW comes from `ref2` (reference solver, seed 11, 12 starts). |
-| `harbor/` | `harbor run` results: oracle 3/3 at reward 1, nop 3/3 at reward 0. |
+| `harbor/` | `harbor run` results: oracle 5/5 at reward 1 and nop 5/5 at reward 0. The two 22-xx runs use the final `/app` paths. |
 | `verifier_local_run.sh` | Runs the built verifier image against an output directory. |
 | `anti_cheat.md` | Laziest passing attempts and why they fail. |
 
