@@ -1,0 +1,14 @@
+{
+  "n_turbines": 24,
+  "boundary_radius_m": 1000.0,
+  "min_spacing_m": 308.0,
+  "rotor_diameter_m": 77.0,
+  "hub_height_m": 80.0,
+  "thrust_coefficient": 0.8,
+  "wake_decay_constant": 0.05,
+  "mast_anemometer_heights_m": [
+    40.0,
+    60.0
+  ],
+  "mast_vane_height_m": 58.0
+}

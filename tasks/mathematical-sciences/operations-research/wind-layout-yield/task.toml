@@ -1,0 +1,47 @@
+schema_version = "1.4"
+
+artifacts = ["/root/output/layout.csv", "/root/output/yield.json"]
+
+[task]
+name = "afterquery/wind-layout-yield"
+description = "Turn a raw two-level met-mast record into a hub-height wind climate, optimise a 24-turbine layout in a circular lease under a Jensen wake model, and report a net-yield estimate the layout actually delivers."
+authors = [{ name = "FILL_ME_AUTHOR_NAME", email = "princesolanki197@gmail.com" }]
+keywords = ["wind farm layout optimization", "WFLOP", "Jensen wake model", "wind resource assessment", "met mast", "metaheuristics"]
+
+[metadata]
+author_name = "FILL_ME_AUTHOR_NAME"
+author_email = "princesolanki197@gmail.com"
+author_organization = "FILL_ME_ORGANIZATION_OR_Independent Researcher"
+author_profile = "FILL_ME_GOOGLE_SCHOLAR_URL"
+research_advisor = ""
+referred_by = ""
+conflicts_of_interest = "None"
+domain = "mathematical-sciences"
+field = "operations-research"
+subfield = "Wind farm layout optimization (WFLOP) with wake models and metaheuristics"
+category = "Science"
+subcategory = "Operations Research & Optimization"
+tags = ["wind farm layout optimization", "WFLOP", "Jensen wake model", "wind resource assessment", "met mast", "metaheuristics"]
+expert_time_estimate_hours = 5
+relevant_experience = "FILL_ME: PhD research on wind farm layout optimization; developed QA-SSA and benchmarked it against SSA, BBO, EA, ACO and PF on the Kusiak-Song circular-farm WFLOP (500/750/1000 m radii, two wind data sets) under a Jensen wake model."
+difficulty_explanation = "Synthetic data from a disclosed seeded generator. Three decisions interact. (1) The wind resource: the mast measures at 40 and 60 m, the hub is at 80 m, and about 5% of hours are unheated-cup icing episodes that read as calms under a frozen vane. The shear has to be measured from the cup pair and the iced hours removed; skipping either biases the yield by 5-11%. (2) Directional resolution of the objective: with a top-hat Jensen wake and a fairly narrow wind rose, the textbook WFLOP recipe (12-36 sectors, each evaluated at its centre line, as in the Kusiak-Song benchmark) lets the optimiser park turbines just outside each sector's centre-line wake. The model then reports near-ideal efficiency, and the layout is 1-3% worse than a properly optimised one when run against the real hourly directions. (3) The yield has to be the honest yield of the submitted layout; a coarse-sector model over-predicts it by 3-10%. Beyond these, 24 turbines in a 1 km radius with 4D spacing is a hard nonconvex, discontinuous problem, and the optimiser has to be good."
+solution_explanation = "The oracle drops logger gaps and flags iced episodes: both cups below 1 m/s with a frozen vane for at least 3 h, in an event that touches sub-zero air. It measures the power-law shear exponent from the ratio of mean 60 m and 40 m speeds above 3 m/s and extrapolates the 60 m cup to 80 m. It builds a 1-degree wind rose with, for each direction bin, the empirical mean power as a function of the wake speed factor. A multi-start random-search optimiser with incremental O(B*N) move evaluation and feasibility-preserving moves then maximises the model. Finally it reports the net mean power of the final layout evaluated hour by hour on the cleaned hub-height series. Other valid routes exist (parametric Weibull/KDE climates, simulated annealing, gradient methods on a smoothed wake), and the verifier requires none of these choices."
+verification_explanation = "Ground truth is the clean hourly hub-height speed and direction that the generator produced before applying the measurement model (shear, cup noise, vane noise, icing, gaps). It is independent of any solver. The verifier re-evaluates the submitted layout hour by hour on that truth with the stated wake model. Gates: feasibility (inside the circle and pairwise spacing >= 308 m, 0.1 m tolerance); layout quality, 1 - P_true/P_best <= 0.75%, where P_best is the best true mean power found by a truth-informed optimisation plus all calibration solvers; yield accuracy, |P_reported/P_true - 1| <= 1.5%. Thresholds were calibrated on 30 regenerated seeds: the reference and an independent implementation pass all of them with margin, and the coarse-sector, no-QC, no-shear and naive routes fail."
+
+[verifier]
+timeout_sec = 600.0
+environment_mode = "separate"
+
+[verifier.environment]
+network_mode = "no-network"
+
+[agent]
+timeout_sec = 7200.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+gpus = 0
+network_mode = "public"
