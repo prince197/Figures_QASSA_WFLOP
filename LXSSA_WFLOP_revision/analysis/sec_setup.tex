@@ -1,0 +1,50 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Test Problems}
+Two wind data sets are used (Table~\ref{tab:wind_data_I}). \emph{Wind Data Set~I} has fixed Weibull parameters ($\zeta=2$, $\psi=13$) in all directions and a strongly directional blowing probability: $\omega_0=\omega_{23}=0$, $\omega_5=0.2$, $\omega_6=0.6$, and $\omega_l=0.01$ for all other intervals. \emph{Wind Data Set~II} keeps $\zeta=2$ but lets the scale parameter vary with direction, from $\psi=2.6$ (255--270$^\circ$) to $\psi=10$ (180--195$^\circ$), with a broader directional distribution. Wind direction is discretized into $N_\theta=24$ bins of $15^\circ$, and the speed range from $s_{\text{cut-in}}$ to $s_{\text{rated}}$ into $N_s=21$ intervals of 0.5~m/s.
+
+Each data set is combined with three circular farms of radius $r=500$, 750 and 1000~m. The turbine count is prescribed for each run: $N=2,\ldots,10$ for 500~m, $N=2,\ldots,12$ for 750~m and $N=2,\ldots,15$ for 1000~m. This gives $2\times(9+11+14)=68$ test cases. The turbine and wake parameters are
+\begin{itemize}
+    \item rotor radius $R=38.5$~m and minimum spacing $4D=8R=308$~m;
+    \item cut-in speed $s_{\text{cut-in}}=3.5$~m/s, rated speed $s_{\text{rated}}=14$~m/s and rated power $P_{\text{rated}}=1500$~kW;
+    \item linear power-curve parameters $\lambda'=140.86$ and $\eta=-500$;
+    \item thrust coefficient $C_T=0.8$ and wake spreading constant $K=0.075$;
+    \item constraint penalty $\lambda=10^{10}$ in~\eqref{eq:penalty}.
+\end{itemize}
+Every run optimizes the $2N$ turbine coordinates for its prescribed $N$; varying $N$ is a parameter sweep, not a joint optimization of turbine number and positions.
+
+\subsection{Methods Compared}
+Six methods are compared, all with the same objective~\eqref{eq:penalty}, the same bounds $[-r,r]^{2N}$ and the same budget:
+\begin{itemize}
+\item \emph{LX-SSA}~\cite{Solanki2023}: Algorithm~\ref{alg:lx-ssa-wflop} with $\phi=0$, $\chi=1$, population 30 and 100 iterations.
+\item \emph{SSA}~\cite{Mirjalili2017}: the same leader/follower dynamics without the Laplace candidate; population 30 and 200 iterations.
+\item \emph{PSO}: inertia weight $w=0.7$ and acceleration coefficients $c_1=c_2=2$, with unbounded velocities and positions clipped to the bounds; population 30 and 200 iterations.
+\item \emph{DE}: DE/rand/1/bin with $F=0.5$ and $CR=0.9$; population 30 and 200 iterations.
+\item \emph{VNS}~\cite{Mladenovic1997,Cazzaro2022}: basic variable neighbourhood search adapted to continuous coordinates. It starts from the best member of the initial population. Shaking moves $k\in\{1,2,3\}$ randomly chosen turbines by Gaussian steps with standard deviation $0.05r$, $0.15r$ and $0.40r$. Each shake is followed by a ten-call first-improvement local search of single-turbine Gaussian moves with an adaptive step (enlarged by 1.5 after a success, reduced by 0.8 after a failure). An improvement is accepted and resets $k=1$; otherwise $k$ increases cyclically.
+\item \emph{Multistart SLSQP (MS-SLSQP)}, a gradient-based method: SciPy's sequential least-squares quadratic programming solver~\cite{Kraft1988} minimizes the wake loss with the spacing and boundary constraints imposed explicitly and forward-difference gradients (1-m step). It starts from the members of the initial population in order of $F_p$ and restarts until the budget is exhausted.
+\end{itemize}
+SSA, LX-SSA, PSO and DE use the original implementation; VNS and MS-SLSQP were implemented for this study.
+
+\subsection{Budget, Seeds and Pairing}
+Every run has a budget of exactly 6,030 objective-function calls, counted by a wrapper around the objective. The count includes the initial population and, for MS-SLSQP, the calls used for finite-difference gradients. For LX-SSA this corresponds to 100 iterations, because each follower evaluates two candidates before the population is re-evaluated ($30+100\times60$ calls); SSA, PSO and DE reach the same count in 200 iterations ($30+200\times30$). Each method is run with seeds 1--30. Every optimizer seeds the random-number generator and draws its initial population first, so runs with the same seed start from the \emph{same} initial population for all six methods. The runs of a test case are therefore paired by seed.
+
+\subsection{Performance Measures and Statistical Analysis}
+For each run we record
+\begin{itemize}
+\item the final benchmark objective and wake loss (as a percentage of the wake-free objective);
+\item whether the final layout is feasible (spacing and boundary satisfied within $10^{-6}$~m);
+\item the convergence curve, i.e., the best feasible objective found after every 30 calls;
+\item the wall-clock time.
+\end{itemize}
+Means and standard deviations are computed over the feasible runs.
+
+Within each test case, the 30 seed-paired runs are compared by a run-level Friedman test and by two-sided Wilcoxon signed-rank tests of LX-SSA against each of the other five methods. The five $p$ values of each case are adjusted by Holm's procedure~\cite{Holm1979}, and effect sizes are reported as matched-pairs rank-biserial correlations. For ranking, a feasible run beats an infeasible one, and infeasible runs are compared by their spacing shortfall. Across the 68 cases, the methods are ranked within each case by their mean feasible objective and compared by a case-level Friedman test with the Iman--Davenport correction and Holm-adjusted average-rank post hoc tests, following Dem\v{s}ar~\cite{Demsar2006}.
+
+\subsection{Implementation Verification}
+\label{sec:validation}
+The objective function was vectorized and checked against the original implementation; the relative difference is below $10^{-6}$ on random feasible and infeasible layouts. Its wake and energy terms also reproduce the objective values of 720 archived final layouts from an earlier run of the original code (maximum absolute deviation $8.7\times10^{-11}$). Re-running the original SSA, LX-SSA, PSO and DE code at the archived settings reproduces the archived distributions: 22 of 24 Mann--Whitney comparisons give $p\ge0.05$, and the means differ by at most 0.21\%. This also confirms the Laplace parameters $\phi=0$ and $\chi=1$.
+
+\subsection{Computing Environment}
+All runs were executed on a Linux container with an Intel Xeon processor at 2.80~GHz and 4 virtual cores, four runs in parallel, using Python~3.11.15, NumPy~2.4.6 and SciPy~1.17.1. Each run was timed individually. Scripts, per-run results (including final coordinates and convergence curves) and the figure-generation code accompany the revision.
+
