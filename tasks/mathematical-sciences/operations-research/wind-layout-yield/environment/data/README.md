@@ -1,7 +1,7 @@
 # Site data
 
 ## mast_timeseries.csv
-Hourly means from the site met mast, 2019-01-01 00:00 to 2023-12-31 (UTC, hour-beginning).
+Hourly means from the site met mast, 2014-01-01 00:00 to 2024-01-01 11:00 (UTC, hour-beginning; 87,660 hours).
 
 | column | unit | meaning |
 |---|---|---|

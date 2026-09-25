@@ -1,6 +1,6 @@
 ## Context
 
-We are laying out a 24-turbine onshore farm inside a circular lease area. The only wind data is five years of hourly records from a met mast next to the site. The mast has cups at 40 m and 60 m and a vane at 58 m, and the turbines have an 80 m hub. A previous consultant sent us a layout claiming almost no wake loss, and nobody here believed the number. We need our own layout and a yield estimate we can stand behind.
+We are laying out a 24-turbine onshore farm inside a circular lease area. The only wind data is ten years of hourly records from a met mast next to the site. The mast has cups at 40 m and 60 m and a vane at 58 m, and the turbines have an 80 m hub. A previous consultant sent us a layout claiming almost no wake loss, and nobody here believed the number. We need our own layout and a yield estimate we can stand behind.
 
 ## Inputs
 
@@ -16,11 +16,11 @@ We are laying out a 24-turbine onshore farm inside a circular lease area. The on
    - `net_mean_power_kw`: your estimate of the farm's long-term mean electrical output for this layout, after wake losses, in kW.
    - `gross_mean_power_kw`: the same with wakes ignored (24 free-standing turbines).
 
-Take the five years covered by the mast record as the long-term climate. The turbines run every hour of that period, including hours when the mast was down or reading badly.
+Take the ten years covered by the mast record as the long-term climate. The turbines run every hour of that period, including hours when the mast was down or reading badly.
 
 ## What is graded
 
-Your layout is evaluated hour by hour over the full five-year period, using the true hub-height wind speed and direction of each hour and the wake model in the data README.
+Your layout is evaluated hour by hour over the full ten-year period, using the true hub-height wind speed and direction of each hour and the wake model in the data README.
 
 - **Layout feasibility (hard constraint).** Every turbine must lie inside the lease circle, and every pair must be at least the minimum spacing apart. A tolerance of 0.1 m is allowed on both. Any violation fails the task.
 - **Layout quality.** The true net mean power of your layout is compared with the best layout we know of for this site.

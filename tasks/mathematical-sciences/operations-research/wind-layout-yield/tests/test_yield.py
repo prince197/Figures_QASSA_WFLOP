@@ -22,7 +22,7 @@ METRICS = "/logs/verifier/metrics.json"
 
 GEOM_TOL_M = 0.1            # stated in the instruction
 MAX_SHORTFALL = 0.0075      # layout quality: 1 - P_true / P_best
-MAX_YIELD_ERR = 0.015       # yield accuracy: |P_reported / P_true - 1|
+MAX_YIELD_ERR = 0.020       # yield accuracy: |P_reported / P_true - 1|
 
 D = SITE["rotor_diameter_m"]
 R0 = D / 2

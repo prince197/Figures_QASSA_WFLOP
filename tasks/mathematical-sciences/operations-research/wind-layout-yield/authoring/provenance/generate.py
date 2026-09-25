@@ -27,8 +27,8 @@ SITE = {
     "mast_vane_height_m": 58.0,
 }
 Z_LO, Z_HI, Z_VANE = 40.0, 60.0, 58.0
-START = np.datetime64("2019-01-01T00:00")
-YEARS = 5
+START = np.datetime64("2014-01-01T00:00")
+YEARS = 10
 
 
 def power_curve_table():
@@ -77,7 +77,7 @@ def default_cfg():
         phi_dir=0.97, phi_spd=0.93,
         vane_sd=3.0,
         ice_rate=0.004, ice_len=(8, 72),
-        gap_blocks=14, gap_len=(6, 240),
+        gap_blocks=8, gap_len=(6, 96),
     )
 
 
