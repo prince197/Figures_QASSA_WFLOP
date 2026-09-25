@@ -1,18 +1,18 @@
 \begin{table*}[!t]
 \centering
-\caption{Robustness of the fresh results to the benchmark model. All feasible final layouts are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model; average rank of each method over the 68 cases (methods with at least five feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and alternative orderings of the methods within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
+\caption{Robustness of the results to the benchmark model. All feasible final layouts are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model; average rank of each method over the 68 cases (methods with at least five feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and alternative orderings of the methods within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
 \label{tab:robust-hybrid}
 \scriptsize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccccccccccc}
+\begin{tabular}{lcccccccccccc}
 \toprule
-& \multicolumn{2}{c}{$\Delta$ (\%)} & \multicolumn{7}{c}{Average rank} & & \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-10}
-Model & DS I & DS II & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & $\bar\tau$ & Same best (\%) \\
+& \multicolumn{2}{c}{$\Delta$ (\%)} & \multicolumn{8}{c}{Average rank} & & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-11}
+Model & DS I & DS II & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS & $\bar\tau$ & Same best (\%) \\
 \midrule
-Benchmark (linear curve, Jensen) & +0.0 & +0.0 & 2.37 & 4.81 & 4.44 & 4.08 & 5.86 & 1.84 & 4.60 & -- & -- \\
-Cubic power curve & -17.7 & -36.9 & 2.44 & 4.78 & 4.40 & 3.99 & 5.80 & 1.90 & 4.69 & 0.96 & 87 \\
-Cubic curve with 25 m/s cut-out & -21.5 & -37.0 & 2.46 & 4.78 & 4.41 & 3.96 & 5.82 & 1.91 & 4.66 & 0.96 & 88 \\
-Gaussian wake ($k^*=0.04$) & -0.2 & -0.3 & 3.01 & 5.07 & 4.38 & 3.35 & 5.88 & 2.54 & 3.75 & 0.57 & 46 \\
+Benchmark (linear curve, Jensen) & +0.0 & +0.0 & 2.72 & 5.62 & 5.18 & 4.79 & 6.77 & 2.07 & 5.28 & 3.57 & -- & -- \\
+Cubic power curve & -17.7 & -36.9 & 2.78 & 5.56 & 5.13 & 4.68 & 6.71 & 2.13 & 5.37 & 3.64 & 0.96 & 91 \\
+Cubic curve with 25 m/s cut-out & -21.5 & -37.1 & 2.79 & 5.56 & 5.15 & 4.65 & 6.73 & 2.16 & 5.34 & 3.62 & 0.96 & 90 \\
+Gaussian wake ($k^*=0.04$) & -0.2 & -0.4 & 3.25 & 5.75 & 4.96 & 3.81 & 6.72 & 2.75 & 4.15 & 4.62 & 0.57 & 46 \\
 \bottomrule
 \end{tabular}
 \end{table*}

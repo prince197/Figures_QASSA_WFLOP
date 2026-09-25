@@ -1,4 +1,4 @@
-"""Tables, figures and statistics with the hybrid LX-SSA-VNS (seven methods; focus comparisons: LX-SSA-VNS vs each).
+"""Tables, figures and statistics with the hybrid LX-SSA-VNS (eight methods incl. the original basic VNS "BVNS"; focus comparisons: LX-SSA-VNS vs each).
 
 Outputs go to ../figures_fresh/ (PDF figures) and fresh_tables.tex / fresh_stats.txt here.
 """
@@ -10,16 +10,16 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker
 from scipy.stats import wilcoxon, friedmanchisquare, rankdata, norm
 
-ALGS = ["LXVNS", "LXSSA", "SSA", "PSO", "DE", "VNS", "SLSQP"]
+ALGS = ["LXVNS", "LXSSA", "SSA", "PSO", "DE", "VNS", "SLSQP", "BVNS"]
 FOCUS = "LXVNS"
 LAB = {"LXVNS": "LX-SSA-VNS", "LXSSA": "LX-SSA", "SSA": "SSA", "PSO": "PSO", "DE": "DE", "VNS": "VNS",
-       "SLSQP": "MS-SLSQP"}
+       "SLSQP": "MS-SLSQP", "BVNS": "BVNS"}
 # categorical palette (validated: scripts/validate_palette.js, light mode, legend order)
 COL = {"LXVNS": "#2a78d6", "LXSSA": "#4a3aa7", "SSA": "#eb6834", "PSO": "#1baf7a", "DE": "#eda100",
-       "VNS": "#e87ba4", "SLSQP": "#008300"}
-MRK = {"LXVNS": "*", "LXSSA": "o", "SSA": "s", "PSO": "^", "DE": "v", "VNS": "D", "SLSQP": "P"}
+       "VNS": "#e87ba4", "SLSQP": "#008300", "BVNS": "#e34948"}
+MRK = {"LXVNS": "*", "LXSSA": "o", "SSA": "s", "PSO": "^", "DE": "v", "VNS": "D", "SLSQP": "P", "BVNS": "X"}
 LS = {"LXVNS": "-", "LXSSA": (0, (1, 1)), "SSA": "--", "PSO": "-.", "DE": ":", "VNS": (0, (5, 1)),
-      "SLSQP": (0, (3, 1, 1, 1))}
+      "SLSQP": (0, (3, 1, 1, 1)), "BVNS": (0, (4, 2, 1, 2))}
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 RADII = {500: 10, 750: 12, 1000: 15}
 DSN = {1: "Data Set I", 2: "Data Set II"}
@@ -90,12 +90,13 @@ def save(fig, name):
 def legend_row(fig, y=1.02):
     h = [plt.Line2D([], [], color=COL[a], ls=LS[a], marker=MRK[a], ms=7 if MRK[a] == "*" else 4, label=LAB[a])
          for a in ALGS]
-    fig.legend(handles=h, loc="lower center", ncol=7, bbox_to_anchor=(0.5, y), fontsize=7.5)
+    fig.legend(handles=h, loc="lower center", ncol=8, bbox_to_anchor=(0.5, y), fontsize=7.5)
 
 
 # ------------------------------------------------------------------ main
 def main():
-    G = pd.concat([pd.read_csv("fresh_grid.csv"), pd.read_csv("fresh_hgrid.csv")], ignore_index=True)
+    G = pd.concat([pd.read_csv("fresh_grid.csv"), pd.read_csv("fresh_hgrid.csv"), pd.read_csv("fresh_vgrid.csv")],
+                  ignore_index=True)
     G["LossPct"] = 100 * G.WakeLoss / G.Ideal
     tex, stats = [], {}
 
@@ -141,13 +142,14 @@ def main():
 \caption{%s, %d-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.}
 \label{tab:res-%d-%d}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccccccccc}
+\resizebox{\textwidth}{!}{%%
+\begin{tabular}{cccccccccc}
 \toprule
-$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS \\
 \midrule
 """ % (DSN[ds], r, ds, r) + "\n".join(lines) + r"""
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 """)
 
@@ -160,7 +162,7 @@ $N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
             for b in ALGS[1:]:
                 x = s[s.Baseline == b].Outcome.value_counts()
                 cells.append(f"{x.get('W',0)}/{x.get('T',0)}/{x.get('L',0)}")
-            lines.append(f"{DSN[ds]} & {r} & {s.Turbines.nunique()} & " + " & ".join(cells) + " \\\\")
+            lines.append(f"{'I' if ds == 1 else 'II'} & {r} & {s.Turbines.nunique()} & " + " & ".join(cells) + " \\\\")
     tot = []
     for b in ALGS[1:]:
         x = C[C.Baseline == b].Outcome.value_counts()
@@ -168,12 +170,12 @@ $N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
     lines.append("\\midrule\nAll & & 68 & " + " & ".join(tot) + " \\\\")
     tex.append(r"""\begin{table}[!t]
 \centering
-\caption{Pairwise outcome of the hybrid LX-SSA-VNS against each method: number of cases in which LX-SSA-VNS is significantly better / not significantly different / significantly worse (two-sided Wilcoxon signed-rank test on 30 seed-paired runs, Holm-adjusted over the six comparisons of each case, $\alpha=0.05$).}
+\caption{Pairwise outcome of the hybrid LX-SSA-VNS against each method: number of cases in which LX-SSA-VNS is significantly better / not significantly different / significantly worse (two-sided Wilcoxon signed-rank test on 30 seed-paired runs, Holm-adjusted over the seven comparisons of each case, $\alpha=0.05$).}
 \label{tab:wtl}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{llccccccc}
+\begin{tabular}{llcccccccc}
 \toprule
-Data set & $r$ (m) & Cases & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+DS & $r$ (m) & Cases & LX-SSA & SSA & PSO & DE & VNS & \begin{tabular}{@{}c@{}}MS-\\SLSQP\end{tabular} & BVNS \\
 \midrule
 """ + "\n".join(lines) + r"""
 \bottomrule
@@ -207,14 +209,14 @@ Data set & $r$ (m) & Cases & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
     order = np.argsort(avg)
     tex.append(r"""\begin{table}[!t]
 \centering
-\caption{Case-level Friedman analysis over all 68 benchmark cases (blocks: cases; ranks of the mean feasible objective, 1 = best). Friedman $\chi^2_F=%.1f$ (6 d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$. Holm-adjusted $p$ values of the average-rank $z$ test against the best-ranked method (%s) and against LX-SSA-VNS; ``Best'': cases in which the method alone has the highest mean (remaining cases are ties); ``Feas.'': percentage of feasible runs.}
+\caption{Case-level Friedman analysis over all 68 benchmark cases (blocks: cases; ranks of the mean feasible objective, 1 = best). Friedman $\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$. Holm-adjusted $p$ values of the average-rank $z$ test against the best-ranked method (%s) and against LX-SSA-VNS; ``Best'': cases in which the method alone has the highest mean (remaining cases are ties); ``Feas.'': percentage of feasible runs.}
 \label{tab:friedman68}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccccc}
 \toprule
 Method & Avg.\ rank & Best & Feas.\ (\%%) & $p$ vs.\ %s & $p$ vs.\ LX-SSA-VNS \\
 \midrule
-""" % (chi, fmt_p(pf).strip("$") if pf >= 1e-3 else fmt_p(pf).strip("$"), ff, LAB[ALGS[best_i]], LAB[ALGS[best_i]]) +
+""" % (chi, k - 1, fmt_p(pf).strip("$") if pf >= 1e-3 else fmt_p(pf).strip("$"), ff, LAB[ALGS[best_i]], LAB[ALGS[best_i]]) +
         "\n".join(rows[i] for i in order) + r"""
 \bottomrule
 \end{tabular}
@@ -235,7 +237,7 @@ Method & Avg.\ rank & Best & Feas.\ (\%%) & $p$ vs.\ %s & $p$ vs.\ LX-SSA-VNS \\
                    edgecolor="white", lw=0.6)
         ax.text(avg[j] + 0.08, pos, f"{avg[j]:.2f}", va="center", fontsize=7, color=INK)
     ax.set_yticks(range(k)); ax.set_yticklabels([LAB[ALGS[j]] for j in order[::-1]])
-    ax.set_xlim(1, 7.3); ax.set_xlabel("Average rank over 68 cases (1 = best)")
+    ax.set_xlim(1, 8.3); ax.set_xlabel("Average rank over 68 cases (1 = best)")
     ax.grid(axis="y", visible=False)
     save(fig, "avg_ranks")
 
@@ -300,8 +302,9 @@ Method & Avg.\ rank & Best & Feas.\ (\%%) & $p$ vs.\ %s & $p$ vs.\ LX-SSA-VNS \\
                                 ms=7 if MRK[a] == "*" else 4)
                 ax.set_yscale("log")
                 fmt = matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:g}")
-                ax.yaxis.set_major_formatter(fmt); ax.yaxis.set_minor_formatter(fmt)
-                ax.tick_params(axis="y", which="minor", labelsize=6)
+                ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(subs=(1.0, 2.0, 3.0, 5.0)))
+                ax.yaxis.set_major_formatter(fmt)
+                ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
                 ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
                 if i == 1: ax.set_xlabel("Objective-function calls")
                 if j == 0: ax.set_ylabel("Best wake loss (% of ideal)")
@@ -322,7 +325,7 @@ Method & Avg.\ rank & Best & Feas.\ (\%%) & $p$ vs.\ %s & $p$ vs.\ LX-SSA-VNS \\
                             capprops=dict(color=MUTED))
             for patch, a in zip(bp["boxes"], ALGS):
                 patch.set_facecolor(COL[a]); patch.set_alpha(0.55); patch.set_edgecolor(COL[a])
-            ax.set_xticks(range(1, 8)); ax.set_xticklabels([LAB[a] for a in ALGS], rotation=40, fontsize=6)
+            ax.set_xticks(range(1, len(ALGS) + 1)); ax.set_xticklabels([LAB[a] for a in ALGS], rotation=40, fontsize=6)
             ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
             if j == 0: ax.set_ylabel("Wake loss (% of ideal)")
             ax.grid(axis="x", visible=False)
@@ -365,7 +368,8 @@ Method & Avg.\ rank & Best & Feas.\ (\%%) & $p$ vs.\ %s & $p$ vs.\ LX-SSA-VNS \\
 
     # ---------- Horns Rev ----------
     import hornsrev_model as hr
-    H = {n: pd.concat([pd.read_csv(f"fresh_hr{n}.csv"), pd.read_csv(f"fresh_hhr{n}.csv")], ignore_index=True)
+    H = {n: pd.concat([pd.read_csv(f"fresh_hr{n}.csv"), pd.read_csv(f"fresh_hhr{n}.csv"),
+                    pd.read_csv(f"fresh_vhr{n}.csv")], ignore_index=True)
          for n in (16, 80)}
     inst = {n: hr.aep_gwh(hr.site(n)[0]) for n in (16, 80)}
     ideal = {n: H[n].IdealAEP.iloc[0] for n in (16, 80)}

@@ -8,8 +8,11 @@
 | `full_grid_experiments.py hgrid` | 68 cases × LX-SSA-VNS × 30 seeds (paired with `fresh_grid.csv`) | `fresh_hgrid.csv` |
 | `full_grid_experiments.py hsplit` | Split ablation: rho = 25% / 75% on 12 cases | `fresh_hsplit.csv` |
 | `full_grid_experiments.py hhr16` / `hhr80` | Horns Rev 1 with the hybrid | `fresh_hhr16.csv`, `fresh_hhr80.csv` |
-| `hybrid_results.py` | Seven-method tables, statistics, ablation and figures | `hybrid_tables.tex`, `hybrid_summary.json`, `hybrid_case_tests.csv`, `hybrid_best_layouts_maxN.csv`, `../figures_hybrid/*.pdf` |
-| `robustness_hybrid.py` | Cubic power curve / Gaussian wake re-evaluation, seven methods | `hybrid_robust_table.tex`, `hybrid_robust_summary.json`, `hybrid_reevaluation.csv` |
+| `hybrid_results.py` | Eight-method tables, statistics, ablation and figures | `hybrid_tables.tex`, `hybrid_summary.json`, `hybrid_case_tests.csv`, `hybrid_best_layouts_maxN.csv`, `../figures_hybrid/*.pdf` |
+| `robustness_hybrid.py` | Cubic power curve / Gaussian wake re-evaluation, eight methods | `hybrid_robust_table.tex`, `hybrid_robust_summary.json`, `hybrid_reevaluation.csv` |
+| `original_vns.py` | Original basic VNS (BVNS; Mladenovic & Hansen 1997, continuous form of Mladenovic et al. 2008): l_inf-shell shaking of the whole layout + complete best-improvement compass local search | library |
+| `full_grid_experiments.py vgrid` / `vhr16` / `vhr80` | BVNS on the 68 cases and Horns Rev (paired seeds) | `fresh_vgrid.csv`, `fresh_vhr16.csv`, `fresh_vhr80.csv` |
+| `bvns_compare.py` | BVNS vs each method (Holm over seven per case) | `bvns_tables.tex`, `bvns_summary.json`, `bvns_case_tests.csv` |
 | `sec_hybrid.tex` | Section VI (algorithm) | – |
 | `build_hybrid_manuscript.py` | Writes Sections VI–XII and the appendix from the outputs above | – |
 | `hybrid_frontmatter.py` | Title, abstract, introduction and motivation section | – |

@@ -6,8 +6,8 @@ from multiprocessing import Pool
 from scipy.stats import rankdata, kendalltau
 from wflop_model import farm_objective
 
-ALGS = ["LXVNS", "LXSSA", "SSA", "PSO", "DE", "VNS", "SLSQP"]
-LAB = {"LXVNS": "LX-SSA-VNS", "LXSSA": "LX-SSA", "SSA": "SSA", "PSO": "PSO", "DE": "DE", "VNS": "VNS", "SLSQP": "MS-SLSQP"}
+ALGS = ["LXVNS", "LXSSA", "SSA", "PSO", "DE", "VNS", "SLSQP", "BVNS"]
+LAB = {"LXVNS": "LX-SSA-VNS", "LXSSA": "LX-SSA", "SSA": "SSA", "PSO": "PSO", "DE": "DE", "VNS": "VNS", "SLSQP": "MS-SLSQP", "BVNS": "BVNS"}
 
 
 def reval(row):
@@ -21,7 +21,8 @@ def reval(row):
 
 
 if __name__ == "__main__":
-    G = pd.concat([pd.read_csv("fresh_grid.csv"), pd.read_csv("fresh_hgrid.csv")], ignore_index=True)
+    G = pd.concat([pd.read_csv("fresh_grid.csv"), pd.read_csv("fresh_hgrid.csv"), pd.read_csv("fresh_vgrid.csv")],
+                  ignore_index=True)
     G = G[G.Feasible].reset_index(drop=True)
     with Pool(4) as pool:
         R = pd.DataFrame(pool.map(reval, G.to_dict("records"), chunksize=50))
@@ -46,14 +47,14 @@ if __name__ == "__main__":
                      (" & -- & -- \\\\" if col == "Linear" else f" & {np.nanmean(taus):.2f} & {100*same_top:.0f} \\\\"))
     tex = r"""\begin{table*}[!t]
 \centering
-\caption{Robustness of the fresh results to the benchmark model. All feasible final layouts are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model; average rank of each method over the 68 cases (methods with at least five feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and alternative orderings of the methods within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
+\caption{Robustness of the results to the benchmark model. All feasible final layouts are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model; average rank of each method over the 68 cases (methods with at least five feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and alternative orderings of the methods within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
 \label{tab:robust-hybrid}
 \scriptsize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccccccccccc}
+\begin{tabular}{lcccccccccccc}
 \toprule
-& \multicolumn{2}{c}{$\Delta$ (\%)} & \multicolumn{7}{c}{Average rank} & & \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-10}
-Model & DS I & DS II & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & $\bar\tau$ & Same best (\%) \\
+& \multicolumn{2}{c}{$\Delta$ (\%)} & \multicolumn{8}{c}{Average rank} & & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-11}
+Model & DS I & DS II & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS & $\bar\tau$ & Same best (\%) \\
 \midrule
 """ + "\n".join(lines) + r"""
 \bottomrule

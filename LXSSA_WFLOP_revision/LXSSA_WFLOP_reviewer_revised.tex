@@ -36,7 +36,7 @@
 
 
 \begin{abstract}
-The Wind Farm Layout Optimization Problem (WFLOP) is a nonlinear constrained optimization problem in which turbine locations interact through wake-induced velocity deficits. This paper proposes LX-SSA-VNS, a two-phase hybrid for continuous WFLOP. The Laplacian Salp Swarm Algorithm (LX-SSA), previously introduced by Solanki and Deep~\cite{Solanki2023}, explores the layout space during the first half of the evaluation budget. Variable neighbourhood search (VNS) then intensifies the best layout found, using nested turbine-perturbation neighbourhoods and an adaptive local search. Both phases share a penalized objective with Jensen wake interactions, direction-dependent Weibull wind statistics and explicit farm-boundary and minimum-spacing constraints. The hybrid is compared with LX-SSA, SSA, particle swarm optimization (PSO), differential evolution (DE), stand-alone VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases (two wind data sets, three circular farms, 2--15 turbines). Each comparison uses 30 seed-paired runs at an equal budget of 6,030 objective evaluations and is analyzed with Friedman, Holm-corrected Wilcoxon signed-rank and effect-size statistics, together with feasibility rates, convergence curves and an ablation of the budget split. LX-SSA-VNS attains the second-best average rank (2.38) and a feasibility rate of 98.1\%. It is significantly better than LX-SSA in 36 cases and never worse, and it ranks significantly better than SSA, PSO, DE, LX-SSA and SLSQP. Stand-alone VNS remains the best method (average rank 1.85): it is statistically equivalent to the hybrid in 52 cases and better in 16 dense cases, and the ablation attributes the gain of the hybrid to its VNS phase. On the Horns Rev~1 offshore site the same ordering appears, no method improves on the installed layout within the budget, and only the constraint-aware SLSQP finds feasible layouts for the full 80-turbine farm. The algorithm ordering is insensitive to the power-curve model but sensitive to the wake model, and absolute energy values are strongly model-dependent.
+The Wind Farm Layout Optimization Problem (WFLOP) is a nonlinear constrained optimization problem in which turbine locations interact through wake-induced velocity deficits. This paper proposes LX-SSA-VNS, a two-phase hybrid for continuous WFLOP. The Laplacian Salp Swarm Algorithm (LX-SSA), previously introduced by Solanki and Deep~\cite{Solanki2023}, explores the layout space during the first half of the evaluation budget. Variable neighbourhood search (VNS) then intensifies the best layout found, using nested turbine-perturbation neighbourhoods and an adaptive local search. Both phases share a penalized objective with Jensen wake interactions, direction-dependent Weibull wind statistics and explicit farm-boundary and minimum-spacing constraints. The hybrid is compared with LX-SSA, SSA, particle swarm optimization (PSO), differential evolution (DE), the original basic VNS (BVNS), a modified stand-alone VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases (two wind data sets, three circular farms, 2--15 turbines). Each comparison uses 30 seed-paired runs at an equal budget of 6,030 objective evaluations and is analyzed with Friedman, Holm-corrected Wilcoxon signed-rank and effect-size statistics, together with feasibility rates, convergence curves and an ablation of the budget split. LX-SSA-VNS attains the second-best average rank (2.74) and a feasibility rate of 98.1\%. It is significantly better than LX-SSA in 35 cases and never worse, and it ranks significantly better than SSA, PSO, DE, LX-SSA and SLSQP. The modified VNS remains the best method (average rank 2.09): it is statistically equivalent to the hybrid in 53 cases and better in 15 dense cases, and the ablation attributes the gain of the hybrid to its VNS phase. The original BVNS ranks third (3.62) and is the only method feasible in every run; the modified VNS outperforms it for layouts with six or more turbines. On the Horns Rev~1 offshore site a similar ordering appears, no method improves on the installed layout within the budget, and only the constraint-aware SLSQP finds feasible layouts for the full 80-turbine farm. The algorithm ordering is insensitive to the power-curve model but sensitive to the wake model, and absolute energy values are strongly model-dependent.
 \end{abstract}
 
 
@@ -60,8 +60,8 @@ The standard WFLOP ingredients---Jensen's wake model, a Weibull wind representat
 \begin{itemize}
 \item a two-phase hybrid, LX-SSA-VNS, in which the previously published LX-SSA~\cite{Solanki2023} explores the continuous layout space and a VNS with nested turbine-perturbation neighbourhoods and an adaptive local search intensifies the best layout (Section~\ref{sec:hybrid});
 \item a continuous turbine-coordinate formulation with explicit farm-boundary and minimum-spacing constraints, shared by both phases, within the standard Jensen--Weibull WFLOP benchmark framework;
-\item a controlled comparison of the hybrid with LX-SSA, SSA, PSO, DE, stand-alone VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases at equal objective-evaluation budgets, with 30 seed-paired runs per method and case, full statistical analysis (Friedman and Holm-corrected Wilcoxon signed-rank tests, effect sizes), feasibility rates and convergence curves (Section~\ref{sec:results});
-\item an ablation that separates the contributions of the two phases and examines the budget split (Section~\ref{sec:ablation});
+\item a controlled comparison of the hybrid with LX-SSA, SSA, PSO, DE, the original basic VNS, a modified stand-alone VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases at equal objective-evaluation budgets, with 30 seed-paired runs per method and case, full statistical analysis (Friedman and Holm-corrected Wilcoxon signed-rank tests, effect sizes), feasibility rates and convergence curves (Section~\ref{sec:results});
+\item a comparison of the original and the modified VNS (Section~\ref{sec:bvns}) and an ablation that separates the contributions of the two phases and examines the budget split (Section~\ref{sec:ablation});
 \item an application to the Horns Rev~1 offshore site with its real turbine, wind climate and outline, compared against the installed layout (Section~\ref{sec:hornsrev-site}); and
 \item a sensitivity analysis of the benchmark assumptions (power curve, wake model, minimum spacing and boundary handling; Section~\ref{sec:robustness}).
 \end{itemize}
@@ -93,7 +93,7 @@ Continuous WFLOP contains $2N$ spatial decision variables for $N$ turbines, nonl
 
 In the 2023 LX-SSA, the standard SSA follower dynamics are supplemented by a Laplace-distribution-based candidate update and greedy retention~\cite{Solanki2023,Deep2007}. The heavy-tailed Laplace perturbation can generate both short and occasional longer moves, which provides a plausible mechanism for exploring spatially separated layout configurations. In a swarm, however, these moves are spread over the whole population, so the final refinement of the best layout, which in WFLOP means small coordinated moves of individual turbines along the spacing constraints, proceeds slowly.
 
-VNS~\cite{Mladenovic1997}, which has been applied successfully to discrete WFLOP~\cite{Cazzaro2022}, addresses exactly this refinement: it perturbs one, two or three turbines at a time with increasing step sizes and keeps only improvements. Its weakness is its dependence on the starting layout. A sequential hybrid, in which LX-SSA supplies the starting layout for VNS, is therefore a natural combination. Whether it pays off at a fixed budget, compared with running either component alone, is an empirical question: the experiments answer it by comparing the hybrid with LX-SSA, with stand-alone VNS and with four further baselines at equal objective-evaluation budgets (Section~\ref{sec:results}). Pseudo-gradient, surrogate and data-driven WFLO methods remain literature context.
+VNS~\cite{Mladenovic1997}, which has been applied successfully to discrete WFLOP~\cite{Cazzaro2022}, addresses exactly this refinement: it perturbs one, two or three turbines at a time with increasing step sizes and keeps only improvements. Its weakness is its dependence on the starting layout. A sequential hybrid, in which LX-SSA supplies the starting layout for VNS, is therefore a natural combination. Whether it pays off at a fixed budget, compared with running either component alone, is an empirical question: the experiments answer it by comparing the hybrid with LX-SSA, with stand-alone VNS in its original and modified forms and with four further baselines at equal objective-evaluation budgets (Section~\ref{sec:results}). Pseudo-gradient, surrogate and data-driven WFLO methods remain literature context.
 
 The remainder of the paper presents the benchmark model, summarizes the previously published LX-SSA to the extent needed for reproducibility, defines its WFLOP mapping and constraint handling, introduces the hybrid, reports the experimental results, and finally states the limitations of the evidence.
 
@@ -526,7 +526,7 @@ T_1=\operatorname{round}\!\left(\frac{\rho B-N_p}{2N_p}\right)
 iterations, because one LX-SSA iteration costs $2N_p$ calls. Its parameter $r_1$ decreases over these $T_1$ iterations, so the swarm moves from exploration to exploitation within Phase~1. The food source $H$ at the end of Phase~1 is the starting incumbent of Phase~2.
 
 \subsection{Phase 2: Intensification by VNS}
-Starting from $x=H$, VNS uses $k_{\max}=3$ nested neighbourhoods. In neighbourhood $k$, a \emph{shaking} step moves $k$ randomly chosen turbines by Gaussian steps with standard deviation $\sigma_k r$, where $(\sigma_1,\sigma_2,\sigma_3)=(0.05,0.15,0.40)$. The shaken layout $y$ is then improved by a first-improvement \emph{local search} of $L=10$ single-turbine Gaussian moves. Its step length is enlarged by a factor 1.5 after a successful move and reduced by a factor 0.8 after an unsuccessful one, and it is bounded between $10^{-3}r$ and $0.5r$. If the resulting layout improves on the incumbent according to $F_p$, it is accepted and the search returns to $k=1$; otherwise $k$ is increased cyclically. Phase~2 ends when the budget $B$ is exhausted. Box repair and the penalized objective~\eqref{eq:penalty} are used exactly as in LX-SSA, so the feasibility-first rules of Section~\ref{sec:constraints} apply in both phases.
+Starting from $x=H$, VNS uses $k_{\max}=3$ nested neighbourhoods. In neighbourhood $k$, a \emph{shaking} step moves $k$ randomly chosen turbines by Gaussian steps with standard deviation $\sigma_k r$, where $(\sigma_1,\sigma_2,\sigma_3)=(0.05,0.15,0.40)$. The shaken layout $y$ is then improved by a first-improvement \emph{local search} of $L=10$ single-turbine Gaussian moves. Its step length is enlarged by a factor 1.5 after a successful move and reduced by a factor 0.8 after an unsuccessful one, and it is bounded between $10^{-3}r$ and $0.5r$. If the resulting layout improves on the incumbent according to $F_p$, it is accepted and the search returns to $k=1$; otherwise $k$ is increased cyclically. Phase~2 ends when the budget $B$ is exhausted. This is the modified VNS that is also run stand-alone in Section~\ref{sec:results}; it differs from the original basic VNS~\cite{Mladenovic1997,Hansen2001}, which shakes the whole layout and applies a complete local search, and which is evaluated separately (BVNS, Section~\ref{sec:bvns}). Box repair and the penalized objective~\eqref{eq:penalty} are used exactly as in LX-SSA, so the feasibility-first rules of Section~\ref{sec:constraints} apply in both phases.
 
 \begin{algorithm}
 \caption{Hybrid LX-SSA-VNS for a prescribed turbine count $N$}
@@ -576,20 +576,21 @@ Each data set is combined with three circular farms of radius $r=500$, 750 and 1
 Every run optimizes the $2N$ turbine coordinates for its prescribed $N$; varying $N$ is a parameter sweep, not a joint optimization of turbine number and positions.
 
 \subsection{Methods Compared}
-The proposed hybrid and six reference methods are compared, all with the same objective~\eqref{eq:penalty}, the same bounds $[-r,r]^{2N}$ and the same budget:
+The proposed hybrid and seven reference methods are compared, all with the same objective~\eqref{eq:penalty}, the same bounds $[-r,r]^{2N}$ and the same budget:
 \begin{itemize}
 \item \emph{LX-SSA-VNS} (proposed): Algorithm~\ref{alg:hybrid} with $\rho=0.5$, i.e., 50 LX-SSA iterations (3,030 calls) followed by 3,000 calls of VNS.
 \item \emph{LX-SSA}~\cite{Solanki2023}: Algorithm~\ref{alg:lx-ssa-wflop} with $\phi=0$, $\chi=1$, population 30 and 100 iterations.
 \item \emph{SSA}~\cite{Mirjalili2017}: the same leader/follower dynamics without the Laplace candidate; population 30 and 200 iterations.
 \item \emph{PSO}: inertia weight $w=0.7$ and acceleration coefficients $c_1=c_2=2$, with unbounded velocities and positions clipped to the bounds; population 30 and 200 iterations.
 \item \emph{DE}: DE/rand/1/bin with $F=0.5$ and $CR=0.9$; population 30 and 200 iterations.
-\item \emph{VNS}~\cite{Mladenovic1997,Cazzaro2022}: basic variable neighbourhood search adapted to continuous coordinates. It starts from the best member of the initial population. Shaking moves $k\in\{1,2,3\}$ randomly chosen turbines by Gaussian steps with standard deviation $0.05r$, $0.15r$ and $0.40r$. Each shake is followed by a ten-call first-improvement local search of single-turbine Gaussian moves with an adaptive step (enlarged by 1.5 after a success, reduced by 0.8 after a failure). An improvement is accepted and resets $k=1$; otherwise $k$ increases cyclically.
+\item \emph{VNS} (modified; this study): a variant of basic VNS~\cite{Mladenovic1997,Cazzaro2022} tailored to turbine coordinates. It starts from the best member of the initial population. Shaking moves $k\in\{1,2,3\}$ randomly chosen turbines by Gaussian steps with standard deviation $0.05r$, $0.15r$ and $0.40r$. Instead of a complete local search, each shake is followed by only ten first-improvement trial moves of single turbines with an adaptive step (enlarged by 1.5 after a success, reduced by 0.8 after a failure). An improvement is accepted and resets $k=1$; otherwise $k$ increases cyclically.
 \item \emph{Multistart SLSQP (MS-SLSQP)}, a gradient-based method: SciPy's sequential least-squares quadratic programming solver~\cite{Kraft1988} minimizes the wake loss with the spacing and boundary constraints imposed explicitly and forward-difference gradients (1-m step). It starts from the members of the initial population in order of $F_p$ and restarts until the budget is exhausted.
+\item \emph{BVNS} (original basic VNS): the basic VNS of Mladenovi\'c and Hansen~\cite{Mladenovic1997,Hansen2001} in the continuous form of Mladenovi\'c et al.~\cite{Mladenovic2008}, with the exterior penalty $F_p$ for the constraints. It uses $k_{\max}=5$ nested $\ell_\infty$ neighbourhoods of the whole layout, $\rho_{k-1}<\lVert y-x\rVert_\infty\le\rho_k$ with $\rho_k=0.1kr$; shaking draws a point uniformly from the $k$-th neighbourhood, so all $2N$ coordinates move. It is followed by a complete best-improvement local search to a local minimum: a derivative-free compass search evaluates all $4N$ moves $\pm h$ along the coordinates, moves to the best improving one, and halves $h$ (from $0.05r$) when none improves, until $h<10^{-3}r$. (Gradient descent, used for smooth problems in~\cite{Mladenovic2008}, is not applicable because the Jensen top-hat wake makes $F_p$ discontinuous.) BVNS first applies this local search to the best member of the initial population; neighbourhood change is as in VNS, and the returned layout is the best point evaluated.
 \end{itemize}
-SSA, LX-SSA, PSO and DE use the original implementation. VNS, MS-SLSQP and the hybrid were implemented for this study, and the hybrid calls the original LX-SSA code in its first phase. Comparing LX-SSA-VNS with LX-SSA and with stand-alone VNS isolates the contribution of each phase.
+SSA, LX-SSA, PSO and DE use the original implementation. VNS, BVNS, MS-SLSQP and the hybrid were implemented for this study, and the hybrid calls the original LX-SSA code in its first phase. Comparing LX-SSA-VNS with LX-SSA and with stand-alone VNS isolates the contribution of each phase, and comparing VNS with BVNS shows the effect of the modifications made to the original VNS.
 
 \subsection{Budget, Seeds and Pairing}
-Every run has a budget of exactly 6,030 objective-function calls, counted by a wrapper around the objective. The count includes the initial population and, for MS-SLSQP, the calls used for finite-difference gradients. For LX-SSA this corresponds to 100 iterations, because each follower evaluates two candidates before the population is re-evaluated ($30+100\times60$ calls); SSA, PSO and DE reach the same count in 200 iterations ($30+200\times30$), and LX-SSA-VNS in $3{,}030+3{,}000$ calls. Each method is run with seeds 1--30. Every optimizer seeds the random-number generator and draws its initial population first, so runs with the same seed start from the \emph{same} initial population for all seven methods. The runs of a test case are therefore paired by seed.
+Every run has a budget of exactly 6,030 objective-function calls, counted by a wrapper around the objective. The count includes the initial population and, for MS-SLSQP, the calls used for finite-difference gradients. For LX-SSA this corresponds to 100 iterations, because each follower evaluates two candidates before the population is re-evaluated ($30+100\times60$ calls); SSA, PSO and DE reach the same count in 200 iterations ($30+200\times30$), and LX-SSA-VNS in $3{,}030+3{,}000$ calls. Each method is run with seeds 1--30. Every optimizer seeds the random-number generator and draws its initial population first, so runs with the same seed start from the \emph{same} initial population for all eight methods. The runs of a test case are therefore paired by seed.
 
 \subsection{Performance Measures and Statistical Analysis}
 For each run we record
@@ -601,7 +602,7 @@ For each run we record
 \end{itemize}
 Means and standard deviations are computed over the feasible runs.
 
-Within each test case, the 30 seed-paired runs are compared by a run-level Friedman test and by two-sided Wilcoxon signed-rank tests of LX-SSA-VNS against each of the other six methods. The six $p$ values of each case are adjusted by Holm's procedure~\cite{Holm1979}, and effect sizes are reported as matched-pairs rank-biserial correlations. For ranking, a feasible run beats an infeasible one, and infeasible runs are compared by their spacing shortfall. Across the 68 cases, the methods are ranked within each case by their mean feasible objective and compared by a case-level Friedman test with the Iman--Davenport correction and Holm-adjusted average-rank post hoc tests, following Dem\v{s}ar~\cite{Demsar2006}.
+Within each test case, the 30 seed-paired runs are compared by a run-level Friedman test and by two-sided Wilcoxon signed-rank tests of LX-SSA-VNS against each of the other seven methods. The seven $p$ values of each case are adjusted by Holm's procedure~\cite{Holm1979}, and effect sizes are reported as matched-pairs rank-biserial correlations. For ranking, a feasible run beats an infeasible one, and infeasible runs are compared by their spacing shortfall. Across the 68 cases, the methods are ranked within each case by their mean feasible objective and compared by a case-level Friedman test with the Iman--Davenport correction and Holm-adjusted average-rank post hoc tests, following Dem\v{s}ar~\cite{Demsar2006}.
 
 \subsection{Implementation Verification}
 \label{sec:validation}
@@ -613,72 +614,75 @@ All runs were executed on a Linux container with an Intel Xeon processor at 2.80
 \section{Numerical Results}
 \label{sec:results}
 \label{sec:equalbudget}
-This section reports 14,280 runs: 68 test cases, seven methods and 30 seed-paired runs, all at 6,030 objective calls. It is followed by an ablation of the hybrid and the Horns Rev~1 site case. Detailed per-case results are given in Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000}.
+This section reports 16,320 runs: 68 test cases, eight methods and 30 seed-paired runs, all at 6,030 objective calls. It is followed by a comparison of the original and modified VNS, an ablation of the hybrid and the Horns Rev~1 site case. Detailed per-case results are given in Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000}.
 
 \subsection{Overall Comparison}
 \label{sec:overall}
 \begin{table}[!t]
 \centering
-\caption{Case-level Friedman analysis over all 68 benchmark cases (blocks: cases; ranks of the mean feasible objective, 1 = best). Friedman $\chi^2_F=190.9$ (6 d.f.), $p=1.65\times10^{-38}$; Iman--Davenport $F_F=58.9$. Holm-adjusted $p$ values of the average-rank $z$ test against the best-ranked method (VNS) and against LX-SSA-VNS; ``Best'': cases in which the method alone has the highest mean (remaining cases are ties); ``Feas.'': percentage of feasible runs.}
+\caption{Case-level Friedman analysis over all 68 benchmark cases (blocks: cases; ranks of the mean feasible objective, 1 = best). Friedman $\chi^2_F=212.5$ (7 d.f.), $p=2.57\times10^{-42}$; Iman--Davenport $F_F=54.0$. Holm-adjusted $p$ values of the average-rank $z$ test against the best-ranked method (VNS) and against LX-SSA-VNS; ``Best'': cases in which the method alone has the highest mean (remaining cases are ties); ``Feas.'': percentage of feasible runs.}
 \label{tab:friedman68}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lccccc}
 \toprule
 Method & Avg.\ rank & Best & Feas.\ (\%) & $p$ vs.\ VNS & $p$ vs.\ LX-SSA-VNS \\
 \midrule
-VNS & 1.85 & 38 & 99.6 & -- & 0.153 \\
-LX-SSA-VNS & 2.38 & 8 & 98.1 & 0.153 & -- \\
-SSA & 4.07 & 0 & 97.6 & $4.10\times10^{-9}$ & $1.00\times10^{-5}$ \\
-PSO & 4.12 & 7 & 86.0 & $2.59\times10^{-9}$ & $7.66\times10^{-6}$ \\
-MS-SLSQP & 4.71 & 6 & 99.9 & $5.41\times10^{-14}$ & $1.43\times10^{-9}$ \\
-LX-SSA & 4.91 & 0 & 96.9 & $7.51\times10^{-16}$ & $4.32\times10^{-11}$ \\
-DE & 5.95 & 2 & 71.4 & $1.25\times10^{-27}$ & $3.73\times10^{-21}$ \\
+VNS & 2.09 & 36 & 99.6 & -- & 0.123 \\
+LX-SSA-VNS & 2.74 & 5 & 98.1 & 0.123 & -- \\
+BVNS & 3.62 & 10 & 100.0 & $5.08\times10^{-4}$ & 0.068 \\
+SSA & 4.79 & 0 & 97.6 & $3.55\times10^{-10}$ & $2.86\times10^{-6}$ \\
+PSO & 4.84 & 3 & 86.0 & $2.36\times10^{-10}$ & $2.22\times10^{-6}$ \\
+MS-SLSQP & 5.38 & 6 & 99.9 & $2.22\times10^{-14}$ & $1.48\times10^{-9}$ \\
+LX-SSA & 5.68 & 0 & 96.9 & $7.94\times10^{-17}$ & $1.52\times10^{-11}$ \\
+DE & 6.86 & 0 & 71.4 & $4.64\times10^{-29}$ & $6.50\times10^{-22}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.95\columnwidth]{figures_hybrid/avg_ranks.pdf}
-\caption{Average rank of the seven methods over the 68 benchmark cases (ranks of the mean feasible objective within each case; 1 = best).}
+\caption{Average rank of the eight methods over the 68 benchmark cases (ranks of the mean feasible objective within each case; 1 = best).}
 \label{fig:avgranks}
 \end{figure}
 \begin{table}[!t]
 \centering
-\caption{Pairwise outcome of the hybrid LX-SSA-VNS against each method: number of cases in which LX-SSA-VNS is significantly better / not significantly different / significantly worse (two-sided Wilcoxon signed-rank test on 30 seed-paired runs, Holm-adjusted over the six comparisons of each case, $\alpha=0.05$).}
+\caption{Pairwise outcome of the hybrid LX-SSA-VNS against each method: number of cases in which LX-SSA-VNS is significantly better / not significantly different / significantly worse (two-sided Wilcoxon signed-rank test on 30 seed-paired runs, Holm-adjusted over the seven comparisons of each case, $\alpha=0.05$).}
 \label{tab:wtl}
-\scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{llccccccc}
+\scriptsize\setlength{\tabcolsep}{1.6pt}
+\begin{tabular}{llcccccccc}
 \toprule
-Data set & $r$ (m) & Cases & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+DS & $r$ (m) & Cases & LX-SSA & SSA & PSO & DE & VNS & \begin{tabular}{@{}c@{}}MS-\\SLSQP\end{tabular} & BVNS \\
 \midrule
-Data Set I & 500 & 9 & 3/6/0 & 0/9/0 & 3/6/0 & 6/2/1 & 0/7/2 & 3/4/2 \\
-Data Set I & 750 & 11 & 8/3/0 & 5/6/0 & 4/7/0 & 9/2/0 & 0/10/1 & 7/4/0 \\
-Data Set I & 1000 & 14 & 6/8/0 & 7/7/0 & 9/5/0 & 12/2/0 & 0/8/6 & 10/4/0 \\
-Data Set II & 500 & 9 & 4/5/0 & 2/7/0 & 4/5/0 & 6/3/0 & 0/7/2 & 2/4/3 \\
-Data Set II & 750 & 11 & 6/5/0 & 5/6/0 & 5/6/0 & 8/3/0 & 0/9/2 & 3/8/0 \\
-Data Set II & 1000 & 14 & 9/5/0 & 8/6/0 & 8/6/0 & 11/3/0 & 0/11/3 & 9/5/0 \\
+I & 500 & 9 & 3/6/0 & 0/9/0 & 3/6/0 & 6/2/1 & 0/7/2 & 3/4/2 & 2/4/3 \\
+I & 750 & 11 & 8/3/0 & 5/6/0 & 4/7/0 & 9/2/0 & 0/10/1 & 7/4/0 & 4/7/0 \\
+I & 1000 & 14 & 6/8/0 & 7/7/0 & 8/6/0 & 12/2/0 & 0/9/5 & 10/4/0 & 2/12/0 \\
+II & 500 & 9 & 4/5/0 & 2/7/0 & 4/5/0 & 6/3/0 & 0/7/2 & 2/4/3 & 1/6/2 \\
+II & 750 & 11 & 6/5/0 & 5/6/0 & 5/6/0 & 8/3/0 & 0/9/2 & 3/8/0 & 1/9/1 \\
+II & 1000 & 14 & 8/6/0 & 8/6/0 & 8/6/0 & 11/3/0 & 0/11/3 & 9/5/0 & 2/11/1 \\
 \midrule
-All & & 68 & 36/32/0 & 27/41/0 & 33/35/0 & 52/15/1 & 0/52/16 & 34/29/5 \\
+All & & 68 & 35/33/0 & 27/41/0 & 32/36/0 & 52/15/1 & 0/53/15 & 34/29/5 & 12/49/7 \\
 \bottomrule
 \end{tabular}
 \end{table}
-The case-level Friedman test over the 68 cases rejects equal performance of the seven methods ($\chi^2_F=190.9$, 6 d.f., $p=1.7\times10^{-38}$; Iman--Davenport $F_F=58.9$). Table~\ref{tab:friedman68} and Fig.~\ref{fig:avgranks} give the average ranks:
+The case-level Friedman test over the 68 cases rejects equal performance of the eight methods ($\chi^2_F=212.5$, 7 d.f., $p=2.6\times10^{-42}$; Iman--Davenport $F_F=54.0$). Table~\ref{tab:friedman68} and Fig.~\ref{fig:avgranks} give the average ranks (in parentheses: cases in which the method alone has the highest mean):
 \begin{itemize}
-\item VNS 1.85 (alone highest mean in 38 cases);
-\item \textbf{LX-SSA-VNS 2.38} (8 cases);
-\item SSA 4.07, PSO 4.12, MS-SLSQP 4.71, LX-SSA 4.91 and DE 5.95.
+\item VNS (modified) 2.09 (36 cases);
+\item \textbf{LX-SSA-VNS 2.74} (5 cases);
+\item BVNS (original VNS) 3.62 (10 cases);
+\item SSA 4.79, PSO 4.84, MS-SLSQP 5.38, LX-SSA 5.68 and DE 6.86.
 \end{itemize}
-In the Holm-adjusted post hoc tests, LX-SSA-VNS ranks significantly better than SSA, PSO, MS-SLSQP, LX-SSA and DE ($p_{\rm Holm}\le1.0\times10^{-5}$). Its difference from VNS is not significant at the case level ($p_{\rm Holm}=0.153$).
+In the Holm-adjusted post hoc tests, LX-SSA-VNS ranks significantly better than SSA, PSO, MS-SLSQP, LX-SSA and DE ($p_{\rm Holm}\le2.9\times10^{-6}$). Its differences from VNS ($p_{\rm Holm}=0.123$) and from BVNS ($p_{\rm Holm}=0.068$) are not significant at the case level, whereas VNS ranks significantly better than BVNS ($p_{\rm Holm}=5.1\times10^{-4}$).
 
 The run-level pairwise tests (Table~\ref{tab:wtl}) show where the hybrid gains and loses:
 \begin{itemize}
-\item \emph{LX-SSA-VNS vs.\ LX-SSA.} The hybrid is significantly better in 36 cases and never worse ($r_{rb}$ from $0.50$ to $0.98$, median $0.77$). The 32 cases without a significant difference are mostly small cases ($N\le7$), in which LX-SSA is already close to the best layouts, plus four cases with $N=8$ or 10, including both 500-m ten-turbine cases, in which many runs of both methods are infeasible.
-\item \emph{LX-SSA-VNS vs.\ SSA and PSO.} The hybrid is significantly better in 27 and 33 cases, respectively, and never worse.
+\item \emph{LX-SSA-VNS vs.\ LX-SSA.} The hybrid is significantly better in 35 cases and never worse ($r_{rb}$ from $0.50$ to $0.98$, median $0.77$). The 33 cases without a significant difference are mostly small cases ($N\le7$), in which LX-SSA is already close to the best layouts, plus four cases with $N=8$ or 10, including both 500-m ten-turbine cases, in which many runs of both methods are infeasible.
+\item \emph{LX-SSA-VNS vs.\ SSA and PSO.} The hybrid is significantly better in 27 and 32 cases, respectively, and never worse.
 \item \emph{LX-SSA-VNS vs.\ DE.} The hybrid is better in 52 cases and worse in only one three-turbine case.
 \item \emph{LX-SSA-VNS vs.\ MS-SLSQP.} The hybrid is better in 34 cases and worse in five, all dense 500-m cases (Data Set~I, $N=9,10$; Data Set~II, $N=8$--10), where MS-SLSQP's explicit constraint handling pays off.
-\item \emph{LX-SSA-VNS vs.\ VNS.} The two are statistically indistinguishable in 52 cases. VNS is significantly better in 16 cases, all with $N\ge7$ (median $r_{rb}=-0.61$), and the hybrid is never significantly better than VNS.
+\item \emph{LX-SSA-VNS vs.\ VNS.} The two are statistically indistinguishable in 53 cases. VNS is significantly better in 15 cases, all with $N\ge7$ (median $r_{rb}=-0.62$), and the hybrid is never significantly better than VNS.
+\item \emph{LX-SSA-VNS vs.\ BVNS.} The hybrid is significantly better in 12 cases, all with $N=5$ to 11, and worse in seven: five cases with $N=3$ or 4, and the two 500-m ten-turbine cases, in which BVNS is feasible in every run.
 \end{itemize}
-Hybridization therefore lifts LX-SSA from the sixth to the second average rank among the seven methods, but it does not surpass stand-alone VNS at this budget.
+Hybridization therefore lifts LX-SSA from the seventh to the second average rank among the eight methods, but it does not surpass the modified VNS at this budget.
 
 \subsection{Solution Quality by Farm Size and Turbine Count}
 \begin{figure*}[!t]
@@ -690,8 +694,8 @@ Hybridization therefore lifts LX-SSA from the sixth to the second average rank a
 
 Figure~\ref{fig:wakeloss} and Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} show that the wake loss grows with $N$, falls with the farm radius, and is higher for the broader wind rose of Data Set~II. For $N\le3$ all methods stay within 0.3\% of the wake-free objective. With growing $N$ the curve of the hybrid separates from that of LX-SSA and moves close to the VNS and MS-SLSQP curves, as in these examples:
 \begin{itemize}
-\item Data Set~I, 1000~m/15: LX-SSA-VNS 2.08\%, VNS 1.82\%, MS-SLSQP 2.20\%, SSA 2.80\%, LX-SSA 3.32\%;
-\item Data Set~II, 750~m/12: LX-SSA-VNS 5.95\%, VNS 5.76\%, MS-SLSQP 5.60\%, SSA 6.79\%, LX-SSA 7.34\%.
+\item Data Set~I, 1000~m/15: LX-SSA-VNS 2.08\%, VNS 1.82\%, BVNS 1.99\%, MS-SLSQP 2.20\%, SSA 2.80\%, LX-SSA 3.32\%;
+\item Data Set~II, 750~m/12: LX-SSA-VNS 5.95\%, VNS 5.76\%, BVNS 6.17\%, MS-SLSQP 5.60\%, SSA 6.79\%, LX-SSA 7.34\%.
 \end{itemize}
 In every largest case the hybrid reduces the mean wake loss of LX-SSA by 1.2 to 2.0 percentage points, while VNS or MS-SLSQP retains the lowest value.
 
@@ -700,140 +704,146 @@ In every largest case the hybrid reduces the mean wake loss of LX-SSA by 1.2 to 
 \caption{Data Set I, 500-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.}
 \label{tab:res-1-500}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccccccccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccccccc}
 \toprule
-$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS \\
 \midrule
-2 & 28091.5 & \textbf{28091.5 (0.0)} & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28087.2 (4.6) \\
-3 & 42137.2 & 42117.1 (13.6) & 42114.8 (14.2) & 42114.9 (10.3) & 42124.7 (8.5) & \textbf{42130.7 (8.8)} & 42119.7 (11.8) & 42116.0 (10.1) \\
-4 & 56182.9 & 56092.3 (22.6) & 56078.8 (22.6) & 56086.8 (19.8) & \textbf{56094.3 (13.3)} & 56092.8 (29.8) & 56094.2 (28.5) & 56063.2 (30.9) \\
-5 & 70228.7 & 70008.9 (40.7) & 69972.6 (72.0) & 69994.0 (34.0) & \textbf{70010.5 (27.2)} & 69960.5 (78.6) & 69955.1 (126.5) & 69930.5 (113.0) \\
-6 & 84274.4 & 83748.8 (232.3) & 83544.9 (465.3) & 83535.6 (372.5) & \textbf{83775.8 (154.1)} & 83326.7 (761.5) & 83738.2 (213.4) & 83601.4 (213.1) \\
-7 & 98320.2 & 96944.1 (569.8) & 96380.6 (1013.8) & 96757.0 (692.4) & 96935.0 (485.2) & 95903.3 (1316.3)$^{15}$ & \textbf{97066.5 (484.7)} & 97037.0 (484.3) \\
-8 & 112365.9 & 109629.4 (1262.9) & 108258.3 (1704.3)$^{28}$ & 109172.6 (1362.4) & 108616.6 (1480.8)$^{24}$ & 107632.7 (1592.8)$^{2}$ & 109981.7 (835.2) & \textbf{110226.6 (585.5)} \\
-9 & 126411.6 & 121711.4 (1326.2)$^{26}$ & 119134.2 (2666.4)$^{21}$ & 120043.1 (2755.8)$^{25}$ & 117175.2 (7148.7)$^{2}$ & --$^{0}$ & 122702.8 (1513.8)$^{29}$ & \textbf{123222.8 (812.6)}$^{28}$ \\
-10 & 140457.4 & 133731.1 (1839.9)$^{15}$ & 130967.4 (3191.0)$^{13}$ & 132616.3 (2328.0)$^{12}$ & --$^{0}$ & 130994.8 (0.0)$^{1}$ & 134084.5 (1603.0)$^{27}$ & \textbf{135461.0 (1291.9)} \\
+2 & 28091.5 & \textbf{28091.5 (0.0)} & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28087.2 (4.6) & 28091.5 (0.0) \\
+3 & 42137.2 & 42117.1 (13.6) & 42114.8 (14.2) & 42114.9 (10.3) & 42124.7 (8.5) & 42130.7 (8.8) & 42119.7 (11.8) & 42116.0 (10.1) & \textbf{42131.6 (9.7)} \\
+4 & 56182.9 & 56092.3 (22.6) & 56078.8 (22.6) & 56086.8 (19.8) & 56094.3 (13.3) & 56092.8 (29.8) & 56094.2 (28.5) & 56063.2 (30.9) & \textbf{56106.1 (21.7)} \\
+5 & 70228.7 & 70008.9 (40.7) & 69972.6 (72.0) & 69994.0 (34.0) & \textbf{70010.5 (27.2)} & 69960.5 (78.6) & 69955.1 (126.5) & 69930.5 (113.0) & 69876.9 (199.8) \\
+6 & 84274.4 & 83748.8 (232.3) & 83544.9 (465.3) & 83535.6 (372.5) & \textbf{83775.8 (154.1)} & 83326.7 (761.5) & 83738.2 (213.4) & 83601.4 (213.1) & 83299.3 (524.5) \\
+7 & 98320.2 & 96944.1 (569.8) & 96380.6 (1013.8) & 96757.0 (692.4) & 96935.0 (485.2) & 95903.3 (1316.3)$^{15}$ & \textbf{97066.5 (484.7)} & 97037.0 (484.3) & 96967.1 (590.6) \\
+8 & 112365.9 & 109629.4 (1262.9) & 108258.3 (1704.3)$^{28}$ & 109172.6 (1362.4) & 108616.6 (1480.8)$^{24}$ & 107632.7 (1592.8)$^{2}$ & 109981.7 (835.2) & \textbf{110226.6 (585.5)} & 109493.5 (2035.2) \\
+9 & 126411.6 & 121711.4 (1326.2)$^{26}$ & 119134.2 (2666.4)$^{21}$ & 120043.1 (2755.8)$^{25}$ & 117175.2 (7148.7)$^{2}$ & --$^{0}$ & 122702.8 (1513.8)$^{29}$ & \textbf{123222.8 (812.6)}$^{28}$ & 122259.2 (1232.0) \\
+10 & 140457.4 & 133731.1 (1839.9)$^{15}$ & 130967.4 (3191.0)$^{13}$ & 132616.3 (2328.0)$^{12}$ & --$^{0}$ & 130994.8 (0.0)$^{1}$ & 134084.5 (1603.0)$^{27}$ & \textbf{135461.0 (1291.9)} & 133567.5 (1820.9) \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 \begin{table*}[!t]
 \centering
 \caption{Data Set I, 750-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.}
 \label{tab:res-1-750}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccccccccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccccccc}
 \toprule
-$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS \\
 \midrule
-2 & 28091.5 & \textbf{28091.5 (0.0)} & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.0 (1.6) \\
-3 & 42137.2 & 42135.7 (3.5) & 42134.2 (4.8) & 42134.4 (4.1) & \textbf{42137.0 (1.1)} & 42136.8 (1.5) & 42134.5 (4.9) & 42132.3 (5.0) \\
-4 & 56182.9 & 56157.8 (15.0) & 56149.9 (14.0) & 56153.8 (17.9) & \textbf{56160.0 (14.2)} & 56146.9 (17.5) & 56156.3 (14.4) & 56137.1 (16.4) \\
-5 & 70228.7 & 70135.1 (36.5) & 70118.1 (28.6) & 70122.2 (26.3) & 70135.0 (22.6) & 70083.9 (31.7) & \textbf{70137.4 (36.3)} & 70100.5 (42.3) \\
-6 & 84274.4 & 84070.5 (38.2) & 84033.5 (58.3) & 84035.2 (58.4) & 84059.1 (42.0) & 83948.2 (74.1) & \textbf{84079.8 (64.2)} & 83947.6 (95.9) \\
-7 & 98320.2 & 97939.2 (105.7) & 97840.0 (167.7) & 97875.2 (169.3) & 97872.3 (131.8) & 97479.1 (285.1) & \textbf{97963.6 (80.6)} & 97710.2 (204.8) \\
-8 & 112365.9 & 111702.9 (228.8) & 111374.0 (460.8) & 111506.5 (334.5) & 111448.4 (551.6) & 110595.8 (445.6) & \textbf{111801.5 (162.3)} & 111296.2 (217.8) \\
-9 & 126411.6 & 125328.2 (407.8) & 124698.0 (960.4) & 124756.2 (610.5) & 124550.0 (794.2) & 121674.9 (2276.5)$^{23}$ & \textbf{125437.8 (379.2)} & 124818.4 (466.3) \\
-10 & 140457.4 & 138702.3 (605.3) & 137748.6 (1116.3) & 137817.6 (1160.1) & 137036.8 (1051.3)$^{28}$ & 134937.7 (998.5)$^{4}$ & \textbf{138856.6 (431.7)} & 138184.7 (595.3) \\
-11 & 154503.1 & 151656.0 (753.7) & 149863.8 (1886.6)$^{29}$ & 150404.1 (1042.2)$^{29}$ & 149356.6 (1849.0)$^{20}$ & 148555.7 (1134.8)$^{3}$ & \textbf{151831.7 (908.0)} & 151352.9 (560.2) \\
-12 & 168548.8 & 164372.6 (1167.7) & 161630.5 (1988.2)$^{28}$ & 162903.5 (1685.8) & 160854.7 (2108.4)$^{7}$ & --$^{0}$ & \textbf{165106.7 (762.7)} & 164663.8 (674.6) \\
+2 & 28091.5 & \textbf{28091.5 (0.0)} & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.0 (1.6) & 28091.5 (0.0) \\
+3 & 42137.2 & 42135.7 (3.5) & 42134.2 (4.8) & 42134.4 (4.1) & 42137.0 (1.1) & 42136.8 (1.5) & 42134.5 (4.9) & 42132.3 (5.0) & \textbf{42137.2 (0.0)} \\
+4 & 56182.9 & 56157.8 (15.0) & 56149.9 (14.0) & 56153.8 (17.9) & 56160.0 (14.2) & 56146.9 (17.5) & 56156.3 (14.4) & 56137.1 (16.4) & \textbf{56167.0 (13.8)} \\
+5 & 70228.7 & 70135.1 (36.5) & 70118.1 (28.6) & 70122.2 (26.3) & 70135.0 (22.6) & 70083.9 (31.7) & \textbf{70137.4 (36.3)} & 70100.5 (42.3) & 70125.8 (47.0) \\
+6 & 84274.4 & 84070.5 (38.2) & 84033.5 (58.3) & 84035.2 (58.4) & 84059.1 (42.0) & 83948.2 (74.1) & \textbf{84079.8 (64.2)} & 83947.6 (95.9) & 84029.2 (141.3) \\
+7 & 98320.2 & 97939.2 (105.7) & 97840.0 (167.7) & 97875.2 (169.3) & 97872.3 (131.8) & 97479.1 (285.1) & \textbf{97963.6 (80.6)} & 97710.2 (204.8) & 97774.4 (232.6) \\
+8 & 112365.9 & 111702.9 (228.8) & 111374.0 (460.8) & 111506.5 (334.5) & 111448.4 (551.6) & 110595.8 (445.6) & \textbf{111801.5 (162.3)} & 111296.2 (217.8) & 111411.4 (493.5) \\
+9 & 126411.6 & 125328.2 (407.8) & 124698.0 (960.4) & 124756.2 (610.5) & 124550.0 (794.2) & 121674.9 (2276.5)$^{23}$ & \textbf{125437.8 (379.2)} & 124818.4 (466.3) & 124780.0 (716.8) \\
+10 & 140457.4 & 138702.3 (605.3) & 137748.6 (1116.3) & 137817.6 (1160.1) & 137036.8 (1051.3)$^{28}$ & 134937.7 (998.5)$^{4}$ & \textbf{138856.6 (431.7)} & 138184.7 (595.3) & 138170.4 (764.7) \\
+11 & 154503.1 & 151656.0 (753.7) & 149863.8 (1886.6)$^{29}$ & 150404.1 (1042.2)$^{29}$ & 149356.6 (1849.0)$^{20}$ & 148555.7 (1134.8)$^{3}$ & \textbf{151831.7 (908.0)} & 151352.9 (560.2) & 151004.2 (1339.0) \\
+12 & 168548.8 & 164372.6 (1167.7) & 161630.5 (1988.2)$^{28}$ & 162903.5 (1685.8) & 160854.7 (2108.4)$^{7}$ & --$^{0}$ & \textbf{165106.7 (762.7)} & 164663.8 (674.6) & 163712.4 (1575.6) \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 \begin{table*}[!t]
 \centering
 \caption{Data Set I, 1000-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.}
 \label{tab:res-1-1000}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccccccccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccccccc}
 \toprule
-$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS \\
 \midrule
-2 & 28091.5 & \textbf{28091.5 (0.0)} & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.3 (0.7) \\
-3 & 42137.2 & 42136.6 (2.4) & 42136.7 (1.4) & 42136.7 (1.6) & \textbf{42137.2 (0.0)} & 42137.2 (0.0) & 42137.0 (0.9) & 42135.9 (2.6) \\
-4 & 56182.9 & \textbf{56173.6 (7.5)} & 56172.9 (7.8) & 56169.4 (9.2) & 56173.0 (6.8) & 56166.9 (8.4) & 56170.1 (13.3) & 56162.5 (10.5) \\
-5 & 70228.7 & \textbf{70189.3 (14.8)} & 70183.3 (21.0) & 70174.0 (19.7) & 70182.6 (13.0) & 70148.7 (22.4) & 70186.7 (23.4) & 70151.4 (32.7) \\
-6 & 84274.4 & 84160.5 (32.4) & 84142.7 (23.5) & 84149.9 (29.7) & 84152.3 (22.2) & 84096.1 (24.0) & \textbf{84171.1 (30.2)} & 84087.4 (92.6) \\
-7 & 98320.2 & 98114.3 (54.2) & 98078.4 (82.1) & 98084.7 (47.0) & 98083.0 (35.8) & 97942.3 (67.9) & \textbf{98141.0 (51.2)} & 97955.8 (136.6) \\
-8 & 112365.9 & 112018.1 (104.7) & 111924.6 (164.7) & 111947.1 (125.7) & 111915.5 (125.3) & 111608.3 (168.9) & \textbf{112038.8 (78.6)} & 111688.0 (181.9) \\
-9 & 126411.6 & 125870.2 (134.6) & 125701.5 (265.4) & 125761.1 (168.4) & 125531.1 (324.5) & 124996.3 (282.9) & \textbf{125923.2 (134.4)} & 125366.6 (282.7) \\
-10 & 140457.4 & 139526.2 (256.3) & 139354.2 (388.5) & 139348.0 (433.0) & 139018.6 (478.6) & 137969.0 (623.0) & \textbf{139687.2 (221.5)} & 139031.6 (341.6) \\
-11 & 154503.1 & 153147.5 (320.5) & 152736.8 (558.8) & 152825.1 (385.8) & 152337.8 (768.8)$^{29}$ & 150189.7 (1068.9)$^{29}$ & \textbf{153426.4 (348.5)} & 152445.9 (402.0) \\
-12 & 168548.8 & 166651.8 (513.8) & 165814.4 (827.9) & 166091.9 (816.6) & 165072.5 (1367.5)$^{28}$ & 162390.4 (1765.9)$^{17}$ & \textbf{166906.5 (459.2)} & 166188.4 (681.0) \\
-13 & 182594.6 & 180156.4 (701.3) & 178913.6 (967.4) & 179101.5 (1028.9) & 177302.0 (2352.6)$^{22}$ & 174763.4 (1389.6)$^{4}$ & \textbf{180466.7 (599.8)} & 179465.2 (506.2) \\
-14 & 196640.3 & 192979.6 (804.0) & 191046.6 (1754.6) & 192235.7 (1504.8) & 190385.1 (1544.4)$^{18}$ & --$^{0}$ & \textbf{193732.7 (887.0)} & 192677.8 (595.4) \\
-15 & 210686.1 & 206293.9 (874.2) & 203681.8 (1899.5)$^{29}$ & 204777.6 (1420.5) & 201985.5 (1678.3)$^{9}$ & --$^{0}$ & \textbf{206859.5 (910.3)} & 206059.6 (761.8) \\
+2 & 28091.5 & \textbf{28091.5 (0.0)} & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.5 (0.0) & 28091.3 (0.7) & 28091.5 (0.0) \\
+3 & 42137.2 & 42136.6 (2.4) & 42136.7 (1.4) & 42136.7 (1.6) & \textbf{42137.2 (0.0)} & 42137.2 (0.0) & 42137.0 (0.9) & 42135.9 (2.6) & 42137.2 (0.0) \\
+4 & 56182.9 & 56173.6 (7.5) & 56172.9 (7.8) & 56169.4 (9.2) & 56173.0 (6.8) & 56166.9 (8.4) & 56170.1 (13.3) & 56162.5 (10.5) & \textbf{56177.3 (8.6)} \\
+5 & 70228.7 & 70189.3 (14.8) & 70183.3 (21.0) & 70174.0 (19.7) & 70182.6 (13.0) & 70148.7 (22.4) & 70186.7 (23.4) & 70151.4 (32.7) & \textbf{70193.3 (24.5)} \\
+6 & 84274.4 & 84160.5 (32.4) & 84142.7 (23.5) & 84149.9 (29.7) & 84152.3 (22.2) & 84096.1 (24.0) & \textbf{84171.1 (30.2)} & 84087.4 (92.6) & 84170.0 (49.5) \\
+7 & 98320.2 & 98114.3 (54.2) & 98078.4 (82.1) & 98084.7 (47.0) & 98083.0 (35.8) & 97942.3 (67.9) & \textbf{98141.0 (51.2)} & 97955.8 (136.6) & 98064.6 (118.7) \\
+8 & 112365.9 & 112018.1 (104.7) & 111924.6 (164.7) & 111947.1 (125.7) & 111915.5 (125.3) & 111608.3 (168.9) & \textbf{112038.8 (78.6)} & 111688.0 (181.9) & 111862.5 (246.1) \\
+9 & 126411.6 & 125870.2 (134.6) & 125701.5 (265.4) & 125761.1 (168.4) & 125531.1 (324.5) & 124996.3 (282.9) & \textbf{125923.2 (134.4)} & 125366.6 (282.7) & 125589.7 (312.6) \\
+10 & 140457.4 & 139526.2 (256.3) & 139354.2 (388.5) & 139348.0 (433.0) & 139018.6 (478.6) & 137969.0 (623.0) & \textbf{139687.2 (221.5)} & 139031.6 (341.6) & 139290.3 (447.7) \\
+11 & 154503.1 & 153147.5 (320.5) & 152736.8 (558.8) & 152825.1 (385.8) & 152337.8 (768.8)$^{29}$ & 150189.7 (1068.9)$^{29}$ & \textbf{153426.4 (348.5)} & 152445.9 (402.0) & 153010.5 (393.8) \\
+12 & 168548.8 & 166651.8 (513.8) & 165814.4 (827.9) & 166091.9 (816.6) & 165072.5 (1367.5)$^{28}$ & 162390.4 (1765.9)$^{17}$ & \textbf{166906.5 (459.2)} & 166188.4 (681.0) & 166510.6 (669.8) \\
+13 & 182594.6 & 180156.4 (701.3) & 178913.6 (967.4) & 179101.5 (1028.9) & 177302.0 (2352.6)$^{22}$ & 174763.4 (1389.6)$^{4}$ & \textbf{180466.7 (599.8)} & 179465.2 (506.2) & 179762.6 (1091.2) \\
+14 & 196640.3 & 192979.6 (804.0) & 191046.6 (1754.6) & 192235.7 (1504.8) & 190385.1 (1544.4)$^{18}$ & --$^{0}$ & \textbf{193732.7 (887.0)} & 192677.8 (595.4) & 192874.6 (1745.6) \\
+15 & 210686.1 & 206293.9 (874.2) & 203681.8 (1899.5)$^{29}$ & 204777.6 (1420.5) & 201985.5 (1678.3)$^{9}$ & --$^{0}$ & \textbf{206859.5 (910.3)} & 206059.6 (761.8) & 206486.7 (1093.6) \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 \begin{table*}[!t]
 \centering
 \caption{Data Set II, 500-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.}
 \label{tab:res-2-500}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccccccccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccccccc}
 \toprule
-$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS \\
 \midrule
-2 & 14630.8 & \textbf{14630.8 (0.0)} & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14626.0 (5.6) \\
-3 & 21946.1 & 21901.3 (11.1) & 21899.7 (9.5) & 21900.9 (11.1) & 21901.5 (6.3) & 21901.2 (5.5) & \textbf{21906.5 (23.0)} & 21888.8 (45.5) \\
-4 & 29261.5 & 29052.1 (72.4) & 29004.2 (87.4) & 29028.7 (93.8) & \textbf{29077.9 (64.5)} & 29044.2 (61.5) & 29028.5 (66.7) & 28998.9 (104.2) \\
-5 & 36576.9 & \textbf{35996.8 (137.2)} & 35880.1 (168.6) & 35918.9 (74.0) & 35959.4 (119.0) & 35789.6 (193.8) & 35976.5 (173.2) & 35896.9 (110.0) \\
-6 & 43892.3 & \textbf{42635.1 (202.0)} & 42512.1 (227.9) & 42444.3 (224.5) & 42568.5 (159.7) & 42257.5 (374.9) & 42626.6 (192.4) & 42590.7 (236.0) \\
-7 & 51207.6 & 49055.4 (161.0) & 48626.5 (340.5) & 48887.9 (304.1) & 48885.9 (278.3) & 48203.9 (767.8)$^{15}$ & \textbf{49171.8 (236.9)} & 49007.9 (208.2) \\
-8 & 58523.0 & 55132.6 (337.9) & 54699.5 (620.7)$^{28}$ & 54900.5 (471.3) & 54693.1 (404.3)$^{24}$ & 54451.3 (618.7)$^{2}$ & 55331.0 (323.5) & \textbf{55457.2 (287.3)} \\
-9 & 65838.4 & 61066.7 (640.2)$^{26}$ & 59963.3 (652.2)$^{21}$ & 60581.0 (844.8)$^{25}$ & 61035.6 (137.9)$^{2}$ & --$^{0}$ & \textbf{61509.3 (538.6)}$^{29}$ & 61457.0 (370.7) \\
-10 & 73153.8 & 66744.8 (731.7)$^{15}$ & 65868.7 (586.0)$^{13}$ & 65880.7 (761.6)$^{12}$ & --$^{0}$ & 64240.2 (0.0)$^{1}$ & 67141.9 (581.4)$^{27}$ & \textbf{67288.3 (300.1)}$^{29}$ \\
+2 & 14630.8 & \textbf{14630.8 (0.0)} & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14626.0 (5.6) & 14630.8 (0.0) \\
+3 & 21946.1 & 21901.3 (11.1) & 21899.7 (9.5) & 21900.9 (11.1) & 21901.5 (6.3) & 21901.2 (5.5) & 21906.5 (23.0) & 21888.8 (45.5) & \textbf{21932.3 (17.2)} \\
+4 & 29261.5 & 29052.1 (72.4) & 29004.2 (87.4) & 29028.7 (93.8) & \textbf{29077.9 (64.5)} & 29044.2 (61.5) & 29028.5 (66.7) & 28998.9 (104.2) & 29070.8 (94.1) \\
+5 & 36576.9 & \textbf{35996.8 (137.2)} & 35880.1 (168.6) & 35918.9 (74.0) & 35959.4 (119.0) & 35789.6 (193.8) & 35976.5 (173.2) & 35896.9 (110.0) & 35878.2 (160.9) \\
+6 & 43892.3 & \textbf{42635.1 (202.0)} & 42512.1 (227.9) & 42444.3 (224.5) & 42568.5 (159.7) & 42257.5 (374.9) & 42626.6 (192.4) & 42590.7 (236.0) & 42560.3 (202.5) \\
+7 & 51207.6 & 49055.4 (161.0) & 48626.5 (340.5) & 48887.9 (304.1) & 48885.9 (278.3) & 48203.9 (767.8)$^{15}$ & \textbf{49171.8 (236.9)} & 49007.9 (208.2) & 49032.1 (314.4) \\
+8 & 58523.0 & 55132.6 (337.9) & 54699.5 (620.7)$^{28}$ & 54900.5 (471.3) & 54693.1 (404.3)$^{24}$ & 54451.3 (618.7)$^{2}$ & 55331.0 (323.5) & \textbf{55457.2 (287.3)} & 55182.8 (738.6) \\
+9 & 65838.4 & 61066.7 (640.2)$^{26}$ & 59963.3 (652.2)$^{21}$ & 60581.0 (844.8)$^{25}$ & 61035.6 (137.9)$^{2}$ & --$^{0}$ & \textbf{61509.3 (538.6)}$^{29}$ & 61457.0 (370.7) & 61166.8 (574.8) \\
+10 & 73153.8 & 66744.8 (731.7)$^{15}$ & 65868.7 (586.0)$^{13}$ & 65880.7 (761.6)$^{12}$ & --$^{0}$ & 64240.2 (0.0)$^{1}$ & 67141.9 (581.4)$^{27}$ & \textbf{67288.3 (300.1)}$^{29}$ & 67056.0 (749.1) \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 \begin{table*}[!t]
 \centering
 \caption{Data Set II, 750-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.}
 \label{tab:res-2-750}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccccccccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccccccc}
 \toprule
-$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS \\
 \midrule
-2 & 14630.8 & \textbf{14630.8 (0.0)} & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.4 (1.5) \\
-3 & 21946.1 & 21941.4 (6.9) & 21937.3 (8.1) & 21940.0 (8.2) & \textbf{21943.2 (5.4)} & 21942.5 (5.8) & 21941.5 (6.8) & 21938.2 (12.2) \\
-4 & 29261.5 & \textbf{29214.1 (25.3)} & 29201.4 (25.7) & 29182.5 (36.2) & 29213.0 (20.4) & 29195.3 (26.2) & 29202.4 (32.5) & 29179.0 (59.2) \\
-5 & 36576.9 & 36402.3 (84.4) & 36366.8 (74.3) & 36332.0 (91.4) & 36400.0 (62.2) & 36277.7 (105.9) & \textbf{36405.5 (82.8)} & 36283.6 (98.0) \\
-6 & 43892.3 & \textbf{43477.6 (122.5)} & 43377.4 (175.7) & 43419.5 (153.1) & 43441.8 (107.5) & 43142.2 (144.8) & 43470.4 (120.0) & 43283.1 (153.3) \\
-7 & 51207.6 & 50250.7 (154.8) & 50095.4 (193.6) & 50264.8 (202.5) & 50188.2 (199.5) & 49696.6 (156.3) & \textbf{50324.3 (194.4)} & 50164.7 (205.9) \\
-8 & 58523.0 & 56999.0 (223.5) & 56659.2 (332.0) & 56806.2 (303.6) & 56786.4 (311.8) & 56033.1 (331.4) & \textbf{57063.0 (286.7)} & 56752.4 (256.7) \\
-9 & 65838.4 & 63513.2 (260.8) & 63252.7 (342.8) & 63291.6 (402.5) & 63180.2 (411.7) & 61970.8 (763.0)$^{23}$ & \textbf{63680.4 (415.5)} & 63381.6 (322.9) \\
-10 & 73153.8 & 70004.6 (370.2) & 69480.7 (385.7) & 69520.3 (512.6) & 69159.6 (436.1)$^{28}$ & 68103.2 (423.7)$^{4}$ & \textbf{70300.6 (409.0)} & 69972.9 (458.1) \\
-11 & 80469.2 & 76071.3 (533.6) & 75181.6 (681.1)$^{29}$ & 75742.5 (677.1)$^{29}$ & 75199.6 (585.7)$^{20}$ & 74596.6 (476.3)$^{3}$ & \textbf{76504.5 (395.7)} & 76284.4 (433.9) \\
-12 & 87784.5 & 82557.7 (550.8) & 81341.8 (792.1)$^{28}$ & 81822.1 (625.7) & 80936.3 (798.4)$^{7}$ & --$^{0}$ & 82731.2 (470.9) & \textbf{82867.2 (399.2)} \\
+2 & 14630.8 & \textbf{14630.8 (0.0)} & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.4 (1.5) & 14630.8 (0.0) \\
+3 & 21946.1 & 21941.4 (6.9) & 21937.3 (8.1) & 21940.0 (8.2) & 21943.2 (5.4) & 21942.5 (5.8) & 21941.5 (6.8) & 21938.2 (12.2) & \textbf{21946.1 (0.0)} \\
+4 & 29261.5 & 29214.1 (25.3) & 29201.4 (25.7) & 29182.5 (36.2) & 29213.0 (20.4) & 29195.3 (26.2) & 29202.4 (32.5) & 29179.0 (59.2) & \textbf{29227.3 (29.9)} \\
+5 & 36576.9 & 36402.3 (84.4) & 36366.8 (74.3) & 36332.0 (91.4) & 36400.0 (62.2) & 36277.7 (105.9) & \textbf{36405.5 (82.8)} & 36283.6 (98.0) & 36389.7 (97.1) \\
+6 & 43892.3 & \textbf{43477.6 (122.5)} & 43377.4 (175.7) & 43419.5 (153.1) & 43441.8 (107.5) & 43142.2 (144.8) & 43470.4 (120.0) & 43283.1 (153.3) & 43367.4 (201.2) \\
+7 & 51207.6 & 50250.7 (154.8) & 50095.4 (193.6) & 50264.8 (202.5) & 50188.2 (199.5) & 49696.6 (156.3) & \textbf{50324.3 (194.4)} & 50164.7 (205.9) & 50180.2 (303.8) \\
+8 & 58523.0 & 56999.0 (223.5) & 56659.2 (332.0) & 56806.2 (303.6) & 56786.4 (311.8) & 56033.1 (331.4) & \textbf{57063.0 (286.7)} & 56752.4 (256.7) & 56855.9 (391.5) \\
+9 & 65838.4 & 63513.2 (260.8) & 63252.7 (342.8) & 63291.6 (402.5) & 63180.2 (411.7) & 61970.8 (763.0)$^{23}$ & \textbf{63680.4 (415.5)} & 63381.6 (322.9) & 63217.0 (515.4) \\
+10 & 73153.8 & 70004.6 (370.2) & 69480.7 (385.7) & 69520.3 (512.6) & 69159.6 (436.1)$^{28}$ & 68103.2 (423.7)$^{4}$ & \textbf{70300.6 (409.0)} & 69972.9 (458.1) & 69930.2 (355.0) \\
+11 & 80469.2 & 76071.3 (533.6) & 75181.6 (681.1)$^{29}$ & 75742.5 (677.1)$^{29}$ & 75199.6 (585.7)$^{20}$ & 74596.6 (476.3)$^{3}$ & \textbf{76504.5 (395.7)} & 76284.4 (433.9) & 76099.7 (566.3) \\
+12 & 87784.5 & 82557.7 (550.8) & 81341.8 (792.1)$^{28}$ & 81822.1 (625.7) & 80936.3 (798.4)$^{7}$ & --$^{0}$ & 82731.2 (470.9) & \textbf{82867.2 (399.2)} & 82368.6 (603.1) \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 \begin{table*}[!t]
 \centering
 \caption{Data Set II, 1000-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.}
 \label{tab:res-2-1000}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccccccccc}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cccccccccc}
 \toprule
-$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
+$N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS \\
 \midrule
-2 & 14630.8 & \textbf{14630.8 (0.0)} & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.5 (1.0) \\
-3 & 21946.1 & 21945.8 (1.2) & 21945.3 (2.8) & 21945.6 (1.8) & 21945.8 (2.0) & \textbf{21946.1 (0.0)} & 21945.6 (1.7) & 21943.5 (4.8) \\
-4 & 29261.5 & 29236.8 (17.4) & 29228.0 (14.9) & 29232.5 (18.5) & 29243.3 (13.6) & 29225.9 (12.1) & \textbf{29246.6 (13.5)} & 29218.7 (24.2) \\
-5 & 36576.9 & 36499.5 (32.4) & 36468.2 (46.1) & 36485.9 (37.5) & 36486.0 (36.0) & 36402.8 (39.4) & \textbf{36499.6 (38.8)} & 36432.0 (50.4) \\
-6 & 43892.3 & 43688.5 (69.2) & 43656.6 (73.3) & 43626.4 (74.5) & 43665.8 (65.6) & 43488.5 (69.7) & \textbf{43700.2 (82.3)} & 43524.8 (86.8) \\
-7 & 51207.6 & \textbf{50786.6 (120.8)} & 50727.3 (119.3) & 50731.8 (118.8) & 50739.2 (134.6) & 50442.7 (136.0) & 50785.0 (110.8) & 50582.5 (165.5) \\
-8 & 58523.0 & 57832.5 (140.8) & 57645.1 (186.6) & 57739.3 (142.0) & 57616.2 (157.7) & 57210.0 (191.8) & \textbf{57854.1 (163.9)} & 57560.8 (206.6) \\
-9 & 65838.4 & \textbf{64672.1 (262.3)} & 64428.7 (273.1) & 64476.4 (203.0) & 64308.4 (234.8) & 63790.1 (227.2) & 64652.4 (279.3) & 64419.1 (268.8) \\
-10 & 73153.8 & 71475.5 (282.8) & 71099.4 (266.9) & 71139.4 (336.8) & 70985.2 (314.4) & 70190.1 (286.9) & \textbf{71535.7 (321.0)} & 71161.4 (275.8) \\
-11 & 80469.2 & 78115.5 (396.3) & 77561.6 (498.0) & 77697.5 (425.8) & 77501.2 (352.1)$^{29}$ & 75960.9 (577.6)$^{29}$ & \textbf{78281.9 (285.9)} & 77812.4 (323.7) \\
-12 & 87784.5 & 84615.4 (456.0) & 83981.2 (515.0) & 84049.6 (660.3) & 83795.7 (565.1)$^{28}$ & 82211.6 (905.2)$^{17}$ & \textbf{85002.5 (322.8)} & 84312.7 (466.3) \\
-13 & 95099.9 & 91106.0 (521.1) & 90303.5 (674.2) & 90267.0 (482.6) & 90139.1 (533.9)$^{22}$ & 88665.1 (496.0)$^{4}$ & \textbf{91538.1 (357.6)} & 90837.9 (572.0) \\
-14 & 102415.3 & 97312.5 (738.6) & 96229.6 (1019.3) & 96936.5 (669.3) & 96266.2 (730.7)$^{18}$ & --$^{0}$ & \textbf{97983.6 (409.3)} & 97276.4 (405.3) \\
-15 & 109730.7 & 103802.7 (659.0) & 102327.4 (838.7)$^{29}$ & 102746.3 (827.8) & 101804.8 (571.6)$^{9}$ & --$^{0}$ & \textbf{104036.5 (619.7)} & 103853.3 (475.2) \\
+2 & 14630.8 & \textbf{14630.8 (0.0)} & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.8 (0.0) & 14630.5 (1.0) & 14630.8 (0.0) \\
+3 & 21946.1 & 21945.8 (1.2) & 21945.3 (2.8) & 21945.6 (1.8) & 21945.8 (2.0) & \textbf{21946.1 (0.0)} & 21945.6 (1.7) & 21943.5 (4.8) & 21946.1 (0.0) \\
+4 & 29261.5 & 29236.8 (17.4) & 29228.0 (14.9) & 29232.5 (18.5) & 29243.3 (13.6) & 29225.9 (12.1) & 29246.6 (13.5) & 29218.7 (24.2) & \textbf{29253.1 (11.7)} \\
+5 & 36576.9 & 36499.5 (32.4) & 36468.2 (46.1) & 36485.9 (37.5) & 36486.0 (36.0) & 36402.8 (39.4) & \textbf{36499.6 (38.8)} & 36432.0 (50.4) & 36498.4 (49.1) \\
+6 & 43892.3 & 43688.5 (69.2) & 43656.6 (73.3) & 43626.4 (74.5) & 43665.8 (65.6) & 43488.5 (69.7) & \textbf{43700.2 (82.3)} & 43524.8 (86.8) & 43686.1 (101.2) \\
+7 & 51207.6 & \textbf{50786.6 (120.8)} & 50727.3 (119.3) & 50731.8 (118.8) & 50739.2 (134.6) & 50442.7 (136.0) & 50785.0 (110.8) & 50582.5 (165.5) & 50696.0 (203.8) \\
+8 & 58523.0 & 57832.5 (140.8) & 57645.1 (186.6) & 57739.3 (142.0) & 57616.2 (157.7) & 57210.0 (191.8) & \textbf{57854.1 (163.9)} & 57560.8 (206.6) & 57588.6 (311.3) \\
+9 & 65838.4 & \textbf{64672.1 (262.3)} & 64428.7 (273.1) & 64476.4 (203.0) & 64308.4 (234.8) & 63790.1 (227.2) & 64652.4 (279.3) & 64419.1 (268.8) & 64430.8 (311.5) \\
+10 & 73153.8 & 71475.5 (282.8) & 71099.4 (266.9) & 71139.4 (336.8) & 70985.2 (314.4) & 70190.1 (286.9) & \textbf{71535.7 (321.0)} & 71161.4 (275.8) & 71342.3 (339.4) \\
+11 & 80469.2 & 78115.5 (396.3) & 77561.6 (498.0) & 77697.5 (425.8) & 77501.2 (352.1)$^{29}$ & 75960.9 (577.6)$^{29}$ & \textbf{78281.9 (285.9)} & 77812.4 (323.7) & 77948.1 (483.3) \\
+12 & 87784.5 & 84615.4 (456.0) & 83981.2 (515.0) & 84049.6 (660.3) & 83795.7 (565.1)$^{28}$ & 82211.6 (905.2)$^{17}$ & \textbf{85002.5 (322.8)} & 84312.7 (466.3) & 84485.7 (606.8) \\
+13 & 95099.9 & 91106.0 (521.1) & 90303.5 (674.2) & 90267.0 (482.6) & 90139.1 (533.9)$^{22}$ & 88665.1 (496.0)$^{4}$ & \textbf{91538.1 (357.6)} & 90837.9 (572.0) & 90787.8 (806.9) \\
+14 & 102415.3 & 97312.5 (738.6) & 96229.6 (1019.3) & 96936.5 (669.3) & 96266.2 (730.7)$^{18}$ & --$^{0}$ & \textbf{97983.6 (409.3)} & 97276.4 (405.3) & 97079.1 (980.3) \\
+15 & 109730.7 & 103802.7 (659.0) & 102327.4 (838.7)$^{29}$ & 102746.3 (827.8) & 101804.8 (571.6)$^{9}$ & --$^{0}$ & \textbf{104036.5 (619.7)} & 103853.3 (475.2) & 103777.6 (794.4) \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 
 \subsection{Feasibility}
@@ -844,7 +854,7 @@ $N$ & Ideal & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP \\
 \label{fig:feasibility}
 \end{figure*}
 
-Figure~\ref{fig:feasibility} shows that LX-SSA-VNS returns a feasible layout in 98.1\% of all runs, compared with 96.9\% for LX-SSA, 97.6\% for SSA, 86.0\% for PSO, 71.4\% for DE, 99.6\% for VNS and 99.9\% for MS-SLSQP. The only cases in which the hybrid misses feasibility are the densest 500-m cases: 26 of 30 runs are feasible for $N=9$ and 15 of 30 for $N=10$, compared with 21 and 13 for LX-SSA and 29 and 27 for VNS. In these cases the LX-SSA phase frequently ends with an infeasible layout, and the VNS phase, which works on a single incumbent, cannot always repair it in the remaining budget. The feasibility counts of all penalty-based methods are identical for the two wind data sets, because while every candidate is infeasible the penalty term dominates $F_p$.
+Figure~\ref{fig:feasibility} shows that LX-SSA-VNS returns a feasible layout in 98.1\% of all runs, compared with 96.9\% for LX-SSA, 97.6\% for SSA, 86.0\% for PSO, 71.4\% for DE, 99.6\% for VNS and 99.9\% for MS-SLSQP. BVNS is the only method that is feasible in every run. The only cases in which the hybrid misses feasibility are the densest 500-m cases: 26 of 30 runs are feasible for $N=9$ and 15 of 30 for $N=10$, compared with 21 and 13 for LX-SSA, 29 and 27 for VNS, and 30 and 30 for BVNS. In these cases the LX-SSA phase frequently ends with an infeasible layout, and the VNS phase, which works on a single incumbent, cannot always repair it in the remaining budget. The feasibility counts of all penalty-based methods are identical for the two wind data sets, because while every candidate is infeasible the penalty term dominates $F_p$.
 
 \subsection{Convergence Behaviour}
 \begin{figure*}[!t]
@@ -860,7 +870,7 @@ Figure~\ref{fig:feasibility} shows that LX-SSA-VNS returns a feasible layout in 
 \label{fig:conv-max}
 \end{figure*}
 
-Figures~\ref{fig:conv-mid} and~\ref{fig:conv-max} show the effect of the hybridization directly. Until 3,030 calls the hybrid runs a shortened LX-SSA and is therefore slightly behind the full LX-SSA run. After the switch its curve drops steeply, as VNS continues to improve the incumbent that LX-SSA has found, whereas stand-alone LX-SSA and SSA stagnate after about 3,000 calls. Over all feasible runs, the VNS phase removes on average 36.4\% (median 31.1\%) of the wake loss present at the end of the LX-SSA phase, and it turns 82 runs that were still infeasible at the switch into feasible ones. Stand-alone VNS reaches low wake losses earlier because it spends its whole budget on intensification, and MS-SLSQP is the fastest method to reach feasibility.
+Figures~\ref{fig:conv-mid} and~\ref{fig:conv-max} show the effect of the hybridization directly. Until 3,030 calls the hybrid runs a shortened LX-SSA and is therefore slightly behind the full LX-SSA run. After the switch its curve drops steeply, as VNS continues to improve the incumbent that LX-SSA has found, whereas stand-alone LX-SSA and SSA stagnate after about 3,000 calls. Over all feasible runs, the VNS phase removes on average 36.4\% (median 31.1\%) of the wake loss present at the end of the LX-SSA phase, and it turns 82 runs that were still infeasible at the switch into feasible ones. Stand-alone VNS reaches low wake losses earlier because it spends its whole budget on intensification, and MS-SLSQP is the fastest method to reach feasibility. BVNS reaches feasibility in the dense 500-m cases earlier than VNS, but afterwards it improves in fewer and larger steps, because every sweep of its complete local search costs $4N$ calls.
 
 \subsection{Distribution of Results}
 \begin{figure*}[!t]
@@ -871,6 +881,37 @@ Figures~\ref{fig:conv-mid} and~\ref{fig:conv-max} show the effect of the hybridi
 \end{figure*}
 
 Figure~\ref{fig:box} shows the run-to-run distributions for the moderate cases. LX-SSA-VNS has the lowest median wake loss in both 500-m cases and the second-lowest, after VNS, in the other four, with a smaller interquartile range than LX-SSA in five of the six cases. DE has the highest median in all six cases.
+
+\subsection{Original versus Modified VNS}
+\label{sec:bvns}
+\begin{table}[!t]
+\centering
+\caption{Pairwise outcome of the original basic VNS (BVNS) against each method: number of cases in which BVNS is significantly better / not significantly different / significantly worse (two-sided Wilcoxon signed-rank test on 30 seed-paired runs, Holm-adjusted over the seven comparisons of each case, $\alpha=0.05$).}
+\label{tab:bvns}
+\scriptsize\setlength{\tabcolsep}{1.6pt}
+\begin{tabular}{llcccccccc}
+\toprule
+DS & $r$ (m) & Cases & \begin{tabular}{@{}c@{}}LX-SSA-\\VNS\end{tabular} & LX-SSA & SSA & PSO & DE & VNS & \begin{tabular}{@{}c@{}}MS-\\SLSQP\end{tabular} \\
+\midrule
+I & 500 & 9 & 3/4/2 & 5/4/0 & 4/5/0 & 4/3/2 & 4/5/0 & 1/7/1 & 3/4/2 \\
+I & 750 & 11 & 0/7/4 & 4/7/0 & 3/8/0 & 3/8/0 & 9/2/0 & 2/3/6 & 3/7/1 \\
+I & 1000 & 14 & 1/11/2 & 6/8/0 & 4/9/1 & 7/7/0 & 12/2/0 & 1/5/8 & 8/6/0 \\
+II & 500 & 9 & 2/6/1 & 6/3/0 & 3/6/0 & 4/5/0 & 6/3/0 & 1/8/0 & 3/6/0 \\
+II & 750 & 11 & 1/10/0 & 5/6/0 & 6/5/0 & 5/6/0 & 10/1/0 & 2/4/5 & 3/7/1 \\
+II & 1000 & 14 & 1/11/2 & 6/8/0 & 4/10/0 & 7/7/0 & 12/2/0 & 1/6/7 & 4/10/0 \\
+\midrule
+All & & 68 & 8/49/11 & 32/36/0 & 24/43/1 & 30/36/2 & 53/15/0 & 8/33/27 & 24/40/4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+The VNS used as a baseline and inside the hybrid departs from the original algorithm in two ways: it perturbs only one to three turbines, and it replaces the complete local search by ten trial moves. Table~\ref{tab:bvns} shows how the original basic VNS (BVNS), with shaking of the whole layout and a complete best-improvement local search, compares with every other method.
+\begin{itemize}
+\item \emph{BVNS vs.\ the population-based methods and MS-SLSQP.} BVNS is significantly better than LX-SSA in 32 cases, SSA in 24, PSO in 30, DE in 53 and MS-SLSQP in 24, and worse in at most four cases against any of them.
+\item \emph{BVNS vs.\ the modified VNS.} BVNS is better in eight cases, all with $N=3$ or 4, and worse in 27 cases, all with $N\ge6$ (median $r_{rb}=-0.78$). For small layouts a complete descent over all coordinate moves is affordable and pays off; for larger layouts every sweep costs $4N$ calls, so few VNS iterations fit into the budget, and the cheaper turbine-wise moves of the modified VNS make better use of it.
+\item \emph{BVNS vs.\ LX-SSA-VNS.} BVNS is better in eight cases and worse in 11. These counts differ slightly from Table~\ref{tab:wtl} because the Holm adjustment is applied to a different family of comparisons.
+\item \emph{Feasibility.} BVNS is the only method that returns a feasible layout in all 2,040 runs, including the dense 500-m cases.
+\end{itemize}
+The modifications therefore make VNS stronger on the larger layouts that matter most in practice, which supports using the modified VNS as the intensification phase of the hybrid; the original BVNS nevertheless remains a strong baseline.
 
 \subsection{Ablation of the Hybrid}
 \label{sec:ablation}
@@ -900,7 +941,7 @@ DS & $r$ & $N$ & 25\% & 50\% & 75\% & $p$ (25) & $p$ (75) \\\\
 \end{table}
 Two ablations clarify the role of each phase:
 \begin{itemize}
-\item \emph{Phase contribution.} Comparing LX-SSA-VNS with LX-SSA (same first phase) and with VNS (same second phase) shows that nearly all of the improvement over LX-SSA comes from the VNS phase: the hybrid beats LX-SSA in 36 cases and never loses. The LX-SSA phase, however, does not provide a better starting point than the best member of a random initial population, which stand-alone VNS uses, because stand-alone VNS remains better in 16 dense cases.
+\item \emph{Phase contribution.} Comparing LX-SSA-VNS with LX-SSA (same first phase) and with VNS (same second phase) shows that nearly all of the improvement over LX-SSA comes from the VNS phase: the hybrid beats LX-SSA in 35 cases and never loses. The LX-SSA phase, however, does not provide a better starting point than the best member of a random initial population, which stand-alone VNS uses: stand-alone VNS remains better in 15 dense cases.
 \item \emph{Budget split.} Table~\ref{tab:split} varies $\rho$ over 25\%, 50\% and 75\% on twelve representative cases. Giving more budget to LX-SSA is harmful: the 50\% split has a higher mean than the 75\% split in 11 of 12 cases, significantly so in four. Giving more budget to VNS helps slightly: the 25\% split has the higher mean in 9 of 12 cases, but the difference is significant in only one.
 \end{itemize}
 Both ablations point the same way: at this budget the intensification phase is the valuable part of the hybrid. A larger total budget, or a switch triggered by stagnation of the swarm instead of a fixed split, would be needed for the exploration phase to pay off.
@@ -913,17 +954,17 @@ Both ablations point the same way: at this budget the intensification phase is t
 \label{fig:layouts}
 \end{figure*}
 
-Figure~\ref{fig:layouts} compares, for the largest turbine count of each farm, the best LX-SSA-VNS layout with the best layout found by any method, which comes from VNS or MS-SLSQP in all six cases. Most turbines are placed close to the boundary, which maximizes their mutual distances, while the remaining turbines occupy the interior at positions staggered with respect to the dominant wind directions.
+Figure~\ref{fig:layouts} compares, for the largest turbine count of each farm, the best LX-SSA-VNS layout with the best layout found by any method, which comes from BVNS in three cases, from MS-SLSQP in two and from VNS in one. Most turbines are placed close to the boundary, which maximizes their mutual distances, while the remaining turbines occupy the interior at positions staggered with respect to the dominant wind directions.
 
 \subsection{Computational Cost}
 \label{sec:runtime}
-At an equal number of objective calls all methods need almost the same time: 0.39~ms per call for LX-SSA-VNS, 0.40~ms for LX-SSA and SSA, 0.41~ms for VNS and PSO, 0.47~ms for DE and 0.49~ms for MS-SLSQP. The objective evaluation dominates the cost, so neither the Laplace step nor the VNS bookkeeping adds measurable overhead. A 6,030-call run of LX-SSA-VNS takes 1.7--3.5~s on average, depending on $N$.
+At an equal number of objective calls all methods need almost the same time: 0.37~ms per call for BVNS, 0.39~ms for LX-SSA-VNS, 0.40~ms for LX-SSA and SSA, 0.41~ms for VNS and PSO, 0.47~ms for DE and 0.49~ms for MS-SLSQP. The objective evaluation dominates the cost, so neither the Laplace step nor the VNS bookkeeping adds measurable overhead. A 6,030-call run of LX-SSA-VNS takes 1.7--3.5~s on average, depending on $N$.
 
 \subsection{Horns Rev 1 Site Case}
 \label{sec:hornsrev-site}
 \begin{table*}[!t]
 \centering
-\caption{Horns Rev~1 site case (real Vestas V80 power and thrust curves, measured 12-sector wind climate, installed farm outline; Jensen wake with $k=0.04$; minimum spacing $4D=320$~m): AEP in GWh/yr, mean (SD) over the feasible runs at 6,030 objective calls (30 seeds for the 16-turbine block, 10 for the 80-turbine farm), mean wake loss relative to the wake-free AEP (``Loss'', \%), feasible runs, and Holm-adjusted Wilcoxon signed-rank $p$ of LX-SSA-VNS vs.\ each method (16-turbine block; run-level Friedman $p=3.08\times10^{-27}$).}
+\caption{Horns Rev~1 site case (real Vestas V80 power and thrust curves, measured 12-sector wind climate, installed farm outline; Jensen wake with $k=0.04$; minimum spacing $4D=320$~m): AEP in GWh/yr, mean (SD) over the feasible runs at 6,030 objective calls (30 seeds for the 16-turbine block, 10 for the 80-turbine farm), mean wake loss relative to the wake-free AEP (``Loss'', \%), feasible runs, and Holm-adjusted Wilcoxon signed-rank $p$ of LX-SSA-VNS vs.\ each method (16-turbine block; run-level Friedman $p=1.39\times10^{-29}$).}
 \label{tab:hr-site}
 \footnotesize\setlength{\tabcolsep}{4pt}
 \begin{tabular}{lccccccc}
@@ -935,12 +976,13 @@ Layout / method & AEP & Loss & Feas. & $p_{\rm Holm}$ & AEP & Loss & Feas. \\
 Installed layout & 139.51 & 6.53 & -- & -- & 664.6 & 10.95 & -- \\
 \midrule
 LX-SSA-VNS & 137.59 (0.62) & 7.82 & 28/30 & -- & -- & -- & 0/10 \\
-LX-SSA & 136.46 (0.90) & 8.58 & 28/30 & 0.002 & -- & -- & 0/10 \\
-SSA & 136.66 (1.00) & 8.44 & 30/30 & 0.039 & -- & -- & 0/10 \\
-PSO & -- & -- & 0/30 & $1.12\times10^{-8}$ & -- & -- & 0/10 \\
-DE & -- & -- & 0/30 & $1.12\times10^{-8}$ & -- & -- & 0/10 \\
-VNS & 137.97 (0.80) & 7.57 & 29/30 & 0.039 & -- & -- & 0/10 \\
-MS-SLSQP & 136.80 (0.77) & 8.35 & 30/30 & 0.030 & 653.9 (2.6) & 12.39 & 10/10 \\
+LX-SSA & 136.46 (0.90) & 8.58 & 28/30 & 0.003 & -- & -- & 0/10 \\
+SSA & 136.66 (1.00) & 8.44 & 30/30 & 0.059 & -- & -- & 0/10 \\
+PSO & -- & -- & 0/30 & $1.30\times10^{-8}$ & -- & -- & 0/10 \\
+DE & -- & -- & 0/30 & $1.30\times10^{-8}$ & -- & -- & 0/10 \\
+VNS & 137.97 (0.80) & 7.57 & 29/30 & 0.059 & -- & -- & 0/10 \\
+MS-SLSQP & 136.80 (0.77) & 8.35 & 30/30 & 0.040 & 653.9 (2.6) & 12.39 & 10/10 \\
+BVNS & 137.67 (1.02) & 7.77 & 30/30 & 0.191 & -- & -- & 0/10 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -963,13 +1005,13 @@ To bring the validation closer to a real project, the Horns Rev~1 offshore farm 
 \item the measured 12-sector wind climate;
 \item the parallelogram spanned by the installed turbines as the site outline.
 \end{itemize}
-The farm model keeps the Jensen top-hat wake (with $k=0.04$, a value commonly used offshore) and root-sum-square superposition. It uses the tabulated power curve with a 25~m/s cut-out, a speed-dependent thrust coefficient at the free-stream speed, 5$^\circ$ direction bins and 1~m/s speed bins. For the installed layout it gives 664.6~GWh/yr and a wake loss of 10.95\%, against 662.5~GWh/yr and 10.96\% from PyWake's Jensen model with the same settings, a difference below 0.3\%. The 16-turbine block that PyWake uses as an example (30 seeds) and the complete 80-turbine farm (10 seeds) were optimized with all seven methods at 6,030 calls and the $4D$ (320~m) minimum spacing.
+The farm model keeps the Jensen top-hat wake (with $k=0.04$, a value commonly used offshore) and root-sum-square superposition. It uses the tabulated power curve with a 25~m/s cut-out, a speed-dependent thrust coefficient at the free-stream speed, 5$^\circ$ direction bins and 1~m/s speed bins. For the installed layout it gives 664.6~GWh/yr and a wake loss of 10.95\%, against 662.5~GWh/yr and 10.96\% from PyWake's Jensen model with the same settings, a difference below 0.3\%. The 16-turbine block that PyWake uses as an example (30 seeds) and the complete 80-turbine farm (10 seeds) were optimized with all eight methods at 6,030 calls and the $4D$ (320~m) minimum spacing.
 
 Table~\ref{tab:hr-site} and Figs.~\ref{fig:hr-conv} and~\ref{fig:hr-layouts} lead to three observations.
 \begin{itemize}
-\item \emph{The benchmark ordering carries over to the site.} In the 16-turbine block LX-SSA-VNS reaches 137.59~GWh/yr on average. It is significantly better than LX-SSA ($p_{\rm Holm}=0.002$), SSA ($p_{\rm Holm}=0.039$) and MS-SLSQP ($p_{\rm Holm}=0.030$), and significantly worse than VNS (137.97~GWh/yr, $p_{\rm Holm}=0.039$). PSO and DE never find a feasible layout inside the parallelogram.
+\item \emph{The benchmark ordering carries over to the site.} In the 16-turbine block VNS attains the highest mean AEP (137.97~GWh/yr), followed by BVNS (137.67~GWh/yr, feasible in all 30 runs) and LX-SSA-VNS (137.59~GWh/yr). The hybrid is significantly better than LX-SSA ($p_{\rm Holm}=0.003$) and MS-SLSQP ($p_{\rm Holm}=0.040$); its differences from SSA and VNS ($p_{\rm Holm}=0.059$ each) and from BVNS ($p_{\rm Holm}=0.191$) are not significant. PSO and DE never find a feasible layout inside the parallelogram.
 \item \emph{No method improves on the installed layout within the budget.} The installed $7D$ grid reaches 139.51~GWh/yr.
-\item \emph{The full farm exceeds what the penalty-based methods can handle at this budget.} With 160 variables and 3,160 spacing constraints, none of the runs of LX-SSA-VNS, LX-SSA, SSA, PSO, DE or VNS returns a feasible layout. MS-SLSQP, which handles the constraints explicitly, is feasible in all ten runs, but its mean AEP (653.9~GWh/yr) remains 1.6\% below the installed layout.
+\item \emph{The full farm exceeds what the penalty-based methods can handle at this budget.} With 160 variables and 3,160 spacing constraints, none of the runs of LX-SSA-VNS, LX-SSA, SSA, PSO, DE, VNS or BVNS returns a feasible layout. MS-SLSQP, which handles the constraints explicitly, is feasible in all ten runs, but its mean AEP (653.9~GWh/yr) remains 1.6\% below the installed layout.
 \end{itemize}
 Realistic farm sizes therefore require larger budgets, feasible initialization or explicit constraint handling, and a regular installed layout is a strong reference.
 
@@ -980,19 +1022,19 @@ Realistic farm sizes therefore require larger budgets, feasible initialization o
 \label{sec:gaussian}
 \begin{table*}[!t]
 \centering
-\caption{Robustness of the fresh results to the benchmark model. All feasible final layouts are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model; average rank of each method over the 68 cases (methods with at least five feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and alternative orderings of the methods within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
+\caption{Robustness of the results to the benchmark model. All feasible final layouts are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model; average rank of each method over the 68 cases (methods with at least five feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and alternative orderings of the methods within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
 \label{tab:robust-hybrid}
 \scriptsize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccccccccccc}
+\begin{tabular}{lcccccccccccc}
 \toprule
-& \multicolumn{2}{c}{$\Delta$ (\%)} & \multicolumn{7}{c}{Average rank} & & \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-10}
-Model & DS I & DS II & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & $\bar\tau$ & Same best (\%) \\
+& \multicolumn{2}{c}{$\Delta$ (\%)} & \multicolumn{8}{c}{Average rank} & & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-11}
+Model & DS I & DS II & LX-SSA-VNS & LX-SSA & SSA & PSO & DE & VNS & MS-SLSQP & BVNS & $\bar\tau$ & Same best (\%) \\
 \midrule
-Benchmark (linear curve, Jensen) & +0.0 & +0.0 & 2.37 & 4.81 & 4.44 & 4.08 & 5.86 & 1.84 & 4.60 & -- & -- \\
-Cubic power curve & -17.7 & -36.9 & 2.44 & 4.78 & 4.40 & 3.99 & 5.80 & 1.90 & 4.69 & 0.96 & 87 \\
-Cubic curve with 25 m/s cut-out & -21.5 & -37.0 & 2.46 & 4.78 & 4.41 & 3.96 & 5.82 & 1.91 & 4.66 & 0.96 & 88 \\
-Gaussian wake ($k^*=0.04$) & -0.2 & -0.3 & 3.01 & 5.07 & 4.38 & 3.35 & 5.88 & 2.54 & 3.75 & 0.57 & 46 \\
+Benchmark (linear curve, Jensen) & +0.0 & +0.0 & 2.72 & 5.62 & 5.18 & 4.79 & 6.77 & 2.07 & 5.28 & 3.57 & -- & -- \\
+Cubic power curve & -17.7 & -36.9 & 2.78 & 5.56 & 5.13 & 4.68 & 6.71 & 2.13 & 5.37 & 3.64 & 0.96 & 91 \\
+Cubic curve with 25 m/s cut-out & -21.5 & -37.1 & 2.79 & 5.56 & 5.15 & 4.65 & 6.73 & 2.16 & 5.34 & 3.62 & 0.96 & 90 \\
+Gaussian wake ($k^*=0.04$) & -0.2 & -0.4 & 3.25 & 5.75 & 4.96 & 3.81 & 6.72 & 2.75 & 4.15 & 4.62 & 0.57 & 46 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -1011,7 +1053,7 @@ with $\beta=\tfrac12(1+\sqrt{1-C_T})/\sqrt{1-C_T}$ and $k^*=0.04$, evaluated at 
 Table~\ref{tab:robust-hybrid} shows two kinds of sensitivity.
 \begin{itemize}
 \item \emph{Absolute energy is strongly model-dependent.} The linear benchmark curve overstates expected power relative to the cubic curve by 17.7\% for Data Set~I and 36.9\% for Data Set~II (21.5\% and 37.1\% with the cut-out). The absolute energy values of this paper are therefore benchmark values, not turbine-specific AEP predictions.
-\item \emph{The algorithm comparison is robust to the power curve but less so to the wake model.} Under the cubic curve the within-case orderings are almost unchanged (mean Kendall $\bar\tau=0.96$), and VNS (1.90) and LX-SSA-VNS (2.44) remain the two best methods. Under the Gaussian model the orderings change more ($\bar\tau=0.58$; same best method in 46\% of the cases), because layouts optimized for the sharp Jensen wake cone are penalized differently by the smooth Gaussian deficit. VNS (2.54) and LX-SSA-VNS (3.01) nevertheless keep the two best average ranks.
+\item \emph{The algorithm comparison is robust to the power curve but less so to the wake model.} Under the cubic curve the within-case orderings are almost unchanged (mean Kendall $\bar\tau=0.96$), and VNS (2.13), LX-SSA-VNS (2.78) and BVNS (3.64) remain the three best methods. Under the Gaussian model the orderings change more ($\bar\tau=0.57$; same best method in 46\% of the cases), because layouts optimized for the sharp Jensen wake cone are penalized differently by the smooth Gaussian deficit. VNS (2.75) and LX-SSA-VNS (3.25) nevertheless keep the two best average ranks, whereas BVNS falls to 4.62, behind PSO (3.81) and MS-SLSQP (4.15).
 \end{itemize}
 
 \subsection{Minimum Spacing}
@@ -1056,7 +1098,7 @@ The $4D$ spacing is a legacy benchmark value. Its influence was examined in thre
 
 \emph{Geometric capacity.} Table~\ref{tab:capacity} gives the largest turbine count for which a multi-start packing search constructed a feasible layout; these are constructive lower bounds, and the 500-m values coincide with the known optimal circle-packing results. At $5D$ the 500-m farm holds at most 8 turbines and at $6D$ only 7, so the tested 500-m cases with $N\ge9$ (at $5D$) or $N\ge8$ (at $6D$) would be infeasible.
 
-\emph{Final layouts.} The optimized layouts are frequently active at the $4D$ constraint. Of the 11,247 feasible final layouts of the six reference methods, 48.7\% also satisfy $5D$ and 35.7\% satisfy $6D$. For $N=6$--10 these fractions fall to 29.6\% and 11.3\%, and for $N=11$--15 to 3.1\% and 0\%. Optimized layouts therefore cannot be transferred to a site with larger spacing requirements without re-optimization.
+\emph{Final layouts.} The optimized layouts are frequently active at the $4D$ constraint. Of the 11,247 feasible final layouts of LX-SSA, SSA, PSO, DE, VNS and MS-SLSQP, 48.7\% also satisfy $5D$ and 35.7\% satisfy $6D$. For $N=6$--10 these fractions fall to 29.6\% and 11.3\%, and for $N=11$--15 to 3.1\% and 0\%. Optimized layouts therefore cannot be transferred to a site with larger spacing requirements without re-optimization.
 
 \emph{Re-optimization.} Six representative cases were re-optimized with LX-SSA and SSA at $5D$ and $6D$ (Table~\ref{tab:spacing-authors}). In the 750-m eight-turbine cases the mean LX-SSA objective falls from $4D$ to $6D$ by 0.95\% (Data Set~I) and 0.22\% (Data Set~II), and the wake loss rises from 0.88\% to 1.85\% and from 3.18\% to 3.47\%. The spacing rule does not reverse the LX-SSA--SSA comparison.
 
@@ -1074,23 +1116,24 @@ and a run with a budget of $B$ objective calls costs $\mathcal{O}(B\,N_t^2N_\the
 \section{Scope, Limitations, and Validity of the Evidence}
 The results should be interpreted within the following boundaries:
 \begin{itemize}
-\item \textbf{Relative performance of the hybrid:} LX-SSA-VNS improves substantially on LX-SSA, SSA, PSO, DE and MS-SLSQP, but it does not outperform stand-alone VNS at the tested budget. The ablation indicates that its advantage over LX-SSA comes from the VNS phase.
+\item \textbf{Relative performance of the hybrid:} LX-SSA-VNS improves substantially on LX-SSA, SSA, PSO, DE and MS-SLSQP, but it does not outperform the modified VNS at the tested budget, and at the case level its advantage over the original BVNS is not significant. The ablation indicates that its advantage over LX-SSA comes from the VNS phase.
 \item \textbf{Budget and farm size:} all methods were compared at 6,030 objective calls; larger budgets could change the ordering, in particular the value of the exploration phase. For an 80-turbine farm the penalty-based methods, including the hybrid, did not find feasible layouts at this budget.
-\item \textbf{Algorithm settings:} the LX-SSA parameters ($\phi=0$, $\chi=1$), the VNS settings and the split $\rho=0.5$ are fixed defaults and were not tuned. Pseudo-gradient and surrogate-assisted methods are discussed but not benchmarked.
+\item \textbf{Algorithm settings:} the LX-SSA parameters ($\phi=0$, $\chi=1$), the VNS and BVNS settings and the split $\rho=0.5$ are fixed defaults and were not tuned. Pseudo-gradient and surrogate-assisted methods are discussed but not benchmarked.
 \item \textbf{Wake model and power curve:} Jensen's model and the piecewise-linear power curve are benchmark choices. Absolute energy values depend strongly on them, and the within-case orderings change under a Gaussian wake model (Section~\ref{sec:gaussian}); layouts were not re-optimized with the alternative models.
 \item \textbf{Spacing and boundary handling:} $4D$ is a legacy constraint that governs the feasible turbine density, and the boundary-handling rule also affects absolute results.
 \item \textbf{Scope:} $N$ is prescribed in every run. Terrain, heterogeneous turbines, electrical collector systems, grid, acoustic and environmental constraints, and economic objectives are not modeled.
 \end{itemize}
 
 \section{Conclusion}
-This paper proposes LX-SSA-VNS, a two-phase hybrid in which the previously published Laplacian Salp Swarm Algorithm (LX-SSA)~\cite{Solanki2023} explores the continuous layout space and variable neighbourhood search then intensifies the best layout found. The hybrid is applied to the continuous WFLOP with a Jensen--Weibull benchmark model and explicit constraint handling. It is evaluated against LX-SSA, SSA, PSO, DE, VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases (14,280 seed-paired runs at equal budgets) and on the Horns Rev~1 site.
+This paper proposes LX-SSA-VNS, a two-phase hybrid in which the previously published Laplacian Salp Swarm Algorithm (LX-SSA)~\cite{Solanki2023} explores the continuous layout space and variable neighbourhood search then intensifies the best layout found. The hybrid is applied to the continuous WFLOP with a Jensen--Weibull benchmark model and explicit constraint handling. It is evaluated against LX-SSA, SSA, PSO, DE, the original basic VNS (BVNS), a modified VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases (16,320 seed-paired runs at equal budgets) and on the Horns Rev~1 site.
 
 The results support five conclusions.
 \begin{itemize}
-\item \emph{Hybridization substantially improves LX-SSA.} LX-SSA-VNS is significantly better than LX-SSA in 36 of 68 cases and never worse. It lifts LX-SSA from the sixth to the second average rank among seven methods (4.91 to 2.38) and achieves a feasibility rate of 98.1\%.
+\item \emph{Hybridization substantially improves LX-SSA.} LX-SSA-VNS is significantly better than LX-SSA in 35 of 68 cases and never worse. It lifts LX-SSA from the seventh to the second average rank among eight methods (5.68 to 2.74) and achieves a feasibility rate of 98.1\%.
 \item \emph{The hybrid outperforms the other population-based and gradient-based references.} It is significantly better than SSA, PSO, DE and MS-SLSQP in most cases, and at the case level it ranks significantly better than all of them.
-\item \emph{Stand-alone VNS remains the best method at this budget.} The hybrid is statistically indistinguishable from VNS in 52 cases but worse in 16 dense cases. The ablation shows that the gain comes from the intensification phase, and that assigning more budget to LX-SSA is harmful.
-\item \emph{The same ordering holds at a real site.} In a 16-turbine block of Horns Rev~1 the hybrid is better than LX-SSA, SSA and MS-SLSQP and slightly worse than VNS. No method improves on the installed layout within the budget, and for the full 80-turbine farm only the constraint-aware MS-SLSQP finds feasible layouts.
+\item \emph{The modified VNS remains the best method at this budget.} The hybrid is statistically indistinguishable from it in 53 cases but worse in 15 dense cases. The ablation shows that the gain comes from the intensification phase, and that assigning more budget to LX-SSA is harmful.
+\item \emph{The original basic VNS is a strong baseline.} BVNS ranks third (3.62), is feasible in every run, and is better than the hybrid in seven cases (small or very dense layouts) and worse in 12. The modified VNS beats it in 27 cases with $N\ge6$, while BVNS is better in eight cases with $N\le4$, so the cheaper turbine-wise search pays off for larger layouts.
+\item \emph{A similar ordering holds at a real site.} In a 16-turbine block of Horns Rev~1 the hybrid is better than LX-SSA and MS-SLSQP and statistically indistinguishable from SSA, VNS and BVNS. No method improves on the installed layout within the budget, and for the full 80-turbine farm only the constraint-aware MS-SLSQP finds feasible layouts.
 \item \emph{The comparison depends on the wake model more than on the power curve.} The algorithm ordering is insensitive to the power curve but changes considerably under a Gaussian wake model, and absolute energy values depend strongly on both.
 \end{itemize}
 
@@ -1099,7 +1142,7 @@ Future work should use a stagnation-triggered switch between the two phases, fea
 \appendices
 \section{Coordinates of the Best Layouts}
 \label{app:coordinates}
-Table~\ref{tab:coords} lists the turbine coordinates (m, farm center at the origin) of the best layout found by any method for the largest turbine count of each farm (Fig.~\ref{fig:layouts}). The final coordinates and convergence curves of all 14,280 runs and the Horns Rev~1 layouts are provided as machine-readable files with the revision.
+Table~\ref{tab:coords} lists the turbine coordinates (m, farm center at the origin) of the best layout found by any method for the largest turbine count of each farm (Fig.~\ref{fig:layouts}). The final coordinates and convergence curves of all 16,320 runs and the Horns Rev~1 layouts are provided as machine-readable files with the revision.
 
 \begin{table*}[!t]
 \centering
@@ -1118,18 +1161,18 @@ DS & $r$ (m) & $N$ & Method & Objective & Coordinates $(\rho_i,\sigma_i)$ (m) \\
  & & & & & (-606.4, -345.2); (-116.6, -388.9); (297.6, -367.4); (687.2, 195.4) \\
  & & & & & (-21.4, 692.3); (-743.2, 99.5); (-405.1, 546.3); (360.5, 625.1) \\
 \midrule
-1 & 1000 & 15 & VNS & 208107.8 & (769.0, 594.6); (978.8, -162.6); (11.0, 61.2); (-443.3, -12.6) \\
- & & & & & (462.7, -101.3); (-137.6, -453.2); (-378.3, 424.2); (5.6, -883.2) \\
- & & & & & (-849.4, 511.3); (646.3, 261.2); (-215.7, 874.6); (-486.1, -771.8) \\
- & & & & & (466.4, 871.8); (-852.8, -403.4); (167.4, 600.7) \\
+1 & 1000 & 15 & BVNS & 208307.4 & (849.2, 26.7); (-396.0, 285.5); (-707.1, 439.0); (-278.5, -82.2) \\
+ & & & & & (-237.9, 773.9); (-596.9, 744.5); (323.7, -696.2); (-705.5, -708.7) \\
+ & & & & & (131.1, 938.4); (628.6, -498.9); (-23.6, -999.4); (620.8, 448.3) \\
+ & & & & & (328.2, 199.8); (-997.9, 16.7); (-4.6, 263.8) \\
 \midrule
-2 & 500 & 10 & VNS & 68162.3 & (-11.9, -263.9); (472.0, -113.8); (184.1, 463.0); (-307.8, 131.6) \\
- & & & & & (-211.8, 443.7); (99.2, 55.5); (291.5, -405.6); (-483.2, -126.0) \\
- & & & & & (418.6, 201.3); (-294.9, -399.6) \\
+2 & 500 & 10 & BVNS & 68269.3 & (-445.8, 225.2); (25.6, -179.7); (421.4, 268.9); (-225.6, 440.8) \\
+ & & & & & (123.1, 417.9); (386.0, -54.2); (328.2, -376.7); (-245.5, -9.4) \\
+ & & & & & (-389.7, -312.9); (-1.9, -499.6) \\
 \midrule
-2 & 750 & 12 & VNS & 83596.1 & (60.6, 704.2); (136.6, -451.9); (-376.4, 634.2); (166.4, 296.3) \\
- & & & & & (356.2, 559.5); (405.3, -631.0); (617.3, 15.1); (446.4, -249.2) \\
- & & & & & (-722.1, 48.2); (-298.6, -220.1); (-435.5, -521.4); (-526.1, 326.1) \\
+2 & 750 & 12 & BVNS & 83609.6 & (-220.7, -240.0); (-184.6, -704.7); (425.4, -617.0); (-196.1, 723.8) \\
+ & & & & & (745.5, 9.5); (502.1, -260.4); (259.7, 701.5); (40.1, 163.4) \\
+ & & & & & (-660.6, -195.5); (-541.5, -518.0); (-299.6, 433.0); (-722.9, 161.4) \\
 \midrule
 2 & 1000 & 15 & MS-SLSQP & 105183.7 & (480.1, 134.7); (887.9, -308.8); (-932.2, -356.9); (-954.1, 299.4) \\
  & & & & & (-999.9, -11.2); (469.8, 644.1); (-777.1, 625.3); (-106.5, 301.6) \\
@@ -1274,6 +1317,12 @@ Cao, L., Ge, M., Gao, X., Du, B., Li, B., Huang, Z. and Liu, Y. (2022). Wind far
 
 \bibitem{Mladenovic1997}
 Mladenovi\'c, N. and Hansen, P. (1997). Variable neighborhood search, \textit{Computers \& Operations Research} \textbf{24}(11), 1097--1100.
+
+\bibitem{Hansen2001}
+Hansen, P. and Mladenovi\'c, N. (2001). Variable neighborhood search: Principles and applications, \textit{European Journal of Operational Research} \textbf{130}(3), 449--467.
+
+\bibitem{Mladenovic2008}
+Mladenovi\'c, N., Dra\v{z}i\'c, M., Kova\v{c}evi\'c-Vuj\v{c}i\'c, V. and \v{C}angalovi\'c, M. (2008). General variable neighborhood search for the continuous optimization, \textit{European Journal of Operational Research} \textbf{191}(3), 753--770.
 
 \bibitem{Kraft1988}
 Kraft, D. (1988). A software package for sequential quadratic programming, Technical Report DFVLR-FB 88-28, DLR German Aerospace Center, Institute for Flight Mechanics, Cologne.
