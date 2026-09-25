@@ -1,6 +1,6 @@
 \section{Hybrid LX-SSA-VNS Algorithm}
 \label{sec:hybrid}
-Population-based swarm methods such as LX-SSA spread their search over many regions of the layout space, but once the swarm has contracted around the food source, most remaining evaluations produce only small improvements. Trajectory-based local search behaves the other way round. Variable neighbourhood search (VNS)~\cite{Mladenovic1997} refines one incumbent very efficiently by systematically changing the size of its perturbations, but its result depends strongly on where it starts. This complementarity motivates a two-phase hybrid, LX-SSA-VNS, in which the previously published LX-SSA~\cite{Solanki2023} provides global exploration and VNS provides intensification.
+Population-based swarm methods such as LX-SSA spread their search over many regions of the layout space, but once the swarm has contracted around the food source, most remaining evaluations produce only small improvements. Trajectory-based local search behaves the other way round. Variable neighbourhood search (VNS)~\cite{Mladenovic1997,Hansen2001} refines one incumbent systematically by alternating random perturbations of increasing size with a complete local search, but its result depends strongly on where it starts. This complementarity motivates a two-phase hybrid, LX-SSA-VNS, in which the previously published LX-SSA~\cite{Solanki2023} provides global exploration and the original basic VNS provides intensification.
 
 \subsection{Phase 1: Global Exploration by LX-SSA}
 For a budget of $B$ objective calls and a split fraction $\rho\in(0,1)$, LX-SSA (Algorithm~\ref{alg:lx-ssa-wflop}) runs with population $N_p$ for
@@ -9,8 +9,17 @@ T_1=\operatorname{round}\!\left(\frac{\rho B-N_p}{2N_p}\right)
 \]
 iterations, because one LX-SSA iteration costs $2N_p$ calls. Its parameter $r_1$ decreases over these $T_1$ iterations, so the swarm moves from exploration to exploitation within Phase~1. The food source $H$ at the end of Phase~1 is the starting incumbent of Phase~2.
 
-\subsection{Phase 2: Intensification by VNS}
-Starting from $x=H$, VNS uses $k_{\max}=3$ nested neighbourhoods. In neighbourhood $k$, a \emph{shaking} step moves $k$ randomly chosen turbines by Gaussian steps with standard deviation $\sigma_k r$, where $(\sigma_1,\sigma_2,\sigma_3)=(0.05,0.15,0.40)$. The shaken layout $y$ is then improved by a first-improvement \emph{local search} of $L=10$ single-turbine Gaussian moves. Its step length is enlarged by a factor 1.5 after a successful move and reduced by a factor 0.8 after an unsuccessful one, and it is bounded between $10^{-3}r$ and $0.5r$. If the resulting layout improves on the incumbent according to $F_p$, it is accepted and the search returns to $k=1$; otherwise $k$ is increased cyclically. Phase~2 ends when the budget $B$ is exhausted. This is the modified VNS that is also run stand-alone in Section~\ref{sec:results}; it differs from the original basic VNS~\cite{Mladenovic1997,Hansen2001}, which shakes the whole layout and applies a complete local search, and which is evaluated separately (BVNS, Section~\ref{sec:bvns}). Box repair and the penalized objective~\eqref{eq:penalty} are used exactly as in LX-SSA, so the feasibility-first rules of Section~\ref{sec:constraints} apply in both phases.
+\subsection{Phase 2: Intensification by Basic VNS}
+Phase~2 is the basic VNS of Mladenovi\'c and Hansen~\cite{Mladenovic1997,Hansen2001} in the continuous form of Mladenovi\'c et al.~\cite{Mladenovic2008}, applied to the penalized objective $F_p$~\eqref{eq:penalty}. It uses $k_{\max}=5$ nested $\ell_\infty$ neighbourhoods of the whole layout,
+\[
+\mathcal N_k(x)=\{y:\rho_{k-1}<\lVert y-x\rVert_\infty\le\rho_k\},\qquad \rho_k=0.1\,k\,r .
+\]
+\begin{itemize}
+\item \emph{Shaking} draws a point uniformly from $\mathcal N_k(x)$, so all $2N$ coordinates move; box repair is applied.
+\item \emph{Local search} is a complete best-improvement descent to a local minimum. Because the Jensen top-hat wake makes $F_p$ discontinuous, a derivative-free compass search is used: it evaluates all $4N$ moves $\pm h$ along the coordinate axes, moves to the best improving one, and halves $h$ (starting from $0.05r$) when none improves, until $h<10^{-3}r$.
+\item \emph{Neighbourhood change}: if the local minimum improves on the incumbent, it is accepted and $k\gets1$; otherwise $k\gets k+1$, and $k\gets1$ after $k_{\max}$.
+\end{itemize}
+Phase~2 first applies the local search to $H$ and then repeats shaking, local search and neighbourhood change until the budget $B$ is exhausted. It returns the best layout evaluated. Box repair and the penalized objective are used exactly as in LX-SSA, so the feasibility-first rules of Section~\ref{sec:constraints} apply in both phases.
 
 \begin{algorithm}
 \caption{Hybrid LX-SSA-VNS for a prescribed turbine count $N$}
@@ -19,24 +28,26 @@ Starting from $x=H$, VNS uses $k_{\max}=3$ nested neighbourhoods. In neighbourho
 \Require budget $B$, split $\rho$, population $N_p$, LX-SSA parameters $\phi,\chi$, farm radius $r$
 \State $T_1\gets\operatorname{round}((\rho B-N_p)/(2N_p))$
 \State Run LX-SSA (Algorithm~\ref{alg:lx-ssa-wflop}) for $T_1$ iterations; let $H$ be its food source
-\State $x\gets H$, $k\gets1$, step $\gets0.1r$
+\State $x\gets\textsc{LocalSearch}(H)$; $k\gets1$
 \While{fewer than $B$ objective calls have been used}
-    \State $y\gets x$ with $k$ random turbines moved by $\mathcal N(0,(\sigma_k r)^2)$; box repair
-    \For{$L$ local-search moves (while budget remains)}
-        \State $z\gets y$ with one random turbine moved by $\mathcal N(0,\mathrm{step}^2)$; box repair
-        \If{$F_p(z)<F_p(y)$}
-            \State $y\gets z$; step $\gets\min(1.5\,\mathrm{step},0.5r)$
-        \Else
-            \State step $\gets\max(0.8\,\mathrm{step},10^{-3}r)$
-        \EndIf
-    \EndFor
+    \State $y\gets$ uniform random point of $\mathcal N_k(x)$; box repair
+    \State $y\gets\textsc{LocalSearch}(y)$
     \If{$F_p(y)<F_p(x)$}
         \State $x\gets y$; $k\gets1$
     \Else
         \State $k\gets k\bmod k_{\max}+1$
     \EndIf
 \EndWhile
-\State \Return $x$
+\State \Return best layout evaluated
+\Statex
+\Function{LocalSearch}{$y$} \Comment{compass search, best improvement}
+    \State $h\gets0.05r$
+    \While{$h\ge10^{-3}r$}
+        \State $z^\star\gets\arg\min F_p$ over the $4N$ points $y\pm h\,e_i$ (box-repaired)
+        \If{$F_p(z^\star)<F_p(y)$} \State $y\gets z^\star$ \Else \State $h\gets h/2$ \EndIf
+    \EndWhile
+    \State \Return $y$
+\EndFunction
 \end{algorithmic}
 \end{algorithm}
 

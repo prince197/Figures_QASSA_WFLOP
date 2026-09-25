@@ -1,21 +1,25 @@
 # Analysis supporting the revised manuscript
 
-## Hybrid LX-SSA-VNS study (current manuscript, Sections VI–XI)
+## Final study (current manuscript): hybrid LX-SSA-VNS = LX-SSA + original basic VNS
 
 | Script | Purpose | Output |
 |---|---|---|
-| `hybrid_lxssa_vns.py` | The proposed hybrid (LX-SSA phase + VNS phase, split rho) | library |
-| `full_grid_experiments.py hgrid` | 68 cases × LX-SSA-VNS × 30 seeds (paired with `fresh_grid.csv`) | `fresh_hgrid.csv` |
-| `full_grid_experiments.py hsplit` | Split ablation: rho = 25% / 75% on 12 cases | `fresh_hsplit.csv` |
-| `full_grid_experiments.py hhr16` / `hhr80` | Horns Rev 1 with the hybrid | `fresh_hhr16.csv`, `fresh_hhr80.csv` |
-| `hybrid_results.py` | Eight-method tables, statistics, ablation and figures | `hybrid_tables.tex`, `hybrid_summary.json`, `hybrid_case_tests.csv`, `hybrid_best_layouts_maxN.csv`, `../figures_hybrid/*.pdf` |
-| `robustness_hybrid.py` | Cubic power curve / Gaussian wake re-evaluation, eight methods | `hybrid_robust_table.tex`, `hybrid_robust_summary.json`, `hybrid_reevaluation.csv` |
-| `original_vns.py` | Original basic VNS (BVNS; Mladenovic & Hansen 1997, continuous form of Mladenovic et al. 2008): l_inf-shell shaking of the whole layout + complete best-improvement compass local search | library |
-| `full_grid_experiments.py vgrid` / `vhr16` / `vhr80` | BVNS on the 68 cases and Horns Rev (paired seeds) | `fresh_vgrid.csv`, `fresh_vhr16.csv`, `fresh_vhr80.csv` |
-| `bvns_compare.py` | BVNS vs each method (Holm over seven per case) | `bvns_tables.tex`, `bvns_summary.json`, `bvns_case_tests.csv` |
-| `sec_hybrid.tex` | Section VI (algorithm) | – |
-| `build_hybrid_manuscript.py` | Writes Sections VI–XII and the appendix from the outputs above | – |
-| `hybrid_frontmatter.py` | Title, abstract, introduction and motivation section | – |
+| `original_vns.py` | Original basic VNS (Mladenovic & Hansen 1997; continuous form of Mladenovic et al. 2008) | library |
+| `hybrid_lxssa_bvns.py` | Final hybrid (phase 1 LX-SSA or SSA, phase 2 original VNS) | library |
+| `full_grid_experiments.py vgrid` / `vhr16` / `vhr80` | Original VNS on the 68 cases and Horns Rev | `fresh_vgrid.csv`, `fresh_vhr16.csv`, `fresh_vhr80.csv` |
+| `full_grid_experiments.py bgrid` | LX-SSA-VNS (`LXBV`) and SSA-VNS (`SSABV`) on the 68 cases | `fresh_bgrid.csv` |
+| `full_grid_experiments.py bsplit` | Budget split 25% / 75% on 12 cases | `fresh_bsplit.csv` |
+| `full_grid_experiments.py bhr16` / `bhr80` | Hybrids on Horns Rev | `fresh_bhr16.csv`, `fresh_bhr80.csv` |
+| `final_results.py` | Seven-method tables, statistics, component ablation, split table, figures | `final_tables.tex`, `final_summary.json`, `final_case_tests.csv`, `final_ablation_tests.csv`, `final_best_layouts_maxN.csv`, `../figures_final/*.pdf` |
+| `robustness_final.py` | Cubic power curve / Gaussian wake re-evaluation, seven methods | `final_robust_table.tex`, `final_robust_summary.json`, `final_reevaluation.csv` |
+| `sec_hybrid.tex`, `sec_setup.tex` | Section VI (algorithm) and the Experimental Setup source | – |
+| `build_final_manuscript.py`, `final_frontmatter.py` | Write Sections VI–XII, appendix, abstract/contributions/motivation | – |
+
+Method ids in the CSV files: `LXBV` = LX-SSA-VNS (final), `SSABV` = SSA-VNS (ablation), `BVNS` = original VNS (shown as "VNS"), `LXSSA`, `SSA`, `PSO`, `DE`, `SLSQP` = MS-SLSQP. The ids `VNS` (modified VNS) and `LXVNS` (earlier hybrid with the modified VNS) in `fresh_grid.csv` / `fresh_hgrid.csv` belong to superseded versions and are not used in the manuscript.
+
+## Superseded intermediate versions (kept for reference, not used in the manuscript)
+
+`hybrid_lxssa_vns.py`, `hybrid_results.py`, `robustness_hybrid.py`, `build_hybrid_manuscript.py`, `hybrid_frontmatter.py`, `bvns_compare.py` and their outputs (`hybrid_*`, `bvns_*`, `fresh_hgrid.csv`, `fresh_hsplit.csv`, `fresh_hhr*.csv`).
 
 ## Six-method study (reference runs reused by the hybrid study)
 

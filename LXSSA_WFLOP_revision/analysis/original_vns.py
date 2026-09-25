@@ -51,9 +51,16 @@ class BVNS:
             return obj_fun(x)
 
         pop = np.random.uniform(lb, ub, (self.pop_size, dim))
-        fit = np.array([f(p) for p in pop])
-        best = [pop[np.argmin(fit)].copy(), fit.min()]      # best point evaluated so far
-        x, fx = best[0].copy(), best[1]
+        try:
+            fit = np.array([f(p) for p in pop])
+        except BudgetExhausted:
+            raise RuntimeError("budget smaller than the initial population")
+        return self.search(f, pop[np.argmin(fit)].copy(), fit.min(), dim, lb, ub)
+
+    def search(self, f, x, fx, dim, lb, ub):
+        """BVNS from the incumbent (x, fx). `f` must raise BudgetExhausted when the budget is
+        used up. Returns the best point evaluated, its value and None."""
+        best = [x.copy(), fx]                               # best point evaluated so far
 
         def shake(x, k):
             lo, hi = self.rho[k - 1], self.rho[k]

@@ -15,6 +15,7 @@ from authors_optimizers import SSA, LXSSA, PSO, DE
 from extra_baselines import VNS, MSSLSQP
 from hybrid_lxssa_vns import LXSSAVNS
 from original_vns import BVNS
+from hybrid_lxssa_bvns import HybridBVNS
 from authors_objective import make_objective
 from wflop_model import farm_objective, min_spacing, R
 import hornsrev_model as hr
@@ -60,6 +61,10 @@ def run_method(alg, seed, f, wake, feasible, dim, lb, ub, radius, smin, bcons=No
     if alg.startswith("LXVNS"):
         split = {"LXVNS": 0.5, "LXVNS25": 0.25, "LXVNS75": 0.75}[alg]
         pos, _, _ = LXSSAVNS(30, BUDGET, split, 0.0, 1.0, radius, seed=seed).optimize(fp, dim, lb, ub)
+    elif alg.startswith("LXBV") or alg == "SSABV":
+        split = {"LXBV": 0.5, "LXBV25": 0.25, "LXBV75": 0.75, "SSABV": 0.5}[alg]
+        pos, _, _ = HybridBVNS(30, BUDGET, split, 0.0, 1.0, radius, "SSA" if alg == "SSABV" else "LXSSA",
+                               seed=seed).optimize(fp, dim, lb, ub)
     elif alg == "BVNS":
         pos, _, _ = BVNS(30, BUDGET, radius, seed=seed).optimize(fp, dim, lb, ub)
     elif alg == "VNS":
@@ -137,6 +142,14 @@ if __name__ == "__main__":
         fn, tl = run_grid, [("LXVNS", *c, s) for c in GRID for s in range(1, 31)]
     elif exp == "hsplit":
         fn, tl = run_grid, [(a, *c, s) for c in SPLITCASES for a in ("LXVNS25", "LXVNS75") for s in range(1, 31)]
+    elif exp == "bgrid":
+        fn, tl = run_grid, [(a, *c, s) for c in GRID for a in ("LXBV", "SSABV") for s in range(1, 31)]
+    elif exp == "bsplit":
+        fn, tl = run_grid, [(a, *c, s) for c in SPLITCASES for a in ("LXBV25", "LXBV75") for s in range(1, 31)]
+    elif exp == "bhr16":
+        fn, tl = run_hr, [(a, 16, s) for a in ("LXBV", "SSABV") for s in range(1, 31)]
+    elif exp == "bhr80":
+        fn, tl = run_hr, [("LXBV", 80, s) for s in range(1, 11)]
     elif exp == "vgrid":
         fn, tl = run_grid, [("BVNS", *c, s) for c in GRID for s in range(1, 31)]
     elif exp == "vhr16":
