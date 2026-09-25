@@ -1,0 +1,8 @@
+# Pitch (template section 0)
+
+- **Workflow.** Turn a raw two-level met-mast record into a hub-height wind climate, correcting for shear and iced sensors. Optimise a turbine layout under a wake model, and decide the net yield the layout will actually deliver.
+- **Who does this.** A wind-resource / layout engineer at a developer or consultancy during pre-construction energy yield assessment. In research, anyone benchmarking WFLOP metaheuristics.
+- **The hard part.** (a) Choosing the directional resolution of the optimisation objective. Coarse sector-centre evaluation with a top-hat wake is exploitable, and an optimiser will park turbines between sector centre-lines. (b) Reporting the yield of the final layout honestly, not the optimiser's own objective. Both sit on top of routine but necessary resource QC: measured shear and removal of iced-cup episodes.
+- **What a wrong answer looks like.** The textbook Kusiak-Song recipe: 12-36 sectors, a Weibull per sector, a metaheuristic, and the objective value reported as the yield. It claims 91-97% wake efficiency. The layout is 1-6% worse than a properly optimised one on the real hourly wind, and the yield is 5-17% optimistic.
+- **Failure mode.** An optimiser exploiting a discretisation artefact of its own surrogate model, plus the optimiser's-curse gap between the modelled and true objective. This differs from contact-sync-3d, which tested robust outlier rejection in SE(3) synchronisation.
+- **Data.** Synthetic, from a seeded generator. The ground truth is the clean hub-height wind produced before the measurement model, never taken from a solver.

@@ -1,0 +1,4 @@
+{
+  "best_true_net_mean_power_kw": 12838.06,
+  "source": "max over truth-informed random search (4 starts), reference solver (seeds 20260925 and 11, 12 starts) and independent SA solver; layouts in authoring/evidence/shipped_layouts/"
+}
