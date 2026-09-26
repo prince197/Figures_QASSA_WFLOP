@@ -30,7 +30,7 @@ All results come from one controlled study with the original optimizer code and 
 | R3-1 Contribution | Addressed | New hybrid + honest controlled comparison |
 | R3-2 Jensen rationale | Addressed | Gaussian re-evaluation (Table XIII) |
 | R3-3 Modern baselines | Addressed | Original basic VNS and gradient-based MS-SLSQP; surrogate methods discussed only |
-| R3-4 Literature | Addressed; **verify DOIs** | – |
+| R3-4 Literature | Addressed | All 47 references checked against publisher records; DOIs added, errors corrected (Hou 2019 DOI/issue, Castro Mora 2007 authors, Kraft 1988 institution, Jin 2019 description), ordered by first citation |
 | R3-5 Table typo | Moot | Old tables removed |
 
 ## Main results
@@ -50,5 +50,5 @@ The Laplace step on its own does not improve on SSA (LX-SSA vs SSA 0/59/9); the 
 
 - φ = 0, χ = 1 confirmed by the authors as the values of the original LX-SSA code.
 - The paper is submitted as a new manuscript; no response-to-reviewers letter is prepared. New cover letter: `Cover_letter.tex`; competing-interest declaration: `conflict_of_interest.tex`.
-- References: checked against publisher records (see git history for the corrections).
+- References: all 47 checked; only the volume/issue/pages of Solanki & Deep (2023) could not be found online (DOI given) — add them if the article has been assigned to an issue.
 - Before submission: one final proofread by the authors and, if required by the journal, a statement on AI-assisted editing.

@@ -36,7 +36,7 @@
 
 
 \begin{abstract}
-The wind farm layout optimization problem (WFLOP) asks where a given number of turbines should be placed so that as little energy as possible is lost in the wakes, while every turbine stays inside the site and keeps a minimum distance from the others. In this work, we propose LX-SSA-VNS, a two-phase hybrid algorithm for the continuous WFLOP. In the first phase, the Laplacian Salp Swarm Algorithm (LX-SSA), introduced by Solanki and Deep~\cite{Solanki2023}, explores the layout space for half of the evaluation budget. In the second phase, the basic variable neighborhood search (VNS) refines the best layout found by the swarm by alternating shaking of the whole layout with a complete local search. Wake losses are computed with the Jensen model and direction-dependent Weibull wind data, and the boundary and spacing constraints are handled through a penalized objective. We compare LX-SSA-VNS with LX-SSA, SSA, particle swarm optimization (PSO), differential evolution (DE), VNS and a multistart SLSQP solver on 68 benchmark cases (two wind data sets, three circular farms, 2--15 turbines), using 30 seed-paired runs of 6,030 objective evaluations per method and case, and analyze the results with Friedman, Holm-corrected Wilcoxon and effect-size statistics. LX-SSA-VNS obtains the best average rank (1.89), is significantly better than each of the other six methods and finds a feasible layout in 99.9\% of the runs. An ablation with SSA, LX-SSA and VNS shows that the improvement comes from pairing the swarm phase with VNS, which removes on average 39\% of the wake loss left by the swarm, whereas the Laplace step on its own does not improve on the standard SSA. On the Horns Rev~1 offshore site, the hybrid gives the highest mean energy yield for a 16-turbine block, although no method improves on the installed layout within the budget and only the constraint-aware SLSQP solver finds feasible layouts for the full 80-turbine farm. Finally, we show that the ranking of the algorithms is stable under a different power curve but changes under a Gaussian wake model.
+The wind farm layout optimization problem (WFLOP) asks where a given number of turbines should be placed so that as little energy as possible is lost in the wakes, while every turbine stays inside the site and keeps a minimum distance from the others. In this work, we propose LX-SSA-VNS, a two-phase hybrid algorithm for the continuous WFLOP. In the first phase, the Laplacian Salp Swarm Algorithm (LX-SSA), introduced by Solanki and Deep in 2023, explores the layout space for half of the evaluation budget. In the second phase, the basic variable neighborhood search (VNS) refines the best layout found by the swarm by alternating shaking of the whole layout with a complete local search. Wake losses are computed with the Jensen model and direction-dependent Weibull wind data, and the boundary and spacing constraints are handled through a penalized objective. We compare LX-SSA-VNS with LX-SSA, SSA, particle swarm optimization (PSO), differential evolution (DE), VNS and a multistart SLSQP solver on 68 benchmark cases (two wind data sets, three circular farms, 2--15 turbines), using 30 seed-paired runs of 6,030 objective evaluations per method and case, and analyze the results with Friedman, Holm-corrected Wilcoxon and effect-size statistics. LX-SSA-VNS obtains the best average rank (1.89), is significantly better than each of the other six methods and finds a feasible layout in 99.9\% of the runs. An ablation with SSA, LX-SSA and VNS shows that the improvement comes from pairing the swarm phase with VNS, which removes on average 39\% of the wake loss left by the swarm, whereas the Laplace step on its own does not improve on the standard SSA. On the Horns Rev~1 offshore site, the hybrid gives the highest mean energy yield for a 16-turbine block, although no method improves on the installed layout within the budget and only the constraint-aware SLSQP solver finds feasible layouts for the full 80-turbine farm. Finally, we show that the ranking of the algorithms is stable under a different power curve but changes under a Gaussian wake model.
 \end{abstract}
 
 
@@ -54,7 +54,7 @@ Mosetti et al.~\cite{Mosetti1994} and Grady et al.~\cite{Grady2005} were among t
 
 Emami and Noghreh~\cite{Emami2010} added the construction cost to the objective and solved the resulting problem with a GA, while Sisbot et al.~\cite{Sisbot2010} used a multi-objective GA to trade energy production against installation cost. Kusiak and Song~\cite{Kusiak2010} introduced the wind-distribution-based placement model that we also use in this paper. They treated the wake loss as a function of the turbine locations and the wind direction and solved a bi-criteria version of the problem with a multi-objective evolution strategy. Eroglu et al.~\cite{Eroglu2012,Eroglu2013} applied ant colony optimization (ACO) and particle filtering to the same model, Samorani~\cite{Samorani2013} studied the trade-off between power output and wake effect, and Bansal and Farswan~\cite{Bansal2017} used biogeography-based optimization (BBO) and proposed an upper limit on the number of turbines for a given farm. ACO has also been used to design the collector cable system of offshore farms~\cite{Srikakulapu2018}.
 
-Later studies refined both the algorithms and the models. Ju and Liu~\cite{Ju2019} proposed adaptive and self-informed variants of the GA, and Jin et al.~\cite{Jin2019} combined a wake-aware power-loss cost model with an adaptive PSO. Hou et al.~\cite{Hou2019} reviewed the layout and electrical-system design of wind farms, including the routing of cables. Dhiman et al.~\cite{Dhiman2020} used lidar simulations to locate the wakes and steer the yaw of downstream turbines, Nagpal et al.~\cite{Nagpal2021} refined the layouts of a distributed GA with a continuous local method, and PSO has been applied to reduce wake losses and increase the power output~\cite{Asaah2021}. Bai et al.~\cite{Bai2022} integrated Monte Carlo tree search into an adaptive GA and applied it to a planned wind farm in New Jersey, and Cazzaro and Pisinger~\cite{Cazzaro2022} developed a variable neighborhood search (VNS) heuristic that handles spacing constraints and construction costs. Beyond classical metaheuristics, pseudo-gradient methods have been developed for large design spaces~\cite{Quaeghebeur2021}, three-dimensional Gaussian wake models have been coupled with layout optimization~\cite{Tao2020}, and machine-learning~\cite{Yang2023}, CFD-based Kriging~\cite{Wang2024} and data-driven or physics-informed~\cite{Yang2024,Li2025} surrogates have been introduced to reduce the cost of higher-fidelity evaluations. No single optimizer or wake model dominates this literature; each study balances model fidelity, computing cost and scalability in its own way.
+Later studies refined both the algorithms and the models. Ju and Liu~\cite{Ju2019} proposed adaptive and self-informed variants of the GA, and Jin et al.~\cite{Jin2019} used an adaptive PSO to optimize the cable routing of offshore wind power plants, with a power-loss cost model based on wind scenarios and wake-affected turbine output. Hou et al.~\cite{Hou2019} reviewed the layout and electrical-system design of wind farms, including the routing of cables. Dhiman et al.~\cite{Dhiman2020} used lidar simulations to locate the wakes and steer the yaw of downstream turbines, Nagpal et al.~\cite{Nagpal2021} refined the layouts of a distributed GA with a continuous local method, and PSO has been applied to reduce wake losses and increase the power output~\cite{Asaah2021}. Bai et al.~\cite{Bai2022} integrated Monte Carlo tree search into an adaptive GA and applied it to a planned wind farm in New Jersey, and Cazzaro and Pisinger~\cite{Cazzaro2022} developed a variable neighborhood search (VNS) heuristic that handles spacing constraints and construction costs. Beyond classical metaheuristics, pseudo-gradient methods have been developed for large design spaces~\cite{Quaeghebeur2021}, three-dimensional Gaussian wake models have been coupled with layout optimization~\cite{Tao2020}, and machine-learning~\cite{Yang2023}, CFD-based Kriging~\cite{Wang2024} and data-driven or physics-informed~\cite{Yang2024,Li2025} surrogates have been introduced to reduce the cost of higher-fidelity evaluations. No single optimizer or wake model dominates this literature; each study balances model fidelity, computing cost and scalability in its own way.
 
 Swarm methods such as the Salp Swarm Algorithm (SSA)~\cite{Mirjalili2017} are attractive for WFLOP because they are simple and cheap per iteration. Solanki and Deep~\cite{Solanki2023} introduced the Laplacian Salp Swarm Algorithm (LX-SSA), in which each follower salp also tries a Laplace-distributed move relative to the food source and keeps the better of its two positions. The heavy tail of the Laplace distribution produces mostly short moves and occasionally long ones, which helps the swarm to visit separated regions of the layout space. In WFLOP, however, we observed that a swarm spends most of the second half of its budget on small improvements once it has contracted around the best layout, because the final refinement of a layout requires coordinated moves of single turbines along the spacing constraints. Trajectory methods such as VNS~\cite{Mladenovic1997,Hansen2001} behave the other way round: they refine one layout very efficiently by alternating random perturbations of growing size with a local search, but the result depends on where the search starts.
 
@@ -1076,105 +1076,82 @@ DS & $r$ (m) & $N$ & Method & Objective & Coordinates $(\rho_i,\sigma_i)$ (m) \\
 \begin{thebibliography}{99}
 
 \bibitem{Mosetti1994}
-Mosetti, G., Poloni, C. and Diviacco, B. (1994). Optimization of wind turbine positioning in large windfarms by means of a genetic algorithm, \textit{J. Wind Engineering and Industrial Aerodynamics} \textbf{51}(1), 105-116.
+Mosetti, G., Poloni, C. and Diviacco, B. (1994). Optimization of wind turbine positioning in large windfarms by means of a genetic algorithm, \textit{Journal of Wind Engineering and Industrial Aerodynamics} \textbf{51}(1), 105--116. doi:10.1016/0167-6105(94)90080-9.
 
 \bibitem{Grady2005}
-Grady, S., Hussaini, M. and Abdullah, M.M. (2005). Placement of wind turbines using genetic algorithms, \textit{Renewable Energy} \textbf{30}(2), 259-270.
+Grady, S.A., Hussaini, M.Y. and Abdullah, M.M. (2005). Placement of wind turbines using genetic algorithms, \textit{Renewable Energy} \textbf{30}(2), 259--270. doi:10.1016/j.renene.2004.05.007.
 
 \bibitem{Ozturk2004}
-Ozturk, U.A. and Norman, B.A. (2004). Heuristic methods for wind energy conversion system positioning, \textit{Electric Power Systems Research} \textbf{70}(3), 179-185.
+Ozturk, U.A. and Norman, B.A. (2004). Heuristic methods for wind energy conversion system positioning, \textit{Electric Power Systems Research} \textbf{70}(3), 179--185. doi:10.1016/j.epsr.2003.12.006.
 
 \bibitem{Lackner2007}
-Lackner, M.A. and Elkinton, C.N. (2007). An analytical framework for offshore wind farm layout optimization, \textit{Wind Engineering} \textbf{31}(1), 17-31.
+Lackner, M.A. and Elkinton, C.N. (2007). An analytical framework for offshore wind farm layout optimization, \textit{Wind Engineering} \textbf{31}(1), 17--31. doi:10.1260/030952407780811401.
 
 \bibitem{Mora2007}
-Mora, J.C., Baron, L.M.C., Santos J.M.R. and Payan, M.B. (2007). An evolutive algorithm for wind farm optimal design, \textit{Neurocomputing} \textbf{70}(16), 2651-2658.
+Castro Mora, J., Calero Bar\'on, J.M., Riquelme Santos, J.M. and Burgos Pay\'an, M. (2007). An evolutive algorithm for wind farm optimal design, \textit{Neurocomputing} \textbf{70}(16--18), 2651--2658. doi:10.1016/j.neucom.2006.05.017.
 
 \bibitem{Huang2007}
-Huang, H.S. (2007). Distributed genetic algorithm for optimization of wind farm annual profits, 14th International Conference on Intelligent System Applications to Power Systems, ISAP 2007, Taiwan, IEEE, 1-6.
+Huang, H.S. (2007). Distributed genetic algorithm for optimization of wind farm annual profits, in: \textit{Proc. 14th International Conference on Intelligent Systems Applications to Power Systems (ISAP 2007)}, Kaohsiung, Taiwan, IEEE, 1--6. doi:10.1109/ISAP.2007.4441654.
 
 \bibitem{Elkinton2008}
-Elkinton, C.N., Manwell, J.F. and McGowan, J.G. (2008). Algorithms for offshore wind farm layout optimization, \textit{Wind Engineering} \textbf{32}(1), 67–84.
+Elkinton, C.N., Manwell, J.F. and McGowan, J.G. (2008). Algorithms for offshore wind farm layout optimization, \textit{Wind Engineering} \textbf{32}(1), 67--84. doi:10.1260/030952408784305877.
 
 \bibitem{Bilbao2009}
-Bilbao, M. and Alba, E. (2009). Simulated annealing for optimization of wind farm annual profit, 2nd International Symposium on Logistics and Industrial Informatics, IEEE, Austria, 1-5.
+Bilbao, M. and Alba, E. (2009). Simulated annealing for optimization of wind farm annual profit, in: \textit{Proc. 2nd International Symposium on Logistics and Industrial Informatics (LINDI 2009)}, Linz, Austria, IEEE, 1--5. doi:10.1109/LINDI.2009.5258656.
 
 \bibitem{Rivas2009}
-Rivas, R.A., Clausen, J., Hansen, K.S. and Jensen, L.E. (2009). Solving the turbine positioning problem for large offshore wind farms by simulated annealing, \textit{Wind Engineering} \textbf{33}(3), 287-297.
+Rivas, R.A., Clausen, J., Hansen, K.S. and Jensen, L.E. (2009). Solving the turbine positioning problem for large offshore wind farms by simulated annealing, \textit{Wind Engineering} \textbf{33}(3), 287--297. doi:10.1260/0309-524X.33.3.287.
 
 \bibitem{Emami2010}
-Emami, A. and Noghreh, P. (2010). New approach on optimization in placement of wind turbines within wind farm by genetic algorithms, \textit{Renewable Energy} \textbf{35}(7), 1559-1564.
+Emami, A. and Noghreh, P. (2010). New approach on optimization in placement of wind turbines within wind farm by genetic algorithms, \textit{Renewable Energy} \textbf{35}(7), 1559--1564. doi:10.1016/j.renene.2009.11.026.
 
 \bibitem{Sisbot2010}
-Sisbot S., Turgut, O., Tunç, M. and Çamdalı, U.(2010). Optimal positioning of wind turbines on gokçeada using multi-objective genetic algorithm, \textit{Wind Energy} \textbf{13}(4), 297-306.
+\c{S}i\c{s}bot, S., Turgut, \"O., Tun\c{c}, M. and \c{C}amdal\i, \"U. (2010). Optimal positioning of wind turbines on G\"ok\c{c}eada using multi-objective genetic algorithm, \textit{Wind Energy} \textbf{13}(4), 297--306. doi:10.1002/we.339.
 
 \bibitem{Kusiak2010}
-Kusiak, A. and Song, Z. (2010). Design of wind farm layout for maximum wind energy capture, \textit{Renewable Energy} \textbf{35}(3), 685-694.
+Kusiak, A. and Song, Z. (2010). Design of wind farm layout for maximum wind energy capture, \textit{Renewable Energy} \textbf{35}(3), 685--694. doi:10.1016/j.renene.2009.08.019.
 
 \bibitem{Eroglu2012}
-Eroglu, Y. and Seckiner, S.U. (2012). Design of wind farm layout using ant colony algorithm, \textit{Renewable Energy} \textbf{44}, 53-62.
+Ero\u{g}lu, Y. and Se\c{c}kiner, S.U. (2012). Design of wind farm layout using ant colony algorithm, \textit{Renewable Energy} \textbf{44}, 53--62. doi:10.1016/j.renene.2011.12.013.
 
 \bibitem{Eroglu2013}
-Eroglu, Y. and Seckiner, S.U. (2013). Wind farm layout optimization using particle filtering approach, \textit{Renewable Energy} \textbf{58}, 95-107.
+Ero\u{g}lu, Y. and Se\c{c}kiner, S.U. (2013). Wind farm layout optimization using particle filtering approach, \textit{Renewable Energy} \textbf{58}, 95--107. doi:10.1016/j.renene.2013.02.019.
 
 \bibitem{Samorani2013}
-Samorani, M. (2013). The wind farm layout optimization problem, in: \textit{Handbook of Wind Power Systems}, Springer, 21-38.
+Samorani, M. (2013). The wind farm layout optimization problem, in: Pardalos, P.M., Rebennack, S., Pereira, M.V.F., Iliadis, N.A. and Pappu, V. (Eds.), \textit{Handbook of Wind Power Systems}, Springer, Berlin, Heidelberg, 21--38. doi:10.1007/978-3-642-41080-2\_2.
 
 \bibitem{Bansal2017}
-Bansal, J.C. and Farswan, P. (2017). Wind farm layout using Biogeography Based Optimization, \textit{Renewable Energy} \textbf{107}, 386-402.
-
-\bibitem{Ju2019}
-Ju, X. and Liu. F. (2019). Wind farm layout optimization using self-informed genetic algorithm with information guided exploitation, \textit{Applied Energy} \textbf{248}, 429-445.
-
-\bibitem{Jin2019}
-Jin, R., Hou, P., Yang, G., Qi, Y., Chen, C. and Chen, Z. (2019). Cable routing optimization for offshore wind power plants via wind scenarios considering power loss cost model, \textit{Applied Energy} \textbf{254}. \url{https://doi.org/10.1016/j.apenergy.2019.113719}
-
-\bibitem{Dhiman2020}
-Dhiman, H.S., Deb, D. and Foley, A.M. (2020). Lidar assisted wake redirection in wind farms: A data driven approach, \textit{Renewable Energy} \textbf{152}, 484-493.
-
-\bibitem{Nagpal2021}
-Nagpal, S.V., Liu, M.V. and Anderson, C.L. (2021). A comparison of deterministic refinement techniques for wind farm layout optimization, \textit{Renewable Energy} \textbf{168}, 581-592.
-
-\bibitem{Bai2022}
-Bai, F., Ju, X., Wang, S., Zhou, W. and Liu, F. (2022). Wind farm layout optimization using adaptive evolutionary algorithm with Monte Carlo Tree Search reinforcement learning, \textit{Energy Conversion and Management} \textbf{252}. \url{https://doi.org/10.1016/j.enconman.2021.115047}
-
-\bibitem{Cazzaro2022}
-Cazzaro, D. and Pisinger, D. (2022). Variable neighborhood search for large offshore wind farm layout optimization, \textit{Computers \& Operations Research} \textbf{138}. \url{https://doi.org/10.1016/j.cor.2021.105588}
-
-\bibitem{Jensen1983}
-Jensen, N. O. (1983). A Note on Wind Generator Interaction, Risø National Laboratory.
-
-\bibitem{Katic1986}
-Katic, I., Højstrup, J. and Jensen, N.O. (1986). A simple model for cluster efficiency, in: \textit{European Wind Energy Association Conference and Exhibition}, 407-410.
-
-\bibitem{Stroock1999}
-Stroock, D.W. (1999). A concise introduction to the theory of integration, Springer Science \& Business Media, 1999.
-
-\bibitem{Mirjalili2017}
-Mirjalili, S., Gandomi, A.H., Mirjalili, S.Z., Saremi, S., Faris, H., \& Mirjalili, S.M. (2017). Salp Swarm Algorithm: A bio-inspired optimizer for engineering design problems. \textit{Advances in Engineering Software} \textbf{114}, 163-191.
+Bansal, J.C. and Farswan, P. (2017). Wind farm layout using biogeography based optimization, \textit{Renewable Energy} \textbf{107}, 386--402. doi:10.1016/j.renene.2017.01.064.
 
 \bibitem{Srikakulapu2018}
-Srikakulapu, R. and Vinatha, U. (2018). Optimized design of collector topology for offshore wind farm based on ant colony optimization with multiple travelling salesman problem, \textit{Journal of Modern Power Systems and Clean Energy} \textbf{6}, 1181--1192. doi:10.1007/s40565-018-0386-4.
+Srikakulapu, R. and Vinatha, U. (2018). Optimized design of collector topology for offshore wind farm based on ant colony optimization with multiple travelling salesman problem, \textit{Journal of Modern Power Systems and Clean Energy} \textbf{6}(6), 1181--1192. doi:10.1007/s40565-018-0386-4.
+
+\bibitem{Ju2019}
+Ju, X. and Liu, F. (2019). Wind farm layout optimization using self-informed genetic algorithm with information guided exploitation, \textit{Applied Energy} \textbf{248}, 429--445. doi:10.1016/j.apenergy.2019.04.084.
+
+\bibitem{Jin2019}
+Jin, R., Hou, P., Yang, G., Qi, Y., Chen, C. and Chen, Z. (2019). Cable routing optimization for offshore wind power plants via wind scenarios considering power loss cost model, \textit{Applied Energy} \textbf{254}, 113719. doi:10.1016/j.apenergy.2019.113719.
 
 \bibitem{Hou2019}
-Hou, P., Zhu, J., Ma, K., et al. (2019). A review of offshore wind farm layout optimization and electrical system design methods, \textit{Journal of Modern Power Systems and Clean Energy} \textbf{7}(4), 975--986. doi:10.1007/s40565-019-0544-7.
+Hou, P., Zhu, J., Ma, K., Yang, G., Hu, W. and Chen, Z. (2019). A review of offshore wind farm layout optimization and electrical system design methods, \textit{Journal of Modern Power Systems and Clean Energy} \textbf{7}(5), 975--986. doi:10.1007/s40565-019-0550-5.
+
+\bibitem{Dhiman2020}
+Dhiman, H.S., Deb, D. and Foley, A.M. (2020). Lidar assisted wake redirection in wind farms: A data driven approach, \textit{Renewable Energy} \textbf{152}, 484--493. doi:10.1016/j.renene.2020.01.027.
+
+\bibitem{Nagpal2021}
+Nagpal, S.V., Liu, M.V. and Anderson, C.L. (2021). A comparison of deterministic refinement techniques for wind farm layout optimization, \textit{Renewable Energy} \textbf{168}, 581--592. doi:10.1016/j.renene.2020.12.043.
 
 \bibitem{Asaah2021}
 Asaah, P., Hao, L. and Ji, J. (2021). Optimal placement of wind turbines in wind farm layout using particle swarm optimization, \textit{Journal of Modern Power Systems and Clean Energy} \textbf{9}(2), 367--375. doi:10.35833/MPCE.2019.000087.
 
-\bibitem{Solanki2023}
-Solanki, P. and Deep, K. (2023). Laplacian Salp Swarm Algorithm for continuous optimization, \textit{International Journal of System Assurance Engineering and Management}. doi:10.1007/s13198-023-01935-y.
+\bibitem{Bai2022}
+Bai, F., Ju, X., Wang, S., Zhou, W. and Liu, F. (2022). Wind farm layout optimization using adaptive evolutionary algorithm with Monte Carlo Tree Search reinforcement learning, \textit{Energy Conversion and Management} \textbf{252}, 115047. doi:10.1016/j.enconman.2021.115047.
 
-\bibitem{Deep2007}
-Deep, K. and Thakur, M. (2007). A new crossover operator for real-coded genetic algorithms. \textit{Applied Mathematics and Computation} \textbf{188}, 895-911.
-
-
-
-\bibitem{SolankiQA2024}
-Solanki, P. and Deep, K. (2024). Quadratic approximation salp swarm algorithm for function optimization, \textit{OPSEARCH} \textbf{61}(1), 282--314. doi:10.1007/s12597-023-00682-9.
+\bibitem{Cazzaro2022}
+Cazzaro, D. and Pisinger, D. (2022). Variable neighborhood search for large offshore wind farm layout optimization, \textit{Computers \& Operations Research} \textbf{138}, 105588. doi:10.1016/j.cor.2021.105588.
 
 \bibitem{Quaeghebeur2021}
-Quaeghebeur, E., Bos, R. and Zaaijer, M.B. (2021). Wind farm layout optimization using pseudo-gradients, \textit{Wind Energy Science} \textbf{6}, 815--839. doi:10.5194/wes-6-815-2021.
+Quaeghebeur, E., Bos, R. and Zaaijer, M.B. (2021). Wind farm layout optimization using pseudo-gradients, \textit{Wind Energy Science} \textbf{6}(3), 815--839. doi:10.5194/wes-6-815-2021.
 
 \bibitem{Tao2020}
 Tao, S., Xu, Q., Feij\'oo, A., Zheng, G. and Zhou, J. (2020). Wind farm layout optimization with a three-dimensional Gaussian wake model, \textit{Renewable Energy} \textbf{159}, 553--569. doi:10.1016/j.renene.2020.06.003.
@@ -1191,38 +1168,53 @@ Yang, S., Deng, X. and Yang, K. (2024). Machine-learning-based wind farm optimiz
 \bibitem{Li2025}
 Li, P., Che, Y., Hua, A., Wang, L., Zheng, M. and Guo, X. (2025). A data-physics hybrid-driven layout optimization framework for large-scale wind farms, \textit{Applied Energy} \textbf{392}, 125908. doi:10.1016/j.apenergy.2025.125908.
 
+\bibitem{Mirjalili2017}
+Mirjalili, S., Gandomi, A.H., Mirjalili, S.Z., Saremi, S., Faris, H. and Mirjalili, S.M. (2017). Salp Swarm Algorithm: A bio-inspired optimizer for engineering design problems, \textit{Advances in Engineering Software} \textbf{114}, 163--191. doi:10.1016/j.advengsoft.2017.07.002.
+
+\bibitem{Solanki2023}
+Solanki, P. and Deep, K. (2023). Laplacian Salp Swarm Algorithm for continuous optimization, \textit{International Journal of System Assurance Engineering and Management}. doi:10.1007/s13198-023-01935-y.
+
+\bibitem{Mladenovic1997}
+Mladenovi\'c, N. and Hansen, P. (1997). Variable neighborhood search, \textit{Computers \& Operations Research} \textbf{24}(11), 1097--1100. doi:10.1016/S0305-0548(97)00031-2.
+
+\bibitem{Hansen2001}
+Hansen, P. and Mladenovi\'c, N. (2001). Variable neighborhood search: Principles and applications, \textit{European Journal of Operational Research} \textbf{130}(3), 449--467. doi:10.1016/S0377-2217(00)00100-4.
+
+\bibitem{Mladenovic2008}
+Mladenovi\'c, N., Dra\v{z}i\'c, M., Kova\v{c}evi\'c-Vuj\v{c}i\'c, V. and \v{C}angalovi\'c, M. (2008). General variable neighborhood search for the continuous optimization, \textit{European Journal of Operational Research} \textbf{191}(3), 753--770. doi:10.1016/j.ejor.2006.12.064.
+
+\bibitem{Jensen1983}
+Jensen, N.O. (1983). A note on wind generator interaction, Technical Report Ris\o-M-2411, Ris\o\ National Laboratory, Roskilde, Denmark.
+
+\bibitem{Katic1986}
+Kati\'c, I., H\o jstrup, J. and Jensen, N.O. (1986). A simple model for cluster efficiency, in: \textit{Proc. European Wind Energy Association Conference and Exhibition (EWEC'86)}, Rome, Italy, Vol.~1, 407--410.
+
 \bibitem{Cao2022}
 Cao, L., Ge, M., Gao, X., Du, B., Li, B., Huang, Z. and Liu, Y. (2022). Wind farm layout optimization to minimize the wake induced turbulence effect on wind turbines, \textit{Applied Energy} \textbf{323}, 119599. doi:10.1016/j.apenergy.2022.119599.
 
-\bibitem{Mladenovic1997}
-Mladenovi\'c, N. and Hansen, P. (1997). Variable neighborhood search, \textit{Computers \& Operations Research} \textbf{24}(11), 1097--1100.
+\bibitem{Stroock1999}
+Stroock, D.W. (1999). \textit{A Concise Introduction to the Theory of Integration}, 3rd ed., Birkh\"auser, Boston.
 
-\bibitem{Hansen2001}
-Hansen, P. and Mladenovi\'c, N. (2001). Variable neighborhood search: Principles and applications, \textit{European Journal of Operational Research} \textbf{130}(3), 449--467.
-
-\bibitem{Mladenovic2008}
-Mladenovi\'c, N., Dra\v{z}i\'c, M., Kova\v{c}evi\'c-Vuj\v{c}i\'c, V. and \v{C}angalovi\'c, M. (2008). General variable neighborhood search for the continuous optimization, \textit{European Journal of Operational Research} \textbf{191}(3), 753--770.
+\bibitem{Deep2007}
+Deep, K. and Thakur, M. (2007). A new crossover operator for real coded genetic algorithms, \textit{Applied Mathematics and Computation} \textbf{188}(1), 895--911. doi:10.1016/j.amc.2006.10.047.
 
 \bibitem{Kraft1988}
-Kraft, D. (1988). A software package for sequential quadratic programming, Technical Report DFVLR-FB 88-28, DLR German Aerospace Center, Institute for Flight Mechanics, Cologne.
+Kraft, D. (1988). A software package for sequential quadratic programming, Technical Report DFVLR-FB 88-28, DFVLR, Institut f\"ur Dynamik der Flugsysteme, Oberpfaffenhofen, K\"oln.
+
+\bibitem{Holm1979}
+Holm, S. (1979). A simple sequentially rejective multiple test procedure, \textit{Scandinavian Journal of Statistics} \textbf{6}(2), 65--70.
+
+\bibitem{Demsar2006}
+Dem\v{s}ar, J. (2006). Statistical comparisons of classifiers over multiple data sets, \textit{Journal of Machine Learning Research} \textbf{7}, 1--30.
 
 \bibitem{PyWake}
-DTU Wind Energy. PyWake: an open-source wind farm simulation tool, Python package \texttt{py\_wake} version 2.6.20 (Horns Rev~1 site data, \texttt{py\_wake/examples/data/hornsrev1.py}), MIT License. \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}.
+DTU Wind Energy (2026). PyWake: open-source static wake modeling framework, Python package \texttt{py\_wake} version 2.6.20 (Horns Rev~1 site data in \texttt{py\_wake/examples/data/hornsrev1.py}), MIT License. \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}.
 
 \bibitem{Carrillo2013}
 Carrillo, C., Obando Monta\~no, A.F., Cidr\'as, J. and D\'iaz-Dorado, E. (2013). Review of power curve modelling for wind turbines, \textit{Renewable and Sustainable Energy Reviews} \textbf{21}, 572--581. doi:10.1016/j.rser.2013.01.012.
 
 \bibitem{Bastankhah2014}
 Bastankhah, M. and Port\'e-Agel, F. (2014). A new analytical model for wind-turbine wakes, \textit{Renewable Energy} \textbf{70}, 116--123. doi:10.1016/j.renene.2014.01.029.
-
-\bibitem{Demsar2006}
-Dem\v{s}ar, J. (2006). Statistical comparisons of classifiers over multiple data sets, \textit{Journal of Machine Learning Research} \textbf{7}, 1--30.
-
-\bibitem{Holm1979}
-Holm, S. (1979). A simple sequentially rejective multiple test procedure, \textit{Scandinavian Journal of Statistics} \textbf{6}(2), 65--70.
-
-\bibitem{Vargha2000}
-Vargha, A. and Delaney, H.D. (2000). A critique and improvement of the CL common language effect size statistics of McGraw and Wong, \textit{Journal of Educational and Behavioral Statistics} \textbf{25}(2), 101--132.
 
 \end{thebibliography}
 
