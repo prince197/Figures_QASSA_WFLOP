@@ -1,24 +1,33 @@
 # Site data
 
+All timestamps are UTC and mark the start of an hourly mean. Empty fields mean nothing was recorded that hour.
+
 ## mast_timeseries.csv
-Hourly means from the site met mast, 2014-01-01 00:00 to 2024-01-01 11:00 (UTC, hour-beginning; 87,660 hours).
+The on-site met mast, 2021-01-01 00:00 to 2023-12-31 23:00.
 
 | column | unit | meaning |
 |---|---|---|
 | timestamp_utc | ISO 8601 | start of the averaging hour |
-| ws_40m | m/s | cup anemometer at 40 m |
-| ws_60m | m/s | cup anemometer at 60 m |
-| wd_58m | deg | wind vane at 58 m, direction the wind blows **from**, clockwise from true north, 1-degree resolution |
-| temp_2m | degC | air temperature at 2 m |
-| rh_2m | % | relative humidity at 2 m |
+| ws_40m | m/s | cup anemometer, 40 m |
+| ws_60m_a | m/s | cup anemometer "A", 60 m |
+| ws_60m_b | m/s | cup anemometer "B", 60 m |
+| wd_58m | deg | wind vane, 58 m; direction the wind blows **from**, clockwise from true north, 1-degree resolution |
+| temp_2m | degC | air temperature, 2 m |
+| rh_2m | % | relative humidity, 2 m |
 
-Empty fields mean the logger recorded nothing that hour. The cups are unheated and read 0.00 below their starting threshold (about 0.3 m/s). The vane sits close enough to hub height that no veer correction is needed. The mast stands in flat, open terrain next to the planned farm, so the hub-height wind is taken to be the same at every turbine position.
+The instrument heights, boom azimuths and tower type are listed in `site.json`. A boom azimuth is the compass direction in which the boom points out from the tower. The cups are unheated and read 0.00 below their starting threshold of about 0.3 m/s. The vane is close enough to hub height that no veer correction is needed between 58 m and 80 m. The mast stands in flat, open terrain next to the lease, so the hub-height wind is taken to be the same at every turbine position.
+
+## reference_timeseries.csv
+A reanalysis grid node, 2004-01-01 00:00 to 2023-12-31 23:00: `ws_100m` (m/s) and `wd_100m` (deg, from, clockwise from true north).
+
+## station_timeseries.csv
+A synoptic airport station, 2004-01-01 00:00 to 2023-12-31 23:00: `ws_10m` (m/s, reported to 0.5 m/s) and `wd_10m` (deg, reported to 10 degrees; 0 when calm).
 
 ## power_curve.csv
 Power curve of the planned turbine at hub-height free-stream speed, valid at site air density. Interpolate linearly between table points. Output is zero above 25 m/s.
 
 ## site.json
-Farm and turbine parameters: turbine count, rotor diameter, hub height, thrust coefficient, wake decay constant, boundary radius, minimum spacing, and the mast instrument heights.
+Farm and turbine parameters: turbine count, rotor diameter, hub height, thrust coefficient, wake decay constant, boundary radius and minimum spacing. It also gives the long-term period and the instrument metadata for the mast, the reanalysis node and the station.
 
 ## Coordinates
 x points east and y points north, in metres. The origin is the centre of the circular lease area. Each turbine centre must satisfy x^2 + y^2 <= R^2, where R = `boundary_radius_m`. Every pair of turbines must be at least `min_spacing_m` apart (4 rotor diameters, centre to centre).

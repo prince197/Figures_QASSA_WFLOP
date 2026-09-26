@@ -4,14 +4,16 @@
 
 Design a layout for 24 turbines within the circular onshore lease area and estimate its long-term electrical output.
 
-The only wind data available are ten years of hourly measurements from a met mast beside the site.
+On-site wind data cover only three years of hourly measurements from a met mast beside the site. Twenty years of hourly data are available from a reanalysis grid node and from an airport station.
 
 ## Input files
 
 - `/app/data/README.md` — columns, units, coordinate frame, and the exact wake model used for grading.
-- `/app/data/mast_timeseries.csv` — hourly mast measurements.
+- `/app/data/mast_timeseries.csv` — hourly mast measurements, 2021–2023.
+- `/app/data/reference_timeseries.csv` — hourly reanalysis node data, 2004–2023.
+- `/app/data/station_timeseries.csv` — hourly airport station data, 2004–2023.
 - `/app/data/power_curve.csv` — turbine power curve.
-- `/app/data/site.json` — turbine specifications, wake-model parameters, and lease limits.
+- `/app/data/site.json` — turbine specifications, wake-model parameters, lease limits, and instrument metadata.
 
 ## Files to submit
 
@@ -20,11 +22,11 @@ The only wind data available are ten years of hourly measurements from a met mas
    - `net_mean_power_kw`: estimated long-term mean electrical output of the submitted layout after wake losses, in kW.
    - `gross_mean_power_kw`: estimated long-term mean electrical output with wakes ignored, assuming 24 free-standing turbines, in kW.
 
-Treat the full ten years in the mast record as the long-term wind climate. Assume the turbines operate in every hour of that period, including hours when the mast was down or its readings were unreliable.
+The long-term wind climate is the period 2004–2023. Assume the turbines operate in every hour of that period.
 
 ## Evaluation
 
-The submitted layout is evaluated for every hour in the ten-year period using that hour's true hub-height wind speed and direction and the wake model specified in the README.
+The submitted layout is evaluated for every hour of 2004–2023 using that hour's true hub-height wind speed and direction and the wake model specified in the README.
 
 - All 24 turbines must be inside the lease circle. Every pair of turbines must meet the minimum spacing requirement. There is a 0.1 m tolerance for both limits. Any violation fails the task.
 - The true net mean power of your layout is compared with the best layout known for this site.

@@ -6,9 +6,36 @@
   "hub_height_m": 80.0,
   "thrust_coefficient": 0.8,
   "wake_decay_constant": 0.05,
-  "mast_anemometer_heights_m": [
-    40.0,
-    60.0
+  "long_term_period_utc": [
+    "2004-01-01T00:00",
+    "2023-12-31T23:00"
   ],
-  "mast_vane_height_m": 58.0
+  "mast": {
+    "ws_40m": {
+      "height_m": 40.0,
+      "boom_azimuth_deg": 232.0
+    },
+    "ws_60m_a": {
+      "height_m": 60.0,
+      "boom_azimuth_deg": 232.0
+    },
+    "ws_60m_b": {
+      "height_m": 60.0,
+      "boom_azimuth_deg": 52.0
+    },
+    "wd_58m": {
+      "height_m": 58.0
+    },
+    "tower": "triangular lattice, 0.9 m face width"
+  },
+  "reference": {
+    "source": "reanalysis grid node, 28 km from site",
+    "height_m": 100.0
+  },
+  "station": {
+    "source": "airport synoptic station, 14 km from site",
+    "height_m": 10.0,
+    "speed_resolution_ms": 0.5,
+    "direction_resolution_deg": 10
+  }
 }

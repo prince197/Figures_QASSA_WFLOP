@@ -1,22 +1,32 @@
-"""Reference solution: hub-height resource from a two-level mast, then wake-aware layout optimisation.
+"""Reference solution (v3): long-term hub-height climate from a short mast campaign, then
+wake-aware layout optimisation.
 
-Choices (see README): drop logger gaps and iced-sensor episodes; extrapolate the 60 m cup
-to hub height with the shear exponent measured between 40 m and 60 m; keep the wind rose at
-1-degree resolution so the optimiser cannot hide turbines between coarse sector centre-lines;
-multi-start random search with incremental evaluation; report the yield of the final layout
-evaluated record-by-record (no binning) on the cleaned hub-height series.
+Choices (see README):
+  * mast QC: drop logger gaps and iced-cup episodes (all cups near zero, vane frozen >= 3 h,
+    event touching sub-zero air);
+  * tower shadow: at 60 m use the cup whose boom faces the wind;
+  * shear: power-law exponent by hour of day from the same-boom 40 m / 60 m A pair;
+  * reference homogeneity: find the step in the monthly reanalysis/station speed ratio and
+    rescale the reanalysis before the step;
+  * MCP: veer from the concurrent mast/reanalysis directions; variance-ratio regression per
+    30-degree sector of the veer-corrected reanalysis direction; long-term series 2004-2023;
+  * layout: 1-degree wind rose, multi-start random search with incremental evaluation, then a
+    simulated-annealing polish;
+  * yield: the final layout evaluated hour by hour on the long-term series.
 """
 import json
 import os
 import sys
 
 import numpy as np
+import pandas as pd
 
 DATA = os.environ.get("WLY_DATA", "/app/data")
 OUT = os.environ.get("WLY_OUT", "/app/output")
 SEED = int(os.environ.get("WLY_SEED", "20260925"))
 N_STARTS = int(os.environ.get("WLY_STARTS", "6"))
 ITERS = int(os.environ.get("WLY_ITERS", "60000"))
+SA_ITERS = int(os.environ.get("WLY_SA_ITERS", "150000"))
 
 SITE = json.load(open(os.path.join(DATA, "site.json")))
 D = SITE["rotor_diameter_m"]
@@ -32,17 +42,20 @@ S_GRID = np.linspace(0.3, 1.0, 141)
 
 
 # ---------------------------------------------------------------- resource
-def load_mast():
-    raw = np.genfromtxt(os.path.join(DATA, "mast_timeseries.csv"), delimiter=",", skip_header=1,
-                        usecols=(1, 2, 3, 4, 5))
-    ws40, ws60, wd, temp = raw[:, 0], raw[:, 1], raw[:, 2], raw[:, 3]
-    ok = ~np.isnan(ws40) & ~np.isnan(ws60) & ~np.isnan(wd)
-    # iced cups: near-zero speeds on both cups with a frozen vane for >= 3 h; the event
-    # must touch sub-zero air somewhere (ice lingers after the air warms up)
+def angdiff(a, b):
+    return (np.asarray(a) - np.asarray(b) + 180.0) % 360.0 - 180.0
+
+
+def mast_hub():
+    m = pd.read_csv(os.path.join(DATA, "mast_timeseries.csv"), parse_dates=["timestamp_utc"])
+    ws = m[["ws_40m", "ws_60m_a", "ws_60m_b"]].to_numpy()
+    wd = m.wd_58m.to_numpy()
+    T = m.temp_2m.to_numpy()
+    ok = ~np.isnan(ws).any(axis=1) & ~np.isnan(wd)
+    cand = ok & (ws < 1.0).all(axis=1)
     frozen = np.r_[False, np.diff(wd) == 0]
-    cand = ok & (ws60 < 1.0) & (ws40 < 1.0)
-    flag = np.zeros(len(wd), bool)
-    i, n = 0, len(wd)
+    ice = np.zeros(len(m), bool)
+    i, n = 0, len(m)
     while i < n:
         if not cand[i]:
             i += 1
@@ -50,15 +63,60 @@ def load_mast():
         j = i + 1
         while j < n and cand[j] and frozen[j]:
             j += 1
-        if j - i >= 3 and np.nanmin(temp[i:j]) < 1.0:
-            flag[i:j] = True
+        if j - i >= 3 and np.nanmin(T[i:j]) < 1.0:
+            ice[i:j] = True
         i = j
-    good = ok & ~flag
-    both = good & (ws40 > 3.0) & (ws60 > 3.0)
-    alpha = np.log(ws60[both].mean() / ws40[both].mean()) / np.log(60.0 / 40.0)
-    U = ws60[good] * (HUB / 60.0) ** alpha
-    return U, wd[good], dict(alpha=float(alpha), n_good=int(good.sum()), n_iced=int(flag.sum()),
-                             n_total=len(wd))
+    d = m[ok & ~ice]
+    wd = d.wd_58m.to_numpy()
+    ba = SITE["mast"]["ws_60m_a"]["boom_azimuth_deg"]
+    bb = SITE["mast"]["ws_60m_b"]["boom_azimuth_deg"]
+    use_a = np.abs(angdiff(wd, ba)) <= np.abs(angdiff(wd, bb))
+    u60 = np.where(use_a, d.ws_60m_a, d.ws_60m_b)
+    pair = ((d.ws_40m > 3) & (d.ws_60m_a > 3)).to_numpy()
+    hod = d.timestamp_utc.dt.hour.to_numpy()
+    a_h = np.array([np.log(d.ws_60m_a.to_numpy()[pair & (hod == h)].mean()
+                           / d.ws_40m.to_numpy()[pair & (hod == h)].mean()) for h in range(24)]) / np.log(1.5)
+    U = u60 * (HUB / 60.0) ** a_h[hod]
+    info = dict(n_mast=len(m), n_iced=int(ice.sum()), alpha_day_night=[float(a_h[14]), float(a_h[2])])
+    return pd.DataFrame({"t": d.timestamp_utc.to_numpy(), "U": U, "wd": wd}), info
+
+
+def homogenized_reference():
+    r = pd.read_csv(os.path.join(DATA, "reference_timeseries.csv"), parse_dates=["timestamp_utc"])
+    st = pd.read_csv(os.path.join(DATA, "station_timeseries.csv"), parse_dates=["timestamp_utc"])
+    r = r.merge(st, on="timestamp_utc", how="left")
+    mo = r.timestamp_utc.dt.to_period("M")
+    q = (r.ws_100m.groupby(mo).mean() / r.ws_10m.groupby(mo).mean()).to_numpy()
+    best = None
+    for k in range(12, len(q) - 12):
+        sse = ((q[:k] - q[:k].mean()) ** 2).sum() + ((q[k:] - q[k:].mean()) ** 2).sum()
+        if best is None or sse < best[0]:
+            best = (sse, k)
+    k = best[1]
+    months = mo.unique()
+    f = q[k:].mean() / q[:k].mean()
+    pre = (mo < months[k]).to_numpy()
+    r.loc[pre, "ws_100m"] = r.loc[pre, "ws_100m"] * f
+    return r, dict(step_month=str(months[k]), step_factor=float(f))
+
+
+def long_term_series():
+    h, info = mast_hub()
+    r, hinfo = homogenized_reference()
+    c = h.join(r.set_index("timestamp_utc"), on="t", how="inner")
+    veer = float(np.rad2deg(np.angle(np.mean(np.exp(1j * np.deg2rad(c.wd - c.wd_100m))))))
+    rdir = np.mod(r.wd_100m.to_numpy() + veer, 360)
+    cdir = np.mod(c.wd_100m.to_numpy() + veer, 360)
+    sec = lambda x: (np.floor(np.mod(x + 15, 360) / 30).astype(int)) % 12
+    sr, sc = sec(rdir), sec(cdir)
+    x_lt = r.ws_100m.to_numpy()
+    xc, yc = c.ws_100m.to_numpy(), c.U.to_numpy()
+    U = np.empty(len(r))
+    for s in range(12):
+        mc, ml = sc == s, sr == s
+        U[ml] = yc[mc].mean() + yc[mc].std() / xc[mc].std() * (x_lt[ml] - xc[mc].mean())
+    info.update(hinfo, veer_deg=veer, n_long_term=len(r))
+    return np.clip(U, 0.0, None), rdir, info
 
 
 def load_curve():
@@ -189,9 +247,31 @@ def farm_mean_power(xy, U, wd, curve, chunk=4000):
     return tot / len(U)
 
 
+def anneal(model, xy, rng, iters, T0=2.0, step0=60.0):
+    """Metropolis polish on the binned model; keeps the best layout seen."""
+    f = model.reset(xy)
+    best = (model.xy.copy(), f)
+    for it in range(iters):
+        frac = it / iters
+        T = T0 * (1 - frac) ** 2 + 1e-6
+        m = rng.integers(N)
+        p = model.xy[m] + rng.normal(0, step0 * (1 - frac) + 2.0, 2)
+        if not feasible(model.xy, m, p):
+            continue
+        fn, st = model.propose(m, p)
+        if fn > model.f or rng.random() < np.exp((fn - model.f) / T):
+            model.accept(fn, st)
+            if model.f > best[1]:
+                best = (model.xy.copy(), model.f)
+        if it % 5000 == 4999:
+            model.reset(model.xy)
+    model.reset(best[0])
+    return model.xy.copy(), model.f
+
+
 def main():
     rng = np.random.default_rng(SEED)
-    U, wd, info = load_mast()
+    U, wd, info = long_term_series()
     curve = load_curve()
     model = Model(U, wd, curve, width=1.0)
     best = None
@@ -200,6 +280,7 @@ def main():
         if best is None or f > best[1]:
             best = (xy, f)
     xy, f = search(model, best[0], rng, ITERS, step0=60.0, jump=0.0)
+    xy, f = anneal(model, xy, rng, SA_ITERS)
     net = farm_mean_power(xy, U, wd, curve)
     gross = N * pcurve(U, curve).mean()
     os.makedirs(OUT, exist_ok=True)
