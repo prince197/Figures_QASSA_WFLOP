@@ -16,8 +16,6 @@ The task is a pre-construction energy-yield assessment: several dependent resour
 6. **Reference veer.** The reanalysis direction is rotated about 14° from the site vane. Optimising on the uncorrected long-term rose puts the layout 1.04% (0.8 to 1.4%) below the best-known one.
 7. **Optimisation and honest yield.** 24 turbines in a 1 km radius at 4D spacing is a nonconvex, discontinuous problem. A weak optimiser or a hand-made ring layout falls 0.8-2.5% short. Coarse-sector (30°) models over-predict their own yield by 14-16%.
 
-Earlier versions of this task, with only a long mast record, were solved 3/3 by frontier agents. Those agents did the icing QC, the shear and the fine-direction optimisation without difficulty. This version keeps those steps but puts the dominant errors in the long-term correction and the instrument handling, which require domain knowledge rather than careful coding.
-
 ## Reference solution
 
 `solution/solve.py` uses NumPy and pandas and runs in about 95 s on 2 CPUs. The choices it makes:
