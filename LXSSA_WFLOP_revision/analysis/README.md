@@ -7,17 +7,17 @@
 | `original_vns.py` | Original basic VNS (Mladenovic & Hansen 1997; continuous form of Mladenovic et al. 2008) | library |
 | `hybrid_lxssa_bvns.py` | Final hybrid (phase 1 LX-SSA or SSA, phase 2 original VNS) | library |
 | `full_grid_experiments.py vgrid` / `vhr16` / `vhr80` | Original VNS on the 68 cases and Horns Rev | `fresh_vgrid.csv`, `fresh_vhr16.csv`, `fresh_vhr80.csv` |
-| `full_grid_experiments.py bgrid` | LX-SSA-VNS (`LXBV`) and SSA-VNS (`SSABV`) on the 68 cases | `fresh_bgrid.csv` |
+| `full_grid_experiments.py bgrid` | LX-SSA-VNS (`LXBV`) and SSA-VNS (`SSABV`, not reported in the manuscript) on the 68 cases | `fresh_bgrid.csv` |
 | `full_grid_experiments.py bsplit` | Budget split 25% / 75% on 12 cases | `fresh_bsplit.csv` |
 | `full_grid_experiments.py bhr16` / `bhr80` | Hybrids on Horns Rev | `fresh_bhr16.csv`, `fresh_bhr80.csv` |
-| `final_results.py` | Seven-method tables, statistics, component ablation, split table, figures | `final_tables.tex`, `final_summary.json`, `final_case_tests.csv`, `final_ablation_tests.csv`, `final_best_layouts_maxN.csv`, `../figures_final/*.pdf` |
+| `final_results.py` | Seven-method tables, statistics, component ablation (SSA, LX-SSA, VNS, LX-SSA-VNS), split table, figures | `final_tables.tex`, `final_summary.json`, `final_case_tests.csv`, `final_ablation_tests.csv`, `final_best_layouts_maxN.csv`, `../figures_final/*.pdf` |
 | `robustness_final.py` | Cubic power curve / Gaussian wake re-evaluation, seven methods | `final_robust_table.tex`, `final_robust_summary.json`, `final_reevaluation.csv` |
 | `sec_hybrid.tex`, `sec_setup.tex` | Section VI (algorithm) and the Experimental Setup source | – |
 | `build_final_manuscript.py`, `final_frontmatter.py` | Write Sections VI–XII, appendix, abstract/contributions/motivation | – |
 | `final_prose.py` | Final prose pass in the authors' style (run once after the two builders); switches Figs. 1–3 to the redrawn figures | – |
 | `make_model_figures.py` | Redrawn model figures (circular farm, Jensen wake, wake half cone) | `../figures_final/fig_wind_farm.pdf`, `fig_wake_model.pdf`, `fig_half_cone.pdf` |
 
-Method ids in the CSV files: `LXBV` = LX-SSA-VNS (final), `SSABV` = SSA-VNS (ablation), `BVNS` = original VNS (shown as "VNS"), `LXSSA`, `SSA`, `PSO`, `DE`, `SLSQP` = MS-SLSQP. The ids `VNS` (modified VNS) and `LXVNS` (earlier hybrid with the modified VNS) in `fresh_grid.csv` / `fresh_hgrid.csv` belong to superseded versions and are not used in the manuscript.
+Method ids in the CSV files: `LXBV` = LX-SSA-VNS (final), `SSABV` = SSA-VNS (run, not reported), `BVNS` = original VNS (shown as "VNS"), `LXSSA`, `SSA`, `PSO`, `DE`, `SLSQP` = MS-SLSQP. The ids `VNS` (modified VNS) and `LXVNS` (earlier hybrid with the modified VNS) in `fresh_grid.csv` / `fresh_hgrid.csv` belong to superseded versions and are not used in the manuscript.
 
 ## Superseded intermediate versions (kept for reference, not used in the manuscript)
 

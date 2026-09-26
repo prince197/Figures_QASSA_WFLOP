@@ -347,7 +347,7 @@ Method & Avg.\ rank & Best & Feas.\ (\%%) & $p$ vs.\ LX-SSA-VNS \\
             sub = G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n) & G.Feasible]
             lx = sub[sub.Algorithm == FOCUS].sort_values("Objective").iloc[-1]
             top = sub.sort_values("Objective").iloc[-1]
-            for row, mk, colr, lab in ((top, "s", COL[top.Algorithm], f"best overall ({LAB[top.Algorithm]})"),
+            for row, mk, colr, lab in ((top, "s", INK, f"best of all methods ({LAB[top.Algorithm]})"),
                                        (lx, "o", COL[FOCUS], "best LX-SSA-VNS")):
                 xy = np.array([[float(v) for v in p.split()] for p in row.Coordinates.split(";")])
                 ax.scatter(xy[:, 0], xy[:, 1], marker=mk, s=22 if mk == "s" else 12,
@@ -358,9 +358,13 @@ Method & Avg.\ rank & Best & Feas.\ (\%%) & $p$ vs.\ LX-SSA-VNS \\
             t = np.linspace(0, 2 * np.pi, 200)
             ax.plot(r * np.cos(t), r * np.sin(t), color=MUTED, lw=0.8)
             ax.set_aspect("equal"); ax.set_xlim(-1.08 * r, 1.08 * r); ax.set_ylim(-1.08 * r, 1.08 * r)
-            ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
+            ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}\nbest of all methods: {LAB[top.Algorithm]}",
+                         fontsize=8, color=INK)
             ax.tick_params(labelsize=6)
-            ax.legend(fontsize=6, loc="lower left", bbox_to_anchor=(0, -0.02), handletextpad=0.2)
+    hl = [plt.Line2D([], [], ls="none", marker="s", ms=6, mfc="none", mec=INK, mew=1,
+                     label="best layout of all methods"),
+          plt.Line2D([], [], ls="none", marker="o", ms=4.5, color=COL[FOCUS], label="best LX-SSA-VNS layout")]
+    fig.legend(handles=hl, loc="lower center", ncol=2, bbox_to_anchor=(0.5, 1.0), fontsize=7.5)
     fig.tight_layout()
     save(fig, "layouts_max")
     pd.DataFrame(best_rows).drop_duplicates().to_csv("final_best_layouts_maxN.csv", index=False)
@@ -509,13 +513,10 @@ DS & $r$ & $N$ & 25\%% & 50\%% & 75\%% & $p$ (25) & $p$ (75) \\\\
     summary["phase2_loss_reduction_pct"] = dict(mean=float(np.mean(gains)), median=float(np.median(gains)),
                                                 n=len(gains), infeasible_at_switch=still_infeasible)
     # ---------- component ablation: SSA, LX-SSA, VNS, SSA-VNS, LX-SSA-VNS ----------
-    ABL = ["SSABV", "LXBV", "BVNS", "LXSSA", "SSA"]          # legend order (palette validated)
+    ABL = ["LXBV", "BVNS", "LXSSA", "SSA"]                   # legend order (palette validated)
     CONTR = [("LXBV", "LXSSA", "VNS phase (after LX-SSA)"),
              ("LXBV", "BVNS", "LX-SSA start vs.\\ best initial point"),
-             ("LXBV", "SSABV", "Laplace step inside the hybrid"),
-             ("SSABV", "SSA", "VNS phase (after SSA)"),
-             ("SSABV", "BVNS", "SSA start vs.\\ best initial point"),
-             ("LXSSA", "SSA", "Laplace step alone")]
+             ("LXSSA", "SSA", "Laplace step (without VNS)")]
     GB = GA[GA.Algorithm.isin(ABL)]
     arows = []
     for (ds, r, n), sub in GB.groupby(["Dataset", "Radius", "Turbines"]):
@@ -542,8 +543,7 @@ DS & $r$ & $N$ & 25\%% & 50\%% & 75\%% & $p$ (25) & $p$ (75) \\\\
     acr = np.vstack([rankdata(-np.nan_to_num(row, nan=-np.inf)) for row in am.values])
     achi, apf = friedmanchisquare(*[acr[:, j] for j in range(len(ABL))])
     aavg = acr.mean(0)
-    comp = {"SSA": ("SSA", "--"), "LXSSA": ("LX-SSA", "--"), "BVNS": ("--", "VNS"),
-            "SSABV": ("SSA", "VNS"), "LXBV": ("LX-SSA", "VNS")}
+    comp = {"SSA": ("SSA", "--"), "LXSSA": ("LX-SSA", "--"), "BVNS": ("--", "VNS"), "LXBV": ("LX-SSA", "VNS")}
     rows1 = []
     for j in np.argsort(aavg):
         a = ABL[j]
@@ -557,7 +557,7 @@ DS & $r$ & $N$ & 25\%% & 50\%% & 75\%% & $p$ (25) & $p$ (75) \\\\
                      f"${x.DLoss.mean():+.2f}$ \\\\")
     tex.append(r"""\begin{table}[!t]
 \centering
-\caption{Component ablation over the 68 benchmark cases (30 seed-paired runs, 6,030 calls). Top: phase-1 and phase-2 components, average rank of the mean feasible objective among the five variants (Friedman $\chi^2_F=%.1f$, 4 d.f., $p=%s$) and percentage of feasible runs. Bottom: planned contrasts, number of cases in which the first variant is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the six contrasts of each case, $\alpha=0.05$), and mean difference of the wake loss $\overline{\Delta L}$ (percentage points; negative = first variant better).}
+\caption{Component ablation over the 68 benchmark cases (30 seed-paired runs, 6,030 calls). Top: phase-1 and phase-2 components, average rank of the mean feasible objective among the four variants (Friedman $\chi^2_F=%.1f$, 3 d.f., $p=%s$) and percentage of feasible runs. Bottom: planned contrasts, number of cases in which the first variant is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the three contrasts of each case, $\alpha=0.05$), and mean difference of the wake loss $\overline{\Delta L}$ (percentage points; negative = first variant better).}
 \label{tab:ablation}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lcccc}
@@ -583,17 +583,6 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
                                contrasts={f"{a}-{b}": dict(A[(A.A == a) & (A.B == b)].Outcome.value_counts().to_dict(),
                                                             dloss=float(A[(A.A == a) & (A.B == b)].DLoss.mean()))
                                           for a, b, _ in CONTR})
-    # phase-2 gain of SSA-VNS as well
-    for key, alg in (("phase2_ssabv", "SSABV"),):
-        Hy2 = GA[(GA.Algorithm == alg) & GA.Feasible]; g2, inf2 = [], 0
-        for _, row in Hy2.iterrows():
-            c = np.array([float(v) for v in row.Curve.split(";")]); at = c[3030 // CHECK - 1]
-            if not np.isfinite(at):
-                inf2 += 1; continue
-            l1, l2 = row.Ideal - at, row.Ideal - row.Objective
-            if l1 > 1e-9:
-                g2.append(100 * (l1 - l2) / l1)
-        summary[key] = dict(mean=float(np.mean(g2)), median=float(np.median(g2)), infeasible_at_switch=inf2)
     # ablation convergence figure (largest N)
     fig, axes = plt.subplots(2, 3, figsize=(7.1, 4.0))
     for i, ds in enumerate((1, 2)):

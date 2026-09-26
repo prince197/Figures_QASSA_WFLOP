@@ -109,7 +109,7 @@ Figure~\ref{fig:box} shows the run-to-run distributions for the moderate cases. 
 \subsection{Component Ablation}
 \label{sec:ablation}
 """ + T["tab:ablation"] + "\n" + fig("ablation_convergence", "fig:ablation",
-    "Component ablation, largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls for SSA, LX-SSA, VNS and the two-phase variants SSA-VNS and LX-SSA-VNS (dotted vertical line: switch from the swarm phase to VNS at 3,030 calls).") + \
+    "Component ablation, largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls for SSA, LX-SSA, VNS and LX-SSA-VNS (dotted vertical line: switch from LX-SSA to VNS in the hybrid at 3,030 calls).") + \
     T["tab:split"] + r"""
 The ablation separates the three ingredients of the hybrid: the swarm phase, the Laplace step inside that swarm phase, and the VNS phase. It compares SSA, LX-SSA, VNS, SSA-VNS and LX-SSA-VNS on all 68 cases with the same seeds and budget (Table~\ref{tab:ablation}, Fig.~\ref{fig:ablation}). The Friedman test over the five variants is highly significant ($\chi^2_F=156.5$, 4 d.f., $p=8.1\times10^{-33}$).
 \begin{itemize}
@@ -122,7 +122,7 @@ Taken together, the improvement of LX-SSA-VNS over its components comes from com
 
 \subsection{Optimized Layouts}
 """ + fig("layouts_max", "fig:layouts",
-    "Best layouts for the largest turbine count of each farm: best LX-SSA-VNS run (filled markers) and best run of any method (open squares, method in the legend). Circle: farm boundary. Coordinates are listed in Appendix~\\ref{app:coordinates}.") + r"""
+    "Best layouts for the largest turbine count of each farm: best LX-SSA-VNS run (filled blue circles) and best run of all methods (open black squares; the method is named above each panel). Where the two coincide, the circles sit inside the squares. Circle: farm boundary. Coordinates are listed in Appendix~\\ref{app:coordinates}.") + r"""
 Figure~\ref{fig:layouts} compares, for the largest turbine count of each farm, the best LX-SSA-VNS layout with the best layout found by any method. The best overall layout comes from LX-SSA-VNS in four cases, from MS-SLSQP in one (Data Set~I, 500~m) and from VNS in one (Data Set~II, 750~m). Most turbines are placed close to the boundary, which maximizes their mutual distances, while the remaining turbines occupy the interior at positions staggered with respect to the dominant wind directions.
 
 \subsection{Computational Cost}

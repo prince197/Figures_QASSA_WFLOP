@@ -36,7 +36,7 @@
 
 
 \begin{abstract}
-The wind farm layout optimization problem (WFLOP) asks where a given number of turbines should be placed so that as little energy as possible is lost in the wakes, while every turbine stays inside the site and keeps a minimum distance from the others. In this work, we propose LX-SSA-VNS, a two-phase hybrid algorithm for the continuous WFLOP. In the first phase, the Laplacian Salp Swarm Algorithm (LX-SSA), introduced by Solanki and Deep~\cite{Solanki2023}, explores the layout space for half of the evaluation budget. In the second phase, the basic variable neighborhood search (VNS) refines the best layout found by the swarm by alternating shaking of the whole layout with a complete local search. Wake losses are computed with the Jensen model and direction-dependent Weibull wind data, and the boundary and spacing constraints are handled through a penalized objective. We compare LX-SSA-VNS with LX-SSA, SSA, particle swarm optimization (PSO), differential evolution (DE), VNS and a multistart SLSQP solver on 68 benchmark cases (two wind data sets, three circular farms, 2--15 turbines), using 30 seed-paired runs of 6,030 objective evaluations per method and case, and analyze the results with Friedman, Holm-corrected Wilcoxon and effect-size statistics. LX-SSA-VNS obtains the best average rank (1.89), is significantly better than each of the other six methods and finds a feasible layout in 99.9\% of the runs. An ablation with SSA, LX-SSA, VNS and SSA-VNS shows that the improvement comes from pairing a swarm phase with VNS, which removes on average 39\% of the wake loss left by the swarm, whereas the Laplace step itself adds nothing: an SSA first phase does at least as well. On the Horns Rev~1 offshore site, the hybrid gives the highest mean energy yield for a 16-turbine block, although no method improves on the installed layout within the budget and only the constraint-aware SLSQP solver finds feasible layouts for the full 80-turbine farm. Finally, we show that the ranking of the algorithms is stable under a different power curve but changes under a Gaussian wake model.
+The wind farm layout optimization problem (WFLOP) asks where a given number of turbines should be placed so that as little energy as possible is lost in the wakes, while every turbine stays inside the site and keeps a minimum distance from the others. In this work, we propose LX-SSA-VNS, a two-phase hybrid algorithm for the continuous WFLOP. In the first phase, the Laplacian Salp Swarm Algorithm (LX-SSA), introduced by Solanki and Deep~\cite{Solanki2023}, explores the layout space for half of the evaluation budget. In the second phase, the basic variable neighborhood search (VNS) refines the best layout found by the swarm by alternating shaking of the whole layout with a complete local search. Wake losses are computed with the Jensen model and direction-dependent Weibull wind data, and the boundary and spacing constraints are handled through a penalized objective. We compare LX-SSA-VNS with LX-SSA, SSA, particle swarm optimization (PSO), differential evolution (DE), VNS and a multistart SLSQP solver on 68 benchmark cases (two wind data sets, three circular farms, 2--15 turbines), using 30 seed-paired runs of 6,030 objective evaluations per method and case, and analyze the results with Friedman, Holm-corrected Wilcoxon and effect-size statistics. LX-SSA-VNS obtains the best average rank (1.89), is significantly better than each of the other six methods and finds a feasible layout in 99.9\% of the runs. An ablation with SSA, LX-SSA and VNS shows that the improvement comes from pairing the swarm phase with VNS, which removes on average 39\% of the wake loss left by the swarm, whereas the Laplace step on its own does not improve on the standard SSA. On the Horns Rev~1 offshore site, the hybrid gives the highest mean energy yield for a 16-turbine block, although no method improves on the installed layout within the budget and only the constraint-aware SLSQP solver finds feasible layouts for the full 80-turbine farm. Finally, we show that the ranking of the algorithms is stable under a different power curve but changes under a Gaussian wake model.
 \end{abstract}
 
 
@@ -63,7 +63,7 @@ This complementary behavior motivates the present work. We propose LX-SSA-VNS, a
 \item We propose LX-SSA-VNS, a two-phase hybrid in which the previously published LX-SSA~\cite{Solanki2023} explores the layout space and the basic VNS~\cite{Mladenovic1997,Mladenovic2008} refines the best layout (Section~\ref{sec:hybrid}).
 \item We formulate the continuous WFLOP with explicit boundary and minimum-spacing constraints, handled through a penalized objective that both phases of the hybrid share (Section~\ref{sec:model}).
 \item We compare the hybrid with LX-SSA, SSA, PSO, DE, VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases at equal numbers of objective evaluations, with 30 seed-paired runs per method and case, and support the comparison with Friedman, Holm-corrected Wilcoxon and effect-size statistics, feasibility rates and convergence curves (Section~\ref{sec:results}).
-\item We carry out a component ablation with SSA, LX-SSA, VNS, SSA-VNS and LX-SSA-VNS that separates the effects of the swarm phase, the Laplace step and the VNS phase, and we examine how the budget should be split between the two phases (Section~\ref{sec:ablation}).
+\item We carry out a component ablation with SSA, LX-SSA, VNS and LX-SSA-VNS that separates the effects of the swarm phase, the Laplace step and the VNS phase, and we examine how the budget should be split between the two phases (Section~\ref{sec:ablation}).
 \item We apply all methods to the Horns Rev~1 offshore farm with its real turbine, wind climate and site outline (Section~\ref{sec:hornsrev-site}), and we test how the results depend on the power curve, the wake model, the minimum spacing and the boundary handling (Section~\ref{sec:robustness}).
 \end{enumerate}
 
@@ -516,7 +516,7 @@ We compare the proposed hybrid with six reference methods. All of them are evalu
 \item \emph{VNS}: the basic VNS of Mladenovi\'c and Hansen~\cite{Mladenovic1997,Hansen2001} in the continuous form of Mladenovi\'c et al.~\cite{Mladenovic2008}. It is exactly Phase~2 of Algorithm~\ref{alg:hybrid} ($\ell_\infty$ shaking of the whole layout with $k_{\max}=5$ and $\rho_k=0.1kr$, and a complete best-improvement compass search), started from the best member of the initial population instead of the LX-SSA food source.
 \item \emph{Multistart SLSQP (MS-SLSQP)}, a gradient-based method: the sequential least-squares quadratic programming solver of SciPy~\cite{Kraft1988} minimizes the wake loss with the spacing and boundary constraints imposed explicitly and forward-difference gradients (1-m step). It starts from the members of the initial population in the order of their $F_p$ values and restarts until the budget is used up.
 \end{itemize}
-SSA, LX-SSA, PSO and DE use our original implementation. We implemented VNS, MS-SLSQP and the hybrid for this study; the hybrid calls the original LX-SSA code in its first phase. For the ablation in Section~\ref{sec:ablation}, we also use SSA-VNS, which replaces LX-SSA by SSA in Phase~1 (100 SSA iterations, 3,030 calls) and is otherwise identical to LX-SSA-VNS.
+SSA, LX-SSA, PSO and DE use our original implementation. We implemented VNS, MS-SLSQP and the hybrid for this study; the hybrid calls the original LX-SSA code in its first phase.
 
 \subsection{Budget, Seeds and Pairing}
 Every run has a budget of exactly 6,030 objective calls, counted by a wrapper around the objective function. The count includes the initial population and, for MS-SLSQP, the calls used for the finite-difference gradients. For LX-SSA this corresponds to 100 iterations, because each follower evaluates two candidates before the population is re-evaluated ($30+100\times60$ calls); SSA, PSO and DE reach the same count in 200 iterations ($30+200\times30$), and LX-SSA-VNS in $3{,}030+3{,}000$ calls. Each method is run with the seeds 1--30. Every optimizer seeds the random-number generator and draws its initial population first, so runs with the same seed start from the \emph{same} initial population for all methods, and the runs of a test case are paired by seed.
@@ -536,7 +536,7 @@ All runs were carried out in a Linux container with an Intel Xeon processor (2.8
 \section{Numerical Results}
 \label{sec:results}
 \label{sec:equalbudget}
-In this section, we report 14,280 runs (68 test cases, seven methods and 30 seed-paired runs, all with 6,030 objective calls). We then present the component ablation of the hybrid, which adds 2,040 runs of SSA-VNS and 720 runs with other budget splits, and the Horns Rev~1 site case. The detailed results of every case are given in Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000}.
+In this section, we report 14,280 runs (68 test cases, seven methods and 30 seed-paired runs, all with 6,030 objective calls). We then present the component ablation of the hybrid, including 720 additional runs with other budget splits, and the Horns Rev~1 site case. The detailed results of every case are given in Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000}.
 
 \subsection{Overall Comparison}
 \label{sec:overall}
@@ -787,18 +787,17 @@ Fig.~\ref{fig:box} shows the spread of the final wake loss over the 30 runs for 
 \label{sec:ablation}
 \begin{table}[!t]
 \centering
-\caption{Component ablation over the 68 benchmark cases (30 seed-paired runs, 6,030 calls). Top: phase-1 and phase-2 components, average rank of the mean feasible objective among the five variants (Friedman $\chi^2_F=156.5$, 4 d.f., $p=8.10\times10^{-33}$) and percentage of feasible runs. Bottom: planned contrasts, number of cases in which the first variant is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the six contrasts of each case, $\alpha=0.05$), and mean difference of the wake loss $\overline{\Delta L}$ (percentage points; negative = first variant better).}
+\caption{Component ablation over the 68 benchmark cases (30 seed-paired runs, 6,030 calls). Top: phase-1 and phase-2 components, average rank of the mean feasible objective among the four variants (Friedman $\chi^2_F=103.7$, 3 d.f., $p=2.48\times10^{-22}$) and percentage of feasible runs. Bottom: planned contrasts, number of cases in which the first variant is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the three contrasts of each case, $\alpha=0.05$), and mean difference of the wake loss $\overline{\Delta L}$ (percentage points; negative = first variant better).}
 \label{tab:ablation}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lcccc}
 \toprule
 Variant & Phase 1 & Phase 2 & Avg.\ rank & Feas.\ (\%) \\
 \midrule
-SSA-VNS & SSA & VNS & 1.62 & 99.6 \\
-LX-SSA-VNS & LX-SSA & VNS & 2.25 & 99.9 \\
-VNS & -- & VNS & 2.90 & 100.0 \\
-SSA & SSA & -- & 3.74 & 97.6 \\
-LX-SSA & LX-SSA & -- & 4.49 & 96.9 \\
+LX-SSA-VNS & LX-SSA & VNS & 1.50 & 99.9 \\
+VNS & -- & VNS & 2.15 & 100.0 \\
+SSA & SSA & -- & 2.81 & 97.6 \\
+LX-SSA & LX-SSA & -- & 3.54 & 96.9 \\
 \bottomrule
 \end{tabular}
 
@@ -807,19 +806,16 @@ LX-SSA & LX-SSA & -- & 4.49 & 96.9 \\
 \toprule
 Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
 \midrule
-LX-SSA-VNS vs.\ LX-SSA & VNS phase (after LX-SSA) & 39/29/0 & $-0.43$ \\
-LX-SSA-VNS vs.\ VNS & LX-SSA start vs.\ best initial point & 5/61/2 & $-0.07$ \\
-LX-SSA-VNS vs.\ SSA-VNS & Laplace step inside the hybrid & 0/66/2 & $+0.06$ \\
-SSA-VNS vs.\ SSA & VNS phase (after SSA) & 40/28/0 & $-0.33$ \\
-SSA-VNS vs.\ VNS & SSA start vs.\ best initial point & 10/57/1 & $-0.13$ \\
-LX-SSA vs.\ SSA & Laplace step alone & 0/61/7 & $+0.17$ \\
+LX-SSA-VNS vs.\ LX-SSA & VNS phase (after LX-SSA) & 43/25/0 & $-0.43$ \\
+LX-SSA-VNS vs.\ VNS & LX-SSA start vs.\ best initial point & 10/56/2 & $-0.07$ \\
+LX-SSA vs.\ SSA & Laplace step (without VNS) & 0/59/9 & $+0.17$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\textwidth]{figures_final/ablation_convergence.pdf}
-\caption{Component ablation, largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls for SSA, LX-SSA, VNS and the two-phase variants SSA-VNS and LX-SSA-VNS (dotted vertical line: switch from the swarm phase to VNS at 3,030 calls).}
+\caption{Component ablation, largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls for SSA, LX-SSA, VNS and LX-SSA-VNS (dotted vertical line: switch from LX-SSA to VNS in the hybrid at 3,030 calls).}
 \label{fig:ablation}
 \end{figure*}
 \begin{table}[!t]
@@ -847,19 +843,19 @@ DS & $r$ & $N$ & 25\% & 50\% & 75\% & $p$ (25) & $p$ (75) \\\\
 \end{tabular}
 \end{table}
 
-To understand where the improvement of the hybrid comes from, we carry out a component ablation. The hybrid has three ingredients: a swarm phase, the Laplace step inside that swarm phase, and the VNS phase. We therefore compare SSA, LX-SSA, VNS, SSA-VNS and LX-SSA-VNS on all 68 cases with the same seeds and budget (Table~\ref{tab:ablation} and Fig.~\ref{fig:ablation}). The Friedman test over the five variants is highly significant ($\chi^2_F=156.5$, 4 d.f., $p=8.1\times10^{-33}$).
+To understand where the improvement of the hybrid comes from, we carry out a component ablation. The hybrid has three ingredients: a swarm phase, the Laplace step inside that swarm phase, and the VNS phase. We therefore compare SSA, LX-SSA, VNS and LX-SSA-VNS on all 68 cases with the same seeds and budget (Table~\ref{tab:ablation} and Fig.~\ref{fig:ablation}). The Friedman test over the four variants is highly significant ($\chi^2_F=103.7$, 3 d.f., $p=2.5\times10^{-22}$), and LX-SSA-VNS has the best average rank (1.50), followed by VNS (2.15), SSA (2.81) and LX-SSA (3.54).
 
-Adding the VNS phase is the most important step. LX-SSA-VNS beats LX-SSA in 39 cases and SSA-VNS beats SSA in 40 cases, without a single loss, and the mean wake loss falls by 0.43 and 0.33 percentage points, respectively. Starting VNS from the food source of a swarm, rather than from the best initial point, helps moderately: both two-phase variants have a better average rank than VNS (2.25 and 1.62 against 2.90), LX-SSA-VNS beats VNS in five cases and loses two, and SSA-VNS beats it in ten cases and loses one.
+Adding the VNS phase is the most important step. LX-SSA-VNS beats LX-SSA in 43 cases without a single loss, and the mean wake loss falls by 0.43 percentage points. Starting VNS from the food source of LX-SSA, rather than from the best initial point, also helps: LX-SSA-VNS beats VNS in ten cases with $N=5$ to 12 and loses only the two three-turbine cases of the 500-m farm, and the mean wake loss falls by 0.07 percentage points.
 
-The Laplace step of LX-SSA, on the other hand, does not help. Without VNS, LX-SSA is worse than SSA in seven cases and never better. Inside the hybrid, LX-SSA-VNS and SSA-VNS are statistically indistinguishable in 66 cases, SSA-VNS is better in the remaining two, and SSA-VNS has the better average rank (1.62 against 2.25). The split of the budget between the two phases matters little (Table~\ref{tab:split}). The 50\% split gives the highest mean in eight of the 12 cases, but only one difference is significant (Data Set~I, 1000~m, $N=15$, where the 50\% split is better than the 25\% split, $p_{\rm Holm}=0.024$).
+The Laplace step on its own, in contrast, does not improve on the standard SSA: without the VNS phase, LX-SSA is worse than SSA in nine cases and never better. The split of the budget between the two phases matters little (Table~\ref{tab:split}). The 50\% split gives the highest mean in eight of the 12 cases, but only one difference is significant (Data Set~I, 1000~m, $N=15$, where the 50\% split is better than the 25\% split, $p_{\rm Holm}=0.024$).
 
-Taken together, the ablation shows that the gain of LX-SSA-VNS comes from combining a swarm exploration phase with a complete VNS refinement phase, and not from the particular Laplace mechanism of LX-SSA, since a standard SSA first phase performs at least as well. The counts against VNS differ slightly from Table~\ref{tab:wtl} because the Holm correction is applied to a different family of comparisons.
+Taken together, the ablation shows that the gain of LX-SSA-VNS comes from combining the swarm exploration phase with a complete VNS refinement phase. The counts against VNS differ slightly from Table~\ref{tab:wtl} because the Holm correction is applied to a different family of comparisons.
 
 \subsection{Optimized Layouts}
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\textwidth]{figures_final/layouts_max.pdf}
-\caption{Best layouts for the largest turbine count of each farm: best LX-SSA-VNS run (filled markers) and best run of any method (open squares, method in the legend). Circle: farm boundary. Coordinates are listed in Appendix~\ref{app:coordinates}.}
+\caption{Best layouts for the largest turbine count of each farm: best LX-SSA-VNS run (filled blue circles) and best run of all methods (open black squares; the method is named above each panel). Where the two coincide, the circles sit inside the squares. Circle: farm boundary. Coordinates are listed in Appendix~\ref{app:coordinates}.}
 \label{fig:layouts}
 \end{figure*}
 
@@ -1008,7 +1004,7 @@ and a run with a budget of $B$ objective calls costs $\mathcal{O}(B\,N_t^2N_\the
 
 \section{Limitations}
 \label{sec:limits}
-Our results should be read within the following limits. The ablation shows that the gain of LX-SSA-VNS comes from the combination of a swarm phase with a complete VNS phase, and not from the Laplace step of LX-SSA: SSA-VNS is statistically equivalent in 66 of the 68 cases, better in two, and has a slightly better average rank. The hybrid is significantly better than VNS over the whole benchmark, but in single cases the two differ significantly in only eight of the 68 cases.
+Our results should be read within the following limits. The ablation shows that the gain of LX-SSA-VNS comes mainly from the combination of a swarm phase with a complete VNS phase; the Laplace step of LX-SSA does not improve on the standard SSA when it is used alone. The hybrid is significantly better than VNS over the whole benchmark, but in single cases the two differ significantly in only eight of the 68 cases.
 
 All methods were compared at 6,030 objective calls, and larger budgets could change the ranking; for an 80-turbine farm, none of the penalty-based methods, including the hybrid, found a feasible layout within this budget. The LX-SSA parameters ($\phi=0$, $\chi=1$), the VNS settings and the split $\rho=0.5$ are fixed defaults and were not tuned, and pseudo-gradient and surrogate-based methods are discussed but not benchmarked.
 
@@ -1018,7 +1014,7 @@ The Jensen model and the linear power curve are benchmark choices. The absolute 
 \label{sec:conclusion}
 This work presents LX-SSA-VNS, a two-phase hybrid for the continuous wind farm layout problem in which the Laplacian Salp Swarm Algorithm~\cite{Solanki2023} explores the layout space and the basic variable neighborhood search then refines the best layout found. We evaluated the hybrid on the Jensen--Weibull benchmark with explicit constraint handling against LX-SSA, SSA, PSO, DE, VNS and a multistart SLSQP solver on 68 cases (14,280 seed-paired runs at equal budgets), in a component ablation, and on the Horns Rev~1 offshore farm.
 
-LX-SSA-VNS obtained the best average rank (1.89), was significantly better than every other method over the whole benchmark, including VNS ($p_{\rm Holm}=0.010$), and returned a feasible layout in 99.9\% of the runs. Compared with LX-SSA alone, it was significantly better in 39 of the 68 cases and never worse. The ablation showed that this gain comes from the two-phase design: the VNS phase removes on average 39\% of the wake loss left by the swarm, and starting VNS from a swarm solution is better than starting it from the best initial point. The Laplace step, however, does not contribute, since an SSA first phase performs at least as well. At the Horns Rev~1 site, the hybrid gave the highest mean energy yield for a 16-turbine block, although no method improved on the installed layout within the budget and only the constraint-aware SLSQP solver found feasible layouts for the full 80-turbine farm. The ranking of the methods was stable under a cubic power curve but changed considerably under a Gaussian wake model, where the hybrid nevertheless kept the best average rank.
+LX-SSA-VNS obtained the best average rank (1.89), was significantly better than every other method over the whole benchmark, including VNS ($p_{\rm Holm}=0.010$), and returned a feasible layout in 99.9\% of the runs. Compared with LX-SSA alone, it was significantly better in 39 of the 68 cases and never worse. The ablation showed that this gain comes from the two-phase design: the VNS phase removes on average 39\% of the wake loss left by the swarm, and starting VNS from the LX-SSA solution is better than starting it from the best initial point, whereas the Laplace step on its own does not improve on the standard SSA. At the Horns Rev~1 site, the hybrid gave the highest mean energy yield for a 16-turbine block, although no method improved on the installed layout within the budget and only the constraint-aware SLSQP solver found feasible layouts for the full 80-turbine farm. The ranking of the methods was stable under a cubic power curve but changed considerably under a Gaussian wake model, where the hybrid nevertheless kept the best average rank.
 
 Despite these results, the hybrid shares the limits of penalty-based search on large farms, and its evaluation is tied to a benchmark wake model. In future work, we will study a switch between the two phases that is triggered by the stagnation of the swarm, investigate which properties of the swarm phase make it a good starting point for VNS, and extend the approach with feasibility-preserving initialization, larger budgets for realistic farm sizes, and higher-fidelity wake and power models.
 

@@ -242,18 +242,17 @@ DS & $r$ & $N$ & 25\% & 50\% & 75\% & $p$ (25) & $p$ (75) \\\\
 
 \begin{table}[!t]
 \centering
-\caption{Component ablation over the 68 benchmark cases (30 seed-paired runs, 6,030 calls). Top: phase-1 and phase-2 components, average rank of the mean feasible objective among the five variants (Friedman $\chi^2_F=156.5$, 4 d.f., $p=8.10\times10^{-33}$) and percentage of feasible runs. Bottom: planned contrasts, number of cases in which the first variant is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the six contrasts of each case, $\alpha=0.05$), and mean difference of the wake loss $\overline{\Delta L}$ (percentage points; negative = first variant better).}
+\caption{Component ablation over the 68 benchmark cases (30 seed-paired runs, 6,030 calls). Top: phase-1 and phase-2 components, average rank of the mean feasible objective among the four variants (Friedman $\chi^2_F=103.7$, 3 d.f., $p=2.48\times10^{-22}$) and percentage of feasible runs. Bottom: planned contrasts, number of cases in which the first variant is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the three contrasts of each case, $\alpha=0.05$), and mean difference of the wake loss $\overline{\Delta L}$ (percentage points; negative = first variant better).}
 \label{tab:ablation}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lcccc}
 \toprule
 Variant & Phase 1 & Phase 2 & Avg.\ rank & Feas.\ (\%) \\
 \midrule
-SSA-VNS & SSA & VNS & 1.62 & 99.6 \\
-LX-SSA-VNS & LX-SSA & VNS & 2.25 & 99.9 \\
-VNS & -- & VNS & 2.90 & 100.0 \\
-SSA & SSA & -- & 3.74 & 97.6 \\
-LX-SSA & LX-SSA & -- & 4.49 & 96.9 \\
+LX-SSA-VNS & LX-SSA & VNS & 1.50 & 99.9 \\
+VNS & -- & VNS & 2.15 & 100.0 \\
+SSA & SSA & -- & 2.81 & 97.6 \\
+LX-SSA & LX-SSA & -- & 3.54 & 96.9 \\
 \bottomrule
 \end{tabular}
 
@@ -262,12 +261,9 @@ LX-SSA & LX-SSA & -- & 4.49 & 96.9 \\
 \toprule
 Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
 \midrule
-LX-SSA-VNS vs.\ LX-SSA & VNS phase (after LX-SSA) & 39/29/0 & $-0.43$ \\
-LX-SSA-VNS vs.\ VNS & LX-SSA start vs.\ best initial point & 5/61/2 & $-0.07$ \\
-LX-SSA-VNS vs.\ SSA-VNS & Laplace step inside the hybrid & 0/66/2 & $+0.06$ \\
-SSA-VNS vs.\ SSA & VNS phase (after SSA) & 40/28/0 & $-0.33$ \\
-SSA-VNS vs.\ VNS & SSA start vs.\ best initial point & 10/57/1 & $-0.13$ \\
-LX-SSA vs.\ SSA & Laplace step alone & 0/61/7 & $+0.17$ \\
+LX-SSA-VNS vs.\ LX-SSA & VNS phase (after LX-SSA) & 43/25/0 & $-0.43$ \\
+LX-SSA-VNS vs.\ VNS & LX-SSA start vs.\ best initial point & 10/56/2 & $-0.07$ \\
+LX-SSA vs.\ SSA & Laplace step (without VNS) & 0/59/9 & $+0.17$ \\
 \bottomrule
 \end{tabular}
 \end{table}
