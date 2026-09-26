@@ -1,8 +1,8 @@
 {
-    "id": "4876ff7c-9019-4dbd-8ac2-70bf17615d1a",
-    "started_at": "2026-09-26T06:24:52.550739",
-    "updated_at": "2026-09-26T06:27:32.493656",
-    "finished_at": "2026-09-26T06:27:32.493656",
+    "id": "c744d79c-cdc8-4e1e-b0a7-28dfe4239381",
+    "started_at": "2026-09-26T13:24:44.208350",
+    "updated_at": "2026-09-26T13:25:22.605019",
+    "finished_at": "2026-09-26T13:25:22.605019",
     "n_total_trials": 2,
     "stats": {
         "n_completed_trials": 2,
@@ -12,22 +12,22 @@
         "n_cancelled_trials": 0,
         "n_retries": 0,
         "evals": {
-            "oracle__adhoc": {
+            "nop__adhoc": {
                 "n_trials": 2,
                 "n_errors": 0,
                 "metrics": [
                     {
-                        "mean": 1.0
+                        "mean": 0.0
                     }
                 ],
                 "pass_at_k": {
-                    "2": 1.0
+                    "2": 0.0
                 },
                 "reward_stats": {
                     "reward": {
-                        "1.0": [
-                            "wly-local__rV3hrkG",
-                            "wly-local__XbnKSaZ"
+                        "0.0": [
+                            "wly-local__JkKt3oJ",
+                            "wly-local__Sx7t7YN"
                         ]
                     }
                 },
