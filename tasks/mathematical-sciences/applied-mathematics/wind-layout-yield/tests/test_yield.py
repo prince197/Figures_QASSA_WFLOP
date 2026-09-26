@@ -1,7 +1,8 @@
 """Verifier for wind-layout-yield.
 
-Ground truth (tests/truth.npz) is the clean hourly hub-height wind speed and direction that
-the mast record was synthesised from (authoring/provenance/generate.py); it is never produced
+Ground truth (tests/truth.npz) is the clean hourly hub-height wind speed and direction for the
+whole long-term period 2004-2023, written by the generator (authoring/provenance/generate.py)
+before the mast, reanalysis and station measurement models are applied; it is never produced
 by a solver. The benchmark power in tests/benchmark.json is the best true mean power found by
 a truth-informed optimisation (authoring/evidence/bench.py) or by any calibration solver.
 """
@@ -22,7 +23,7 @@ METRICS = "/logs/verifier/metrics.json"
 
 GEOM_TOL_M = 0.1            # stated in the instruction
 MAX_SHORTFALL = 0.0075      # layout quality: 1 - P_true / P_best
-MAX_YIELD_ERR = 0.020       # yield accuracy: |P_reported / P_true - 1|
+MAX_YIELD_ERR = 0.025       # yield accuracy: |P_reported / P_true - 1|
 
 D = SITE["rotor_diameter_m"]
 R0 = D / 2

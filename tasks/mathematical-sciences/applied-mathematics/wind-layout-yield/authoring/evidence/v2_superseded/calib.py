@@ -5,8 +5,9 @@ import sys
 from multiprocessing import Pool
 
 PY = "/root/venv/bin/python"
-ROUTES = ["no_homog", "mast_only", "avg_cups", "cup_a_only", "no_icing_qc", "shear_one_seventh",
-          "no_veer", "ols_mcp", "station_mcp", "sector30_model", "weak_optimiser", "ring_layout"]
+ROUTES = ["no_icing_qc", "no_shear", "shear_one_seventh", "sector30_model", "sector30_series",
+          "sector10_model", "sector10_series", "sector5_series", "sector_mean_speed",
+          "weak_optimiser", "ring_layout", "random_layout"]
 
 
 def sh(cmd, env=None):
@@ -33,7 +34,7 @@ def one(args):
     env = dict(WLY_DATA=f"{d}/env")
     sh(f"{PY} solve.py", dict(env, WLY_OUT=f"{d}/ref"))
     res["ref"] = score(d, f"{d}/ref")
-    sh(f"{PY} indep.py", dict(env, WLY_OUT=f"{d}/ind", WLY_STARTS="3", WLY_ITERS="40000"))
+    sh(f"{PY} indep.py", dict(env, WLY_OUT=f"{d}/ind"))
     res["ind"] = score(d, f"{d}/ind")
     if do_ablate:
         for r in ROUTES:

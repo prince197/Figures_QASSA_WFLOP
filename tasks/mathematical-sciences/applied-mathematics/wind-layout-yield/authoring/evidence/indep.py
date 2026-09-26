@@ -1,22 +1,24 @@
-"""Independent implementation (different route from solution/solve.py).
+"""Independent implementation v3 (different route from solution/solve.py at every step).
 
-- icing QC: rolling 3-h flat-line test on the 60 m cup plus vane freeze, seeded by sub-zero air
-- shear: per-record exponent from the cup pair, sector-median (30 deg) exponent applied per record
-- climate model: parametric -- Weibull (MLE) per 10 deg sector for hub speed, and a
-  von Mises kernel density (3 deg bandwidth) for direction, evaluated on a 1 deg grid
+- icing QC: rolling 3-h flat-line test on the 60 m A cup plus vane freeze, seeded by sub-zero air
+- tower shadow: sector-wise A/B ratio decides which 60 m cup to trust; shear per record from the 40/60A pair
+- reference homogeneity: CUSUM break in the monthly log-ratio reanalysis/station
+- MCP: per-sector quantile mapping of reference speed to mast hub speed; veer-corrected reference directions
+- climate model: empirical 1-deg direction bins of the analog long-term series
 - optimiser: simulated annealing on the parametric model with full re-evaluation
-- yield: reported from the parametric model (not the time series)
+- yield: reported from the binned empirical model
 """
 import json
 import os
 import sys
 
 import numpy as np
+import pandas as pd
 from scipy import stats
 from scipy.special import gamma as G_
 
-DATA = os.environ.get("WLY_DATA", "/app/data")
-OUT = os.environ.get("WLY_OUT", "/app/output")
+DATA = os.environ.get("WLY_DATA", "/root/data")
+OUT = os.environ.get("WLY_OUT", "/root/output")
 SEED = int(os.environ.get("WLY_SEED", "7"))
 SITE = json.load(open(os.path.join(DATA, "site.json")))
 D, HUB, CT, K = (SITE[k] for k in ("rotor_diameter_m", "hub_height_m", "thrust_coefficient",
@@ -26,23 +28,15 @@ R0 = D / 2
 A0 = 1 - np.sqrt(1 - CT)
 
 
-def read():
-    import pandas as pd
-    df = pd.read_csv(os.path.join(DATA, "mast_timeseries.csv"))
-    pc = pd.read_csv(os.path.join(DATA, "power_curve.csv")).to_numpy()
-    return df, pc
-
-
-def clean(df):
+def clean_mast():
+    df = pd.read_csv(os.path.join(DATA, "mast_timeseries.csv"), parse_dates=["timestamp_utc"])
     df = df.dropna().reset_index(drop=True)
-    flat = df.ws_60m.rolling(3, center=True, min_periods=3).apply(lambda s: s.max() - s.min(), raw=True)
+    flat = df.ws_60m_a.rolling(3, center=True, min_periods=3).apply(lambda s: s.max() - s.min(), raw=True)
     vane = df.wd_58m.rolling(3, center=True, min_periods=3).apply(lambda s: s.max() - s.min(), raw=True)
-    seed_ = (flat <= 0.02) & (vane == 0) & (df.ws_60m < 1.0)
-    # grow each flagged window to its full run of identical readings; require cold at some point
+    seed_ = (flat <= 0.02) & (vane == 0) & (df.ws_60m_a < 1.0)
     ice = np.zeros(len(df), bool)
-    idx = np.where(seed_.fillna(False).to_numpy())[0]
-    ws, wd, T = df.ws_60m.to_numpy(), df.wd_58m.to_numpy(), df.temp_2m.to_numpy()
-    for i in idx:
+    ws, wd, T = df.ws_60m_a.to_numpy(), df.wd_58m.to_numpy(), df.temp_2m.to_numpy()
+    for i in np.where(seed_.fillna(False).to_numpy())[0]:
         if ice[i]:
             continue
         a = i
@@ -57,45 +51,74 @@ def clean(df):
 
 
 def hub_speed(df):
-    ok = (df.ws_40m > 2) & (df.ws_60m > 2)
-    a_rec = np.log(df.ws_60m / df.ws_40m) / np.log(1.5)
-    sec = (np.floor(np.mod(df.wd_58m + 15, 360) / 30).astype(int)) % 12
-    med = np.array([np.median(a_rec[ok & (sec == s)]) for s in range(12)])
-    return df.ws_60m.to_numpy() * (HUB / 60.0) ** med[sec.to_numpy()], med
+    """Data-driven tower-shadow handling: median A/B ratio per 10-deg vane sector; where one cup
+    reads >3% low, use the other, otherwise average. Per-record shear from the same-boom 40/60A
+    pair, falling back to the hour-of-day median exponent at low speed."""
+    a, b = df.ws_60m_a.to_numpy(), df.ws_60m_b.to_numpy()
+    sec = (np.floor(np.mod(df.wd_58m.to_numpy() + 5, 360) / 10).astype(int)) % 36
+    good = (a > 3) & (b > 3)
+    rat = np.array([np.median(a[good & (sec == s)] / b[good & (sec == s)]) if (good & (sec == s)).sum() > 20 else 1.0
+                    for s in range(36)])
+    rs = rat[sec]
+    u60 = np.where(rs < 0.97, b, np.where(rs > 1.03, a, 0.5 * (a + b)))
+    ok = ((df.ws_40m > 2) & (df.ws_60m_a > 2)).to_numpy()
+    a_rec = np.log(df.ws_60m_a.clip(lower=0.01) / df.ws_40m.clip(lower=0.01)).to_numpy() / np.log(1.5)
+    hod = df.timestamp_utc.dt.hour.to_numpy()
+    med = np.array([np.median(a_rec[ok & (hod == h)]) for h in range(24)])
+    alpha = np.where(ok, np.clip(a_rec, -0.1, 0.7), med[hod])
+    return u60 * (HUB / 60.0) ** alpha
 
 
-def climate(U, wd, nsec=36, bw=3.0):
-    grid = np.arange(360.0)
-    kap = 1 / np.deg2rad(bw) ** 2
-    th = np.deg2rad(wd)
-    f = np.zeros(360)
-    for chunk in np.array_split(np.arange(len(wd)), 20):
-        f += np.exp(kap * (np.cos(np.deg2rad(grid)[:, None] - th[None, chunk]) - 1)).sum(axis=1)
-    f /= f.sum()
-    width = 360 / nsec
-    sec_rec = (np.floor(np.mod(wd + width / 2, 360) / width).astype(int)) % nsec
-    kc = np.zeros((nsec, 2))
-    for s in range(nsec):
-        u = U[(sec_rec == s) & (U > 0)]
-        k, _, c = stats.weibull_min.fit(u, floc=0)
-        p0 = np.mean(U[sec_rec == s] == 0)
-        kc[s] = k, c
-    sec_grid = (np.floor(np.mod(grid + width / 2, 360) / width).astype(int)) % nsec
-    return grid, f, kc[sec_grid]
+def reference():
+    r = pd.read_csv(os.path.join(DATA, "reference_timeseries.csv"), parse_dates=["timestamp_utc"])
+    st = pd.read_csv(os.path.join(DATA, "station_timeseries.csv"), parse_dates=["timestamp_utc"])
+    r = r.merge(st, on="timestamp_utc")
+    mo = r.timestamp_utc.dt.to_period("M")
+    q = np.log(r.ws_100m.groupby(mo).mean() / r.ws_10m.groupby(mo).mean()).to_numpy()
+    cus = np.cumsum(q - q.mean())                     # CUSUM break location
+    k = int(np.argmax(np.abs(cus))) + 1
+    f = np.exp(np.median(q[k:]) - np.median(q[:k]))
+    months = mo.unique()
+    pre = (mo < months[k]).to_numpy()
+    r.loc[pre, "ws_100m"] *= f
+    return r, str(months[k]), float(f)
 
 
-def power_tables(kc, pc, sgrid):
-    """E[P(s U)] for Weibull U, by Gauss-Legendre on the speed axis."""
-    x = np.linspace(0, 40, 1601)
-    out = np.zeros((len(kc), len(sgrid)))
-    for i, (k, c) in enumerate(kc):
-        pdf = stats.weibull_min.pdf(x, k, scale=c)
-        for j, s in enumerate(sgrid):
-            us = s * x
-            p = np.interp(us, pc[:, 0], pc[:, 1])
-            p[us > pc[-1, 0]] = 0
-            out[i, j] = np.trapezoid(p * pdf, x)
-    return out
+def quantile_mcp(df, U_hub, r, rng=None):
+    """Per-sector quantile mapping: each long-term reference speed is sent to the mast hub speed
+    at the same quantile of the concurrent-period distributions (distribution matching, robust
+    to the concurrent period being anomalous). Directions: veer-corrected reference."""
+    c = df[["timestamp_utc", "wd_58m"]].assign(U=U_hub).merge(r, on="timestamp_utc")
+    veer = np.rad2deg(np.angle(np.mean(np.exp(1j * np.deg2rad(c.wd_58m - c.wd_100m)))))
+    sec = lambda x: (np.floor(np.mod(x + veer + 15, 360) / 30).astype(int)) % 12
+    sc, sr = sec(c.wd_100m.to_numpy()), sec(r.wd_100m.to_numpy())
+    qs = np.linspace(0, 1, 401)
+    U_lt = np.empty(len(r))
+    for s in range(12):
+        mc, ml = sc == s, sr == s
+        xq = np.quantile(c.ws_100m.to_numpy()[mc], qs)
+        yq = np.quantile(c.U.to_numpy()[mc], qs)
+        x = r.ws_100m.to_numpy()[ml]
+        # linear extrapolation beyond the concurrent range using the outer quantile slopes
+        lo, hi = x < xq[0], x > xq[-1]
+        U_lt[ml] = np.interp(x, xq, yq)
+        sl_hi = (yq[-1] - yq[-5]) / max(xq[-1] - xq[-5], 1e-6)
+        U_lt[ml] = np.where(hi, yq[-1] + sl_hi * (x - xq[-1]), U_lt[ml])
+    D_lt = np.mod(r.wd_100m.to_numpy() + veer, 360.0)
+    return np.clip(U_lt, 0, None), D_lt, float(veer)
+
+
+def empirical_tables(U, wd, pc, sgrid):
+    """1-deg direction frequencies and E[P(s*U) | direction bin] from the long-term series."""
+    b = np.mod(np.round(wd), 360).astype(int)
+    f = np.bincount(b, minlength=360) / len(b)
+    T = np.zeros((360, len(sgrid)))
+    for d in np.where(f > 0)[0]:
+        us = U[b == d][None, :] * sgrid[:, None]
+        p = np.interp(us, pc[:, 0], pc[:, 1])
+        p[us > pc[-1, 0]] = 0
+        T[d] = p.mean(axis=1)
+    return np.arange(360.0), f, T
 
 
 class Park:
@@ -160,17 +183,19 @@ def anneal(model, rng, iters=24000):
 
 def main():
     rng = np.random.default_rng(SEED)
-    df, pc = read()
-    df, n_ice = clean(df)
-    U, med = hub_speed(df)
-    grid, f, kc = climate(U, df.wd_58m.to_numpy())
+    pc = pd.read_csv(os.path.join(DATA, "power_curve.csv")).to_numpy()
+    df, n_ice = clean_mast()
+    U_hub = hub_speed(df)
+    r, brk, f = reference()
+    U, wd, veer = quantile_mcp(df, U_hub, r, rng=rng)
     sgrid = np.linspace(0.3, 1.0, 71)
-    model = Park(grid, f, power_tables(kc, pc, sgrid), sgrid)
+    grid, fr, T = empirical_tables(U, wd, pc, sgrid)
+    model = Park(grid, fr, T, sgrid)
     best = None
     for _ in range(int(os.environ.get("WLY_STARTS", "2"))):
-        r = anneal(model, rng, int(os.environ.get("WLY_ITERS", "24000")))
-        if best is None or r[1] > best[1]:
-            best = r
+        res = anneal(model, rng, int(os.environ.get("WLY_ITERS", "24000")))
+        if best is None or res[1] > best[1]:
+            best = res
     xy, net = best
     gross = N * model.T[:, -1] @ model.f
     os.makedirs(OUT, exist_ok=True)
@@ -180,7 +205,7 @@ def main():
             fh.write(f"{i},{x:.3f},{y:.3f}\n")
     json.dump({"net_mean_power_kw": float(net), "gross_mean_power_kw": float(gross)},
               open(os.path.join(OUT, "yield.json"), "w"))
-    print(json.dumps(dict(n_ice=n_ice, shear=med.round(3).tolist(), net=net, gross=gross)), file=sys.stderr)
+    print(json.dumps(dict(n_ice=n_ice, brk=brk, f=f, veer=veer, net=net, gross=gross)), file=sys.stderr)
 
 
 if __name__ == "__main__":
