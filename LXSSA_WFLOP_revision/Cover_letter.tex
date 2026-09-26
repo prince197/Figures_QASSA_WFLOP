@@ -1,0 +1,34 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\signature{Prince Solanki\\Department of Mathematics, School of Sciences\\IILM University, Greater Noida, Uttar Pradesh, India\\E-mail: prince@iilm.edu\\(on behalf of all authors)}
+\address{}
+\begin{document}
+
+\begin{letter}{The Editor-in-Chief\\Journal of Modern Power Systems and Clean Energy}
+\opening{Dear Editor,}
+
+We are pleased to submit our manuscript entitled \textit{``A Hybrid Laplacian Salp Swarm and Variable Neighborhood Search Algorithm for Continuous Wind Farm Layout Optimization''} by Prince Solanki, Pulkit Dwivedi, Vanita Garg and Vinay Shukla for consideration as a regular paper in the \textit{Journal of Modern Power Systems and Clean Energy}.
+
+Where the turbines of a wind farm are placed decides how much energy is lost in their wakes, and this decision is taken once, at the planning stage. The wind farm layout optimization problem (WFLOP) is therefore of direct practical value, and it has been studied in this journal before, for example in the design of offshore collector systems and in PSO-based layout optimization. The problem is hard for metaheuristics: the wakes couple the positions of all turbines, and the feasible region is bounded by many nonconvex spacing constraints.
+
+In this manuscript, we propose LX-SSA-VNS, a two-phase hybrid for the continuous WFLOP. The Laplacian Salp Swarm Algorithm (LX-SSA), which was introduced by Solanki and Deep in 2023, explores the layout space during the first half of the evaluation budget, and the basic variable neighborhood search (VNS) then refines the best layout found by the swarm. We do not propose LX-SSA again in this paper; the new contribution is the hybrid algorithm and its thorough evaluation. The main contributions are as follows:
+\begin{enumerate}
+\item We propose the two-phase hybrid LX-SSA-VNS, with explicit boundary and minimum-spacing constraints handled through a penalized objective shared by both phases.
+\item We compare the hybrid with LX-SSA, SSA, PSO, DE, VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases (two wind data sets, three farm sizes, 2--15 turbines), using 14,280 seed-paired runs at equal numbers of objective evaluations and Friedman, Holm-corrected Wilcoxon and effect-size statistics. LX-SSA-VNS obtains the best average rank, is significantly better than each of the other six methods, and finds a feasible layout in 99.9\% of the runs.
+\item We carry out a component ablation that shows where the gain comes from: the VNS phase removes on average 39\% of the wake loss left by the swarm, and starting VNS from the LX-SSA solution is better than starting it from a random initial layout.
+\item We apply all methods to the Horns Rev~1 offshore farm with its real turbine, wind climate and site outline, and we test how the results depend on the power curve, the wake model, the minimum spacing and the boundary handling.
+\end{enumerate}
+We have tried to report the evidence as it is, including the cases in which the hybrid is not better, the sensitivity of the ranking to the wake model, and the difficulty of the full 80-turbine Horns Rev~1 farm for all penalty-based methods. The scripts, the per-run results (including final coordinates and convergence curves) and the code that generates the figures are provided as supplementary material, so that every number in the paper can be reproduced.
+
+% Optional (keep if this manuscript is a resubmission of an earlier MPCE submission; insert the ID):
+% This manuscript is a substantially revised and extended version of our earlier submission [manuscript ID], and it takes all comments of the previous review into account.
+
+We confirm that this manuscript is original, has not been published before, and is not under consideration for publication elsewhere. All authors have read and approved the manuscript and agree with its submission to the \textit{Journal of Modern Power Systems and Clean Energy}. The authors declare that they have no known competing financial interests or personal relationships that could have influenced the work reported in this paper.
+
+Thank you for considering our manuscript. We look forward to hearing from you.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}

@@ -24,7 +24,7 @@ All results come from one controlled study with the original optimizer code and 
 | R1-12 Presentation | Addressed | Compiles cleanly |
 | R2-1 Motivation | Addressed | Sec. II (motivation for the hybrid) |
 | R2-2 Model novelty | Addressed | Novelty is the hybrid algorithm, not the wake model |
-| R2-3 Laplace parameters | Addressed | φ = 0, χ = 1, not tuned; split ρ examined |
+| R2-3 Laplace parameters | Addressed | φ = 0, χ = 1 (confirmed by the authors as the original code values), not tuned; split ρ examined |
 | R2-4 Significance/runtime/boxplots | Addressed | Tables II–III, Figs. 4–13 |
 | R2-5 Direct benchmark | Addressed | Sec. VIII |
 | R3-1 Contribution | Addressed | New hybrid + honest controlled comparison |
@@ -46,8 +46,9 @@ All results come from one controlled study with the original optimizer code and 
 
 The Laplace step on its own does not improve on SSA (LX-SSA vs SSA 0/59/9); the paper says so. SSA-VNS runs exist (`SSABV` in `fresh_bgrid.csv`) but, at the authors' request, are not reported in the manuscript; a reviewer may ask for an SSA + VNS comparison.
 
-## Still for the authors
+## Author confirmations and remaining steps
 
-- Confirm φ = 0, χ = 1.
-- Verify all reference DOIs.
-- Update the cover letter and response letter to the new framing (proposed hybrid).
+- φ = 0, χ = 1 confirmed by the authors as the values of the original LX-SSA code.
+- The paper is submitted as a new manuscript; no response-to-reviewers letter is prepared. New cover letter: `Cover_letter.tex`; competing-interest declaration: `conflict_of_interest.tex`.
+- References: checked against publisher records (see git history for the corrections).
+- Before submission: one final proofread by the authors and, if required by the journal, a statement on AI-assisted editing.
