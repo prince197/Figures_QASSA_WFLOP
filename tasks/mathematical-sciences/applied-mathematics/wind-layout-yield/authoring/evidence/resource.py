@@ -92,7 +92,7 @@ def mast_hub(m, site, qc=True, cups="boom", shear="diurnal"):
     return pd.DataFrame({"t": d.timestamp_utc.to_numpy(), "U": U, "wd": wd})
 
 
-def long_term(m, r, site, mcp="vr", veer=True, homog=True, refcol="ws_100m", dircol="wd_100m", **kw):
+def long_term(m, r, site, mcp="vr2", veer=True, homog=True, refcol="ws_100m", dircol="wd_100m", **kw):
     h = mast_hub(m, site, **kw)
     if homog and refcol == "ws_100m":
         r, _, _ = homogenize(r)
@@ -113,6 +113,21 @@ def long_term(m, r, site, mcp="vr", veer=True, homog=True, refcol="ws_100m", dir
         x, y = c.x_ref.to_numpy()[mc], c.U.to_numpy()[mc]
         if mcp == "vr":
             U_lt[ml] = y.mean() + y.std() / x.std() * (x_lt[ml] - x.mean())
+        elif mcp in ("vr2", "ols2_resid", "knn2", "qm2"):
+            XC = np.c_[np.ones(mc.sum()), x, c.ws_10m.to_numpy()[mc]]
+            XL = np.c_[np.ones(ml.sum()), x_lt[ml], r.ws_10m.to_numpy()[ml]]
+            b, *_ = np.linalg.lstsq(XC, y, rcond=None)
+            p, pl = XC @ b, XL @ b
+            rng = np.random.default_rng(s)
+            if mcp == "vr2":
+                U_lt[ml] = y.mean() + y.std() / p.std() * (pl - p.mean())
+            elif mcp == "qm2":
+                qs = np.linspace(0, 1, 401)
+                U_lt[ml] = np.interp(pl, np.quantile(p, qs), np.quantile(y, qs))
+            else:
+                o = np.argsort(p)
+                pick = np.clip(np.searchsorted(p[o], pl) + rng.integers(-20, 20, len(pl)), 0, len(p) - 1)
+                U_lt[ml] = pl + (y - p)[o][pick] if mcp == "ols2_resid" else y[o][pick]
         elif mcp == "ols":
             b, a = np.polyfit(x, y, 1)
             U_lt[ml] = a + b * x_lt[ml]

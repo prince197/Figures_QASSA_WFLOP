@@ -8,8 +8,10 @@ Choices (see README):
   * shear: power-law exponent by hour of day from the same-boom 40 m / 60 m A pair;
   * reference homogeneity: find the step in the monthly reanalysis/station speed ratio and
     rescale the reanalysis before the step;
-  * MCP: veer from the concurrent mast/reanalysis directions; variance-ratio regression per
-    30-degree sector of the veer-corrected reanalysis direction; long-term series 2004-2023;
+  * MCP: veer from the concurrent mast/reanalysis directions; per 30-degree sector of the
+    veer-corrected reanalysis direction, a least-squares combination of reanalysis and station
+    speed is mapped to hub height by variance ratio (variance-preserving, so the windy
+    concurrent period is not regressed into the long term); long-term series 2004-2023;
   * layout: 1-degree wind rose, multi-start random search with incremental evaluation, then a
     simulated-annealing polish;
   * yield: the final layout evaluated hour by hour on the long-term series.
@@ -109,12 +111,18 @@ def long_term_series():
     cdir = np.mod(c.wd_100m.to_numpy() + veer, 360)
     sec = lambda x: (np.floor(np.mod(x + 15, 360) / 30).astype(int)) % 12
     sr, sc = sec(rdir), sec(cdir)
-    x_lt = r.ws_100m.to_numpy()
-    xc, yc = c.ws_100m.to_numpy(), c.U.to_numpy()
+    # predictor: per-sector least-squares combination of reanalysis and station speed; the
+    # long-term mapping is variance-preserving (variance ratio on that predictor), not a
+    # regression, so the anomalous concurrent period is not carried into the long term
+    XL = np.c_[np.ones(len(r)), r.ws_100m.to_numpy(), r.ws_10m.to_numpy()]
+    XC = np.c_[np.ones(len(c)), c.ws_100m.to_numpy(), c.ws_10m.to_numpy()]
+    yc = c.U.to_numpy()
     U = np.empty(len(r))
     for s in range(12):
         mc, ml = sc == s, sr == s
-        U[ml] = yc[mc].mean() + yc[mc].std() / xc[mc].std() * (x_lt[ml] - xc[mc].mean())
+        b, *_ = np.linalg.lstsq(XC[mc], yc[mc], rcond=None)
+        p, pl = XC[mc] @ b, XL[ml] @ b
+        U[ml] = yc[mc].mean() + yc[mc].std() / p.std() * (pl - p.mean())
     info.update(hinfo, veer_deg=veer, n_long_term=len(r))
     return np.clip(U, 0.0, None), rdir, info
 

@@ -49,13 +49,13 @@ def default_cfg():
     return dict(
         lobes=[(232.0, 12.0, 0.50), (38.0, 8.0, 0.28)], w_bg=0.22,
         c0=8.1, c1=1.2, c_dir=232.0, k0=2.15, k1=0.25,
-        year_sd=0.03, mast_years_mult=1.045, w2_sd=0.04, mast_w2_shift=0.06,
+        year_sd=0.03, mast_years_mult=1.10, w2_sd=0.04, mast_w2_shift=0.06,
         alpha0=0.19, alpha_diurnal=0.08, alpha_sd=0.04,
         phi_dir=0.97, phi_spd=0.93, vane_sd=3.0,
         shadow_depth=0.12, shadow_width=14.0,
-        ref_scale=0.92, ref_mult_sd=0.12, ref_add_sd=0.9, ref_veer=14.0, ref_dir_sd=4.0,
+        ref_scale=0.92, ref_mult_sd=0.2, ref_add_sd=1.4, ref_veer=14.0, ref_dir_sd=4.0,
         ref_step_date='2012-07-01T00:00', ref_step=0.94,
-        st_mult_sd=0.15, st_add_sd=0.6, st_dir_sd=12.0,
+        st_mult_sd=0.25, st_add_sd=1.0, st_dir_sd=12.0,
         ice_rate=0.004, ice_len=(8, 72), gap_blocks=4, gap_len=(6, 96),
     )
 

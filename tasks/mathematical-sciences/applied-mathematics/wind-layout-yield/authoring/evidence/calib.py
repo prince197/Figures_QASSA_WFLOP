@@ -6,7 +6,7 @@ from multiprocessing import Pool
 
 PY = "/root/venv/bin/python"
 ROUTES = ["no_homog", "mast_only", "avg_cups", "cup_a_only", "no_icing_qc", "shear_one_seventh",
-          "no_veer", "ols_mcp", "station_mcp", "sector30_model", "weak_optimiser", "ring_layout"]
+          "no_veer", "ols2_resid_mcp", "knn2_mcp", "qm2_mcp", "station_mcp", "sector30_model", "weak_optimiser", "ring_layout"]
 
 
 def sh(cmd, env=None):

@@ -3,7 +3,7 @@
 - icing QC: rolling 3-h flat-line test on the 60 m A cup plus vane freeze, seeded by sub-zero air
 - tower shadow: sector-wise A/B ratio decides which 60 m cup to trust; shear per record from the 40/60A pair
 - reference homogeneity: CUSUM break in the monthly log-ratio reanalysis/station
-- MCP: per-sector quantile mapping of reference speed to mast hub speed; veer-corrected reference directions
+- MCP: variance ratio per sector on the reanalysis alone; veer-corrected reference directions
 - climate model: empirical 1-deg direction bins of the analog long-term series
 - optimiser: simulated annealing on the parametric model with full re-evaluation
 - yield: reported from the binned empirical model
@@ -84,26 +84,18 @@ def reference():
     return r, str(months[k]), float(f)
 
 
-def quantile_mcp(df, U_hub, r, rng=None):
-    """Per-sector quantile mapping: each long-term reference speed is sent to the mast hub speed
-    at the same quantile of the concurrent-period distributions (distribution matching, robust
-    to the concurrent period being anomalous). Directions: veer-corrected reference."""
+def vr_mcp(df, U_hub, r, rng=None):
+    """Variance-ratio MCP on the (homogenised) reanalysis alone, per 30-deg sector of the
+    veer-corrected reanalysis direction; directions from the veer-corrected reanalysis."""
     c = df[["timestamp_utc", "wd_58m"]].assign(U=U_hub).merge(r, on="timestamp_utc")
     veer = np.rad2deg(np.angle(np.mean(np.exp(1j * np.deg2rad(c.wd_58m - c.wd_100m)))))
     sec = lambda x: (np.floor(np.mod(x + veer + 15, 360) / 30).astype(int)) % 12
     sc, sr = sec(c.wd_100m.to_numpy()), sec(r.wd_100m.to_numpy())
-    qs = np.linspace(0, 1, 401)
     U_lt = np.empty(len(r))
     for s in range(12):
         mc, ml = sc == s, sr == s
-        xq = np.quantile(c.ws_100m.to_numpy()[mc], qs)
-        yq = np.quantile(c.U.to_numpy()[mc], qs)
-        x = r.ws_100m.to_numpy()[ml]
-        # linear extrapolation beyond the concurrent range using the outer quantile slopes
-        lo, hi = x < xq[0], x > xq[-1]
-        U_lt[ml] = np.interp(x, xq, yq)
-        sl_hi = (yq[-1] - yq[-5]) / max(xq[-1] - xq[-5], 1e-6)
-        U_lt[ml] = np.where(hi, yq[-1] + sl_hi * (x - xq[-1]), U_lt[ml])
+        x, y = c.ws_100m.to_numpy()[mc], c.U.to_numpy()[mc]
+        U_lt[ml] = y.mean() + y.std() / x.std() * (r.ws_100m.to_numpy()[ml] - x.mean())
     D_lt = np.mod(r.wd_100m.to_numpy() + veer, 360.0)
     return np.clip(U_lt, 0, None), D_lt, float(veer)
 
@@ -187,7 +179,7 @@ def main():
     df, n_ice = clean_mast()
     U_hub = hub_speed(df)
     r, brk, f = reference()
-    U, wd, veer = quantile_mcp(df, U_hub, r, rng=rng)
+    U, wd, veer = vr_mcp(df, U_hub, r, rng=rng)
     sgrid = np.linspace(0.3, 1.0, 71)
     grid, fr, T = empirical_tables(U, wd, pc, sgrid)
     model = Park(grid, fr, T, sgrid)
