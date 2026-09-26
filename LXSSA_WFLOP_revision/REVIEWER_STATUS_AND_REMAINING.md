@@ -1,6 +1,6 @@
 # Reviewer status — final manuscript (hybrid LX-SSA-VNS with the original VNS)
 
-`LXSSA_WFLOP_reviewer_revised.tex` (23 pages) proposes **LX-SSA-VNS**: the published LX-SSA (Solanki & Deep 2023, φ = 0, χ = 1) explores for the first 50% of the budget (3,030 calls), then the **original basic VNS** (Mladenović & Hansen 1997; continuous form of Mladenović et al. 2008: l∞-shell shaking of the whole layout + complete best-improvement compass local search) intensifies the LX-SSA food source for the remaining 3,000 calls (Sec. VI, Algorithm 3). The earlier modified VNS is no longer used anywhere in the paper.
+`LXSSA_WFLOP_reviewer_revised.tex` (21 pages) proposes **LX-SSA-VNS**: the published LX-SSA (Solanki & Deep 2023, φ = 0, χ = 1) explores for the first 50% of the budget (3,030 calls), then the **original basic VNS** (Mladenović & Hansen 1997; continuous form of Mladenović et al. 2008: l∞-shell shaking of the whole layout + complete best-improvement compass local search) intensifies the LX-SSA food source for the remaining 3,000 calls (Sec. VI, Algorithm 3). The earlier modified VNS is no longer used anywhere in the paper.
 
 All results come from one controlled study with the original optimizer code and the original `objective.py`:
 - 68 benchmark cases (Data Sets I and II; 500 m with N = 2–10, 750 m with N = 2–12, 1000 m with N = 2–15);

@@ -14,6 +14,8 @@
 | `robustness_final.py` | Cubic power curve / Gaussian wake re-evaluation, seven methods | `final_robust_table.tex`, `final_robust_summary.json`, `final_reevaluation.csv` |
 | `sec_hybrid.tex`, `sec_setup.tex` | Section VI (algorithm) and the Experimental Setup source | – |
 | `build_final_manuscript.py`, `final_frontmatter.py` | Write Sections VI–XII, appendix, abstract/contributions/motivation | – |
+| `final_prose.py` | Final prose pass in the authors' style (run once after the two builders); switches Figs. 1–3 to the redrawn figures | – |
+| `make_model_figures.py` | Redrawn model figures (circular farm, Jensen wake, wake half cone) | `../figures_final/fig_wind_farm.pdf`, `fig_wake_model.pdf`, `fig_half_cone.pdf` |
 
 Method ids in the CSV files: `LXBV` = LX-SSA-VNS (final), `SSABV` = SSA-VNS (ablation), `BVNS` = original VNS (shown as "VNS"), `LXSSA`, `SSA`, `PSO`, `DE`, `SLSQP` = MS-SLSQP. The ids `VNS` (modified VNS) and `LXVNS` (earlier hybrid with the modified VNS) in `fresh_grid.csv` / `fresh_hgrid.csv` belong to superseded versions and are not used in the manuscript.
 
