@@ -7,7 +7,7 @@ import resource as R
 kw = {"no_homog": dict(homog=False), "mast_only": dict(mcp="none"), "avg_cups": dict(cups="avg"),
       "cup_a_only": dict(cups="a"), "no_icing_qc": dict(qc=False), "shear_one_seventh": dict(shear="seventh"),
       "no_veer": dict(veer=False), "ols_mcp": dict(mcp="ols"), "ols2_resid_mcp": dict(mcp="ols2_resid"),
-      "knn2_mcp": dict(mcp="knn2"), "qm2_mcp": dict(mcp="qm2"), "vr_single_mcp": dict(mcp="vr"), "station_mcp": dict(refcol="ws_10m", dircol="wd_10m"),
+      "knn2_mcp": dict(mcp="knn2"), "qm2_mcp": dict(mcp="qm2"), "vr_single_mcp": dict(mcp="vr"), "station_mcp": dict(refcol="ws_10m", dircol="wd_10m", mcp="vr"),
       }.get(route, {})
 m, r, site = R.load(S.DATA)
 U, wd = R.long_term(m, r, site, **kw)
