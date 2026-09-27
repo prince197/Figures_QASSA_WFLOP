@@ -142,3 +142,19 @@ brute-force check. The agent's single bug was caught only by the example.
     score 0/4.
   * Anti-cheat: reward 0 for all four adversarial submissions.
 * **Unchanged:** all previously graded records.
+
+## 7. Boundary fairness without an answer key
+
+* **Public probes:** the public example now contains both kinds of index probe
+  per query:
+  * 8 single-Morse-set probes, with complete expected records;
+  * 6 multi-set interval probes. Their expected records show `space_dimension_F2`
+    and `rank_F2` in every degree, but withhold `elementary_divisors_F2`, which
+    appears as `null`. The data README states this explicitly.
+* **No hidden-only branches:** the interval branch, the exit set and the relative
+  reduction are visible and partially checkable. The Jordan structure of
+  interval index maps is still not given away.
+* **Unchanged:** hidden inputs and oracles are byte-identical (hidden probe
+  selection re-verified). All other public records are unchanged.
+* **Check:** the independent solver's full public output (divisors included)
+  equals the reference's.

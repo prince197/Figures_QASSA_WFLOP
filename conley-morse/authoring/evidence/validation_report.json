@@ -95,8 +95,8 @@
   "conley_index_maps": {
     "hidden_probes_per_query": 24,
     "hidden_probe_kind": "multi-set Morse intervals",
-    "public_probes_per_query": 8,
-    "public_probe_kind": "single Morse sets",
+    "public_probes_per_query": 14,
+    "public_probe_kind": "8 single Morse sets (full records) + 6 multi-set intervals (dimension and rank shown, elementary divisors withheld)",
     "max_index_space_dimension": 11,
     "hidden_elementary_divisor_types": [
       [
@@ -120,6 +120,7 @@
         2
       ]
     ],
-    "selector_independence": "reference and independent use opposite chain-selector choices and agree on every probe"
+    "selector_independence": "reference and independent use opposite chain-selector choices and agree on every probe",
+    "hidden_only_branches": []
   }
 }

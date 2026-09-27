@@ -8,4 +8,4 @@ The oracle generator composes every arrow of every window. An earlier generation
 
 The verifier never copies these files into the agent environment. During grading it copies one hidden input into a fresh temporary directory, drops the submitted process to an unprivileged user, and compares the resulting JSON to the sealed oracle after the process exits.
 
-Conley index-map probes are chosen by `choose_index_probes` with their own random stream, so adding them does not change any other field. Hidden probes are multi-set Morse intervals selected to cover rare index-map types (by elementary divisors); public probes are single Morse sets only.
+Conley index-map probes are chosen by `choose_index_probes` with their own random stream, so adding them does not change any other field. Hidden probes are multi-set Morse intervals selected to cover rare index-map types (by elementary divisors); public probes are 8 single Morse sets and 6 multi-set intervals per query; `withhold_public_interval_divisors` replaces the elementary divisors of the public interval probes by null in example_expected.json, keeping their dimensions and ranks.

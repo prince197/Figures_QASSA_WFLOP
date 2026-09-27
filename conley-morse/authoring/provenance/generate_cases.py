@@ -572,7 +572,7 @@ def choose_index_probes(q, frames, analyses, nx, seed, public=False):
         seen_par.add(p)
         ana = analyses[p]; desc = ana['desc']; n = len(ana['recurrent'])
         ints = {(m,) for m in range(n)}
-        if not public:
+        if True:
             for a in range(n):
                 ints.add(tuple(sorted({a, *desc[a]})))
                 ints.add(tuple(sorted({a, *[c for c in range(n) if a in desc[c]]})))
@@ -584,9 +584,15 @@ def choose_index_probes(q, frames, analyses, nx, seed, public=False):
                 continue
             rec = ref.conley_index_record(frames[p], ana, list(I), nx)
             cands.append((k, list(I), _index_key(rec)))
+    if public:
+        singles_only = [c for c in cands if len(c[1]) == 1]
+        multis = [c for c in cands if len(c[1]) > 1]
+        return sorted(_pick_index(singles_only, 8, 8, rng) + _pick_index(multis, 6, 0, rng))
+    return _pick_index(cands, 24, 4, rng)
+
+
+def _pick_index(cands, cap, max_single, rng):
     freq = Counter(c[2] for c in cands)
-    cap = 8 if public else 24
-    max_single = cap if public else 4
     chosen = []; seen = set(); singles = 0; empties = 0
     order = sorted(cands, key=lambda c: (-(len(c[2]) > 0), 1.0 / freq[c[2]] * -1, -len(c[1]), rng.random()))
     # first pass: one probe per distinct nontrivial type, rarest first
@@ -633,6 +639,18 @@ def add_index_probes(data, frames, analyses, seed, public):
         q['index_probes'] = choose_index_probes(q, frames, analyses, nx, seed + 9100 + q['query_id'], public)
 
 
+def withhold_public_interval_divisors(out):
+    """The public example shows multi-set interval probes with their index-space
+    dimensions and index-map ranks, but withholds the elementary divisors (null)."""
+    out = json.loads(json.dumps(out))
+    for q in out['queries']:
+        for r in q.get('conley_index_maps', []):
+            if len(r['morse_ids']) > 1:
+                for d in r['degrees']:
+                    d['elementary_divisors_F2'] = None
+    return out
+
+
 def write_json(path, obj):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(obj, separators=(',', ':')) + '\n', encoding='utf-8')
@@ -645,7 +663,7 @@ def generate_named_case(name):
     out = ref.solve_case(data)
     if name == 'public':
         write_json(PUBLIC, data)
-        write_json(PUBLIC_EXPECTED, out)
+        write_json(PUBLIC_EXPECTED, withhold_public_interval_divisors(out))
     else:
         write_json(HIDDEN_DIR / f'{name}.json', data)
         write_json(ORACLE_DIR / f'{name}.json', out)
