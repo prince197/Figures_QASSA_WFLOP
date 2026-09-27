@@ -1,0 +1,8 @@
+{
+  "implementation": "independent Kosaraju routed SCC reconstruction with exact relation composition",
+  "heldout_0": {"exact_match": true, "runtime_sec": 70},
+  "heldout_1": {"exact_match": true, "runtime_sec": 88},
+  "heldout_2": {"exact_match": true, "runtime_sec": 87},
+  "heldout_3": {"exact_match": true, "runtime_sec": 78},
+  "all_exact": true
+}

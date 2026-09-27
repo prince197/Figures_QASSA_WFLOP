@@ -1,0 +1,47 @@
+schema_version = "1.4"
+
+artifacts = ["/app/trajectory_solver.py"]
+
+[task]
+name = "afterquery/conley-morse"
+description = "Build a reusable solver for long Conley Morse continuation trajectories and recover exact Conley and Morse-graph transport invariants on unseen parameter families."
+authors = [{ name = "Anonymous Submission Author", email = "anonymous@example.invalid" }]
+keywords = ["Conley-Morse", "rigorous dynamics", "continuation", "cubical homology", "zigzag rank", "zigzag barcode", "Kronecker canonical form", "Morse graph"]
+
+[metadata]
+category = "Science"
+subcategory = "Applied Mathematics & Scientific Computing"
+difficulty_explanation = "The submitted artifact must reconstruct exact continuation relations for long, low-backtracking parameter trajectories in coupled nonlinear maps. Difficulty is not based on hidden syntax or output volume: every hidden query contains repeated bifurcation crossings where the selected Morse family branches and merges, so continuation must be represented as a linear relation rather than a one-to-one correspondence, and composed exactly; hidden windows are chosen so that some compositions pass through the zero relation and become nonzero again, which defeats solvers that treat the zero relation as absorbing. Every loop relation and every holonomy word must be classified up to conjugacy by its Kronecker invariants over F2 (right and left minimal indices, infinite and finite elementary divisors); on the Morse-graph layer these relations live on spaces of dimension up to 333 and mix full, zero, multivalued, kernel, nilpotent and identity blocks. Holonomy probes combine two closed endorelations A and B with their converses in the words A, B, AB, BA, ABA, BAB, AABB, BBAA, ABAB, BABA, Ab, aB, ABab and abAB, and the complete interval decomposition (barcode) of every Conley zigzag is required in all degrees. Hidden families use 34 by 34 to 36 by 36 phase grids, 210 to 225 parameters and trajectories of 2800 to 4800 steps. The data is synthetic but realistic and models rigorous finite representations used in parameterized nonlinear dynamics. Researchers in rigorous numerics, computational dynamics, computational topology, and topological data analysis perform closely related work."
+solution_explanation = "The reference reconstructs exact rational outer approximations, recurrent SCCs, relative cubical Conley homology over F2, and continuation relations through union-frame SCCs. It propagates selected Morse families along each trajectory, computes sparse generalized ranks by composing linear relations arrow by arrow with no early exit, and computes the full Conley barcode by a left-to-right sweep of the range and multivalued-part flags of the composed relations followed by inclusion-exclusion. Loop and holonomy relations keep the complete relation subspace; Kronecker invariants are read from the dimensions of the functorial chains R^j(0), R^-j(0), R^k(U), R^-k(U) and from the elementary divisors of the automorphism induced on the regular core (characteristic polynomial factorisation over F2). A second layer performs the analogous construction on H0 and H1 of the Morse reachability graph. Repeated complexes are cached, but other exact algorithms are valid."
+verification_explanation = "The verifier treats /app/trajectory_solver.py as the only artifact. It compiles the source in memory, copies it into a fresh sandbox, and runs that copy as an unprivileged user on four hidden inputs; hidden inputs and sealed oracles remain unreadable to the child process. Every transported selection, node dimension, generalized-rank record, Conley barcode, loop signature, and holonomy-word signature (including Kronecker invariants) must match exactly, and all four hidden families must pass. Each hidden invocation has the disclosed 300 second wall-clock limit. The sealed oracles were regenerated after removing an invalid absorbing-zero shortcut from the oracle generator; that shortcut is now an ablation that fails every hidden family. The reference passes all hidden cases, and an independent implementation that shares no relation, Kronecker or barcode code with the reference (section-space relations, polynomial-ring pencil ranks, per-start rank sweeps) reproduces all four sealed oracles exactly."
+author_name = "Anonymous Submission Author"
+author_email = "anonymous@example.invalid"
+author_organization = "Independent Researcher"
+author_profile = "N/A"
+research_advisor = ""
+referred_by = ""
+conflicts_of_interest = "None"
+domain = "mathematical-sciences"
+field = "applied-mathematics"
+subfield = "Rigorous dynamics, Conley index, continuation, and zigzag persistence"
+tags = ["global-dynamics", "Conley-index", "Morse-graph", "cubical-complex", "zigzag-persistence", "continuation", "linear-relations", "Kronecker-form"]
+expert_time_estimate_hours = 24
+relevant_experience = "Computational topology and rigorous-dynamics task design with exact finite-field verification."
+
+[verifier]
+timeout_sec = 1800.0
+environment_mode = "separate"
+
+[verifier.environment]
+network_mode = "no-network"
+
+[agent]
+timeout_sec = 9000.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
+gpus = 0
+network_mode = "public"

@@ -1,0 +1,11 @@
+{
+  "agent_timeout_sec": 9000.0,
+  "gpus": 0,
+  "hidden_cases": 4,
+  "instruction_suffix_exact": true,
+  "issues": [],
+  "logs_artifacts_parent_created": true,
+  "required_hidden_cases": 4,
+  "status": "pass",
+  "task_name": "conley-morse"
+}

@@ -1,0 +1,138 @@
+{
+  "heldout_cases": 4,
+  "required_cases": 4,
+  "routes": [
+    {
+      "case_pass": {
+        "heldout_0.json": 1,
+        "heldout_1.json": 1,
+        "heldout_2.json": 1,
+        "heldout_3.json": 1
+      },
+      "passed_cases": 4,
+      "passes_verifier": true,
+      "route": "full_reference"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "greedy_single_branch"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "endpoint_dimension_as_rank"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "identity_loop_transport"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "zero_graph_queries"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "zero_holonomy"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "absorbing_zero_shortcut"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "graph_assumption_kronecker"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "singular_blocks_as_zero"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "drop_converse_words"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "no_barcodes"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "barcode_from_node_dimensions"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# Reference verification
+
+The sealed oracles and the public expected output were regenerated with the corrected reference solver. The previous generation stopped relation composition as soon as the running relation became zero, which is invalid for linear relations; external solvers that composed exactly were therefore marked wrong on a small number of loop and holonomy records. The corrected reference composes every arrow of every window, and the retired behaviour now fails all four hidden families as the `absorbing_zero_shortcut` ablation. It also fails the public example, so the phenomenon is visible before submission.
+
+Each hidden family was exercised through the verifier sandbox as an isolated case. All four pass: heldout 0 in 77.8 s, heldout 1 in 98.9 s, heldout 2 in 97.2 s, and heldout 3 in 86.6 s. These are well below the disclosed 300 s per-case limit.
+
+The independent implementation (`independent_solver.py`) reproduces all four sealed oracles and the public expected output exactly, byte for byte after key sorting. It shares no relation, Kronecker or barcode code with the reference. Window relations are projections of section spaces of the restricted zigzag, Kronecker invariants come from kernel dimensions of the pencil over polynomial quotient rings, and barcodes come from per-start rank sweeps. Both Kronecker routes were fuzz-tested against 1500 or more randomly conjugated direct sums of known blocks, and the barcode sweep was fuzz-tested against brute-force limit and colimit ranks on 1500 random zigzags.
+
+Local anti-cheat trials for a no-op artifact, case-id-only output, oracle snooping, and symbolic-link output each receive reward 0.

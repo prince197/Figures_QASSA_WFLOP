@@ -1,0 +1,31 @@
+{
+  "reference": {
+    "isolated_verifier_cases": {
+      "heldout_0": {"pass": true, "runtime_sec": 64.973},
+      "heldout_1": {"pass": true, "runtime_sec": 82.378},
+      "heldout_2": {"pass": true, "runtime_sec": 82.233},
+      "heldout_3": {"pass": true, "runtime_sec": 72.738}
+    },
+    "required_cases": 4,
+    "all_cases_pass": true
+  },
+  "direct_reference_regeneration": {
+    "heldout_0": {"exact_match": true, "runtime_sec": 67},
+    "heldout_1": {"exact_match": true, "runtime_sec": 83},
+    "heldout_2": {"exact_match": true, "runtime_sec": 83},
+    "heldout_3": {"exact_match": true, "runtime_sec": 74}
+  },
+  "independent_implementation": {
+    "heldout_0": {"exact_match": true, "runtime_sec": 70},
+    "heldout_1": {"exact_match": true, "runtime_sec": 88},
+    "heldout_2": {"exact_match": true, "runtime_sec": 87},
+    "heldout_3": {"exact_match": true, "runtime_sec": 78},
+    "all_exact": true
+  },
+  "local_adversaries": {
+    "nop": 0,
+    "case_id_only": 0,
+    "oracle_snoop": 0,
+    "symlink_output": 0
+  }
+}
