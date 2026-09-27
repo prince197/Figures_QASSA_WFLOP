@@ -1,27 +1,29 @@
 {
   "reference": {
     "isolated_verifier_cases": {
-      "heldout_0": {"pass": true, "runtime_sec": 64.973},
-      "heldout_1": {"pass": true, "runtime_sec": 82.378},
-      "heldout_2": {"pass": true, "runtime_sec": 82.233},
-      "heldout_3": {"pass": true, "runtime_sec": 72.738}
+      "heldout_0": {"pass": true, "runtime_sec": 77.769},
+      "heldout_1": {"pass": true, "runtime_sec": 98.861},
+      "heldout_2": {"pass": true, "runtime_sec": 97.158},
+      "heldout_3": {"pass": true, "runtime_sec": 86.575}
     },
     "required_cases": 4,
     "all_cases_pass": true
   },
-  "direct_reference_regeneration": {
-    "heldout_0": {"exact_match": true, "runtime_sec": 67},
-    "heldout_1": {"exact_match": true, "runtime_sec": 83},
-    "heldout_2": {"exact_match": true, "runtime_sec": 83},
-    "heldout_3": {"exact_match": true, "runtime_sec": 74}
+  "oracle_regeneration": {
+    "reason": "previous oracle generator treated the zero linear relation as absorbing under composition",
+    "retired_behaviour_ablation": "absorbing_zero_shortcut",
+    "retired_behaviour_passes_heldout_cases": 0,
+    "retired_behaviour_passes_public_example": false
   },
   "independent_implementation": {
-    "heldout_0": {"exact_match": true, "runtime_sec": 70},
-    "heldout_1": {"exact_match": true, "runtime_sec": 88},
-    "heldout_2": {"exact_match": true, "runtime_sec": 87},
-    "heldout_3": {"exact_match": true, "runtime_sec": 78},
+    "public_example": {"exact_match": true, "runtime_sec": 9},
+    "heldout_0": {"exact_match": true, "runtime_sec": 61},
+    "heldout_1": {"exact_match": true, "runtime_sec": 140},
+    "heldout_2": {"exact_match": true, "runtime_sec": 164},
+    "heldout_3": {"exact_match": true, "runtime_sec": 80},
     "all_exact": true
   },
+  "ablations_passing_any_heldout_case": [],
   "local_adversaries": {
     "nop": 0,
     "case_id_only": 0,

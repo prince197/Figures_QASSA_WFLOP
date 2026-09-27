@@ -592,10 +592,13 @@ def _poly_kernel_dim(alpha, beta, n, k):
     return len(cols) - _rank(cols)
 
 
-def _minimal_indices(alpha, beta, n, budget, offset):
+def _minimal_indices(alpha, beta, n, mass_bound):
     """Multiset of minimal indices from polynomial-kernel growth.
-    offset=0: a block of index e uses e dims of the target budget;
-    offset=1: uses e+1."""
+
+    N_k = sum_{e <= k} (k - e + 1) m_e, so N_k - N_{k-1} = #{e <= k}.
+    A block of index e contributes e to rank(alpha) and to rank(beta), so the
+    total index mass of blocks not yet found is at most mass_bound minus the
+    mass already found; once that is below k+1 no block of index > k remains."""
     Nk = []; out = []
     k = 0
     while True:
@@ -603,8 +606,7 @@ def _minimal_indices(alpha, beta, n, budget, offset):
         g = Nk[k] - (Nk[k - 1] if k else 0)          # #{e <= k}
         gprev = (Nk[k - 1] - (Nk[k - 2] if k >= 2 else 0)) if k >= 1 else 0
         out.extend([k] * (g - gprev))
-        used = sum(e + offset for e in out)
-        if budget - used < k + 1 + offset:
+        if mass_bound - sum(out) < k + 1:
             return out
         k += 1
 
@@ -631,7 +633,8 @@ def kronecker_invariants_pencil(R):
     n = R.du; assert R.dv == n
     alpha = [R.left(v) for v in R.vecs]; beta = [R.right(v) for v in R.vecs]
     r = len(R.vecs)
-    right = _minimal_indices(alpha, beta, n, n, 0)
+    mass = min(_rank(alpha), _rank(beta))
+    right = _minimal_indices(alpha, beta, n, mass)
     # left indices: transposed pencil  beta^T - s alpha^T : F2^n -> F2^r
     def transpose(cols, rows):
         out = []
@@ -643,7 +646,7 @@ def kronecker_invariants_pencil(R):
             out.append(v)
         return out
     aT = transpose(alpha, n); bT = transpose(beta, n)
-    left = _minimal_indices(aT, bT, r, n, 1) if n else []
+    left = _minimal_indices(aT, bT, r, mass - sum(right)) if n else []
     nright = len(right)
     # infinite divisors: reversed pencil alpha - s*beta at s = 0
     inf = []
