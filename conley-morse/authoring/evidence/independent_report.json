@@ -1,14 +1,30 @@
 {
-  "implementation": "independent solver sharing no relation, Kronecker or barcode code with the reference: integer box maps, iterative Kosaraju SCCs, window relations as projections of zigzag section spaces glued by pullbacks (no early exit), Kronecker invariants from pencil kernel dimensions over F2[s]/(q) and polynomial-kernel ranks, barcodes from per-start generalized-rank sweeps",
-  "public_example": {"exact_match": true, "runtime_sec": 9},
-  "heldout_0": {"exact_match": true, "runtime_sec": 61},
-  "heldout_1": {"exact_match": true, "runtime_sec": 140},
-  "heldout_2": {"exact_match": true, "runtime_sec": 164},
-  "heldout_3": {"exact_match": true, "runtime_sec": 80},
+  "implementation": "independent solver sharing no relation, Kronecker or barcode code with the reference: integer box maps, iterative Kosaraju SCCs, window relations as projections of zigzag section spaces glued by pullbacks (no early exit), Kronecker invariants from pencil kernel dimensions over F2[s]/(q) and polynomial-kernel ranks, barcodes from per-start generalized-rank sweeps; Morse-graph barcodes from a right-to-left sweep of domain and kernel flags",
+  "public_example": {
+    "exact_match": true,
+    "runtime_sec": 11
+  },
+  "heldout_0": {
+    "exact_match": true,
+    "runtime_sec": 75
+  },
+  "heldout_1": {
+    "exact_match": true,
+    "runtime_sec": 165
+  },
+  "heldout_2": {
+    "exact_match": true,
+    "runtime_sec": 195
+  },
+  "heldout_3": {
+    "exact_match": true,
+    "runtime_sec": 100
+  },
   "all_exact": true,
   "fuzz_checks": {
     "kronecker_reference_route_vs_known_blocks": 4500,
     "kronecker_independent_route_vs_known_blocks": 1500,
-    "zigzag_barcode_sweep_vs_bruteforce_limit_colimit": 1500
+    "zigzag_barcode_sweep_vs_bruteforce_limit_colimit": 1500,
+    "barcode_reverse_sweep_vs_forward_sweep_vs_bruteforce": 2000
   }
 }

@@ -146,6 +146,36 @@ def absorbing_zero_shortcut(ans):
             _ZERO_SHORTCUT_CACHE[case]=json.loads(out.read_text())
     return _ZERO_SHORTCUT_CACHE[case]
 
+
+def no_graph_barcodes(ans):
+    x=copy.deepcopy(ans)
+    for q in x['queries']:
+        q['morse_graph_zigzag_barcodes_F2']=[[],[]]
+    return x
+
+
+def graph_barcode_capped_sweep(ans, cap=1024):
+    """What a per-start sweep truncated at `cap` nodes (to fit the time limit)
+    reports: every interval longer than the cap is cut at start+cap-1."""
+    x=copy.deepcopy(ans)
+    for q in x['queries']:
+        out=[]
+        for bars in q['morse_graph_zigzag_barcodes_F2']:
+            acc={}
+            for s,e,m in bars:
+                e2=min(e,s+cap-1); acc[(s,e2)]=acc.get((s,e2),0)+m
+            out.append([[s,e,m] for (s,e),m in sorted(acc.items())])
+        q['morse_graph_zigzag_barcodes_F2']=out
+    return x
+
+
+def graph_barcode_from_node_dimensions(ans):
+    x=copy.deepcopy(ans)
+    for q in x['queries']:
+        dims=q['morse_graph_node_dimensions_F2']
+        q['morse_graph_zigzag_barcodes_F2']=[[[i,i,v] for i,v in enumerate(dims[d]) if v] for d in range(2)]
+    return x
+
 ROUTES={
  'full_reference': lambda x: copy.deepcopy(x),
  'greedy_single_branch': greedy_single_branch,
@@ -159,6 +189,9 @@ ROUTES={
  'drop_converse_words': drop_converse_words,
  'no_barcodes': no_barcodes,
  'barcode_from_node_dimensions': barcode_from_node_dimensions,
+ 'no_graph_barcodes': no_graph_barcodes,
+ 'graph_barcode_capped_sweep': graph_barcode_capped_sweep,
+ 'graph_barcode_from_node_dimensions': graph_barcode_from_node_dimensions,
 }
 
 

@@ -1809,6 +1809,7 @@ def solve_case(data):
         for k,(a,b) in enumerate(gwindows):
             granks.append({'window_id':k,'start_node':a,'end_node':b,
                            'rank_F2':[grank_by_d[d][k] for d in range(2)]})
+        gbarcodes=[zigzag_barcode(gdims[d],gmaps[d]) for d in range(2)]
         gloops=[]
         for lid,w in enumerate(q.get('graph_loop_windows',q.get('loop_windows',[])[:4])):
             a,b=w
@@ -1831,7 +1832,8 @@ def solve_case(data):
                         'conley_zigzag_barcodes_F2':barcodes,'conley_loop_signatures':loops,
                         'conley_holonomy_word_signatures':holonomy,
                         'morse_graph_node_dimensions_F2':[gdims[d] for d in range(2)],
-                        'morse_graph_generalized_rank_queries':granks,'morse_graph_loop_signatures':gloops,
+                        'morse_graph_generalized_rank_queries':granks,
+                        'morse_graph_zigzag_barcodes_F2':gbarcodes,'morse_graph_loop_signatures':gloops,
                         'morse_graph_holonomy_word_signatures':gholonomy})
         cached_relative_homology_data_boxes.cache_clear(); cached_homology_data_boxes.cache_clear()
     return {'case_id':data['case_id'],'queries':queries}

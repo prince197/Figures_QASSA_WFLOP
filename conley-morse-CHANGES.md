@@ -65,3 +65,26 @@ formula. The public example exercises every block kind and the zero-crossing tra
 
 The bundle is in `conley-morse/`. The same bundle, zipped for upload, is
 `conley-morse.zip`.
+
+## 4. Round 2: the easiness probe passed 3/3, so the task was hardened again
+
+* **New graded field `morse_graph_zigzag_barcodes_F2`**: the full interval
+  decomposition of the Morse-graph zigzag in H0 and H1.
+* **Scale:** the H1 zigzags have up to 9599 nodes on spaces of dimension up to 333.
+  Each query has 6309 to 13797 distinct intervals (total multiplicity up to
+  114565), and some span the whole trajectory.
+* **Why naive fails:** sweeping a composed relation from every start node needs
+  15.7 to 46.1 million relation compositions per query, which cannot fit in the
+  300 s limit. A real zigzag-persistence algorithm is required. The spec
+  already defines the barcode exactly, and it says the barcode covers every
+  interval, not just the listed windows.
+* **Reference:** a single left-to-right flag sweep takes about 12 s for the
+  largest query. The whole case runs in 93-132 s in the verifier sandbox.
+* **Independent check:** a right-to-left sweep over domain and kernel flags
+  (different subspaces, opposite direction) matches all four oracles and the
+  public example exactly. On 2000 random zigzags the reference sweep, the
+  reverse sweep, a per-start sweep and brute-force limit/colimit ranks agree.
+* **New ablations:** no graph barcode, graph barcode read from node dimensions,
+  and a per-start sweep capped at 1024 nodes. All score 0/4. 14 ablations now
+  score 0/4 in total.
+* **Unchanged:** all previously graded records. Only the new field was added.

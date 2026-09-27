@@ -1,10 +1,22 @@
 {
   "reference": {
     "isolated_verifier_cases": {
-      "heldout_0": {"pass": true, "runtime_sec": 77.769},
-      "heldout_1": {"pass": true, "runtime_sec": 98.861},
-      "heldout_2": {"pass": true, "runtime_sec": 97.158},
-      "heldout_3": {"pass": true, "runtime_sec": 86.575}
+      "heldout_0": {
+        "pass": true,
+        "runtime_sec": 92.768
+      },
+      "heldout_1": {
+        "pass": true,
+        "runtime_sec": 129.015
+      },
+      "heldout_2": {
+        "pass": true,
+        "runtime_sec": 131.523
+      },
+      "heldout_3": {
+        "pass": true,
+        "runtime_sec": 105.777
+      }
     },
     "required_cases": 4,
     "all_cases_pass": true
@@ -16,11 +28,26 @@
     "retired_behaviour_passes_public_example": false
   },
   "independent_implementation": {
-    "public_example": {"exact_match": true, "runtime_sec": 9},
-    "heldout_0": {"exact_match": true, "runtime_sec": 61},
-    "heldout_1": {"exact_match": true, "runtime_sec": 140},
-    "heldout_2": {"exact_match": true, "runtime_sec": 164},
-    "heldout_3": {"exact_match": true, "runtime_sec": 80},
+    "public_example": {
+      "exact_match": true,
+      "runtime_sec": 11
+    },
+    "heldout_0": {
+      "exact_match": true,
+      "runtime_sec": 75
+    },
+    "heldout_1": {
+      "exact_match": true,
+      "runtime_sec": 165
+    },
+    "heldout_2": {
+      "exact_match": true,
+      "runtime_sec": 195
+    },
+    "heldout_3": {
+      "exact_match": true,
+      "runtime_sec": 100
+    },
     "all_exact": true
   },
   "ablations_passing_any_heldout_case": [],
@@ -29,5 +56,17 @@
     "case_id_only": 0,
     "oracle_snoop": 0,
     "symlink_output": 0
+  },
+  "morse_graph_barcode_scale": {
+    "distinct_H1_intervals_per_query": [
+      6309,
+      13797
+    ],
+    "max_total_multiplicity": 114565,
+    "naive_per_start_relation_compositions_per_query_millions": [
+      15.7,
+      46.1
+    ],
+    "reference_sweep_seconds_largest_query": 11.7
   }
 }

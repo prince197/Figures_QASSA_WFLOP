@@ -67,9 +67,9 @@ finite_elementary_divisors: pairs [code(p), t] of all finite blocks, sorted lexi
 
 The four lists always satisfy n = sum(e) + sum(h+1) + sum(t*deg p) + sum(t) and dim R = sum(e+1) + sum(h) + sum(t*deg p) + sum(t). Reference points: the identity relation on F2^n has n finite blocks [3,1]; the graph {(x,0)} of the zero map has n finite blocks [2,1]; its converse {(0,y)} has n infinite blocks of size 1; the zero relation {(0,0)} has n left blocks of index 0; the full relation U direct-sum U has n right blocks of index 1; the zero space U = 0 gives four empty lists.
 
-CONLEY ZIGZAG BARCODES
+ZIGZAG BARCODES
 
-For every query and every degree d in 0, 1, 2, the Conley trajectory zigzag of degree d (all 2*L-1 nodes) decomposes as a direct sum of interval representations, uniquely up to order. An interval [s,e] with 0 <= s <= e <= 2*L-2 is F2 on nodes s..e, zero elsewhere, with identity maps between consecutive nodes inside the interval. Report every interval as [start_node, end_node, multiplicity], sorted by start_node and then end_node, with multiplicity >= 1 and each (start_node, end_node) listed once. Intervals of length zero are included. The multiplicity of [s,e] equals rho(s,e) - rho(s-1,e) - rho(s,e+1) + rho(s-1,e+1), where rho is the generalized rank defined above and rho is zero outside 0 <= s <= e <= 2*L-2.
+For every query, the Conley trajectory zigzag in each degree d in 0, 1, 2 and the Morse reachability-graph zigzag in each degree d in 0, 1 (all 2*L-1 nodes in every case) decompose as a direct sum of interval representations, uniquely up to order. An interval [s,e] with 0 <= s <= e <= 2*L-2 is F2 on nodes s..e, zero elsewhere, with identity maps between consecutive nodes inside the interval. Report every interval as [start_node, end_node, multiplicity], sorted by start_node and then end_node, with multiplicity >= 1 and each (start_node, end_node) listed once. Intervals of length zero are included. The multiplicity of [s,e] equals rho(s,e) - rho(s-1,e) - rho(s,e+1) + rho(s-1,e+1), where rho is the generalized rank defined above and rho is zero outside 0 <= s <= e <= 2*L-2. Barcodes are required for every node interval of the full trajectory, not only for the listed rank windows; on the hidden inputs the Morse-graph H1 barcode has more than ten thousand distinct intervals, some spanning the whole trajectory, and every hidden invocation must finish within the stated wall-clock limit.
 
 INPUT QUERY FIELDS
 
@@ -130,6 +130,7 @@ It must write one regular UTF-8 JSON file at OUTPUT with this shape:
       "morse_graph_generalized_rank_queries": [
         {"window_id": int, "start_node": int, "end_node": int, "rank_F2": [int,int]}
       ],
+      "morse_graph_zigzag_barcodes_F2": [ [[int,int,int],...], [[int,int,int],...] ],
       "morse_graph_loop_signatures": [
         {"loop_id": int, "start_occurrence": int, "end_occurrence": int,
          "degrees": [
@@ -158,7 +159,7 @@ It must write one regular UTF-8 JSON file at OUTPUT with this shape:
 }
 
 
-Array orientation is part of the output contract. `selected_morse_ids_by_frame` has one outer entry per trajectory occurrence; each inner list is the sorted Morse-id selection at that occurrence. `conley_node_dimensions_F2` has exactly three outer lists in degree order H0, H1, H2; each of those lists has one integer per endpoint-bridge zigzag node. `conley_zigzag_barcodes_F2` has exactly three outer lists in degree order H0, H1, H2; each is the sorted interval list of that degree. `morse_graph_node_dimensions_F2` has exactly two outer lists in degree order H0, H1, again with one integer per zigzag node. Do not transpose these arrays.
+Array orientation is part of the output contract. `selected_morse_ids_by_frame` has one outer entry per trajectory occurrence; each inner list is the sorted Morse-id selection at that occurrence. `conley_node_dimensions_F2` has exactly three outer lists in degree order H0, H1, H2; each of those lists has one integer per endpoint-bridge zigzag node. `conley_zigzag_barcodes_F2` has exactly three outer lists in degree order H0, H1, H2, and `morse_graph_zigzag_barcodes_F2` has exactly two outer lists in degree order H0, H1; each is the sorted interval list of that degree. `morse_graph_node_dimensions_F2` has exactly two outer lists in degree order H0, H1, again with one integer per zigzag node. Do not transpose these arrays.
 
 The visible file `example_expected.json` is the expected output for `example.json`; it may be used to check both orientation and serialization before submission.
 

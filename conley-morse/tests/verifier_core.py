@@ -167,6 +167,9 @@ def compare_case(got, expected):
             ei["morse_graph_generalized_rank_queries"],
             "window_id",
         )
+        graph_barcode_acc = _fraction_equal(
+            gi.get("morse_graph_zigzag_barcodes_F2"), ei["morse_graph_zigzag_barcodes_F2"]
+        )
         graph_loop_acc = _record_accuracy(
             gi.get("morse_graph_loop_signatures"),
             ei["morse_graph_loop_signatures"],
@@ -189,6 +192,7 @@ def compare_case(got, expected):
             and conley_loop_acc == 1.0
             and conley_holonomy_acc == 1.0
             and graph_rank_acc == 1.0
+            and graph_barcode_acc == 1.0
             and graph_loop_acc == 1.0
             and graph_holonomy_acc == 1.0
         )
@@ -205,6 +209,7 @@ def compare_case(got, expected):
                 "conley_holonomy_record_accuracy": round(conley_holonomy_acc, 6),
                 "graph_dimension_accuracy": round(graph_dim_acc, 6),
                 "graph_rank_record_accuracy": round(graph_rank_acc, 6),
+                "graph_barcode_degree_accuracy": round(graph_barcode_acc, 6),
                 "graph_loop_record_accuracy": round(graph_loop_acc, 6),
                 "graph_holonomy_record_accuracy": round(graph_holonomy_acc, 6),
             }

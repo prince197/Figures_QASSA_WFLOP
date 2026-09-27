@@ -770,6 +770,108 @@ def barcode_ind(dims, maps):
 
 
 # ---------------------------------------------------------------------------
+# Full barcode by a RIGHT-TO-LEFT sweep over different flags:
+#   D_e = dom R_{k,e}  and  K_e = ker R_{k,e}  inside V_k,  for every end e >= k,
+# so rho(k,e) = dim D_e - dim K_e.  Moving from k+1 to k pulls every subspace back
+# through the edge relation S_k between V_k and V_{k+1}:  X -> S_k^{-1}(X), i.e.
+# f^{-1}(X) for a forward map f and g(X) for a backward map g.
+# ---------------------------------------------------------------------------
+
+def _rref(vecs):
+    piv = {}
+    for v in vecs:
+        while v:
+            p = v.bit_length() - 1
+            if p in piv:
+                v ^= piv[p]
+            else:
+                piv[p] = v; break
+    keys = sorted(piv)
+    for i, p in enumerate(keys):
+        for q in keys[i + 1:]:
+            if (piv[q] >> p) & 1:
+                piv[q] ^= piv[p]
+    return tuple(piv[p] for p in keys)
+
+
+def _pull_forward(cols, dsrc, X):
+    """f^{-1}(X) for f: F2^dsrc -> target given by columns."""
+    piv = {}
+    for x in X:
+        v = x
+        while v:
+            p = v.bit_length() - 1
+            if p in piv:
+                v ^= piv[p][0]
+            else:
+                piv[p] = (v, 0); break
+    out = []
+    for j in range(dsrc):
+        v = cols[j]; lab = 1 << j
+        while v:
+            p = v.bit_length() - 1
+            if p in piv:
+                a, l = piv[p]; v ^= a; lab ^= l
+            else:
+                piv[p] = (v, lab); break
+        if v == 0:
+            out.append(lab)
+    return _rref(out)
+
+
+def _push_backward(cols, X):
+    """g(X) for g given by columns."""
+    return _rref([_apply(cols, x) for x in X])
+
+
+def barcode_reverse(dims, maps):
+    n = len(dims)
+    if n == 0:
+        return []
+    full = lambda d: _rref([1 << i for i in range(d)])
+    # segs over e (ascending): [e_lo, D, K], valid for e in [e_lo, next e_lo)
+    segs = [[n - 1, full(dims[n - 1]), ()]]
+    bars = {}
+
+    def jumps(sg, lo):
+        """rho(k,e) - rho(k,e+1) for e >= lo, from a segment list over e."""
+        out = {}
+        vals = [(e, len(D) - len(K)) for e, D, K in sg if True]
+        # value at e is that of the last segment with e_lo <= e; rho(k, n) = 0
+        for i, (e0, r) in enumerate(vals):
+            e_last = (vals[i + 1][0] - 1) if i + 1 < len(vals) else n - 1
+            nxt = vals[i + 1][1] if i + 1 < len(vals) else 0
+            if e_last >= lo and r != nxt:
+                out[e_last] = out.get(e_last, 0) + r - nxt
+        return out
+
+    for k in range(n - 1, -1, -1):
+        if k > 0:
+            direction, cols = maps[k - 1]
+            new = [[k - 1, full(dims[k - 1]), ()]]
+            for e, D, K in segs:
+                if direction == 'forward':
+                    D2 = _pull_forward(cols, dims[k - 1], D); K2 = _pull_forward(cols, dims[k - 1], K)
+                else:
+                    D2 = _push_backward(cols, D); K2 = _push_backward(cols, K)
+                if new[-1][1] == D2 and new[-1][2] == K2:
+                    continue
+                new.append([e, D2, K2])
+        else:
+            new = []
+        # m(k,e) = [rho(k,e)-rho(k,e+1)] - [rho(k-1,e)-rho(k-1,e+1)] for e >= k
+        jk = jumps(segs, k); jn = jumps(new, k) if new else {}
+        for e in set(jk) | set(jn):
+            m = jk.get(e, 0) - jn.get(e, 0)
+            if m < 0:
+                raise RuntimeError('negative multiplicity (reverse sweep)')
+            if m:
+                bars[(k, e)] = m
+        segs = new
+    return [[a, b, m] for (a, b), m in sorted(bars.items())]
+
+
+# ---------------------------------------------------------------------------
 
 WORDS = ['A', 'B', 'AB', 'BA', 'ABA', 'BAB', 'AABB', 'BBAA', 'ABAB', 'BABA', 'Ab', 'aB', 'ABab', 'abAB']
 
@@ -844,6 +946,7 @@ def solve_case_ind(data):
         hol = [{'probe_id': h, 'occurrences': list(pr), 'degrees': holonomy_record(pr, dims, maps)}
                for h, pr in enumerate(q['holonomy_probes'])]
         gdims, gmaps = graph_zigzag_ind(ids, analyses, edge_struct)
+        gbars = [barcode_reverse(gdims[d], gmaps[d]) for d in range(2)]
         granks = []
         for k, (a, b) in enumerate(q['graph_rank_windows']):
             granks.append({'window_id': k, 'start_node': a, 'end_node': b,
@@ -862,6 +965,7 @@ def solve_case_ind(data):
                         'conley_generalized_rank_queries': ranks, 'conley_zigzag_barcodes_F2': bars,
                         'conley_loop_signatures': loops, 'conley_holonomy_word_signatures': hol,
                         'morse_graph_node_dimensions_F2': gdims, 'morse_graph_generalized_rank_queries': granks,
+                        'morse_graph_zigzag_barcodes_F2': gbars,
                         'morse_graph_loop_signatures': gloops, 'morse_graph_holonomy_word_signatures': ghol})
         cached_relative_homology_data_boxes.cache_clear()
     return {'case_id': data['case_id'], 'queries': queries}
