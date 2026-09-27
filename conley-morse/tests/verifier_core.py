@@ -15,7 +15,7 @@ HERE = Path(__file__).resolve().parent
 HIDDEN = sorted((HERE / "heldout").glob("heldout_*.json"))
 ORACLES = {p.name: json.loads((HERE / "oracles" / p.name).read_text()) for p in HIDDEN}
 ARTIFACT = Path("/app/trajectory_solver.py")
-CASE_TIMEOUT_S = 300
+CASE_TIMEOUT_S = 1500
 REQUIRED_CASES = 4
 
 

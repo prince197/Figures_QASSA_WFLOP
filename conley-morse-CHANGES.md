@@ -88,3 +88,22 @@ The bundle is in `conley-morse/`. The same bundle, zipped for upload, is
   and a per-start sweep capped at 1024 nodes. All score 0/4. 14 ablations now
   score 0/4 in total.
 * **Unchanged:** all previously graded records. Only the new field was added.
+
+## 5. Round 3: quality review flagged "essential difficulty" (time-limit headroom)
+
+The reviewer was right: 300 s per case left too little headroom. The reference
+took 268 s on their host, and the independent (correct) implementation would
+have timed out there at about 400 s.
+
+* **Per-case limit raised from 300 s to 1500 s** (`tests/verifier_core.py`,
+  `instruction.md`, README). The whole-verifier timeout in `task.toml` goes from
+  1800 s to 7200 s to cover four cases.
+* **The limit now separates algorithm classes, not constant factors:**
+  * slowest known correct implementation: <= 195 s here, about 400 s on the slow
+    host, which is at least 3.7x headroom;
+  * quadratic per-start sweep: 80-95 million compositions per case at a measured
+    0.13 ms each, so about 3 hours per case here and roughly 6 hours on the slow
+    host, which is 7-14x over the limit.
+* The margins are documented in README ("Gate: runtime"), `calibration.md` and
+  `validation_report.json` (`runtime_gate`).
+* **Unchanged:** data, oracles and graded fields.

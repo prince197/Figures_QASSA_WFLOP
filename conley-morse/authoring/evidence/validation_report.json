@@ -68,5 +68,28 @@
       46.1
     ],
     "reference_sweep_seconds_largest_query": 11.7
+  },
+  "runtime_gate": {
+    "case_timeout_sec": 1500,
+    "reference_authoring_host_sec": [
+      92.8,
+      131.5
+    ],
+    "reference_slow_review_host_sec_reported": [
+      180,
+      268
+    ],
+    "independent_authoring_host_sec_max": 195,
+    "independent_slow_host_estimate_sec": 400,
+    "min_headroom_correct_implementation_slow_host": 3.75,
+    "naive_per_start_sweep_compositions_per_case_millions": [
+      80.3,
+      94.5
+    ],
+    "naive_measured_ms_per_composition": 0.13,
+    "naive_per_case_minutes_authoring_host": [
+      174,
+      205
+    ]
   }
 }
