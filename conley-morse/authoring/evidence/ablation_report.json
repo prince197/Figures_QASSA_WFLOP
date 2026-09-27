@@ -166,6 +166,39 @@
       "passed_cases": 0,
       "passes_verifier": false,
       "route": "graph_barcode_from_node_dimensions"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "no_index_maps"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "identity_index_maps"
+    },
+    {
+      "case_pass": {
+        "heldout_0.json": 0,
+        "heldout_1.json": 0,
+        "heldout_2.json": 0,
+        "heldout_3.json": 0
+      },
+      "passed_cases": 0,
+      "passes_verifier": false,
+      "route": "naive_exit_set"
     }
   ]
 }

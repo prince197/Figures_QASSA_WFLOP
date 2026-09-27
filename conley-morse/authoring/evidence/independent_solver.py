@@ -872,6 +872,138 @@ def barcode_reverse(dims, maps):
 
 
 # ---------------------------------------------------------------------------
+# Conley index maps (independent route): a different chain selector (top-right
+# vertex choice, vertical-first edge paths, top-down square fill) and elementary
+# divisors from the Kronecker pencil of the graph relation {(x, Ix)}.
+# ---------------------------------------------------------------------------
+
+def _pair_for_interval(frame, recurrent, S):
+    off = frame['offsets']; tg = frame['targets']
+    core = set()
+    for m in S:
+        core |= set(recurrent[m])
+    fwd = set(core); todo = list(core)
+    while todo:
+        v = todo.pop()
+        for w in tg[off[v]:off[v + 1]]:
+            if w not in fwd:
+                fwd.add(w); todo.append(w)
+    back = {}
+    for v in fwd:
+        for w in tg[off[v]:off[v + 1]]:
+            back.setdefault(w, set()).add(v)
+    can = set(core); todo = list(core)
+    while todo:
+        w = todo.pop()
+        for v in back.get(w, ()):
+            if v not in can:
+                can.add(v); todo.append(v)
+    return fwd, {b for b in fwd if b not in can}
+
+
+def _rects(frame, nx):
+    off = frame['offsets']; tg = frame['targets']; out = []
+    for q in range(len(off) - 1):
+        xs = [t % nx for t in tg[off[q]:off[q + 1]]]; ys = [t // nx for t in tg[off[q]:off[q + 1]]]
+        out.append((min(xs), max(xs) + 1, min(ys), max(ys) + 1))
+    return out
+
+
+def _carrier(cell, dim, P, rects, nx):
+    if dim == 0:
+        i, j = cell; boxes = [(i - 1, j - 1), (i, j - 1), (i - 1, j), (i, j)]
+    elif dim == 1:
+        a, i, j = cell; boxes = [(i, j - 1), (i, j)] if a == 0 else [(i - 1, j), (i, j)]
+    else:
+        boxes = [cell]
+    lo_x = lo_y = -1; hi_x = hi_y = 1 << 30; seen = False
+    for i, j in boxes:
+        if 0 <= i < nx and j >= 0 and (i + nx * j) in P:
+            r = rects[i + nx * j]; seen = True
+            lo_x = max(lo_x, r[0]); hi_x = min(hi_x, r[1]); lo_y = max(lo_y, r[2]); hi_y = min(hi_y, r[3])
+    if not seen or lo_x > hi_x or lo_y > hi_y:
+        raise RuntimeError('empty carrier')
+    return lo_x, hi_x, lo_y, hi_y
+
+
+def _index_map_columns(P, E, frame, nx):
+    rects = _rects(frame, nx)
+    Hd = get_relative_homology_data_boxes(P, E, nx)
+    vmemo = {}; ememo = {}; smemo = {}
+    def phi_v(v):
+        if v not in vmemo:
+            c = _carrier(v, 0, P, rects, nx); vmemo[v] = (c[1], c[3])
+        return vmemo[v]
+    def phi_e(e):
+        if e not in ememo:
+            a, i, j = e
+            u = phi_v((i, j)); w = phi_v((i + 1, j) if a == 0 else (i, j + 1))
+            ch = set()
+            y0, y1 = sorted((u[1], w[1]))
+            for y in range(y0, y1):
+                ch ^= {(1, u[0], y)}
+            x0, x1 = sorted((u[0], w[0]))
+            for x in range(x0, x1):
+                ch ^= {(0, x, w[1])}
+            ememo[e] = ch
+        return ememo[e]
+    def phi_s(sq):
+        if sq not in smemo:
+            i, j = sq; z = set()
+            for e in ((0, i, j), (0, i, j + 1), (1, i, j), (1, i + 1, j)):
+                z ^= phi_e(e)
+            lx, hx, ly, hy = _carrier(sq, 2, P, rects, nx)
+            out = set()
+            if hx > lx and hy > ly:
+                for x in range(lx, hx):
+                    inside = False
+                    for y in range(hy - 1, ly - 1, -1):
+                        if (0, x, y + 1) in z:
+                            inside = not inside
+                        if inside:
+                            out.add((x, y))
+            chk = set()
+            for x, y in out:
+                chk ^= {(0, x, y), (0, x, y + 1), (1, x, y), (1, x + 1, y)}
+            if chk != z:
+                raise RuntimeError('square fill failed')
+            smemo[sq] = out
+        return smemo[sq]
+    img = [lambda c: {phi_v(c)}, phi_e, phi_s]
+    res = []
+    for d in range(3):
+        H = Hd[d]; basis = H['basis']; pos = {c: t for t, c in enumerate(basis)}; nb = len(H['B'])
+        cols = []
+        for h in H['H']:
+            y = 0; t = 0; x = h
+            while x:
+                if x & 1:
+                    for c in img[d](basis[t]):
+                        u = pos.get(c)
+                        if u is not None:
+                            y ^= 1 << u
+                x >>= 1; t += 1
+            rem, lab = H['coord'].reduce(y)
+            if rem:
+                raise RuntimeError('selector image not a relative cycle')
+            cols.append(lab >> nb)
+        res.append(cols)
+    return res
+
+
+def index_map_record(frame, recurrent, S, nx):
+    P, E = _pair_for_interval(frame, recurrent, S)
+    out = []
+    for d, cols in enumerate(_index_map_columns(P, E, frame, nx)):
+        n = len(cols)
+        R = Rel(n, n, [(1 << i) | (c << n) for i, c in enumerate(cols)])
+        fin = kronecker_cached(R)['finite_elementary_divisors'] if n else []
+        out.append({'dimension': d, 'space_dimension_F2': n, 'rank_F2': _rank(cols),
+                    'elementary_divisors_F2': fin})
+    return out
+
+
+# ---------------------------------------------------------------------------
 
 WORDS = ['A', 'B', 'AB', 'BA', 'ABA', 'BAB', 'AABB', 'BBAA', 'ABAB', 'BABA', 'Ab', 'aB', 'ABab', 'abAB']
 
@@ -960,13 +1092,19 @@ def solve_case_ind(data):
             gloops.append({'loop_id': lid, 'start_occurrence': a, 'end_occurrence': b, 'degrees': degs})
         ghol = [{'probe_id': h, 'occurrences': list(pr), 'degrees': holonomy_record(pr, gdims, gmaps)}
                 for h, pr in enumerate(q['graph_holonomy_probes'])]
+        imaps = []
+        for h, (k, S) in enumerate(q.get('index_probes', [])):
+            par = ids[k]; S = sorted(set(S))
+            imaps.append({'probe_id': h, 'occurrence': k, 'morse_ids': S,
+                          'degrees': index_map_record(frames[par], analyses[par]['recurrent'], S, nx)})
         queries.append({'query_id': q['query_id'], 'parameter_ids': ids, 'seed_box_id': q['seed_box_id'],
                         'selected_morse_ids_by_frame': sel, 'conley_node_dimensions_F2': dims,
                         'conley_generalized_rank_queries': ranks, 'conley_zigzag_barcodes_F2': bars,
                         'conley_loop_signatures': loops, 'conley_holonomy_word_signatures': hol,
                         'morse_graph_node_dimensions_F2': gdims, 'morse_graph_generalized_rank_queries': granks,
                         'morse_graph_zigzag_barcodes_F2': gbars,
-                        'morse_graph_loop_signatures': gloops, 'morse_graph_holonomy_word_signatures': ghol})
+                        'morse_graph_loop_signatures': gloops, 'morse_graph_holonomy_word_signatures': ghol,
+                        'conley_index_maps': imaps})
         cached_relative_homology_data_boxes.cache_clear()
     return {'case_id': data['case_id'], 'queries': queries}
 

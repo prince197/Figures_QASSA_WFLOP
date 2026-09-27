@@ -1731,6 +1731,192 @@ def zigzag_barcode(dims, maps):
     return [[a, b, m] for (a, b), m in sorted(bars.items())]
 
 
+# ---------------------------------------------------------------------------
+# Conley index maps.
+# Index map on H(K(P),K(E)) via a chain selector of the lower-semicontinuous
+# acyclic carrier  Phi(c) = intersection over boxes q in P containing c of |F(q)|.
+# Cells: vertex (i,j); edge (0,i,j) = [(i,j),(i+1,j)], (1,i,j) = [(i,j),(i,j+1)]; square (i,j).
+
+def box_rectangles(frame, nx):
+    """Target rectangle of every source box in vertex coordinates [X0,X1]x[Y0,Y1]."""
+    off = frame['offsets']; tg = frame['targets']
+    rects = []
+    for q in range(len(off) - 1):
+        ts = tg[off[q]:off[q + 1]]
+        xs = [t % nx for t in ts]; ys = [t // nx for t in ts]
+        rects.append((min(xs), max(xs) + 1, min(ys), max(ys) + 1))
+    return rects
+
+
+def _containing_boxes(cell, dim):
+    if dim == 0:
+        i, j = cell
+        return [(i - 1, j - 1), (i, j - 1), (i - 1, j), (i, j)]
+    if dim == 1:
+        a, i, j = cell
+        return [(i, j - 1), (i, j)] if a == 0 else [(i - 1, j), (i, j)]
+    return [cell]
+
+
+class Selector:
+    def __init__(self, Pset, rects, nx, mode=0):
+        self.P = Pset; self.rects = rects; self.nx = nx; self.mode = mode
+        self.memo = [{}, {}, {}]
+
+    def carrier(self, cell, dim):
+        X0 = Y0 = -10 ** 9; X1 = Y1 = 10 ** 9; hit = False
+        for (i, j) in _containing_boxes(cell, dim):
+            if i < 0 or j < 0 or i >= self.nx:
+                continue
+            q = i + self.nx * j
+            if q in self.P:
+                a, b, c, d = self.rects[q]
+                X0 = max(X0, a); X1 = min(X1, b); Y0 = max(Y0, c); Y1 = min(Y1, d); hit = True
+        assert hit and X0 <= X1 and Y0 <= Y1, 'empty carrier'
+        return X0, X1, Y0, Y1
+
+    def vertex(self, v):
+        m = self.memo[0]
+        if v not in m:
+            X0, X1, Y0, Y1 = self.carrier(v, 0)
+            m[v] = (X0, Y0) if self.mode == 0 else (X1, Y1)
+        return m[v]
+
+    def edge(self, e):
+        m = self.memo[1]
+        if e in m:
+            return m[e]
+        a, i, j = e
+        v0 = (i, j); v1 = (i + 1, j) if a == 0 else (i, j + 1)
+        p = self.vertex(v0); r = self.vertex(v1)
+        X0, X1, Y0, Y1 = self.carrier(e, 1)
+        assert X0 <= p[0] <= X1 and Y0 <= p[1] <= Y1 and X0 <= r[0] <= X1 and Y0 <= r[1] <= Y1
+        chain = set()
+        def hstep(x, y, x2):
+            for xx in range(min(x, x2), max(x, x2)):
+                chain.symmetric_difference_update({(0, xx, y)})
+        def vstep(x, y, y2):
+            for yy in range(min(y, y2), max(y, y2)):
+                chain.symmetric_difference_update({(1, x, yy)})
+        if self.mode == 0:
+            hstep(p[0], p[1], r[0]); vstep(r[0], p[1], r[1])
+        else:
+            vstep(p[0], p[1], r[1]); hstep(p[0], r[1], r[0])
+        m[e] = frozenset(chain)
+        return m[e]
+
+    def square(self, s):
+        m = self.memo[2]
+        if s in m:
+            return m[s]
+        i, j = s
+        z = set()
+        for e in ((0, i, j), (0, i, j + 1), (1, i, j), (1, i + 1, j)):
+            z ^= self.edge(e)
+        X0, X1, Y0, Y1 = self.carrier(s, 2)
+        out = set()
+        if X1 > X0 and Y1 > Y0:
+            for x in range(X0, X1):
+                par = 0
+                ys = range(Y0, Y1) if self.mode == 0 else range(Y1 - 1, Y0 - 1, -1)
+                for y in ys:
+                    edge_y = y if self.mode == 0 else y + 1
+                    if (0, x, edge_y) in z:
+                        par ^= 1
+                    if par:
+                        out.add((x, y))
+        # verify boundary
+        bd = set()
+        for (x, y) in out:
+            bd ^= {(0, x, y), (0, x, y + 1), (1, x, y), (1, x + 1, y)}
+        assert bd == z, 'selector fill failed'
+        m[s] = frozenset(out)
+        return m[s]
+
+    def image(self, cell, dim):
+        if dim == 0:
+            return frozenset([self.vertex(cell)])
+        if dim == 1:
+            return self.edge(cell)
+        return self.square(cell)
+
+
+def index_map_matrices(Pset, Eset, rects, nx, Hdata, mode=0):
+    """Return per degree the columns of the index map in the homology basis of Hdata
+    (relative homology data of (P,E) as produced by relative_homology_data_boxes)."""
+    sel = Selector(Pset, rects, nx, mode)
+    out = []
+    for d in range(3):
+        H = Hdata[d]
+        basis = H['basis']; idx = {c: k for k, c in enumerate(basis)}
+        bdim = len(H['B'])
+        cols = []
+        for h in H['H']:
+            y = 0; x = h
+            while x:
+                bit = x & -x; k = bit.bit_length() - 1; x ^= bit
+                for c in sel.image(basis[k], d):
+                    t = idx.get(c)
+                    if t is not None:           # cells of K(E) vanish in relative chains
+                        y ^= 1 << t
+            rem, lab = H['coord'].reduce(y)
+            assert rem == 0, 'selector image is not a relative cycle'
+            cols.append(lab >> bdim)
+        out.append(cols)
+    return out
+
+
+def interval_index_pair(frame, ana, ids):
+    """P = boxes reachable from the Morse boxes of the interval; E = boxes of P
+    from which no Morse box of the interval is reachable."""
+    off = frame['offsets']; tg = frame['targets']
+    B = set()
+    for m in ids:
+        B.update(ana['recurrent'][m])
+    P = set(B); st = list(B)
+    while st:
+        v = st.pop()
+        for k in range(off[v], off[v + 1]):
+            w = tg[k]
+            if w not in P:
+                P.add(w); st.append(w)
+    rev = {}
+    for v in P:
+        for k in range(off[v], off[v + 1]):
+            w = tg[k]
+            rev.setdefault(w, []).append(v)
+    reach = set(B); st = list(B)
+    while st:
+        w = st.pop()
+        for v in rev.get(w, ()):
+            if v not in reach:
+                reach.add(v); st.append(v)
+    return P, P - reach
+
+
+def is_morse_interval(ana, ids):
+    S = set(ids); desc = ana['desc']
+    for a in S:
+        for b in S:
+            if b in desc[a]:
+                for c in range(len(desc)):
+                    if c in desc[a] and b in desc[c] and c not in S:
+                        return False
+    return True
+
+
+def conley_index_record(frame, ana, ids, nx):
+    P, E = interval_index_pair(frame, ana, ids)
+    H = relative_homology_data_boxes(P, E, nx)
+    mats = index_map_matrices(P, E, box_rectangles(frame, nx), nx, H)
+    out = []
+    for d in range(3):
+        cols = mats[d]; n = len(cols)
+        out.append({'dimension': d, 'space_dimension_F2': n, 'rank_F2': map_rank(cols),
+                    'elementary_divisors_F2': kr_elementary_divisors(cols, n)})
+    return out
+
+
 def graph_trajectory_core(ids,analyses,edge_struct):
     endpointH={}
     for p in set(ids):
@@ -1825,6 +2011,15 @@ def solve_case(data):
             gholonomy.append({'probe_id':hid,'occurrences':[a,b,c],
                               'degrees':holonomy_word_signature(probe,gdims,gmaps,False)})
 
+        index_maps=[]
+        for pid_,(k,ids_) in enumerate(q.get('index_probes',[])):
+            if not (0<=k<len(q['parameter_ids'])): raise ValueError('index probe occurrence')
+            par=q['parameter_ids'][k]; ana=analyses[par]
+            ids_=sorted(set(ids_))
+            if not ids_ or any(not (0<=m<len(ana['recurrent'])) for m in ids_): raise ValueError('index probe Morse ids')
+            if not is_morse_interval(ana,ids_): raise ValueError('index probe is not a Morse interval')
+            index_maps.append({'probe_id':pid_,'occurrence':k,'morse_ids':ids_,
+                               'degrees':conley_index_record(frames[par],ana,ids_,nx)})
         queries.append({'query_id':q['query_id'],'parameter_ids':q['parameter_ids'],
                         'seed_box_id':q['seed_box_id'],'selected_morse_ids_by_frame':selected,
                         'conley_node_dimensions_F2':[dims[d] for d in range(3)],
@@ -1834,7 +2029,8 @@ def solve_case(data):
                         'morse_graph_node_dimensions_F2':[gdims[d] for d in range(2)],
                         'morse_graph_generalized_rank_queries':granks,
                         'morse_graph_zigzag_barcodes_F2':gbarcodes,'morse_graph_loop_signatures':gloops,
-                        'morse_graph_holonomy_word_signatures':gholonomy})
+                        'morse_graph_holonomy_word_signatures':gholonomy,
+                        'conley_index_maps':index_maps})
         cached_relative_homology_data_boxes.cache_clear(); cached_homology_data_boxes.cache_clear()
     return {'case_id':data['case_id'],'queries':queries}
 

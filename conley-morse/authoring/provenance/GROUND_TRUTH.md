@@ -7,3 +7,5 @@ Loop windows and holonomy probes are chosen in two stages: a broad shortlist of 
 The oracle generator composes every arrow of every window. An earlier generation stopped composing as soon as the running relation became zero; that is invalid for linear relations ({(0,0)} composed with S equals {(0,w) : (0,w) in S}), and all sealed oracles and the public expected output were regenerated after the fix. `authoring/evidence/zero_shortcut_variant.py` reproduces the retired behaviour as an ablation.
 
 The verifier never copies these files into the agent environment. During grading it copies one hidden input into a fresh temporary directory, drops the submitted process to an unprivileged user, and compares the resulting JSON to the sealed oracle after the process exits.
+
+Conley index-map probes are chosen by `choose_index_probes` with their own random stream, so adding them does not change any other field. Hidden probes are multi-set Morse intervals selected to cover rare index-map types (by elementary divisors); public probes are single Morse sets only.

@@ -6,4 +6,6 @@ Kronecker invariants follow the classical Kronecker-Weierstrass classification o
 
 Zigzag barcodes follow the interval decomposition theorem for type-A quiver representations (Gabriel; Carlsson and de Silva) and the inclusion-exclusion relation between interval multiplicities and generalized ranks (Kim and Memoli).
 
+Conley index maps follow the combinatorial approach of rigorous numerics (Kaczynski, Mischaikow and Mrozek, Computational Homology; Mrozek's discrete Conley index): an index pair of box sets that is forward invariant, a lower-semicontinuous acyclic-valued carrier built from the outer approximation, and chain selectors whose induced homology map is unique by the acyclic carrier theorem.
+
 The instance generator is deterministic and fully contained in this bundle. No external data are required.

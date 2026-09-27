@@ -63,13 +63,17 @@ Report kronecker_invariants_F2 as an object with four lists, each sorted ascendi
 right_minimal_indices: the indices e of all right blocks.
 left_minimal_indices: the indices h of all left blocks.
 infinite_elementary_divisors: the sizes t of all infinite blocks.
-finite_elementary_divisors: pairs [code(p), t] of all finite blocks, sorted lexicographically, where code(p) is the integer whose binary digit i is the coefficient of x^i in p. Thus x has code 2, x+1 has code 3, x^2+x+1 has code 7, and x^3+x+1 has code 11.
-
-The four lists always satisfy n = sum(e) + sum(h+1) + sum(t*deg p) + sum(t) and dim R = sum(e+1) + sum(h) + sum(t*deg p) + sum(t). Reference points: the identity relation on F2^n has n finite blocks [3,1]; the graph {(x,0)} of the zero map has n finite blocks [2,1]; its converse {(0,y)} has n infinite blocks of size 1; the zero relation {(0,0)} has n left blocks of index 0; the full relation U direct-sum U has n right blocks of index 1; the zero space U = 0 gives four empty lists.
+finite_elementary_divisors: pairs [code(p), t] of all finite blocks, sorted lexicographically, where code(p) is the integer whose binary digit i is the coefficient of x^i in p.
 
 ZIGZAG BARCODES
 
-For every query, the Conley trajectory zigzag in each degree d in 0, 1, 2 and the Morse reachability-graph zigzag in each degree d in 0, 1 (all 2*L-1 nodes in every case) decompose as a direct sum of interval representations, uniquely up to order. An interval [s,e] with 0 <= s <= e <= 2*L-2 is F2 on nodes s..e, zero elsewhere, with identity maps between consecutive nodes inside the interval. Report every interval as [start_node, end_node, multiplicity], sorted by start_node and then end_node, with multiplicity >= 1 and each (start_node, end_node) listed once. Intervals of length zero are included. The multiplicity of [s,e] equals rho(s,e) - rho(s-1,e) - rho(s,e+1) + rho(s-1,e+1), where rho is the generalized rank defined above and rho is zero outside 0 <= s <= e <= 2*L-2. Barcodes are required for every node interval of the full trajectory, not only for the listed rank windows; on the hidden inputs the Morse-graph H1 barcode has more than ten thousand distinct intervals, some spanning the whole trajectory, and every hidden invocation must finish within the stated wall-clock limit.
+For every query, the Conley trajectory zigzag in each degree d in 0, 1, 2 and the Morse reachability-graph zigzag in each degree d in 0, 1 (all 2*L-1 nodes in every case) decompose as a direct sum of interval representations, uniquely up to order. An interval [s,e] with 0 <= s <= e <= 2*L-2 is F2 on nodes s..e, zero elsewhere, with identity maps between consecutive nodes inside the interval. Report every interval as [start_node, end_node, multiplicity], sorted by start_node and then end_node, with multiplicity >= 1 and each (start_node, end_node) listed once. Intervals of length zero are included.
+
+CONLEY INDEX MAPS
+
+queries[].index_probes lists pairs [k, S]: an occurrence index k and a set S of Morse ids at parameter parameter_ids[k] that is an interval of the recurrent reachability order (whenever a and b lie in S and c is reachable from a and reaches b, c lies in S). Let F be the box map at that parameter, B the union of the Morse sets in S, P the set of boxes reachable from B including B, and E the set of boxes of P from which no box of B is reachable. F maps P into P and E into E.
+
+For an elementary cell c (vertex, edge or square) of K(P), let Phi(c) be the intersection, over the boxes q of P whose closed rectangle contains c, of the closed rectangle covered by the target boxes of q. A chain selector is an F2 chain map phi of C(K(P)) such that phi(c) is a chain of the cubical set Phi(c) for every cell c and phi(v) is a single vertex for every vertex v. Every chain selector maps C(K(E)) into itself, and all chain selectors induce the same linear map I_d on H_d(K(P),K(E)), the index map. For every probe and d = 0, 1, 2 report the dimension of H_d(K(P),K(E)), the rank of I_d, and the elementary divisors of I_d, including powers of x, as sorted [code(p), t] pairs with repetition. Report morse_ids as the sorted list S; probe_id is the position of the probe in index_probes.
 
 INPUT QUERY FIELDS
 
@@ -79,6 +83,7 @@ queries[].loop_windows contains Conley closed loops in occurrence coordinates.
 queries[].graph_loop_windows contains Morse-graph closed loops in occurrence coordinates.
 queries[].holonomy_probes contains Conley triples [a,b,c] in occurrence coordinates.
 queries[].graph_holonomy_probes contains Morse-graph triples [a,b,c] in occurrence coordinates.
+queries[].index_probes contains Conley index-map probes [k, S].
 Preserve all listed orders.
 
 OUTPUT
@@ -152,6 +157,13 @@ It must write one regular UTF-8 JSON file at OUTPUT with this shape:
                "kronecker_invariants_F2": {"right_minimal_indices": int[], "left_minimal_indices": int[],
                                        "infinite_elementary_divisors": int[], "finite_elementary_divisors": [[int,int],...]}}
             ]}
+         ]}
+      ],
+      "conley_index_maps": [
+        {"probe_id": int, "occurrence": int, "morse_ids": int[],
+         "degrees": [
+           {"dimension": int, "space_dimension_F2": int, "rank_F2": int,
+            "elementary_divisors_F2": [[int,int],...]}
          ]}
       ]
     }

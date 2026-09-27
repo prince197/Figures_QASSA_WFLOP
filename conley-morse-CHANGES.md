@@ -107,3 +107,38 @@ have timed out there at about 400 s.
 * The margins are documented in README ("Gate: runtime"), `calibration.md` and
   `validation_report.json` (`runtime_gate`).
 * **Unchanged:** data, oracles and graded fields.
+
+## 6. Round 4: the easiness probe still passed 3/3, so the real Conley index was added
+
+The Fable 5.1 trajectory showed why. Every layer was fully specified, fully
+covered by `example_expected.json` (which worked as an answer key), and easy to
+brute-force check. The agent's single bug was caught only by the example.
+
+* **New graded field `conley_index_maps`**: the discrete Conley index map of
+  Morse intervals.
+  * Index pair: P = boxes reachable from the interval; E = boxes of P that can
+    no longer reach the interval.
+  * The map is induced on H(K(P),K(E)) by a chain selector of the carrier
+    Phi(c) = intersection of the target rectangles of the P-boxes that contain c.
+  * Graded through the dimension, rank and elementary divisors of the map in
+    each degree.
+* **Hidden cases:** 24 multi-set Morse intervals per query. These give nilpotent
+  Jordan blocks (from connecting orbits) up to size 3, plus unipotent blocks, on
+  spaces up to dimension 11.
+* **Public example:** single Morse sets only (8 per query). The interval case,
+  the exit-set definition and the relative bookkeeping cannot be matched against
+  visible expected values.
+* **Data README:** reduced to definitions only. Removed:
+  * the Kronecker dimension identities and worked reference points;
+  * the barcode inclusion-exclusion formula;
+  * the hint about barcode size and time.
+  The index-map section is one definitional paragraph.
+* **Checks:**
+  * Reference in the verifier sandbox: 4/4 cases pass, 95-131 s each.
+  * Independent solver: opposite chain selector, and elementary divisors via a
+    different algorithm. Exact match on the public example and 4/4 hidden.
+  * New ablations: identity index maps, missing index maps, and the naive exit
+    set E = P minus the Morse boxes. All score 0/4. In total, 17 ablations
+    score 0/4.
+  * Anti-cheat: reward 0 for all four adversarial submissions.
+* **Unchanged:** all previously graded records.

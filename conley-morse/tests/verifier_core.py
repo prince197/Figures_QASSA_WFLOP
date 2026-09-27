@@ -181,6 +181,10 @@ def compare_case(got, expected):
             "probe_id",
         )
 
+        index_map_acc = _record_accuracy(
+            gi.get("conley_index_maps"), ei["conley_index_maps"], "probe_id"
+        )
+
         # Every reported invariant is discrete and exactly determined by the public
         # contract. Hidden cases therefore require every scientific record exactly.
         q_ok = (
@@ -195,6 +199,7 @@ def compare_case(got, expected):
             and graph_barcode_acc == 1.0
             and graph_loop_acc == 1.0
             and graph_holonomy_acc == 1.0
+            and index_map_acc == 1.0
         )
         case_ok &= q_ok
         diag["query_metrics"].append(
@@ -212,6 +217,7 @@ def compare_case(got, expected):
                 "graph_barcode_degree_accuracy": round(graph_barcode_acc, 6),
                 "graph_loop_record_accuracy": round(graph_loop_acc, 6),
                 "graph_holonomy_record_accuracy": round(graph_holonomy_acc, 6),
+                "conley_index_map_record_accuracy": round(index_map_acc, 6),
             }
         )
     return case_ok, diag

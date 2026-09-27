@@ -552,6 +552,65 @@ def choose_query(qid, length, rng, frames, analyses, edge_rel, edge_struct, edge
     return q
 
 
+def _index_key(rec):
+    return tuple((d['dimension'], d['space_dimension_F2'], tuple(map(tuple, d['elementary_divisors_F2'])))
+                 for d in rec if d['space_dimension_F2'])
+
+
+def choose_index_probes(q, frames, analyses, nx, seed, public=False):
+    """Conley index-map probes [occurrence, morse_ids].  Public probes use single
+    Morse sets only; hidden probes are mostly multi-set Morse intervals, where the
+    exit set E is the part of P that can no longer reach the interval."""
+    rng = random.Random(seed)
+    path = q['parameter_ids']
+    occ = sorted(rng.sample(range(len(path)), min(len(path), 40 if public else 70)))
+    seen_par = set(); cands = []
+    for k in occ:
+        p = path[k]
+        if p in seen_par:
+            continue
+        seen_par.add(p)
+        ana = analyses[p]; desc = ana['desc']; n = len(ana['recurrent'])
+        ints = {(m,) for m in range(n)}
+        if not public:
+            for a in range(n):
+                ints.add(tuple(sorted({a, *desc[a]})))
+                ints.add(tuple(sorted({a, *[c for c in range(n) if a in desc[c]]})))
+                for b in desc[a]:
+                    ints.add(tuple(sorted({a, b, *[c for c in range(n) if c in desc[a] and b in desc[c]]})))
+            ints.add(tuple(range(n)))
+        for I in ints:
+            if not ref.is_morse_interval(ana, I):
+                continue
+            rec = ref.conley_index_record(frames[p], ana, list(I), nx)
+            cands.append((k, list(I), _index_key(rec)))
+    freq = Counter(c[2] for c in cands)
+    cap = 8 if public else 24
+    max_single = cap if public else 4
+    chosen = []; seen = set(); singles = 0; empties = 0
+    order = sorted(cands, key=lambda c: (-(len(c[2]) > 0), 1.0 / freq[c[2]] * -1, -len(c[1]), rng.random()))
+    # first pass: one probe per distinct nontrivial type, rarest first
+    for k, I, key in sorted(cands, key=lambda c: (freq[c[2]], -len(c[1]), c[0])):
+        if len(chosen) >= cap:
+            break
+        if key in seen:
+            continue
+        if not key and empties >= 1:
+            continue
+        if len(I) == 1 and singles >= max_single:
+            continue
+        seen.add(key); chosen.append([k, I]); singles += len(I) == 1; empties += not key
+    # second pass: fill with remaining multi-set intervals of nontrivial type
+    for k, I, key in order:
+        if len(chosen) >= cap:
+            break
+        if [k, I] in chosen or not key or (len(I) == 1 and singles >= max_single):
+            continue
+        chosen.append([k, I]); singles += len(I) == 1
+    chosen.sort()
+    return chosen
+
+
 def build_case(cfg):
     name, nx, na, nb, scale, r0, dr, s0, ds, cnum, cden, seed = cfg
     data = make_base(name, nx, na, nb, scale, r0, dr, s0, ds, cnum, cden)
@@ -564,7 +623,14 @@ def build_case(cfg):
         )
         for i, L in enumerate(LENGTHS[name])
     ]
+    add_index_probes(data, frames, analyses, seed, name == 'public')
     return data
+
+
+def add_index_probes(data, frames, analyses, seed, public):
+    nx = data['phase_grid']['nx']
+    for q in data['queries']:
+        q['index_probes'] = choose_index_probes(q, frames, analyses, nx, seed + 9100 + q['query_id'], public)
 
 
 def write_json(path, obj):

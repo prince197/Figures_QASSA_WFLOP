@@ -1,20 +1,20 @@
 {
-  "implementation": "independent solver sharing no relation, Kronecker or barcode code with the reference: integer box maps, iterative Kosaraju SCCs, window relations as projections of zigzag section spaces glued by pullbacks (no early exit), Kronecker invariants from pencil kernel dimensions over F2[s]/(q) and polynomial-kernel ranks, barcodes from per-start generalized-rank sweeps; Morse-graph barcodes from a right-to-left sweep of domain and kernel flags",
+  "implementation": "independent solver sharing no relation, Kronecker or barcode code with the reference: integer box maps, iterative Kosaraju SCCs, window relations as projections of zigzag section spaces glued by pullbacks (no early exit), Kronecker invariants from pencil kernel dimensions over F2[s]/(q) and polynomial-kernel ranks, barcodes from per-start generalized-rank sweeps; Morse-graph barcodes from a right-to-left sweep of domain and kernel flags; Conley index maps from an opposite chain selector (top-right vertices, vertical-first paths, top-down fill) and elementary divisors via the Kronecker pencil of the graph relation",
   "public_example": {
     "exact_match": true,
     "runtime_sec": 11
   },
   "heldout_0": {
     "exact_match": true,
-    "runtime_sec": 75
+    "runtime_sec": 77
   },
   "heldout_1": {
     "exact_match": true,
-    "runtime_sec": 165
+    "runtime_sec": 169
   },
   "heldout_2": {
     "exact_match": true,
-    "runtime_sec": 195
+    "runtime_sec": 196
   },
   "heldout_3": {
     "exact_match": true,

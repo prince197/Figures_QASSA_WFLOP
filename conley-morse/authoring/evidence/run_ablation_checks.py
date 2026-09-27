@@ -176,6 +176,37 @@ def graph_barcode_from_node_dimensions(ans):
         q['morse_graph_zigzag_barcodes_F2']=[[[i,i,v] for i,v in enumerate(dims[d]) if v] for d in range(2)]
     return x
 
+
+def no_index_maps(ans):
+    x=copy.deepcopy(ans)
+    for q in x['queries']:
+        q['conley_index_maps']=[]
+    return x
+
+
+def identity_index_maps(ans):
+    """Report every index map as the identity (homology of the pair only)."""
+    x=copy.deepcopy(ans)
+    for q in x['queries']:
+        for r in q['conley_index_maps']:
+            for d in r['degrees']:
+                n=d['space_dimension_F2']; d['rank_F2']=n; d['elementary_divisors_F2']=[[3,1]]*n
+    return x
+
+
+_EXITSET_CACHE={}
+
+def naive_exit_set(ans):
+    """Index pair (P, P minus Morse boxes) instead of the non-reaching exit set."""
+    case=ans['case_id']
+    if case not in _EXITSET_CACHE:
+        inp=ROOT/'tests'/'heldout'/f'{case}.json'
+        with tempfile.TemporaryDirectory() as td:
+            out=Path(td)/'out.json'
+            subprocess.run([sys.executable,str(ROOT/'authoring'/'evidence'/'index_exitset_variant.py'),str(inp),str(out)],check=True)
+            _EXITSET_CACHE[case]=json.loads(out.read_text())
+    return _EXITSET_CACHE[case]
+
 ROUTES={
  'full_reference': lambda x: copy.deepcopy(x),
  'greedy_single_branch': greedy_single_branch,
@@ -192,6 +223,9 @@ ROUTES={
  'no_graph_barcodes': no_graph_barcodes,
  'graph_barcode_capped_sweep': graph_barcode_capped_sweep,
  'graph_barcode_from_node_dimensions': graph_barcode_from_node_dimensions,
+ 'no_index_maps': no_index_maps,
+ 'identity_index_maps': identity_index_maps,
+ 'naive_exit_set': naive_exit_set,
 }
 
 
