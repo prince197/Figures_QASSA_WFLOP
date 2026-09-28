@@ -20,3 +20,12 @@
 - 06_results moved fig:ranks (avg_ranks.pdf) and fig:wakeloss (wakeloss_vs_n.pdf) out of the main text → make sure the supplement's S-figs section shows both (check MPCE_PSO_VNS_supplement.tex). 06 added labels sec:baseline, sec:quality; tab:baseline behind \IfFileExists guard (can stay).
 - Baseline table done (C27 PASS; C28–C30 PASS; macros \NHRThirtyKMean, \NHRThirtyKAbove). Add CHECK-FINAL comments C28/C29/C30 to the corresponding sentences (02, 06, 08, 10).
 - 09_robust boundary TBD: pipeline edit was blocked by the permission system (do not work around). Replace the \TBD parenthetical with the verified qualitative statement "(Mann–Whitney test, p < 0.01 in all six cases)" + comment "% verified 2026-09-28 against selected_30_run_data.csv: differences 19–631 units, max p = 0.0035"; the old claim "p < 1e-4 in every case" was too strong.
+
+## Phase 4 (lead)
+- Key collision: Hansen2001 = Hansen & Mladenović (VNS). CMA-ES must be HansenOstermeier2001. Check merge.
+- Bratton2007 lacks location/month (Honolulu, HI, USA, Apr. 2007); newrefs journal entries lack months.
+- Benavoli2017 not cited (fine; drop from newrefs if present).
+- 10_limits: "preferably with ω = 0.75" → "candidate setting, confirm on the target problem" (check after S7).
+- 02_intro contribution 3: must match D1 (check after S1).
+- 07 turned "Budget split" subsection into run-in paragraph; \ref{sec:split} → "Section VII".
+- Page count at WIP: 13 — cuts needed at integration.

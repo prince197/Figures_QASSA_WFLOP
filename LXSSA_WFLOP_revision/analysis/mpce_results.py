@@ -416,68 +416,99 @@ def phase2_stat(D, alg, switch=None, validate=True):
 
 
 def split_section(R6, base, tabs, key, label, primary=True, supp=None):
-    """Budget-split table (25 / 50 / 75 % of the calls for phase 1) of hybrid `base`, if its split runs exist."""
+    """Budget-split table of hybrid `base` (omega = 25 / 50 / 75 % of the calls for phase 1, if its split runs
+    exist, and omega = 100 %, i.e. the phase-1 swarm alone at the same budget and seeds: PSO for PSO-VNS).
+    Run-level tests: per case, seed-paired Wilcoxon of 50 % vs 25 %, 50 % vs 75 %, 50 % vs 100 % and 75 % vs
+    100 %, Holm-adjusted over these four comparisons of the case (one family per case). Case level: Wilcoxon
+    on the 12 per-case mean losses (case_mean_wilcoxon; unadjusted) for the same four pairs."""
     ids = (f"{base}25", base, f"{base}75")
     if base not in PHASE1:
         log(f"  SKIPPED: {LAB[base]} is not a two-phase hybrid (no budget split)")
         return None
-    Sp = R6[R6.Algorithm.isin(ids)]
+    p1c = PHASE1[base]                               # omega = 1: the phase-1 swarm alone (same budget, same seeds)
+    Sp = R6[R6.Algorithm.isin(ids + (p1c,))]
     Sp = Sp[[(d, r, n) in SPLITCASES for d, r, n in zip(Sp.Dataset, Sp.Radius, Sp.Turbines)]]
     if not {ids[0], ids[2]} <= set(Sp.Algorithm):
         log(f"  SKIPPED: no split runs for {LAB[base]} ({ids[0]} / {ids[2]} not in the data)"
             + {"SSABV": " -- mpce_ssasplit not present (experiment dropped)", "PSOBV": " -- mpce_psosplit missing"}.get(base, ""))
         return None
+    ids4 = ids + ((p1c,) if p1c in set(Sp.Algorithm) else ())
+    has100 = len(ids4) == 4
+    Sp = Sp[Sp.Algorithm.isin(ids4)]
+    comps = [(base, ids[0]), (base, ids[2])] + ([(base, p1c), (ids[2], p1c)] if has100 else [])
     lines, srows = [], []
     for (ds, r, n), s in Sp.groupby(CASE):
-        if s.Algorithm.nunique() < 3:
+        if s.Algorithm.nunique() < len(ids4):
             continue
         piv = s.assign(S=goodness(s)).pivot_table(index="Seed", columns="Algorithm", values="S")
         fm = s[s.Feasible].groupby("Algorithm").Objective.mean(); fc = s.groupby("Algorithm").Feasible.sum()
         nr = s.groupby("Algorithm").size()
         lmn = s[s.Feasible].groupby("Algorithm").LossPct.mean()
         ps, rbs = [], []
-        for b in (ids[0], ids[2]):
-            p, rb, _ = wil((piv[base] - piv[b]).dropna().values); ps.append(p); rbs.append(rb)
+        for a, b in comps:
+            p, rb, _ = wil((piv[a] - piv[b]).dropna().values); ps.append(p); rbs.append(rb)
         ph = holm(ps)
         cells = []
-        for a in ids:
+        for a in ids4:
             v = fm.get(a, np.nan)
             c = "--" if not np.isfinite(v) else f"{v:.1f}"
             if fc.get(a, 0) < nr.get(a, 0):
                 c += f"$^{{{int(fc.get(a, 0))}}}$"
             cells.append(c)
-        best = max(ids, key=lambda a: fm.get(a, -np.inf) if fc.get(a, 0) >= np.ceil(nr.get(a, 0) / 2) else -np.inf)
-        srows.append(dict(case=f"{ds}-{r}-{n}", best=best, p25_holm=float(ph[0]), p75_holm=float(ph[1]),
-                          rb25=rbs[0], rb75=rbs[1], loss={a: float(lmn.get(a, np.nan)) for a in ids}))
-        lines.append(f"{'I' if ds == '1' else 'II'} & {r} & {n} & " + " & ".join(cells) + f" & {fmt_p(ph[0])} & {fmt_p(ph[1])} \\\\")
-    p1 = LAB[PHASE1[base]]
+        best = max(ids4, key=lambda a: fm.get(a, -np.inf) if fc.get(a, 0) >= np.ceil(nr.get(a, 0) / 2) else -np.inf)
+        row = dict(case=f"{ds}-{r}-{n}", best=best, p25_holm=float(ph[0]), p75_holm=float(ph[1]),
+                   rb25=rbs[0], rb75=rbs[1], loss={a: float(lmn.get(a, np.nan)) for a in ids4})
+        if has100:
+            row.update(p100_holm=float(ph[2]), rb100=rbs[2], p75v100_holm=float(ph[3]), rb75v100=rbs[3])
+        srows.append(row)
+        lines.append(f"{'I' if ds == '1' else 'II'} & {r} & {n} & " + " & ".join(cells) + " & "
+                     + " & ".join(fmt_p(x) for x in ph) + " \\\\")
+    p1 = LAB[p1c]
     pre = "" if primary else f"Secondary analysis ({LAB[base]}, not the proposed method). "
     SR = pd.DataFrame(srows)
-    # compact main-text table: mean loss over the cases, average rank among the three splits, W/T/L of 50% vs each
-    Ssp = case_stats(Sp, list(ids))
-    Rsp = rank_matrix(Ssp, list(ids))
+    # compact main-text table: mean loss over the cases, average rank among the splits, W/T/L of 50% vs each
+    Ssp = case_stats(Sp, list(ids4))
+    Rsp = rank_matrix(Ssp, list(ids4))
     avg_sp = Rsp.mean(axis=0).to_dict()
-    mloss = {a: float(np.mean([c["loss"][a] for c in srows])) for a in ids}
+    mloss = {a: float(np.mean([c["loss"][a] for c in srows])) for a in ids4}
     def wtl_split(pcol, rbcol):
         w = int(((SR[pcol] < 0.05) & (SR[rbcol] > 0)).sum()); l = int(((SR[pcol] < 0.05) & (SR[rbcol] < 0)).sum())
         return dict(W=w, T=int(len(SR) - w - l), L=l)
     w25, w75 = wtl_split("p25_holm", "rb25"), wtl_split("p75_holm", "rb75")
-    lower = {a: int(sum(c["loss"][a] < c["loss"][base] - 1e-12 for c in srows)) for a in (ids[0], ids[2])}
-    cl = [f"{int(100 * w_)}\\% & {mloss[a]:.3f} & {avg_sp[a]:.2f} & " + ("--" if a == base else wtl_str(w25 if a == ids[0] else w75)) + " \\\\"
-          for w_, a in zip((0.25, 0.5, 0.75), ids)]
+    w100 = wtl_split("p100_holm", "rb100") if has100 else None
+    w75v100 = wtl_split("p75v100_holm", "rb75v100") if has100 else None
+    lower = {a: int(sum(c["loss"][a] < c["loss"][base] - 1e-12 for c in srows)) for a in ids4 if a != base}
+    cm = {}
+    for a, b in comps:                       # case-mean Wilcoxon (12 cases), a vs b, unadjusted
+        x = case_mean_wilcoxon(Ssp, a, [b])[b]
+        cm[f"{a}-{b}"] = dict(p=x["p"], wins=x["wins"], losses=x["losses"], mean_dloss_pp=x["mean_dloss_pp"],
+                              n_cases=x["n_cases"])
+    wcol = {ids[0]: w25, ids[2]: w75, p1c: w100}
+    shares = dict(zip(ids4, (0.25, 0.5, 0.75, 1.0)))
+    cl = [f"{int(100 * shares[a])}\\%{' (' + p1 + ')' if a == p1c else ''} & {mloss[a]:.3f} & {avg_sp[a]:.2f} & "
+          + ("--" if a == base else wtl_str(wcol[a])) + " \\\\" for a in ids4]
+    nsh = {3: "Three", 4: "Four"}[len(ids4)]
     if primary:
-        tabs[key] = table("table", f"Budget Split of {LAB[base]} (25\\%, 50\\% and 75\\% of the 6,030 Calls for {p1}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the Three Splits, and Cases in Which the Default 50\\% Split Is Significantly Better / Not Different / Worse (Wilcoxon, Holm-Adjusted)",
-                          label, "cccc", f"{p1} share $\\omega$ & Mean loss (\\%) & Avg.\\ rank & 50\\% vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt")
+        foot = (["\\multicolumn{4}{l}{75\\%% vs.\\ 100\\%% (%s): %s (W/T/L from the 75\\%% side)}" % (p1, wtl_str(w75v100))]
+                if has100 else None)
+        tabs[key] = table("table", f"Budget Split of {LAB[base]} (25\\%, 50\\% and 75\\% of the 6,030 Calls for {p1}{'; 100' + chr(92) + '% = ' + p1 + ' Alone' if has100 else ''}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the {nsh} Settings, and Cases in Which the Default 50\\% Split Is Significantly Better / Not Different / Worse (Wilcoxon, Holm-Adjusted over the {len(comps)} Comparisons of Each Case)",
+                          label, "cccc", f"{p1} share $\\omega$ & Mean loss (\\%) & Avg.\\ rank & 50\\% vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt", foot=foot)
         label = label + "-cases"
-    (supp.append if supp is not None else (lambda t: tabs.__setitem__(key, t)))(table("table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases (25\\%, 50\\% and 75\\% of the 6,030 calls for {p1}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Holm-adjusted Wilcoxon signed-rank $p$ of the 50\\% split against the 25\\% and 75\\% splits (30 seed-paired runs).",
-                      label, "cccccccc", "DS & $r$ & $N$ & 25\\% & 50\\% & 75\\% & $p$ (25) & $p$ (75)", lines, sep="2.5pt", pos="!htb"))
+    heads = ["25\\%", "50\\%", "75\\%"] + (["100\\%"] if has100 else [])
+    pheads = ["$p$ (50/25)", "$p$ (50/75)"] + (["$p$ (50/100)", "$p$ (75/100)"] if has100 else [])
+    (supp.append if supp is not None else (lambda t: tabs.__setitem__(key, t)))(table("table*" if has100 else "table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases (25\\%, 50\\% and 75\\% of the 6,030 calls for {p1}{'; 100' + chr(92) + '%: ' + p1 + ' alone, same seeds' if has100 else ''}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the {len(comps)} comparisons of each case.",
+                      label, "ccc" + "c" * (len(heads) + len(pheads)), "DS & $r$ & $N$ & " + " & ".join(heads + pheads), lines, sep="2.5pt", pos="!htb"))
     out = dict(method=base, primary=primary, cases=srows, best_count=SR.best.value_counts().to_dict(),
-               n_cases=int(len(SR)), avg_rank=avg_sp, mean_loss=mloss, wtl_50_vs_25=w25, wtl_50_vs_75=w75,
+               n_cases=int(len(SR)), settings={a: shares[a] for a in ids4}, omega1_method=p1c if has100 else None,
+               holm_family="per case, over the %d run-level comparisons %s" % (len(comps), ", ".join(f"{a} vs {b}" for a, b in comps)),
+               avg_rank=avg_sp, mean_loss=mloss, wtl_50_vs_25=w25, wtl_50_vs_75=w75,
+               wtl_50_vs_100=w100, wtl_75_vs_100=w75v100, case_mean=cm,
                n_lower_loss_than_50=lower,
                sig_vs25=int((SR.p25_holm < 0.05).sum()), sig_vs75=int((SR.p75_holm < 0.05).sum()),
                sig_vs25_50better=int(((SR.p25_holm < 0.05) & (SR.rb25 > 0)).sum()),
                sig_vs75_50better=int(((SR.p75_holm < 0.05) & (SR.rb75 > 0)).sum()))
-    log(f"  {LAB[base]}: best split counts {out['best_count']}; significant vs 25%: {out['sig_vs25']}, vs 75%: {out['sig_vs75']}")
+    log(f"  {LAB[base]}: best split counts {out['best_count']}; significant vs 25%: {out['sig_vs25']}, vs 75%: {out['sig_vs75']}"
+        + (f"; 75% vs 100% ({p1}): {wtl_str(w75v100)}; avg ranks {', '.join(f'{a} {v:.2f}' for a, v in avg_sp.items())}" if has100 else ""))
     return out
 
 
@@ -617,6 +648,28 @@ def load(data_dir, partial):
         avail[f"mpce_{exp}"] = st
         if df is not None:
             new[exp] = df
+    # Horns Rev 1 rerun with the corrected direction binning (experiment hrfix, 24 shards). As soon as ANY
+    # hrfix shard exists, every Horns Rev row (Dataset == "HR") of every other source -- fresh_hr16 / vhr16 /
+    # bhr16, hr16new, psobv, feas / feasx / feasp, b30k(p), b120k(p), ... -- is dropped (old binning, not
+    # comparable) and replaced by the hrfix rows (run_hr output: Budget, Init, Objective = AEP, Ideal, ...).
+    # Incomplete hrfix shards are used as they are (status PARTIAL): mixing the two models is never done, and
+    # mpce_numbers.py marks the Horns Rev macros pending until all shards are present.
+    hrfix = None
+    if glob.glob(os.path.join(data_dir, "mpce_hrfix_s*of*.csv")):
+        hrfix, st = read_shards("hrfix", data_dir, True)
+        if st["status"] != "complete":
+            st["status"] = "PARTIAL (used; old HR runs dropped)"
+        avail["mpce_hrfix"] = st
+        if hrfix is not None:
+            hrfix = hrfix[hrfix.Dataset == "HR"]
+    else:
+        avail["mpce_hrfix"] = dict(status="missing", shards="0", rows=0)
+    if hrfix is not None:
+        n_old = int((B.Dataset == "HR").sum()) + sum(int((d.Dataset == "HR").sum()) for d in new.values())
+        B = B[B.Dataset != "HR"]
+        new = {k: v[v.Dataset != "HR"].copy() for k, v in new.items()}
+        fallbacks.append(f"Horns Rev 16: all runs from mpce_hrfix (corrected direction binning, {len(hrfix)} runs); "
+                         f"{n_old} runs of the old model dropped")
     parts = [B]
     # SLSQP rerun replaces the old-platform SLSQP runs on the 68 cases
     if "slsqp" in new:
@@ -625,13 +678,19 @@ def load(data_dir, partial):
         fallbacks.append("SLSQP (68 cases): mpce_slsqp missing -> using the old-platform SLSQP runs of fresh_grid.csv")
         m = (B.Algorithm == "SLSQP") & B.Dataset.isin(["1", "2"])
         B.loc[m, "Source"] = "FALLBACK fresh_grid SLSQP"
-    fallbacks.append("SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (no rerun planned)")
+    if hrfix is None:
+        fallbacks.append("SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (old model, replaced by mpce_hrfix)")
+        fallbacks.append("Horns Rev 16: mpce_hrfix missing -> old runs (direction binning before commit 7676da9)")
     for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "ssasplit", "hr16new"):
         if exp in new:
             parts.append(new[exp])
+    if hrfix is not None:
+        parts.append(hrfix)
     A6 = pd.concat(parts, ignore_index=True)
     # PSOC fallback: old-settings PSO relabelled (development only)
-    for dom, has in ((["1", "2"], "psoc" in new), (["HR"], "hr16new" in new and (new["hr16new"].Algorithm == "PSOC").any())):
+    hr_psoc = (hrfix is not None and (hrfix.Algorithm == "PSOC").any()) or \
+              ("hr16new" in new and (new["hr16new"].Algorithm == "PSOC").any())
+    for dom, has in ((["1", "2"], "psoc" in new), (["HR"], hr_psoc)):
         if not has:
             f = A6[(A6.Algorithm == "PSO") & A6.Dataset.isin(dom)].copy()
             f["Algorithm"] = "PSOC"; f["Source"] = "FALLBACK old PSO"
@@ -803,7 +862,7 @@ def main(argv=None):
                  " & ".join(wtl_str(C[C.Baseline == b].Outcome.value_counts()) for b in others) + " \\\\")
     lines.append("$\\tilde r_{\\rm rb}$ & & & " + " & ".join(f"{C[C.Baseline == b].RB.median():+.2f}" for b in others) + " \\\\")
     nword = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine"}.get(len(others), str(len(others)))
-    tabs["wtl"] = table("table", "Pairwise Outcome of %s Against Each Method: Cases in Which %s Is Significantly Better / Not Different / Worse (Two-Sided Wilcoxon Signed-Rank Test, 30 Seed-Paired Runs, Holm-Adjusted over the %s Comparisons of Each Case, $\\alpha=0.05$; an Infeasible Run Ranks Below Every Feasible Run); Last Row: Median Rank-Biserial Correlation (Positive = %s Better)" % (fl, fl, nword, fl),
+    tabs["wtl"] = table("table", "Pairwise Outcome of %s Against Each Method: Cases in Which %s Is Significantly Better / Not Different / Worse (Two-Sided Wilcoxon Signed-Rank Test, 30 Seed-Paired Runs, Holm-Adjusted over the %s Comparisons of %s in Each Case, a Different Family from Table~\\ref{tab:ablation}, $\\alpha=0.05$; an Infeasible Run Ranks Below Every Feasible Run); Last Row: Median Rank-Biserial Correlation (Positive = %s Better; Zero Differences Dropped, $r_{\\rm rb}=0$ if All Are Zero)" % (fl, fl, nword, fl, fl),
                         "tab:wtl", "llc" + "c" * len(others),
                         "DS & $r$ (m) & Cases & " + " & ".join(HEAD2.get(b, LAB[b]) for b in others), lines, sep="1.6pt")
     # W/T/L and mean loss difference by farm size (N >= 10 vs N < 10), for the text
@@ -823,6 +882,47 @@ def main(argv=None):
                        mean_abs_dloss_pp_small=float(d[~bign].abs().mean()) if len(d) else np.nan,
                        max_abs_dloss_pp_small=float(d[~bign].abs().max()) if len(d) else np.nan)
     summary["main"]["by_n"] = by_n
+    # exploratory (post hoc) N >= 10 subgroups of focus vs its phase-1 swarm (PSO for PSO-VNS): case-mean
+    # Wilcoxon (same procedure as the main case-mean test, unadjusted) on the subgroup's cases, and significant
+    # run-level wins / losses (main-table family: Holm over the 7 comparisons of each case)
+    ref1 = PHASE1.get(FOCUS)
+    if ref1 in others:
+        sub_n = {}
+        for tag, dsl in (("Large", ("1", "2")), ("dsILarge", ("1",)), ("dsIILarge", ("2",))):
+            Sg = S[S.Dataset.isin(dsl) & (S.Turbines >= 10)]
+            x = case_mean_wilcoxon(Sg, FOCUS, [ref1])[ref1]
+            cr = C[(C.Baseline == ref1) & C.Dataset.isin(dsl) & (C.Turbines >= 10)].Outcome.value_counts()
+            sub_n[tag] = dict(datasets=list(dsl), n_cases=int(Sg[CASE].drop_duplicates().shape[0]), p=x["p"], rb=x["rb"],
+                              wins=x["wins"], losses=x["losses"], mean_dloss_pp=x["mean_dloss_pp"],
+                              ci95_mean_dloss_pp=x["ci95_mean_dloss_pp"],
+                              run_level=dict(W=int(cr.get("W", 0)), T=int(cr.get("T", 0)), L=int(cr.get("L", 0))))
+        summary["main"]["subgroup_vs_phase1"] = dict(
+            phase1=ref1, groups=sub_n,
+            note="exploratory, post hoc split at N >= 10; case-mean Wilcoxon unadjusted; run-level W/T/L from the "
+                 "main-table family (Holm over the 7 comparisons of the focus in each case)")
+    # imputation in the main case-mean tests (focus vs the seven methods)
+    summary["main"]["case_mean_imputation"] = dict(
+        imputed={b: int(CW[b]["only_focus_qualified"] + CW[b]["only_other_qualified"]) for b in others},
+        dropped={b: int(CW[b]["neither_qualified"]) for b in others},
+        imputed_total=int(sum(CW[b]["only_focus_qualified"] + CW[b]["only_other_qualified"] for b in others)),
+        dropped_total=int(sum(CW[b]["neither_qualified"] for b in others)),
+        note="a case in which exactly one of the two methods has >= 15 feasible runs enters the case-mean test with "
+             "a difference larger than every observed one in favour of that method (imputed); cases in which "
+             "neither has are dropped; counts summed over the comparisons of the main table")
+    # PSO-VNS vs PSO has two different run-level tallies in the paper (R3 item 5): Table wtl counts
+    # significant cases with Holm over the 7 comparisons of the focus with the other methods of the main
+    # comparison in each case; Table ablation uses Holm over the planned ablation contrasts of each case.
+    # The raw per-case p-values are identical; only the Holm family (and thus the adjusted p) differs.
+    summary["holm_families"] = dict(
+        main_wtl=f"per case: {fl} vs each of the other {len(others)} methods of the main comparison (Table wtl, tab:friedman68 p_W over the {len(others)} methods)",
+        ablation="per case: the planned contrasts of Table ablation (run level); case-mean p_W of Table ablation: Holm over the same contrasts",
+        baseline="per case: the hybrid vs each of the other 7 methods of the previous study's pool (Table baseline)",
+        split="per case: the four run-level comparisons of the split table (50 vs 25, 50 vs 75, 50 vs 100, 75 vs 100)",
+        hr16="per setting: the focus vs each other method",
+        feasinit="per case: feasible vs random initialization, over the methods of the case",
+        why_psovns_vs_pso_differs="The main-table tally (Holm over 7 comparisons) and the ablation tally (Holm over the "
+                                  "ablation contrasts) use the same per-case raw p-values of PSO-VNS vs PSO but different "
+                                  "Holm families, so the adjusted p and hence W/T/L differ; both are descriptive tallies.")
 
     # --- Friedman + case-mean Wilcoxon table
     order = sorted(MAINP, key=lambda a: FR["avg_rank"][a])
@@ -852,12 +952,13 @@ def main(argv=None):
             dl = f"${CW[a]['mean_dloss_pp']:+.3f}$"
         lines.append(f"{LAB[a]} & {FR['avg_rank'][a]:.2f} & {FR['sole_best_count'][a]} & {feas_pct[a]:.1f} & {pz} & {pw} & {dl} \\\\")
     tabs["friedman68"] = table(
-        "table", "Case-Level Analysis over the %d Benchmark Cases. Avg.\\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\\%%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against %s. Because Mean-Rank Tests Depend on the Pool of Methods~\\cite{Benavoli2016}, $p_W$ and $\\overline{\\Delta L}$ Give the Holm-Adjusted Two-Sided Wilcoxon Signed-Rank Test on the %d Per-Case Mean Wake Losses and the Mean Wake-Loss Difference (Percentage Points, %s Minus Method; Negative = %s Better)"
-        % (FR["n_cases"], fl, FR["n_cases"], fl, fl),
+        "table", "Case-Level Analysis over the %d Benchmark Cases. Avg.\\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\\%%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against %s. Because Mean-Rank Tests Depend on the Pool of Methods~\\cite{Benavoli2016}, $p_W$ and $\\overline{\\Delta L}$ Give the Two-Sided Wilcoxon Signed-Rank Test on the %d Per-Case Mean Wake Losses (Holm-Adjusted over the %d Methods) and the Mean Wake-Loss Difference over the Cases in Which Both Methods Have at Least 15 Feasible Runs (Percentage Points, %s Minus Method; Negative = %s Better)"
+        % (FR["n_cases"], fl, FR["n_cases"], len(others), fl, fl),
         "tab:friedman68", "lcccccc",
         "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines,
-        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$}"
-              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"], 2).strip("$"), FR["iman_davenport"])], sep="2pt")
+        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$ (%d, %d d.f.), $p=%s$}"
+              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"], 2).strip("$"), FR["iman_davenport"], len(MAINP) - 1,
+                 (len(MAINP) - 1) * (FR["n_cases"] - 1), fmt_p(FR["iman_davenport_p"], 2).strip("$"))], sep="2pt")
 
     # --- further numbers quoted in the text (all written to summary["main"])
     ref = PHASE1.get(FOCUS)                      # phase-1 method of the focus hybrid (PSO for PSO-VNS)
@@ -1227,10 +1328,28 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
     try:
         import hornsrev_model as hr
         inst = float(hr.aep_gwh(hr.site(16)[0]))
+        ideal_model = float(hr.aep_gwh(np.zeros((16, 2)), with_wake=False))
+        xy80 = hr.site(80)[0]
+        a80, i80 = float(hr.aep_gwh(xy80)), float(hr.aep_gwh(xy80, with_wake=False))
+        summary["hr_validation"] = dict(
+            installed80_aep=a80, ideal80_aep=i80, installed80_loss_pct=100 * (1 - a80 / i80),
+            pywake_aep=PYWAKE_HR80_AEP, pywake_loss_pct=PYWAKE_HR80_LOSS_PCT,
+            rel_diff_pct=100 * (a80 / PYWAKE_HR80_AEP - 1),
+            note="installed 80-turbine Horns Rev 1 farm, hornsrev_model.py (current binning) vs the PyWake Jensen "
+                 "reference value quoted in hornsrev_site_text.tex (662.5 GWh/yr, 10.96 %)")
+        log(f"  80-turbine installed AEP {a80:.2f} GWh/yr vs PyWake {PYWAKE_HR80_AEP} -> {summary['hr_validation']['rel_diff_pct']:+.2f}%")
     except Exception as e:                                  # pragma: no cover
-        hr, inst = None, INSTALLED_HR16
+        hr, inst, ideal_model = None, INSTALLED_HR16, None
         log(f"  hornsrev_model unavailable ({e}); installed AEP = {INSTALLED_HR16}")
     H = R6[(R6.Dataset == "HR") & (R6.Turbines == 16)]
+    hr_model = "current"
+    if len(H):
+        ideal_data = float(H.Ideal.iloc[0])
+        if abs(ideal_data - LEGACY_HR16["ideal"]) < 1e-6:      # old runs (binning before 7676da9): same-model installed AEP
+            inst, hr_model = LEGACY_HR16["installed"], "legacy (direction binning before commit 7676da9; mpce_hrfix missing)"
+            log(f"  Horns Rev runs of the OLD model (wake-free AEP {ideal_data:.4f}); installed AEP of the old model {inst:.3f}")
+        elif ideal_model is not None and abs(ideal_data - ideal_model) > 1e-6:
+            log(f"  WARNING: Horns Rev wake-free AEP of the runs ({ideal_data:.4f}) differs from hornsrev_model ({ideal_model:.4f})")
     hm = [a for a in HR_ORDER if a in M10]
     H = H[H.Algorithm.isin(hm)]
     hm = [a for a in hm if a in set(H.Algorithm)]
@@ -1256,10 +1375,11 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
                             gain_vs_installed_pct=float(100 * (s.Mean / inst - 1)),
                             runs_above_installed=int(((H.Algorithm == a) & H.Feasible & (H.Objective > inst)).sum()),
                             p_holm=None if a == FOCUS else tt[a]["PHolm"], rb=None if a == FOCUS else tt[a]["RB"])
-        supp.append(table("table", "Horns Rev~1 site case, 16-turbine block (Vestas V80 power and thrust curves, measured 12-sector wind climate, installed outline; Jensen wake $k=0.04$; minimum spacing $4D=320$~m; wake-free AEP %.2f~GWh/yr): AEP in GWh/yr, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls, mean wake loss (\\%%), feasible runs, Holm-adjusted Wilcoxon signed-rank $p$ of %s vs.\\ each method and rank-biserial $r_{\\rm rb}$ (positive = %s better); run-level Friedman $p=%s$ (over the seeds common to all methods)." % (ideal, fl, fl, fmt_p(pf).strip("$")),
+        supp.append(table("table", "Horns Rev~1 site case, 16-turbine block (Vestas V80 power and thrust curves, measured 12-sector wind climate, installed outline; Jensen wake $k=0.04$; minimum spacing $4D=320$~m; wake-free AEP %.2f~GWh/yr): AEP in GWh/yr, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls, mean wake loss (\\%%), feasible runs, Wilcoxon signed-rank $p$ of %s vs.\\ each method (Holm-adjusted over these %d comparisons) and rank-biserial $r_{\\rm rb}$ (positive = %s better; zero differences dropped); run-level Friedman $p=%s$ (over the seeds common to all methods)." % (ideal, fl, len(hm) - 1, fl, fmt_p(pf).strip("$")),
                              "tab:hr-site-full", "lccccc", "Layout / method & AEP & Loss (\\%) & Feas. & $p_{\\rm Holm}$ & $r_{\\rm rb}$", lines, size="\\footnotesize", sep="3pt", pos="!htb"))
         summary["hr16"] = dict(installed_aep=inst, ideal_aep=ideal, installed_loss_pct=100 * (1 - inst / ideal),
-                               friedman_p=float(pf), methods=hrsum,
+                               model=hr_model, friedman_p=float(pf), methods=hrsum,
+                               holm_family=f"per setting, {LAB[FOCUS]} vs each of the other {len(hm) - 1} methods",
                                sources=H.groupby("Algorithm").Source.first().to_dict())
         log("  mean AEP: " + ", ".join(f"{LAB[a]} {hrsum[a]['mean']:.2f}({hrsum[a]['feasible']})" for a in hm) + f"; installed {inst:.2f}")
         # convergence + layouts
