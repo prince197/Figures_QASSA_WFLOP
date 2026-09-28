@@ -62,3 +62,22 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
 - Feasible starts: label symmetry does NOT explain the stall (relabelling: 0.1 % feasible). Cause: independent per-coordinate weights with overshoot + spacing violations between distinct dense layouts; G-holder frozen (V = 0); no pbest ever updates; DE 0 of 126,000 trials feasible. Replace 08 wording. (D13–D16)
 - RS-VNS: 730 of 2,040 runs have no feasible sample at all; replay agrees with (π/4)^N. (D17)
 - Cloud experiments: omega90 (4 shards), rsdisc (8 shards). Pipeline must learn PSOBV90 and RSDVNS.
+
+## Phase B (integration) — rules for section agents
+- Read ALL notes above (W1–W4 results, including the CONTRADICTIONS) and the drafts: optA/drafts/theory_main.tex,
+  optA/drafts/positioning.md, optA/newrefs/phase6.tex; data macros: analysis/mpce_numbers.tex (\N…),
+  analysis/mpce_numbers_extra.tex (\NX…), analysis/mpce_numbers_diag.tex (\ND…); pending omega90/rsdisc macros
+  are in optA/phase6_macros_stub.tex (names final; values arrive later).
+- Each agent owns only its files. Page budget: the main PDF is exactly 12 pages now and must stay ≤ 12 —
+  every file must end NO LONGER than now (04 may grow ≤ 0.15 page if 06/08 shrink); move details to the
+  supplement (the supplement agent adds the new supplementary sections; point to them with \ref{S-...}).
+- Comment conventions: keep `% CHECK-FINAL [Cnn]`; new claims from W2 get `% CHECK-EXTRA [Xnn]`, from W3
+  `% CHECK-DIAG [Dnn]`, from W4 `% CHECK-THEORY [Tnn]`; equivalence claims `% CHECK-FINAL [C49]–[C52]`.
+- New refs: only keys in optA/newrefs/*.tex or 11_back.tex (Benavoli2017, LaTorre2021, Derrac2011, Hooker1995,
+  Campelo2019, Lakens2017, CamachoVillalon2023, Bonyadi2017, Thomas2023, Wilson2018, Azlan2021, Feng2015).
+- Title (lead decision): "Baseline Configuration and Controls in Metaheuristic Comparisons for Wind Farm Layout
+  Optimization, with a PSO–VNS Reference Method"; running head: "SOLANKI et al.: BASELINES AND CONTROLS IN
+  METAHEURISTIC COMPARISONS FOR WIND FARM LAYOUT OPTIMIZATION".
+- Headline M3 now: "a well-configured PSO and PSO-VNS are practically equivalent on average (±\NEqMargin pp);
+  PSO-VNS adds feasibility reliability (Horns Rev \NHRFeasPSOVNS{} vs \NHRFeasPSO{} of 30) and gains in the
+  larger Data Set II layouts; at 6,030 evaluations its second phase acts as one compass-search descent".

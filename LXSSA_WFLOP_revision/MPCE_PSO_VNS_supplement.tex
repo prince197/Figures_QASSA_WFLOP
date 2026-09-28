@@ -29,7 +29,10 @@
 \newcommand{\TBD}[1]{\textcolor{red}{[TBD\ifx\relax#1\relax\else: #1\fi]}}
 % number macros, loaded in the same order as in MPCE_PSO_VNS.tex (a macro whose data are missing prints [TBD])
 \input{analysis/mpce_numbers.tex}
+\input{analysis/mpce_numbers_extra.tex}
+\input{analysis/mpce_numbers_diag.tex}
 \input{optA/phase4_macros_stub.tex}
+\input{optA/phase6_macros_stub.tex}
 % a missing or empty (0-byte) figure file gives a TBD box instead of a fatal pdfTeX error
 \makeatletter
 \newcommand{\pipefig}[3]{\ifnum0\pdffilesize{#2}>0 \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi

@@ -23,7 +23,10 @@
 % Statements that depend on the outcome carry a comment "% CHECK-FINAL [Cnn]: <condition>";
 % analysis/mpce_check_final.py evaluates these conditions (PASS / FAIL) after every run of mpce_results.py.
 \input{analysis/mpce_numbers.tex}
+\input{analysis/mpce_numbers_extra.tex}
+\input{analysis/mpce_numbers_diag.tex}
 \input{optA/phase4_macros_stub.tex}
+\input{optA/phase6_macros_stub.tex}
 % Figure from the analysis pipeline; a framed placeholder is printed while the file does not exist yet.
 % #1 width, #2 file (with extension), #3 placeholder height
 \newcommand{\pipefig}[3]{\IfFileExists{#2}{\includegraphics[width=#1]{#2}}%
