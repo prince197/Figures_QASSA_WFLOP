@@ -305,8 +305,20 @@ def case_mean_wilcoxon(S, focus, others, val="Loss"):
     return out
 
 
+CURVE_TOL = 0.01      # objective units (curves are stored with 3-4 decimals)
+
+
+def curve_valid(M, ideal):
+    """A checkpoint value (best feasible objective so far) must lie in [0, ideal]. Rarely (mostly PSO, whose
+    particles sit exactly on a constraint boundary) the tracker of the experiment scripts accepted a layout
+    that passes the 1e-6 feasibility tolerance but still carries a (large) penalty, so the recorded value is
+    the penalized objective. Such points are treated as unknown (NaN, i.e. like not-yet-feasible)."""
+    return (M >= -CURVE_TOL) & (M <= np.asarray(ideal, float).reshape(-1, *([1] * (np.ndim(M) - 1))) + CURVE_TOL)
+
+
 def curves(sub):
-    return np.array([[float(v) for v in c.split(";")] for c in sub.Curve])
+    M = np.array([[float(v) for v in c.split(";")] for c in sub.Curve])
+    return np.where(curve_valid(M, sub.Ideal.values), M, np.nan)
 
 
 def curve_x(sub, ncp):
@@ -322,7 +334,7 @@ def wtl_str(c):
     return f"{c.get('W', 0)}/{c.get('T', 0)}/{c.get('L', 0)}"
 
 
-def phase2_stat(D, alg, switch=None):
+def phase2_stat(D, alg, switch=None, validate=True):
     """Share (%) of the wake loss left at the switch call that the VNS phase of hybrid alg removes (feasible
     final runs whose best-feasible curve is finite at the switch), and the number of feasible final runs
     that were still infeasible at the switch (made feasible by phase 2)."""
@@ -333,9 +345,11 @@ def phase2_stat(D, alg, switch=None):
     b = int(X.Budget.iloc[0])
     sw = switch or switch_call(alg, b)
     idx = int(round(sw / max(1, (b - 30) // 200))) - 1
-    gains, made_feasible = [], 0
+    gains, made_feasible, invalid = [], 0, 0
     for ideal, obj, cv in zip(Hy.Ideal.values, Hy.Objective.values, Hy.Curve.values):
         at = float(cv.split(";")[idx])
+        if validate and np.isfinite(at) and not curve_valid(np.array([at]), [ideal])[0]:
+            invalid += 1; continue                         # penalized value recorded at the switch (see curve_valid)
         if not np.isfinite(at):
             made_feasible += 1; continue
         l1, l2 = ideal - at, ideal - obj
@@ -344,6 +358,7 @@ def phase2_stat(D, alg, switch=None):
     g = np.array(gains)
     return dict(mean=float(g.mean()) if len(g) else np.nan, median=float(np.median(g)) if len(g) else np.nan,
                 n_runs_with_loss_at_switch=len(g), infeasible_at_switch_made_feasible=made_feasible,
+                excluded_penalized_value_at_switch=invalid,
                 final_infeasible=int(len(X) - len(Hy)), runs=int(len(X)), switch_call=int(sw),
                 pct_runs_improved=float(100 * np.mean(g > 1e-9)) if len(g) else np.nan)
 
@@ -954,7 +969,7 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         O = pd.DataFrame(orows)
         x = O[(O.A == "LXBV") & (O.B == "SSABV")]
         oc = x.O.value_counts()
-        p2s = phase2_stat(GA, "SSABV", switch=3030)
+        p2s = phase2_stat(GA, "SSABV", switch=3030, validate=False)
         rep = dict(ssabv_avg_rank=Fo["avg_rank"]["SSABV"], expected_ssabv_avg_rank=1.625,
                    lxbv_vs_ssabv_wtl=wtl_str(oc), expected_lxbv_vs_ssabv_wtl="0/66/2",
                    lxbv_minus_ssabv_dloss=float(x.DL.mean()), expected_dloss=0.06306204787105701,
