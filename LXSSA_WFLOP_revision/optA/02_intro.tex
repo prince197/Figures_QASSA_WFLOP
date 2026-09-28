@@ -20,13 +20,15 @@ We report this as a property of the setting, not as a finding about any particul
 % CHECK-FINAL [C15]: SSABV-RSVNS T >= 60, W and L <= 5
 % CHECK-FINAL [C16]: PSOBV-SSABV, PSOBV-LXBV: L == 0, W >= 34
 % CHECK-FINAL [C17]: LXSSA-SSA W == 0; SSABV-LXBV L == 0
-\item PSO-VNS as a simple reference method, with an account of where it wins and where it does not. It has the best average rank (\NRankPSOVNS), is feasible in every run, keeps the best rank at all three budgets, and its best Horns Rev~1 layout exceeds the energy production of the installed one; but it is not significantly better than PSO over all cases ($p=\NPWPSO$), VNS alone ranks first with feasible starts, PSO ranks first under a Gaussian wake model, and on IEA37 a gap to the published optima remains (Sections~\ref{sec:results}--\ref{sec:robustness}). From these results we derive practical recommendations for benchmarking WFLOP methods.
+\item PSO-VNS as a simple reference method, with an account of where it wins and where it does not. It has the best average rank (\NRankPSOVNS), is feasible in every run, keeps the best rank at all three budgets, and its best Horns Rev~1 layout exceeds the energy production of the installed one; but it is not significantly better than PSO over all cases ($p=\NPWPSO$), VNS alone ranks first with feasible starts, PSO ranks first under a Gaussian wake model, and on IEA37 a gap to the published optima remains (Sections~\ref{sec:results}--\ref{sec:robustness}). From these results we derive practical recommendations for benchmarking WFLOP methods (Section~\ref{sec:discussion}).
 % CHECK-FINAL [C01]: main.friedman.best_ranked == PSOBV
 % CHECK-FINAL [C08]: main.feasible_pct.PSOBV == 100
 % CHECK-FINAL [C26]: feasbudget.rank: PSOBV best at 6,030 (30,030 / 120,030 via \NBudgetPhrase)
+% CHECK-FINAL [C29]: PSO-VNS best average rank at all three budgets
+% CHECK-FINAL [C28]: feasible starts: VNS alone first, PSO-VNS second
 % CHECK-FINAL [C19]: hr16 best PSO-VNS run > installed AEP
 % CHECK-FINAL [C04]: case_mean_wilcoxon.PSOC.p >= 0.05 ("not significantly better")
 % CHECK-FINAL [C22]: robustness.Gauss: PSOC first, PSOBV second
 \end{enumerate}
 
-Sections~\ref{sec:model}--\ref{sec:hybrid} describe the model, the swarm methods and PSO-VNS, and Section~\ref{sec:setup} defines the evaluation protocol. Section~\ref{sec:results} reports the effect of the baseline setting, the overall comparison and the component analysis, Section~\ref{sec:beyond} the tests beyond the benchmark and Section~\ref{sec:robustness} the sensitivity to the modeling assumptions. Sections~\ref{sec:limits} and~\ref{sec:conclusion} give the recommendations, limitations and conclusions.
+Sections~\ref{sec:model}--\ref{sec:hybrid} describe the model, the swarm methods and PSO-VNS, and Section~\ref{sec:setup} defines the evaluation protocol. Section~\ref{sec:results} reports the effect of the baseline setting and the overall comparison, Section~\ref{sec:ablation} the component analysis, Section~\ref{sec:beyond} the tests beyond the benchmark and Section~\ref{sec:robustness} the sensitivity to the modeling assumptions. Section~\ref{sec:discussion} gives the recommendations, and Sections~\ref{sec:limits} and~\ref{sec:conclusion} the limitations and conclusions.

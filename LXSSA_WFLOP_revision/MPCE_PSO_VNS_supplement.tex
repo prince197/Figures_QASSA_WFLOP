@@ -155,6 +155,19 @@ Table~\ref{tab:friedman68-full} extends Table~\ref{M-tab:friedman68} by the full
 \FloatBarrier
 \subsection{Additional Figures}
 \label{sec:S-figs}
+Fig.~\ref{fig:S-ranks} shows the average ranks of Table~\ref{M-tab:friedman68} and Fig.~\ref{fig:S-wakeloss} the mean wake loss versus the number of turbines.
+\begin{figure}[!htb]
+\centering
+\pipefig{\columnwidth}{figures_mpce/avg_ranks.pdf}{5cm}
+\caption{Average rank of the eight methods over the 68 benchmark cases (feasibility-aware ranking; 1 = best).}
+\label{fig:S-ranks}
+\end{figure}
+\begin{figure*}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/wakeloss_vs_n.pdf}{8cm}
+\caption{Mean wake loss (\% of the wake-free benchmark objective) of the feasible runs versus the prescribed number of turbines $N$, for each farm and wind data set.}
+\label{fig:S-wakeloss}
+\end{figure*}
 Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} show the convergence, the distribution of the final wake loss, the feasibility and the best layouts of the eight methods of the main comparison.
 \begin{figure}[!htb]
 \centering
@@ -210,6 +223,12 @@ Tables~\ref{tab:feasinit} and~\ref{tab:budget} summarize the six largest benchma
 \SuppTable{tab:budget}
 \SuppTable{tab:budget-cases}
 
+\begin{figure*}[!htb]
+\centering
+\pipefig{0.7\textwidth}{figures_mpce/budget_scaling.pdf}{7.4cm}
+\caption{Budget scaling: mean wake loss of the six largest benchmark cases and mean AEP loss of the Horns Rev~1 block (feasible runs; methods with at least half of their runs feasible) versus the budget (6,030, 30,030 and 120,030 calls, random initialization; 10 seeds for Horns Rev~1 at 120,030 calls).}
+\label{fig:S-budget}
+\end{figure*}
 \FloatBarrier
 \subsection{Horns Rev~1 16-Turbine Block}
 \label{sec:S-hr16}
