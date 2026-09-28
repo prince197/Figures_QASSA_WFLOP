@@ -414,7 +414,78 @@ def build(s, allow_partial=False):
     P("NSpSixAll", lambda: num(sh["all"]["pct_6d"], 0), REQ_MAIN)
     P("NSpFiveLarge", lambda: num(sh["n11_15"]["pct_5d"], 1), REQ_MAIN)
     P("NSpSixLarge", lambda: num(sh["n11_15"]["pct_6d"], 1), REQ_MAIN)
+    # ---------------- Phase-4 macro contract (optA/PHASE4.md)
+    # case-mean Wilcoxon of the component-analysis contrasts (summary ablation.case_mean; procedure of
+    # case_mean_wilcoxon, the same as \NPW...): P unadjusted two-sided p (PHolm: Holm over the contrasts of
+    # Table ablation), Wins / Losses = cases in which A has the lower / higher case-mean loss (cases in which
+    # only one method has >= 15 feasible runs counted for that method), DL = mean of L(A) - L(B) over the
+    # cases in which both qualify (pp, signed, negative = A better), CI = 95 % percentile bootstrap CI of DL
+    # (10,000 resamples of the cases, fixed seed) as "[a, b]".
+    cm = ab.get("case_mean") or {}
+    CMP = {"SSAVNSvsRSVNS": "SSABV-RSVNS", "LXSSAVNSvsRSVNS": "LXBV-RSVNS", "PSOVNSvsRSVNS": "PSOBV-RSVNS",
+           "SSAVNSvsLXSSAVNS": "SSABV-LXBV", "LXSSAvsSSA": "LXSSA-SSA", "SSAVNSvsSSA": "SSABV-SSA",
+           "LXSSAVNSvsLXSSA": "LXBV-LXSSA", "PSOVNSvsPSO": "PSOBV-PSOC", "PSOVNSvsVNS": "PSOBV-BVNS"}
+    for nm, key in CMP.items():
+        P(f"NCm{nm}P", lambda key=key: pval(cm[key]["p"]), REQ_ABL)
+        P(f"NCm{nm}PHolm", lambda key=key: pval(cm[key]["p_holm"]), REQ_ABL)
+        P(f"NCm{nm}Wins", lambda key=key: str(cm[key]["wins"]), REQ_ABL)
+        P(f"NCm{nm}Losses", lambda key=key: str(cm[key]["losses"]), REQ_ABL)
+        P(f"NCm{nm}DL", lambda key=key: num(cm[key]["mean_dloss_pp"], 3, sign=True), REQ_ABL)
+        P(f"NCm{nm}CI", lambda key=key: "[%s, %s]" % tuple(num(v, 3) for v in cm[key]["ci95_mean_dloss_pp"]), REQ_ABL)
+    P("NAblFriedVerb", lambda: "rejects" if fa["p"] < 0.05 else "does not reject", REQ_ABL)
+    # exploratory N >= 10 subgroups, PSO-VNS vs PSO (case-mean Wilcoxon unadjusted; run level: main-table family)
+    sg = (main.get("subgroup_vs_phase1") or {}).get("groups") or {}
+    for g_ in ("Large", "dsILarge", "dsIILarge"):
+        P(f"NCmPSOVNSvsPSO{g_}P", lambda g_=g_: pval(sg[g_]["p"]), REQ_MAIN)
+        P(f"NCmPSOVNSvsPSO{g_}Wins", lambda g_=g_: str(sg[g_]["wins"]), REQ_MAIN)
+        P(f"NCmPSOVNSvsPSO{g_}Losses", lambda g_=g_: str(sg[g_]["losses"]), REQ_MAIN)
+        P(f"NCmPSOVNSvsPSO{g_}N", lambda g_=g_: str(sg[g_]["n_cases"]), REQ_MAIN)
+        P(f"NCmPSOVNSvsPSO{g_}DL", lambda g_=g_: num(sg[g_]["mean_dloss_pp"], 3, sign=True), REQ_MAIN)
+    for g_ in ("dsILarge", "dsIILarge"):
+        P(f"NWtlPSO{g_}W", lambda g_=g_: str(sg[g_]["run_level"]["W"]), REQ_MAIN)
+        P(f"NWtlPSO{g_}L", lambda g_=g_: str(sg[g_]["run_level"]["L"]), REQ_MAIN)
+    P("NImanP", lambda: pval(fr["iman_davenport_p"]), REQ_MAIN)
+    ci_ = main.get("case_mean_imputation") or {}
+    P("NCmImputed", lambda: str(ci_["imputed_total"]), REQ_MAIN)      # plain count, summed over the 7 comparisons
+    P("NCmDropped", lambda: str(ci_["dropped_total"]), REQ_MAIN)
+    P("NCmImputedPhrase", lambda: listing(f"{v} for {LAB[b]}" for b, v in ci_["imputed"].items() if v) or "none", REQ_MAIN)
+    # time per evaluation (median over the 6,030-evaluation runs of the 68 cases; see mpce_results.py)
+    ce = s.get("cost_per_eval") or {}
+    P("NMsEvalMin", lambda: num(ce["meta_min_ms"], 2), REQ_MAIN)
+    P("NMsEvalMax", lambda: num(ce["meta_max_ms"], 2), REQ_MAIN)
+    P("NMsEvalSLSQP", lambda: num(ce["slsqp_ms"], 2), REQ_MAIN)
+    P("NMsEvalPSO", lambda: num(ce["median_ms"]["PSOC"], 2), REQ_MAIN)
+    P("NSLSQPSlowdown", lambda: num(ce["slsqp_over_pso"], 1), REQ_MAIN)       # plain number (text adds "times")
+    # budget split: omega = 1 (PSO alone, same seeds and budget) as the end point
+    P("NSplitRankHundred", lambda: num(sp["avg_rank"]["PSOC"], 2), REQ_SPLIT + ("psoc",))
+    P("NSplitLossHundred", lambda: num(sp["mean_loss"]["PSOC"], 3), REQ_SPLIT + ("psoc",))
+    P("NSplitHundredVsSeventyFive", lambda: "%d/%d/%d" % wtl(sp["wtl_75_vs_100"]), REQ_SPLIT + ("psoc",))
+    P("NSplitCmP", lambda: pval(sp["case_mean"]["PSOBV-PSOBV75"]["p"]), REQ_SPLIT)     # case-mean 0.75 vs 0.5
+    P("NSplitCmHundredP", lambda: pval(sp["case_mean"]["PSOBV75-PSOC"]["p"]), REQ_SPLIT + ("psoc",))
+    P("NSplitCmHundredWins", lambda: str(sp["case_mean"]["PSOBV75-PSOC"]["wins"]), REQ_SPLIT + ("psoc",))
+    # first places of PSO-VNS among the six largest cases per budget (ties for first included)
+    for b in BUDGETS:
+        req = {6030: REQ_MAIN, 30030: REQ_B30, 120030: REQ_B120}[b]
+        P(f"NBudFirstPSOVNS{BNAME[b]}", lambda b=b: str(fb["first_count"][str(b)]["PSOBV"]), req)
+    P("NBudCloseGapOneTwentyK", lambda: ceil_num(fb["close_gap_pp"]["120030"]["max_gap"], 2), REQ_B120)  # rounded up ("within")
+    P("NBudCloseListOneTwentyK", lambda: listing(LAB[a] for a in fb["close_gap_pp"]["120030"]["methods"]), REQ_B120)
+    # Horns Rev: validation of the 80-turbine farm against PyWake, methods below PSO-VNS at 120,030
+    hv = s.get("hr_validation") or {}
+    P("NHRPyWakeDiff", lambda: num(abs(hv["rel_diff_pct"]), 2), ())                 # plain number (text adds \%)
+    P("NHRPyWakeOurs", lambda: num(hv["installed80_aep"], 1), ())
+    P("NHRPyWakeRef", lambda: num(hv["pywake_aep"], 1), ())
+    P("NHRLowerOneTwentyK", lambda: (lambda o: listing(LAB[a] for a in o) if o else "no other method")(
+        [a for a in M10 if a != "PSOBV" and (lb.get(a) or {}).get("120030R") and lb[a]["120030R"]["loss"] is not None
+         and lb[a]["120030R"]["loss"] < lb["PSOBV"]["120030R"]["loss"]]), hr_req(REQ_B120))
+    # boundary rule (robustness section): radial projection vs box clipping for SSA
+    br = s.get("boundary_rule") or {}
+    P("NBoundCases", lambda: WORD.get(br["n_cases"], str(br["n_cases"])), ())
+    P("NBoundHigher", lambda: WORD.get(br["n_higher"], str(br["n_higher"])), ())
+    P("NBoundMaxP", lambda: pval_up(br["max_p"]), ())
+    P("NBoundDiffMin", lambda: num(br["min_diff"], 0), ())
+    P("NBoundDiffMax", lambda: num(br["max_diff"], 0), ())
     return M
+
 
 
 def main(argv=None):
