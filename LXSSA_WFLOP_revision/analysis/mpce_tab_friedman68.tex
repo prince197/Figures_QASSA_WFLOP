@@ -3,7 +3,7 @@
 \centering
 \caption{Case-Level Analysis over the 68 Benchmark Cases. Avg.\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against PSO-VNS. Because Mean-Rank Tests Depend on the Pool of Methods~\cite{Benavoli2016}, $p_W$ and $\overline{\Delta L}$ Give the Holm-Adjusted Two-Sided Wilcoxon Signed-Rank Test on the 68 Per-Case Mean Wake Losses and the Mean Wake-Loss Difference (Percentage Points, PSO-VNS Minus Method; Negative = PSO-VNS Better)}
 \label{tab:friedman68}
-\scriptsize\setlength{\tabcolsep}{2.2pt}
+\scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lcccccc}
 \toprule
 Method & Avg.\ rank & Best & Feas. & $p_z$ & $p_W$ & $\overline{\Delta L}$ \\
@@ -17,6 +17,6 @@ MS-SLSQP & 5.87 & 1 & 99.9 & $2.6\times10^{-21}$ & $2.7\times10^{-11}$ & $-0.443
 LX-SSA & 6.06 & 0 & 96.9 & $3.3\times10^{-23}$ & $4.5\times10^{-11}$ & $-0.765$ \\
 DE & 7.06 & 0 & 71.4 & $6.7\times10^{-35}$ & $5.6\times10^{-11}$ & $-0.887$ \\
 \bottomrule
-\multicolumn{7}{l}{Friedman $\chi^2_F=319.4$ (7 d.f.), $p=4.39\times10^{-65}$; Iman--Davenport $F_F=136.6$.}
+\multicolumn{7}{l}{Friedman $\chi^2_F=319.4$ (7 d.f.), $p=4.4\times10^{-65}$; Iman--Davenport $F_F=136.6$}
 \end{tabular}
 \end{table}

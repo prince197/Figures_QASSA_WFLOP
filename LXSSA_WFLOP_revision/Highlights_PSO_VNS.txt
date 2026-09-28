@@ -1,0 +1,5 @@
+Two-phase PSO-VNS: constriction PSO explores, basic VNS refines the turbine layout
+Common PSO setting w = 0.7, c1 = c2 = 2 violates convergence and understates PSO
+Ablation: neither salp swarm phase nor Laplace step explains the gain of the hybrid
+PSO-VNS is feasible in every run and improves on PSO for larger wind farms
+Tested on Horns Rev 1 and IEA Task 37 cases and with other power and wake models

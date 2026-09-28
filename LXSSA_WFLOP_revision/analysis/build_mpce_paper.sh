@@ -18,4 +18,5 @@ for f in MPCE_PSO_VNS MPCE_PSO_VNS_supplement; do
   echo "$f.pdf: $(grep -o 'Output written.*' $f.log | sed 's/.*(\([0-9]* pages\).*/\1/')," \
        "undefined refs: $(grep -c 'undefined' $f.log || true), overfull boxes: $(grep -c 'Overfull' $f.log || true)"
 done
-echo "TBD markers printed in the main text: $(grep -o 'TBD' MPCE_PSO_VNS.tex analysis/mpce_numbers.tex analysis/mpce_tab_*.tex | wc -l) in the sources (pending macros listed at the top of analysis/mpce_numbers.tex)"
+echo "pending: $(grep -c 'TBD{pending' analysis/mpce_numbers.tex) macros in analysis/mpce_numbers.tex (listed in its 2nd line)," \
+     "$(cat analysis/mpce_tab_*.tex | grep -o 'TBD{}' | wc -l) empty table cells; author placeholders in MPCE_PSO_VNS.tex: $(grep -o 'TBD{[^p}]' MPCE_PSO_VNS.tex | wc -l)"

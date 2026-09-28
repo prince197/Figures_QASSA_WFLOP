@@ -328,16 +328,17 @@ def build(s, allow_partial=False):
     ic = (s.get("iea37_compact") or {}).get("methods", {})
     pub = (s.get("iea37_compact") or {}).get("published", {})
     for n, nm in ((16, "Sixteen"), (36, "ThirtySix")):
-        P(f"NIEAPubFeas{nm}", lambda n=n: str(pub[str(n)]["n_feasible"]), ("iea16", "iea36"))
+        req_n = (f"iea{n}", f"iea{n}p")
+        P(f"NIEAPubFeas{nm}", lambda n=n: str(pub[str(n)]["n_feasible"]), ())
         for b in (6030, 30030):
             k = f"{n}T_{b}"
-            P(f"NIEABest{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["best"], 1), REQ_IEA)
-            P(f"NIEAGap{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["best_gap_to_best_feasible_published_pct"], 2, sign=True), REQ_IEA)
-            P(f"NIEAMeanGap{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["mean_gap_to_best_feasible_published_pct"], 2, sign=True), REQ_IEA)
-            P(f"NIEARank{nm}{BNAME[b]}", lambda k=k: ORD[ic["PSOBV"][k]["best_rank_among_feasible_published"]], REQ_IEA)
-            P(f"NIEAMeanRank{nm}{BNAME[b]}", lambda k=k: ORD[ic["PSOBV"][k]["mean_rank_among_feasible_published"]], REQ_IEA)
+            P(f"NIEABest{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["best"], 1), req_n)
+            P(f"NIEAGap{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["best_gap_to_best_feasible_published_pct"], 2, sign=True), req_n)
+            P(f"NIEAMeanGap{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["mean_gap_to_best_feasible_published_pct"], 2, sign=True), req_n)
+            P(f"NIEARank{nm}{BNAME[b]}", lambda k=k: ORD[ic["PSOBV"][k]["best_rank_among_feasible_published"]], req_n)
+            P(f"NIEAMeanRank{nm}{BNAME[b]}", lambda k=k: ORD[ic["PSOBV"][k]["mean_rank_among_feasible_published"]], req_n)
             P(f"NIEABestOf{nm}{BNAME[b]}", lambda k=k: LAB[max((a for a in ic if ic[a].get(k) and ic[a][k]["best"] is not None),
-                                                                 key=lambda a: ic[a][k]["best"])], REQ_IEA)
+                                                                 key=lambda a: ic[a][k]["best"])], req_n)
 
     P("NIEAPhrase", lambda: "reach " + listing(
         f"{num(100 + ic['PSOBV'][f'{n}T_30030']['best_gap_to_best_feasible_published_pct'], 1)}\\% ({n} turbines)" for n in (16, 36))

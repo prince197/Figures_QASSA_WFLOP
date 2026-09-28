@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 07:38:48",
+ "generated": "2026-09-28 07:42:37",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -269,14 +269,26 @@
    ]
   },
   "mpce_iea16p": {
-   "status": "missing",
-   "shards": "0",
-   "rows": 0
+   "status": "complete",
+   "shards": "1/1",
+   "rows": 60,
+   "methods": [
+    "PSOBV"
+   ],
+   "datasets": [
+    "IEA37cs1"
+   ]
   },
   "mpce_iea36p": {
-   "status": "missing",
-   "shards": "0",
-   "rows": 0
+   "status": "complete",
+   "shards": "1/1",
+   "rows": 60,
+   "methods": [
+    "PSOBV"
+   ],
+   "datasets": [
+    "IEA37cs2"
+   ]
   }
  },
  "fallbacks": [
@@ -2254,6 +2266,17 @@
    "ideal_aep": 469536.0,
    "budgets": {
     "6030": {
+     "PSOBV": {
+      "mean": 395031.81240277033,
+      "best": 402782.4291323834,
+      "sd": 4587.250071317257,
+      "loss_pct": 15.867619862423684,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 1.0,
+      "p_holm": null,
+      "rb": null
+     },
      "PSOC": {
       "mean": 390540.193001406,
       "best": 403753.1204405673,
@@ -2261,9 +2284,9 @@
       "loss_pct": 16.824227960921863,
       "feasible": 30,
       "runs": 30,
-      "rank": 1.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 2.0,
+      "p_holm": 7.152557373046875e-06,
+      "rb": 0.9010752688172043
      },
      "SSABV": {
       "mean": 388562.88495532266,
@@ -2272,9 +2295,9 @@
       "loss_pct": 17.24534754410255,
       "feasible": 30,
       "runs": 30,
-      "rank": 2.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 3.0,
+      "p_holm": 0.0003800932317972183,
+      "rb": 0.7075268817204301
      },
      "SSA": {
       "mean": 378073.07473884634,
@@ -2283,9 +2306,9 @@
       "loss_pct": 19.479427618149334,
       "feasible": 30,
       "runs": 30,
-      "rank": 7.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 8.0,
+      "p_holm": 6.51925802230835e-08,
+      "rb": 0.9870967741935484
      },
      "LXSSA": {
       "mean": 373977.4234698049,
@@ -2294,9 +2317,9 @@
       "loss_pct": 20.351703922637473,
       "feasible": 30,
       "runs": 30,
-      "rank": 8.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 9.0,
+      "p_holm": 1.6763806343078613e-08,
+      "rb": 1.0
      },
      "DE": {
       "mean": 338610.64550017193,
@@ -2305,9 +2328,9 @@
       "loss_pct": 27.883986424859454,
       "feasible": 27,
       "runs": 30,
-      "rank": 9.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 10.0,
+      "p_holm": 1.6763806343078613e-08,
+      "rb": 1.0
      },
      "BVNS": {
       "mean": 387637.3168288761,
@@ -2316,9 +2339,9 @@
       "loss_pct": 17.44247154022778,
       "feasible": 30,
       "runs": 30,
-      "rank": 3.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 4.0,
+      "p_holm": 4.6100467443466187e-05,
+      "rb": 0.8365591397849462
      },
      "SLSQP": {
       "mean": 382605.21674562735,
@@ -2327,9 +2350,9 @@
       "loss_pct": 18.514189168535026,
       "feasible": 18,
       "runs": 30,
-      "rank": 6.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 7.0,
+      "p_holm": 6.906315684318542e-05,
+      "rb": 0.8021505376344086
      },
      "LXBV": {
       "mean": 386930.0482520586,
@@ -2338,9 +2361,9 @@
       "loss_pct": 17.593102924576886,
       "feasible": 30,
       "runs": 30,
-      "rank": 4.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 5.0,
+      "p_holm": 4.6100467443466187e-05,
+      "rb": 0.8451612903225807
      },
      "RSVNS": {
       "mean": 386206.01641850447,
@@ -2349,12 +2372,23 @@
       "loss_pct": 17.747304483893785,
       "feasible": 30,
       "runs": 30,
-      "rank": 5.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 6.0,
+      "p_holm": 4.6100467443466187e-05,
+      "rb": 0.8408602150537634
      }
     },
     "30030": {
+     "PSOBV": {
+      "mean": 402583.0584310474,
+      "best": 413331.92694131937,
+      "sd": 4678.248946862789,
+      "loss_pct": 14.259384066174384,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 1.0,
+      "p_holm": null,
+      "rb": null
+     },
      "PSOC": {
       "mean": 401347.03769496345,
       "best": 412702.3623602993,
@@ -2362,9 +2396,9 @@
       "loss_pct": 14.522627083980051,
       "feasible": 30,
       "runs": 30,
-      "rank": 1.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 2.0,
+      "p_holm": 0.005592020228505135,
+      "rb": 0.6301075268817204
      },
      "SSABV": {
       "mean": 396920.50731957733,
@@ -2373,9 +2407,9 @@
       "loss_pct": 15.465372768099284,
       "feasible": 30,
       "runs": 30,
-      "rank": 3.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 4.0,
+      "p_holm": 0.00044232606887817383,
+      "rb": 0.7591397849462366
      },
      "SSA": {
       "mean": 392875.5815886986,
@@ -2384,9 +2418,9 @@
       "loss_pct": 16.326845739475008,
       "feasible": 30,
       "runs": 30,
-      "rank": 7.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 8.0,
+      "p_holm": 4.302710294723511e-07,
+      "rb": 0.9612903225806452
      },
      "LXSSA": {
       "mean": 390267.4290817604,
@@ -2395,9 +2429,9 @@
       "loss_pct": 16.882320188066437,
       "feasible": 30,
       "runs": 30,
-      "rank": 8.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 9.0,
+      "p_holm": 1.6763806343078613e-08,
+      "rb": 1.0
      },
      "DE": {
       "mean": 359952.2773781028,
@@ -2406,9 +2440,9 @@
       "loss_pct": 23.338726449494214,
       "feasible": 30,
       "runs": 30,
-      "rank": 9.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 10.0,
+      "p_holm": 2.9802322387695312e-08,
+      "rb": 0.9956989247311828
      },
      "BVNS": {
       "mean": 396192.02182935644,
@@ -2417,9 +2451,9 @@
       "loss_pct": 15.620522850355147,
       "feasible": 30,
       "runs": 30,
-      "rank": 4.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 5.0,
+      "p_holm": 7.988885045051575e-05,
+      "rb": 0.8279569892473119
      },
      "SLSQP": {
       "mean": 394566.9974249723,
@@ -2428,9 +2462,9 @@
       "loss_pct": 15.966614396985051,
       "feasible": 29,
       "runs": 30,
-      "rank": 6.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 7.0,
+      "p_holm": 0.005592020228505135,
+      "rb": 0.5741935483870968
      },
      "LXBV": {
       "mean": 399196.9005075417,
@@ -2439,9 +2473,9 @@
       "loss_pct": 14.98055516349295,
       "feasible": 30,
       "runs": 30,
-      "rank": 2.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 3.0,
+      "p_holm": 0.005592020228505135,
+      "rb": 0.621505376344086
      },
      "RSVNS": {
       "mean": 396163.3179092349,
@@ -2450,9 +2484,9 @@
       "loss_pct": 15.626636102613027,
       "feasible": 30,
       "runs": 30,
-      "rank": 5.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 6.0,
+      "p_holm": 8.516013622283936e-06,
+      "rb": 0.896774193548387
      }
     }
    },
@@ -2465,18 +2499,24 @@
     "best_overall_feasible": false,
     "n_published": 12,
     "n_published_feasible": 9,
-    "our_best": 412702.3623602993,
-    "our_best_method": "PSOC",
+    "our_best": 413331.92694131937,
+    "our_best_method": "PSOBV",
     "our_best_budget": 30030,
     "our_best_seed": 14,
-    "focus_best": null,
-    "focus_best_budget": null,
-    "focus_mean_by_budget": {},
-    "focus_best_vs_best_feasible_pct": null,
-    "focus_best_vs_baseline_pct": null,
-    "focus_mean_vs_baseline_pct": {},
-    "our_best_vs_best_feasible_pct": -1.485242660785413,
-    "focus_best_rank_among_feasible_published": null
+    "focus_best": 413331.92694131937,
+    "focus_best_budget": 30030,
+    "focus_mean_by_budget": {
+     "6030": 395031.81240277033,
+     "30030": 402583.0584310474
+    },
+    "focus_best_vs_best_feasible_pct": -1.3349614712767077,
+    "focus_best_vs_baseline_pct": 12.642436678588131,
+    "focus_mean_vs_baseline_pct": {
+     "6030": 7.655235451783127,
+     "30030": 9.713123306900107
+    },
+    "our_best_vs_best_feasible_pct": -1.3349614712767077,
+    "focus_best_rank_among_feasible_published": 3
    }
   },
   "IEA37 CS1, 36 turbines": {
@@ -2485,6 +2525,17 @@
    "ideal_aep": 1056456.0,
    "budgets": {
     "6030": {
+     "PSOBV": {
+      "mean": 736832.364516246,
+      "best": 787708.9489546629,
+      "sd": 19267.689883981355,
+      "loss_pct": 30.254325356072933,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 2.0,
+      "p_holm": null,
+      "rb": null
+     },
      "PSOC": {
       "mean": 729188.510003859,
       "best": 787988.7163865846,
@@ -2492,9 +2543,9 @@
       "loss_pct": 30.977862778586243,
       "feasible": 27,
       "runs": 30,
-      "rank": 2.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 3.0,
+      "p_holm": 0.0008494872599840164,
+      "rb": 0.7419354838709677
      },
      "SSABV": {
       "mean": 728870.2783577497,
@@ -2503,9 +2554,9 @@
       "loss_pct": 31.00798534366318,
       "feasible": 30,
       "runs": 30,
-      "rank": 3.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 4.0,
+      "p_holm": 0.24826892465353012,
+      "rb": 0.3247311827956989
      },
      "SSA": {
       "mean": 717258.4918506356,
@@ -2514,9 +2565,9 @@
       "loss_pct": 32.10711171590339,
       "feasible": 30,
       "runs": 30,
-      "rank": 4.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 5.0,
+      "p_holm": 0.0010251551866531372,
+      "rb": 0.7247311827956989
      },
      "LXSSA": {
       "mean": 709660.5231250295,
@@ -2525,9 +2576,9 @@
       "loss_pct": 32.82630576900227,
       "feasible": 30,
       "runs": 30,
-      "rank": 6.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 7.0,
+      "p_holm": 0.00047463923692703247,
+      "rb": 0.7720430107526882
      },
      "DE": {
       "mean": null,
@@ -2536,9 +2587,9 @@
       "loss_pct": null,
       "feasible": 0,
       "runs": 30,
-      "rank": 9.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 10.0,
+      "p_holm": 1.6763806343078613e-08,
+      "rb": 1.0
      },
      "BVNS": {
       "mean": 741565.5748306591,
@@ -2548,8 +2599,8 @@
       "feasible": 30,
       "runs": 30,
       "rank": 1.0,
-      "p_holm": null,
-      "rb": null
+      "p_holm": 0.40449450351297855,
+      "rb": -0.17849462365591398
      },
      "SLSQP": {
       "mean": 733342.0106963257,
@@ -2558,9 +2609,9 @@
       "loss_pct": 30.5847086204891,
       "feasible": 4,
       "runs": 30,
-      "rank": 8.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 9.0,
+      "p_holm": 1.4901161193847656e-07,
+      "rb": 0.978494623655914
      },
      "LXBV": {
       "mean": 715952.4870874742,
@@ -2569,9 +2620,9 @@
       "loss_pct": 32.23073302745461,
       "feasible": 29,
       "runs": 30,
-      "rank": 5.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 6.0,
+      "p_holm": 0.001999659463763237,
+      "rb": 0.6817204301075269
      },
      "RSVNS": {
       "mean": 709276.4745766707,
@@ -2580,12 +2631,23 @@
       "loss_pct": 32.86265830506233,
       "feasible": 28,
       "runs": 30,
-      "rank": 7.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 8.0,
+      "p_holm": 3.601238131523132e-05,
+      "rb": 0.8623655913978494
      }
     },
     "30030": {
+     "PSOBV": {
+      "mean": 807445.9524939018,
+      "best": 827384.9842852866,
+      "sd": 11696.504851952699,
+      "loss_pct": 23.570318830703613,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 1.0,
+      "p_holm": null,
+      "rb": null
+     },
      "PSOC": {
       "mean": 802252.3061241572,
       "best": 830256.3957545691,
@@ -2593,9 +2655,9 @@
       "loss_pct": 24.06192911733596,
       "feasible": 30,
       "runs": 30,
-      "rank": 1.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 2.0,
+      "p_holm": 4.873424768447876e-05,
+      "rb": 0.8365591397849462
      },
      "SSABV": {
       "mean": 791404.3693369811,
@@ -2604,9 +2666,9 @@
       "loss_pct": 25.088752457557995,
       "feasible": 30,
       "runs": 30,
-      "rank": 3.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 4.0,
+      "p_holm": 0.00041825324296951294,
+      "rb": 0.7333333333333333
      },
      "SSA": {
       "mean": 771297.9714753184,
@@ -2615,9 +2677,9 @@
       "loss_pct": 26.99194557318824,
       "feasible": 30,
       "runs": 30,
-      "rank": 6.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 7.0,
+      "p_holm": 2.9802322387695312e-08,
+      "rb": 0.9956989247311828
      },
      "LXSSA": {
       "mean": 752030.2808691754,
@@ -2626,9 +2688,9 @@
       "loss_pct": 28.81574993476534,
       "feasible": 30,
       "runs": 30,
-      "rank": 7.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 8.0,
+      "p_holm": 2.9802322387695312e-08,
+      "rb": 0.9956989247311828
      },
      "DE": {
       "mean": null,
@@ -2637,9 +2699,9 @@
       "loss_pct": null,
       "feasible": 0,
       "runs": 30,
-      "rank": 9.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 10.0,
+      "p_holm": 1.6763806343078613e-08,
+      "rb": 1.0
      },
      "BVNS": {
       "mean": 801797.385491931,
@@ -2648,9 +2710,9 @@
       "loss_pct": 24.104990128133032,
       "feasible": 30,
       "runs": 30,
-      "rank": 2.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 3.0,
+      "p_holm": 0.11907656863331795,
+      "rb": 0.32903225806451614
      },
      "SLSQP": {
       "mean": 798912.9676158857,
@@ -2659,9 +2721,9 @@
       "loss_pct": 24.378017861994657,
       "feasible": 14,
       "runs": 30,
-      "rank": 8.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 9.0,
+      "p_holm": 0.00023731961846351624,
+      "rb": 0.7720430107526882
      },
      "LXBV": {
       "mean": 785676.5842831661,
@@ -2670,9 +2732,9 @@
       "loss_pct": 25.63092222646602,
       "feasible": 30,
       "runs": 30,
-      "rank": 5.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 6.0,
+      "p_holm": 1.1175870895385742e-07,
+      "rb": 0.978494623655914
      },
      "RSVNS": {
       "mean": 787892.2323030762,
@@ -2681,9 +2743,9 @@
       "loss_pct": 25.4211976359568,
       "feasible": 30,
       "runs": 30,
-      "rank": 4.0,
-      "p_holm": null,
-      "rb": null
+      "rank": 5.0,
+      "p_holm": 4.163011908531189e-06,
+      "rb": 0.9096774193548387
      }
     }
    },
@@ -2700,14 +2762,20 @@
     "our_best_method": "SLSQP",
     "our_best_budget": 30030,
     "our_best_seed": 17,
-    "focus_best": null,
-    "focus_best_budget": null,
-    "focus_mean_by_budget": {},
-    "focus_best_vs_best_feasible_pct": null,
-    "focus_best_vs_baseline_pct": null,
-    "focus_mean_vs_baseline_pct": {},
+    "focus_best": 827384.9842852866,
+    "focus_best_budget": 30030,
+    "focus_mean_by_budget": {
+     "6030": 736832.364516246,
+     "30030": 807445.9524939018
+    },
+    "focus_best_vs_best_feasible_pct": -4.2019579631033865,
+    "focus_best_vs_baseline_pct": 12.12954815688514,
+    "focus_mean_vs_baseline_pct": {
+     "6030": -0.14239843626663307,
+     "30030": 9.427354295601752
+    },
     "our_best_vs_best_feasible_pct": -3.509567289877369,
-    "focus_best_rank_among_feasible_published": null
+    "focus_best_rank_among_feasible_published": 7
    }
   }
  },
@@ -2959,10 +3027,46 @@
   },
   "methods": {
    "PSOBV": {
-    "16T_6030": null,
-    "16T_30030": null,
-    "36T_6030": null,
-    "36T_30030": null
+    "16T_6030": {
+     "best": 402782.4291323834,
+     "mean": 395031.81240277033,
+     "feasible": 30,
+     "runs": 30,
+     "best_rank_among_feasible_published": 6,
+     "mean_rank_among_feasible_published": 7,
+     "best_gap_to_best_feasible_published_pct": -3.8531957037005737,
+     "mean_gap_to_best_feasible_published_pct": -5.703318688168702
+    },
+    "16T_30030": {
+     "best": 413331.92694131937,
+     "mean": 402583.0584310474,
+     "feasible": 30,
+     "runs": 30,
+     "best_rank_among_feasible_published": 3,
+     "mean_rank_among_feasible_published": 6,
+     "best_gap_to_best_feasible_published_pct": -1.3349614712767077,
+     "mean_gap_to_best_feasible_published_pct": -3.9007867961051157
+    },
+    "36T_6030": {
+     "best": 787708.9489546629,
+     "mean": 736832.364516246,
+     "feasible": 30,
+     "runs": 30,
+     "best_rank_among_feasible_published": 8,
+     "mean_rank_among_feasible_published": 9,
+     "best_gap_to_best_feasible_published_pct": -8.795812786011226,
+     "mean_gap_to_best_feasible_published_pct": -14.686513327229456
+    },
+    "36T_30030": {
+     "best": 827384.9842852866,
+     "mean": 807445.9524939017,
+     "feasible": 30,
+     "runs": 30,
+     "best_rank_among_feasible_published": 7,
+     "mean_rank_among_feasible_published": 8,
+     "best_gap_to_best_feasible_published_pct": -4.2019579631033865,
+     "mean_gap_to_best_feasible_published_pct": -6.510581206219301
+    }
    },
    "PSOC": {
     "16T_6030": {
@@ -3753,20 +3857,232 @@
   },
   "iea37": {
    "16T_6030": {
-    "available": false,
-    "note": "no PSO-VNS runs (iea16p missing)"
+    "available": true,
+    "turbines": 16,
+    "budget": 6030,
+    "mean_aep": {
+     "PSOBV": 395031.81240277033,
+     "PSOC": 390540.193001406,
+     "SSABV": 388562.88495532266,
+     "SSA": 378073.07473884634,
+     "LXSSA": 373977.4234698049,
+     "DE": 338610.64550017193,
+     "BVNS": 387637.3168288761,
+     "SLSQP": 382605.21674562735
+    },
+    "best_aep": {
+     "PSOBV": 402782.4291323834,
+     "PSOC": 403753.1204405673,
+     "SSABV": 403251.2806650896,
+     "SSA": 395150.1783001281,
+     "LXSSA": 393284.6189082105,
+     "DE": 357391.29720728577,
+     "BVNS": 400169.3478769021,
+     "SLSQP": 405433.7619152996
+    },
+    "feasible": {
+     "PSOBV": "30/30",
+     "PSOC": "30/30",
+     "SSABV": "30/30",
+     "SSA": "30/30",
+     "LXSSA": "30/30",
+     "DE": "27/30",
+     "BVNS": "30/30",
+     "SLSQP": "18/30"
+    },
+    "rank": {
+     "PSOBV": 1.0,
+     "PSOC": 2.0,
+     "SSABV": 3.0,
+     "SSA": 6.0,
+     "LXSSA": 7.0,
+     "DE": 8.0,
+     "BVNS": 4.0,
+     "SLSQP": 5.0
+    },
+    "PSOC": {
+     "p_holm7": 4.76837158203125e-06,
+     "rb": 0.9010752688172043,
+     "outcome": "W",
+     "mean_aep_diff": 4491.619401364354
+    },
+    "SSABV": {
+     "p_holm7": 0.0003800932317972183,
+     "rb": 0.7075268817204301,
+     "outcome": "W",
+     "mean_aep_diff": 6468.92744744767
+    }
    },
    "16T_30030": {
-    "available": false,
-    "note": "no PSO-VNS runs (iea16p missing)"
+    "available": true,
+    "turbines": 16,
+    "budget": 30030,
+    "mean_aep": {
+     "PSOBV": 402583.0584310474,
+     "PSOC": 401347.03769496345,
+     "SSABV": 396920.50731957733,
+     "SSA": 392875.5815886986,
+     "LXSSA": 390267.4290817604,
+     "DE": 359952.2773781028,
+     "BVNS": 396192.02182935644,
+     "SLSQP": 394566.9974249723
+    },
+    "best_aep": {
+     "PSOBV": 413331.92694131937,
+     "PSOC": 412702.3623602993,
+     "SSABV": 406924.6156586627,
+     "SSA": 401459.3061250835,
+     "LXSSA": 398770.03924694005,
+     "DE": 397402.6884564366,
+     "BVNS": 404075.96857530274,
+     "SLSQP": 410349.5318614801
+    },
+    "feasible": {
+     "PSOBV": "30/30",
+     "PSOC": "30/30",
+     "SSABV": "30/30",
+     "SSA": "30/30",
+     "LXSSA": "30/30",
+     "DE": "30/30",
+     "BVNS": "30/30",
+     "SLSQP": "29/30"
+    },
+    "rank": {
+     "PSOBV": 1.0,
+     "PSOC": 2.0,
+     "SSABV": 3.0,
+     "SSA": 6.0,
+     "LXSSA": 7.0,
+     "DE": 8.0,
+     "BVNS": 4.0,
+     "SLSQP": 5.0
+    },
+    "PSOC": {
+     "p_holm7": 0.0037280134856700897,
+     "rb": 0.6301075268817204,
+     "outcome": "W",
+     "mean_aep_diff": 1236.0207360839704
+    },
+    "SSABV": {
+     "p_holm7": 0.00033174455165863037,
+     "rb": 0.7591397849462366,
+     "outcome": "W",
+     "mean_aep_diff": 5662.551111470093
+    }
    },
    "36T_6030": {
-    "available": false,
-    "note": "no PSO-VNS runs (iea36p missing)"
+    "available": true,
+    "turbines": 36,
+    "budget": 6030,
+    "mean_aep": {
+     "PSOBV": 736832.364516246,
+     "PSOC": 729188.510003859,
+     "SSABV": 728870.2783577497,
+     "SSA": 717258.4918506356,
+     "LXSSA": 709660.5231250295,
+     "DE": null,
+     "BVNS": 741565.5748306591,
+     "SLSQP": 733342.0106963257
+    },
+    "best_aep": {
+     "PSOBV": 787708.9489546629,
+     "PSOC": 787988.7163865846,
+     "SSABV": 766803.3486954567,
+     "SSA": 750707.4195473929,
+     "LXSSA": 746301.3170305056,
+     "DE": null,
+     "BVNS": 785791.3193049263,
+     "SLSQP": 748571.1083792468
+    },
+    "feasible": {
+     "PSOBV": "30/30",
+     "PSOC": "27/30",
+     "SSABV": "30/30",
+     "SSA": "30/30",
+     "LXSSA": "30/30",
+     "DE": "0/30",
+     "BVNS": "30/30",
+     "SLSQP": "4/30"
+    },
+    "rank": {
+     "PSOBV": 2.0,
+     "PSOC": 3.0,
+     "SSABV": 4.0,
+     "SSA": 5.0,
+     "LXSSA": 6.0,
+     "DE": 8.0,
+     "BVNS": 1.0,
+     "SLSQP": 7.0
+    },
+    "PSOC": {
+     "p_holm7": 0.0006795898079872131,
+     "rb": 0.7419354838709677,
+     "outcome": "W",
+     "mean_aep_diff": 7643.854512387072
+    },
+    "SSABV": {
+     "p_holm7": 0.24826892465353012,
+     "rb": 0.3247311827956989,
+     "outcome": "T",
+     "mean_aep_diff": 7962.086158496328
+    }
    },
    "36T_30030": {
-    "available": false,
-    "note": "no PSO-VNS runs (iea36p missing)"
+    "available": true,
+    "turbines": 36,
+    "budget": 30030,
+    "mean_aep": {
+     "PSOBV": 807445.9524939018,
+     "PSOC": 802252.3061241572,
+     "SSABV": 791404.3693369811,
+     "SSA": 771297.9714753184,
+     "LXSSA": 752030.2808691754,
+     "DE": null,
+     "BVNS": 801797.385491931,
+     "SLSQP": 798912.9676158857
+    },
+    "best_aep": {
+     "PSOBV": 827384.9842852866,
+     "PSOC": 830256.3957545691,
+     "SSABV": 819930.5255537059,
+     "SSA": 802538.196810158,
+     "LXSSA": 789311.2544118783,
+     "DE": null,
+     "BVNS": 824230.1875047459,
+     "SLSQP": 833364.9984286419
+    },
+    "feasible": {
+     "PSOBV": "30/30",
+     "PSOC": "30/30",
+     "SSABV": "30/30",
+     "SSA": "30/30",
+     "LXSSA": "30/30",
+     "DE": "0/30",
+     "BVNS": "30/30",
+     "SLSQP": "14/30"
+    },
+    "rank": {
+     "PSOBV": 1.0,
+     "PSOC": 2.0,
+     "SSABV": 4.0,
+     "SSA": 5.0,
+     "LXSSA": 6.0,
+     "DE": 8.0,
+     "BVNS": 3.0,
+     "SLSQP": 7.0
+    },
+    "PSOC": {
+     "p_holm7": 4.873424768447876e-05,
+     "rb": 0.8365591397849462,
+     "outcome": "W",
+     "mean_aep_diff": 5193.646369744674
+    },
+    "SSABV": {
+     "p_holm7": 0.00041825324296951294,
+     "rb": 0.7333333333333333,
+     "outcome": "W",
+     "mean_aep_diff": 16041.583156920737
+    }
    }
   },
   "printed": [
@@ -3789,10 +4105,10 @@
    "      vs PSO      case-mean Wilcoxon p=0.078 (Holm7 0.234) r_rb=+0.79  mean dL=-0.160 pp  lower-loss cases 6 vs 1  run-level W/T/L 0/7/0",
    "      vs SSA-VNS  case-mean Wilcoxon p=0.047 (Holm7 0.188) r_rb=+0.86  mean dL=-0.083 pp  lower-loss cases 6 vs 1  run-level W/T/L 0/7/0",
    "      HR16 mean AEP (GWh/yr): PSO-VNS 139.71 (7/7), PSO 139.31 (2/2), SSA-VNS 139.59 (3/3)",
-   "  IEA37 16T_6030             n/a (no PSO-VNS runs (iea16p missing))",
-   "  IEA37 16T_30030            n/a (no PSO-VNS runs (iea16p missing))",
-   "  IEA37 36T_6030             n/a (no PSO-VNS runs (iea36p missing))",
-   "  IEA37 36T_30030            n/a (no PSO-VNS runs (iea36p missing))"
+   "  IEA37 16T   6,030   mean AEP (MWh): PSO-VNS 395,032 [rank 1, 30/30], PSO 390,540 [rank 2, 30/30], SSA-VNS 388,563 [rank 3, 30/30]; vs PSO: dAEP +4,492, p_Holm7 4.8e-06, W; vs SSA-VNS: dAEP +6,469, p_Holm7 3.8e-04, W",
+   "  IEA37 16T  30,030   mean AEP (MWh): PSO-VNS 402,583 [rank 1, 30/30], PSO 401,347 [rank 2, 30/30], SSA-VNS 396,921 [rank 3, 30/30]; vs PSO: dAEP +1,236, p_Holm7 0.004, W; vs SSA-VNS: dAEP +5,663, p_Holm7 3.3e-04, W",
+   "  IEA37 36T   6,030   mean AEP (MWh): PSO-VNS 736,832 [rank 2, 30/30], PSO 729,189 [rank 3, 27/30], SSA-VNS 728,870 [rank 4, 30/30]; vs PSO: dAEP +7,644, p_Holm7 6.8e-04, W; vs SSA-VNS: dAEP +7,962, p_Holm7 0.248, T",
+   "  IEA37 36T  30,030   mean AEP (MWh): PSO-VNS 807,446 [rank 1, 30/30], PSO 802,252 [rank 2, 30/30], SSA-VNS 791,404 [rank 4, 30/30]; vs PSO: dAEP +5,194, p_Holm7 4.9e-05, W; vs SSA-VNS: dAEP +16,042, p_Holm7 4.2e-04, W"
   ]
  },
  "tables": [
@@ -3846,8 +4162,8 @@
   "  mpce_feasp           complete                                      shards=   1/1 rows=   210  methods=PSOBV",
   "  mpce_b30kp           complete                                      shards=   1/1 rows=   210  methods=PSOBV",
   "  mpce_b120kp          PARTIAL (used, --partial)                     shards=   3/4 rows=   142  methods=PSOBV",
-  "  mpce_iea16p          missing                                       shards=     0 rows=     0",
-  "  mpce_iea36p          missing                                       shards=     0 rows=     0",
+  "  mpce_iea16p          complete                                      shards=   1/1 rows=    60  methods=PSOBV",
+  "  mpce_iea36p          complete                                      shards=   1/1 rows=    60  methods=PSOBV",
   "  FALLBACK: SLSQP (68 cases): mpce_slsqp missing -> using the old-platform SLSQP runs of fresh_grid.csv",
   "  FALLBACK: SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (no rerun planned)",
   "  FOCUS (proposed method): PSOBV = PSO-VNS",
@@ -3887,8 +4203,8 @@
   "  budget 120030: avg ranks PSO-VNS 2.71, DE 3.43, RS-VNS 4.00, PSO 4.43, SSA-VNS 4.71, LX-SSA-VNS 4.71, VNS 5.00, MS-SLSQP 7.14, SSA 8.86, LX-SSA 10.00",
   "\n[7] IEA37 Case Study 1 (16- and 36-turbine scenarios)",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
-  "  IEA37 CS1, 16 turbines: PSO-VNS best nan, best feasible published 418924.4 (par4), baseline 366941.6",
-  "  IEA37 CS1, 36 turbines: PSO-VNS best nan, best feasible published 863676.3 (par4), baseline 737883.1",
+  "  IEA37 CS1, 16 turbines: PSO-VNS best 413331.9, best feasible published 418924.4 (par4), baseline 366941.6",
+  "  IEA37 CS1, 36 turbines: PSO-VNS best 827385.0, best feasible published 863676.3 (par4), baseline 737883.1",
   "\n[8] Robustness re-evaluation",
   "  robustness: 15612 layouts (0 newly evaluated, cache 18305)",
   "  re-evaluation of the rounded coordinates vs recorded objective: {'median_rel_dev': 1.1365582723224955e-09, 'max_rel_dev': 0.00942228678398459, 'n_rel_dev_above_1e_4': 432, 'n_layouts': 15612}",

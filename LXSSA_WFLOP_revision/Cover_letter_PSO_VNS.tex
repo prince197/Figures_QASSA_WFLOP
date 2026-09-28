@@ -1,0 +1,37 @@
+\documentclass[11pt]{letter}
+\usepackage[a4paper,top=0.7in,bottom=0.7in,left=0.9in,right=0.9in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{enumitem}
+% Visible placeholder for information the authors still have to supply
+\newcommand{\TBD}[1]{\textcolor{red}{[TBD: #1]}}
+\setlength{\parskip}{0.35em}
+\longindentation=0pt
+\indentedwidth=\textwidth
+\signature{Prince Solanki \TBD{confirm corresponding author}, on behalf of all authors\\
+Department of Mathematics, School of Sciences, IILM University, Greater Noida, Uttar Pradesh, India; prince@iilm.edu}
+\address{}
+\date{\TBD{date of submission}}
+\begin{document}
+\pagestyle{empty}
+\begin{letter}{The Editor-in-Chief\\Journal of Modern Power Systems and Clean Energy}
+\vspace{-3em}
+\opening{Dear Editor-in-Chief,}
+
+We submit the manuscript \textit{``A Two-Phase Particle Swarm and Variable Neighborhood Search Algorithm for Continuous Wind Farm Layout Optimization''} by Prince Solanki, Pulkit Dwivedi, Vanita Garg and Vinay Shukla for consideration as a regular paper in the \textit{Journal of Modern Power Systems and Clean Energy}.
+
+\textbf{Disclosure of an earlier submission.} A related manuscript by the same authors, \textit{``A Hybrid Laplacian Salp Swarm and Variable Neighborhood Search Algorithm for Continuous Wind Farm Layout Optimization''} (Manuscript ID \TBD{ID of the earlier MPCE submission}; decision: \TBD{e.g., rejected}), was previously submitted to the journal. The present manuscript is a new paper with a different proposed method. It takes all 22 comments of the three earlier reviewers into account; a point-by-point mapping is attached.
+
+\textbf{How the earlier review shaped this paper.} The reviewers asked for equal-budget comparisons with stronger baselines and proper statistics, for an ablation that isolates the Laplace mechanism of the salp swarm method, for a real site, and for tests of the power-curve, wake-model and $4D$-spacing assumptions. In answering the first two, we found that the earlier PSO baseline ($w=0.7$, $c_1=c_2=2$) lies outside the convergence region of PSO. With the Clerc--Kennedy constriction coefficients, plain PSO outperformed the salp swarm methods and our SSA-VNS hybrid, the Laplace step gave no gain, and the salp swarm phase gave the VNS no better start than random multistart. As neither was the source of the gain, the proposed PSO-VNS replaces the salp swarm phase by constriction PSO for half of the budget, followed by the basic VNS.
+
+\textbf{New in this submission} relative to the earlier one: a correctly configured PSO baseline; a component ablation with a random-multistart control (RS-VNS) and a Laplace-step check; feasibility-preserving initialization; budgets of up to 120,030 objective calls; IEA Wind Task~37 Case Study~1 (16 and 36 turbines) with a comparison to the published layouts; a Horns Rev~1 site case; robustness to the power-curve and wake-model choices; and openly available code and per-run data.
+
+\textbf{Main findings.} On 68 benchmark cases (30 seed-paired runs, equal budgets), PSO-VNS is feasible in every run and at least as good as the correctly configured PSO (significantly better in 14 cases, worse in 4; mean wake loss 1.322\% vs.\ 1.341\%, not significant over all cases), with its gain concentrated on the larger farms (9 wins and 2 losses for 10 or more turbines). It is never worse than SSA-VNS and outperforms the other references. On a Horns Rev~1 16-turbine block, its best layout yields 140.39~GWh/yr against 139.51~GWh/yr for the installed layout. We state openly that the gain over PSO is modest and that PSO ranks slightly ahead of PSO-VNS when the layouts are re-evaluated with a Gaussian wake model.
+
+The manuscript is original, not published and not under consideration elsewhere; all authors approved its submission and declare no competing interests. Code and data: \TBD{Zenodo DOI}.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}

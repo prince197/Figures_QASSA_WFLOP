@@ -33,7 +33,10 @@ Outputs (in --out-dir, default: this folder)
   mpce_tab_<name>.tex (one table per file, ready to \\input), mpce_supplementary.tex (per-case
   tables), mpce_summary.json (every number quoted in the text), mpce_case_stats.csv,
   mpce_case_tests.csv, mpce_ablation_tests.csv, mpce_best_layouts_maxN.csv; figures (pdf + png)
-  in --fig-dir (default ../figures_mpce).
+  in --fig-dir (default ../figures_mpce). At the end, mpce_numbers.py writes mpce_numbers.tex (the "N..." macros
+  of the manuscript) and mpce_check_final.py prints PASS / FAIL of its CHECK-FINAL statements. The main-text
+  tables (mpce_tab_*.tex) follow the layout of MPCE_PSO_VNS.tex; everything else goes to mpce_supplementary.tex
+  (input by MPCE_PSO_VNS_supplement.tex). Full rebuild incl. LaTeX: sh build_mpce_paper.sh [--partial].
 
 Ranking rule (survivorship-bias correction; used for every case-level ranking below).
   Ranking methods by the mean objective of their *feasible* runs rewards a method that is
