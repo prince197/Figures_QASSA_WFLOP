@@ -36,7 +36,7 @@
 \maketitle
 
 \begin{abstract}
-The wind farm layout optimization problem (WFLOP) asks where a prescribed number of turbines should be placed to minimize wake losses while every turbine stays inside the site and keeps a minimum distance from the others. This paper proposes PSO-VNS, a two-phase algorithm for the continuous WFLOP. Particle swarm optimization (PSO) with the constriction coefficients of Clerc and Kennedy explores the layout space for the first half of the evaluation budget, and the basic variable neighborhood search (VNS) then refines the global best layout of the swarm. Both phases minimize one penalized objective based on the Jensen wake model and direction-dependent Weibull wind data. PSO-VNS is compared with PSO, a salp swarm variant of the same design (SSA-VNS), the salp swarm algorithm (SSA), the Laplacian SSA (LX-SSA), differential evolution, VNS and a multistart SLSQP solver on 68 benchmark cases, with 30 seed-paired runs of 6,030 objective evaluations per method and case. PSO-VNS obtains the best average rank (\TBD{avg.\ rank}) and \TBD{summary of Holm--Wilcoxon outcome and feasibility rate}. The ablation shows that \TBD{contribution of the VNS phase and of the swarm start, incl.\ vs.\ random multistart}, that SSA and LX-SSA are weaker first phases than a convergent PSO, and that the Laplace step of LX-SSA gives no gain. We also find that the widely used PSO setting $w=0.7$, $c_1=c_2=2$, which lies outside the convergence region of PSO, understates PSO as a baseline. Tests with feasibility-preserving initialization, budgets of up to 120,030 evaluations, a Horns Rev~1 block and IEA Wind Task~37 Case Study~1 show \TBD{one-sentence summary}.
+The wind farm layout optimization problem (WFLOP) places a prescribed number of turbines to minimize wake losses subject to boundary and minimum-spacing constraints. This paper proposes PSO-VNS, a two-phase algorithm for the continuous WFLOP: particle swarm optimization (PSO) with the constriction coefficients of Clerc and Kennedy explores the layout space for the first half of the evaluation budget, and the basic variable neighborhood search (VNS) then refines the global best layout. Both phases minimize one penalized objective based on the Jensen wake model and Weibull wind data. On 68 benchmark cases with 30 seed-paired runs of 6,030 evaluations, PSO-VNS returns a feasible layout in every run and \TBD{obtains the best average rank}. It is at least as good as a correctly configured PSO and better on larger farms (14 significant wins and 4 losses; 9 wins and 2 losses for 10 or more turbines), and it clearly outperforms a salp swarm variant of the same design (SSA-VNS; 50 wins, no loss), the salp swarm algorithm (SSA), the Laplacian SSA, differential evolution, VNS and multistart SLSQP \TBD{confirm}. The ablation shows that salp swarms are weaker first phases than a convergent PSO and that the Laplace step gives no gain. We also find that the widely used PSO setting $w=0.7$, $c_1=c_2=2$ lies outside the convergence region of PSO and understates it as a baseline. On a Horns Rev~1 block, the best PSO-VNS layout exceeds the energy production of the installed layout; tests with feasibility-preserving initialization, larger budgets and IEA Wind Task~37 Case Study~1 show \TBD{one-sentence summary}.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -45,7 +45,7 @@ Wind farm layout optimization, particle swarm optimization, constriction coeffic
 
 \section*{Nomenclature}
 \addcontentsline{toc}{section}{Nomenclature}
-\begin{IEEEdescription}[\IEEEusemathlabelsep\IEEEsetlabelwidth{$\xi_1,\xi_2,\xi_3$}]
+\begin{IEEEdescription}[\IEEEusemathlabelsep\IEEEsetlabelwidth{$\Delta_{ij}$, $\Delta_i$}]
 \item[$B$] Budget (number of objective calls).
 \item[$c_1$, $c_2$] Cognitive and social acceleration coefficients of PSO.
 \item[$C_T$] Thrust coefficient.
@@ -54,10 +54,9 @@ Wind farm layout optimization, particle swarm optimization, constriction coeffic
 \item[$\Delta_{ij}$, $\Delta_i$] Velocity deficit at turbine $i$ due to turbine $j$; combined deficit at turbine $i$.
 \item[$E(P_i)$] Expected power of turbine $i$ (benchmark units).
 \item[$F_p$] Penalized wake loss (minimized).
-\item[$f(s)$] Power curve.
 \item[$\mathbf G$, $\mathbf P^i$] Global best and personal best of particle $i$ (PSO).
 \item[$\mathbf H$] Food source (best layout of the salp swarm).
-\item[$K$, $K_{\rm G}$] Jensen wake-spreading constant; growth rate of the Gaussian wake.
+\item[$K$] Jensen wake-spreading constant.
 \item[$k$, $k_{\max}$] Index and number of VNS neighborhoods.
 \item[$\ell_{ij}$, $\ell_{\min}$] Distance between turbines $i$ and $j$; minimum spacing.
 \item[$N$, $N_p$] Number of turbines; population size.
@@ -68,17 +67,11 @@ Wind farm layout optimization, particle swarm optimization, constriction coeffic
 \item[$t$, $T$, $T_1$] Iteration counter, number of swarm iterations, and number of swarm iterations in Phase~1.
 \item[$\mathbf V^i$] Velocity of particle $i$.
 \item[$w$] Inertia weight of PSO.
-\item[$\mathbf X$] Layout vector $(x_1,y_1,\ldots,x_N,y_N)\in\mathbb R^{2N}$.
-\item[$x_i$, $y_i$] Coordinates of turbine $i$.
+\item[$\mathbf X$] Layout vector $(x_1,y_1,\ldots,x_N,y_N)\in\mathbb R^{2N}$ with turbine coordinates $(x_i,y_i)$.
 \item[$\alpha$, $\beta_{ij}$] Half-cone angle of the wake; wake angle of turbine $i$ with respect to turbine $j$.
-\item[$\delta_k$] Outer radius of the $k$th VNS neighborhood.
 \item[$\zeta$, $\psi$] Weibull shape and scale parameters.
 \item[$\theta$] Wind direction (direction the wind blows towards, counter-clockwise from east).
-\item[$\lambda_1$, $\lambda_0$] Slope and intercept of the linear power curve.
 \item[$\mu$] Penalty factor.
-\item[$\boldsymbol\rho_1$, $\boldsymbol\rho_2$] Vectors of uniform random numbers in the PSO update.
-\item[$\phi$, $\chi$] Location and scale of the Laplace step (LX-SSA).
-\item[$\xi_1,\xi_2,\xi_3$] SSA leader coefficient and uniform random numbers.
 \item[$\omega$] Fraction of the budget given to Phase~1.
 \end{IEEEdescription}
 
@@ -86,13 +79,13 @@ Wind farm layout optimization, particle swarm optimization, constriction coeffic
 
 Wind energy has become one of the main sources of low-carbon electricity, and the placement of the turbines, fixed at the planning stage, has a lasting effect on the energy a farm delivers. The wind farm layout optimization problem (WFLOP) addresses this decision. An upstream turbine leaves behind a wake of slower and more turbulent air that reduces the power of the turbines downstream; the wake recovers with distance, but the site is limited and the turbines must keep a minimum distance from each other. The objective is nonlinear, the wakes couple the positions of all turbines, and the feasible region is bounded by many nonconvex spacing constraints, which has made WFLOP a popular test bed for metaheuristics.
 
-Early studies placed turbines on a grid with genetic algorithms (GAs)~\cite{Mosetti1994,Grady2005}. Kusiak and Song~\cite{Kusiak2010} introduced the continuous, wind-distribution-based model that we also use, and it has since been solved with ant colony optimization and particle filtering~\cite{Eroglu2012,Eroglu2013} and with biogeography-based optimization~\cite{Bansal2017}. GA, particle swarm optimization (PSO), differential evolution (DE) and simulated annealing were compared for offshore layouts in~\cite{Elkinton2008}, PSO has been applied to reduce wake losses~\cite{Asaah2021}, and related design problems such as the collector system and the electrical layout of offshore farms have been reviewed and optimized in this journal~\cite{Srikakulapu2018,Hou2019}. Later work combined GAs with problem-specific information~\cite{Ju2019} or Monte Carlo tree search~\cite{Bai2022}, refined GA layouts with deterministic local methods~\cite{Nagpal2021}, developed a variable neighborhood search (VNS) heuristic for large offshore farms~\cite{Cazzaro2022}, and introduced pseudo-gradients~\cite{Quaeghebeur2021}, Gaussian wake models~\cite{Tao2020} and data-driven or CFD-based surrogates~\cite{Yang2023,Wang2024,Li2025}. The IEA Wind Task~37 case study~\cite{Baker2019} showed that, even with a common wake model, different optimizers reach clearly different layouts.
+Early studies placed turbines on a grid with genetic algorithms (GAs)~\cite{Mosetti1994,Grady2005}. Kusiak and Song~\cite{Kusiak2010} introduced the continuous, wind-distribution-based model that we also use, and it has since been solved with ant colony optimization and particle filtering~\cite{Eroglu2012,Eroglu2013} and with biogeography-based optimization~\cite{Bansal2017}. GA, particle swarm optimization (PSO), differential evolution (DE) and simulated annealing were compared in~\cite{Elkinton2008}, PSO has been applied to reduce wake losses~\cite{Asaah2021}, and the collector and electrical systems of offshore farms have been optimized and reviewed in~\cite{Srikakulapu2018,Hou2019}. Later work used informed GAs~\cite{Ju2019,Bai2022}, deterministic refinement~\cite{Nagpal2021}, variable neighborhood search (VNS) for large offshore farms~\cite{Cazzaro2022}, pseudo-gradients~\cite{Quaeghebeur2021}, Gaussian wake models~\cite{Tao2020} and surrogates~\cite{Yang2023,Wang2024,Li2025}. The IEA Wind Task~37 case study~\cite{Baker2019} showed that, even with a common wake model, different optimizers reach clearly different layouts.
 
 Many of these studies propose a new or modified metaheuristic and compare it with reference methods, among which PSO is one of the most common. Such comparisons are only as informative as the configuration of the references. PSO converges only if its inertia weight $w$ and acceleration coefficients $c_1$, $c_2$ lie in a known region~\cite{Clerc2002,Poli2009}, and the setting $w=0.7$, $c_1=c_2=2$, which is frequently used for PSO baselines and was used in the earlier version of this study, lies outside it. With the constriction coefficients of Clerc and Kennedy~\cite{Clerc2002}, plain PSO outperforms the salp swarm algorithm (SSA)~\cite{Mirjalili2017}, the Laplacian SSA (LX-SSA)~\cite{Solanki2023} proposed earlier by two of the authors, and an SSA-VNS hybrid that we first developed (Section~\ref{sec:results}). A baseline outside its convergence region can therefore make a new method look stronger than it is; we report this as a finding about the configuration of baselines, not about any particular study.
 
 Swarms and trajectory methods complement each other. Once a swarm has contracted around its best layout, the remaining evaluations bring small gains, because the final refinement requires coordinated moves of single turbines along the spacing constraints, whereas VNS~\cite{Mladenovic1997,Hansen2001} refines one layout efficiently but depends on where it starts. A swarm-then-VNS design helps only if the swarm provides a better start than cheaper alternatives, and SSA did not: SSA-VNS was statistically tied with a control that spends the same evaluations on random layouts (Section~\ref{sec:ablation}). A convergent PSO, which contracts around a good region within its share of the budget, is the natural alternative.
 
-We therefore propose PSO-VNS: PSO with constriction coefficients explores the layout space for the first half of the budget, and the basic VNS refines the global best layout of the swarm. Both components are standard; the contribution lies in their combination for the constrained WFLOP and in a controlled evaluation of which ingredients matter. We keep the Jensen wake model, Weibull wind data and the Kusiak--Song power model for comparability with the literature and examine these choices separately. Our contributions are as follows:
+We therefore propose PSO-VNS: PSO with constriction coefficients explores the layout space for the first half of the budget, and the basic VNS refines the global best layout of the swarm. Both components are standard, and the gain over a well-configured PSO is modest; the contribution lies in their combination for the constrained WFLOP, in a controlled evaluation of which ingredients matter, and in the finding on the configuration of PSO baselines. We keep the Jensen wake model, Weibull wind data and the Kusiak--Song power model for comparability with the literature and examine these choices separately. Our contributions are as follows:
 \begin{enumerate}
 \item We propose PSO-VNS, a two-phase algorithm for the continuous WFLOP with explicit boundary and minimum-spacing constraints, in which a convergent PSO and the basic VNS share one penalized objective (Section~\ref{sec:hybrid}).
 \item We compare PSO-VNS with PSO, SSA-VNS, SSA, LX-SSA, DE, VNS and a gradient-based multistart SLSQP solver on 68 benchmark cases at equal numbers of objective evaluations with 30 seed-paired runs, and isolate in an ablation the VNS phase, the value of the swarm start (against VNS alone and a random-multistart control), the choice of the first-phase swarm and the Laplace step of LX-SSA (Sections~\ref{sec:results} and~\ref{sec:ablation}).
@@ -105,14 +98,7 @@ Section~\ref{sec:model} describes the model, Section~\ref{sec:prelim} the swarm 
 \section{Problem Modeling}
 \label{sec:model}
 
-We use the following definitions and assumptions.
-\begin{enumerate}
-    \item \textbf{Turbines and layout:} The number of turbines $N$ is prescribed in every run, and only the $2N$ coordinates $(x_i,y_i)$, measured from the center of the farm, are optimized; results for several $N$ form a sweep, and $N$ is not optimized. All turbines are identical.
-    \item \textbf{Wind:} For a wind direction $\theta$, the wind speed $s$ follows a Weibull distribution with density
-    $p_s(s;\zeta,\psi)=(\zeta/\psi)(s/\psi)^{\zeta-1}\exp[-(s/\psi)^\zeta]$, whose shape $\zeta=\zeta(\theta)$ and scale $\psi=\psi(\theta)$ depend on the direction. Throughout the paper, $\theta$ is the direction \emph{towards} which the wind blows, measured counter-clockwise from east, so that turbine $i$ lies downstream of turbine $j$ when $(x_i-x_j)\cos\theta+(y_i-y_j)\sin\theta>0$. Meteorological directions $\varphi$ (the direction the wind comes \emph{from}, clockwise from north), as given for Horns Rev~1 and IEA37, are converted by $\theta=270^\circ-\varphi$.
-    \item \textbf{Constraints:} Any two turbines must be at least $\ell_{\min}=4D=8R$ apart, $\ell_{ij}=\sqrt{(x_i - x_j)^2 + (y_i - y_j)^2} \geq \ell_{\min}$, the value of the benchmark studies~\cite{Kusiak2010,Bansal2017} (Section~\ref{sec:spacing} studies $5D$ and $6D$). The farm is circular~\cite{Kusiak2010,Bansal2017}, $x_i^2+y_i^2\le r^2$, with $r=500$, 750 and 1000~m, and the turbines are not restricted to a grid.
-    \item \textbf{Objective:} We use the Jensen wake model~\cite{Jensen1983,Katic1986} and the power model of~\cite{Kusiak2010}, and maximize the expected power of the farm, i.e., minimize the wake losses, subject to both constraints.
-\end{enumerate}
+The number of turbines $N$ is prescribed in every run, and only the $2N$ coordinates $(x_i,y_i)$ of the identical turbines, measured from the center of the farm, are optimized; results for several $N$ form a sweep. For a wind direction $\theta$, the wind speed $s$ follows a Weibull distribution with density $p_s(s;\zeta,\psi)=(\zeta/\psi)(s/\psi)^{\zeta-1}\exp[-(s/\psi)^\zeta]$, whose shape $\zeta(\theta)$ and scale $\psi(\theta)$ depend on the direction. Throughout the paper, $\theta$ is the direction \emph{towards} which the wind blows, counter-clockwise from east; meteorological directions $\varphi$ (wind \emph{from}, clockwise from north), as given for Horns Rev~1 and IEA37, are converted by $\theta=270^\circ-\varphi$. Any two turbines must be at least $\ell_{\min}=4D=8R$ apart, $\ell_{ij}=\lVert(x_i-x_j,\,y_i-y_j)\rVert_2\ge\ell_{\min}$, as in the benchmark studies~\cite{Kusiak2010,Bansal2017} (Section~\ref{sec:spacing} discusses $5D$ and $6D$), and the farm is circular, $x_i^2+y_i^2\le r^2$, with $r=500$, 750 and 1000~m. We use the Jensen wake model~\cite{Jensen1983,Katic1986} and the power model of~\cite{Kusiak2010}, and maximize the expected power of the farm, i.e., minimize the wake losses, subject to both constraints.
 
 \subsection{Wake Effect Model}
 In the Jensen model~\cite{Jensen1983,Katic1986}, the wake behind a rotor expands linearly with the downstream distance. With the wake-spreading constant $K$, the thrust coefficient $C_T$ and the distance $d_{ij}$ of turbine $i$ behind turbine $j$, the velocity deficit is
@@ -120,13 +106,7 @@ In the Jensen model~\cite{Jensen1983,Katic1986}, the wake behind a rotor expands
     \Delta_{ij} = 1-\frac{s_{\text{down}}}{s_{\text{up}}}=\frac{1 - \sqrt{1 - C_T}}{\left(1 + K d_{ij}/R\right)^2}.
     \label{eq:deficit}
 \end{equation}
-The wake of turbine $j$ is a half cone with half-angle $\alpha=\arctan K$ whose virtual vertex lies $R/K$ upstream of the rotor. Turbine $i$ lies in it if the wake angle
-$\beta_{ij}=\cos^{-1}\!\bigl(u_{ij}/\sqrt{u_{ij}^2+v_{ij}^2}\bigr)$ satisfies $\beta_{ij}<\alpha$, where
-\begin{align*}
-u_{ij}&=(x_i - x_j)\cos\theta + (y_i - y_j)\sin\theta + R/K,\\
-v_{ij}&=-(x_i - x_j)\sin\theta + (y_i - y_j)\cos\theta ,
-\end{align*}
-$v_{ij}$ is the lateral offset from the wake axis and $d_{ij}=\lvert u_{ij}-R/K\rvert$. The deficits are combined by the root-sum-square rule,
+The wake of turbine $j$ is a half cone with half-angle $\alpha=\arctan K$ whose virtual vertex lies $R/K$ upstream of the rotor. Turbine $i$ lies in it if the wake angle $\beta_{ij}=\cos^{-1}\!\bigl(u_{ij}/\sqrt{u_{ij}^2+v_{ij}^2}\bigr)$ satisfies $\beta_{ij}<\alpha$, where $u_{ij}=(x_i - x_j)\cos\theta + (y_i - y_j)\sin\theta + R/K$, the lateral offset from the wake axis is $v_{ij}=-(x_i - x_j)\sin\theta + (y_i - y_j)\cos\theta$, and $d_{ij}=\lvert u_{ij}-R/K\rvert$. The deficits are combined by the root-sum-square rule,
 \begin{equation}\label{eq5}
 \Delta_i(\theta) = \Bigl( \textstyle\sum_{j \ne i,\ \beta_{ij} < \alpha} \Delta_{ij}^2 \Bigr)^{1/2} .
 \end{equation}
@@ -232,7 +212,7 @@ In the shaking step, a point is drawn uniformly from $\mathcal N_k(\mathbf X)$, 
         \State Evaluate $F_p(\mathbf X^i)$; update $\mathbf P^i$ and $\mathbf G$
     \EndFor
 \EndFor
-\State $\mathbf X\gets\textsc{LocalSearch}(\mathbf G)$; $k\gets1$ \Comment{Phase 2}
+\State $\mathbf X\gets\textsc{LocalSearch}(\mathbf G)$; $k\gets1$ \Comment{Phase 2; compass search}
 \While{fewer than $B$ objective calls have been used}
     \State $\mathbf X'\gets$ uniform random point of $\mathcal N_k(\mathbf X)$; box repair
     \State $\mathbf X'\gets\textsc{LocalSearch}(\mathbf X')$
@@ -243,20 +223,11 @@ In the shaking step, a point is drawn uniformly from $\mathcal N_k(\mathbf X)$, 
     \EndIf
 \EndWhile
 \State \Return best layout evaluated
-\Statex
-\Function{LocalSearch}{$\mathbf X'$} \Comment{compass search}
-    \State $h\gets0.05r$
-    \While{$h\ge10^{-3}r$}
-        \State $\mathbf X^\star\gets\arg\min F_p$ over the $2n$ points $\mathbf X'\pm h\,\mathbf e_m$ (box-repaired)
-        \If{$F_p(\mathbf X^\star)<F_p(\mathbf X')$} \State $\mathbf X'\gets \mathbf X^\star$ \Else \State $h\gets h/2$ \EndIf
-    \EndWhile
-    \State \Return $\mathbf X'$
-\EndFunction
 \end{algorithmic}
 \end{algorithm}
 
 \subsection{Parameters and Cost}
-PSO-VNS uses $N_p=30$, the coefficients \eqref{eq:constriction} and the VNS settings above, and it adds a single parameter, the split $\omega$. With the default $\omega=0.5$ and $B=6{,}030$, PSO runs for $T_1=100$ iterations and receives $30+100\times30=3{,}030$ calls, and VNS the remaining 3,000. None of these values was tuned for PSO-VNS; a study of the split (25\%, 50\% and 75\%) was carried out only for SSA-VNS and is reported in the supplementary material. The cost of both phases is dominated by the objective evaluations, so for a budget of $B$ calls PSO-VNS has the same $\mathcal O(B\,N^2N_\theta N_s)$ cost as the other methods; the PSO update, box repair, shaking and each compass move are $\mathcal O(N)$ and the spacing check $\mathcal O(N^2)$. Because the random-number generator is seeded once and Phase~1 draws the initial population first, PSO-VNS starts from the same initial population as all other methods for a given seed, which keeps the comparisons paired.
+PSO-VNS uses $N_p=30$, the coefficients \eqref{eq:constriction} and the VNS settings above, and it adds a single parameter, the split $\omega$. With the default $\omega=0.5$ and $B=6{,}030$, PSO runs for $T_1=100$ iterations and receives $30+100\times30=3{,}030$ calls, and VNS the remaining 3,000. None of these values was tuned; the effect of $\omega$ is studied in Section~\ref{sec:split}. The cost of both phases is dominated by the objective evaluations, so for a budget of $B$ calls PSO-VNS has the same $\mathcal O(B\,N^2N_\theta N_s)$ cost as the other methods; the PSO update, box repair, shaking and each compass move are $\mathcal O(N)$ and the spacing check $\mathcal O(N^2)$. Because the random-number generator is seeded once and Phase~1 draws the initial population first, PSO-VNS starts from the same initial population as all other methods for a given seed, which keeps the comparisons paired.
 
 \section{Experimental Setup}
 \label{sec:setup}
@@ -270,10 +241,9 @@ The main comparison includes PSO-VNS and seven reference methods, all evaluated 
 \item \emph{PSO-VNS} (proposed): Algorithm~\ref{alg:hybrid} with $\omega=0.5$, i.e., 100 PSO iterations (3,030 calls) followed by 3,000 calls of VNS.
 \item \emph{PSO}~\cite{Kennedy1995,Clerc2002}: the coefficients \eqref{eq:constriction} and 200 iterations. The setting $w=0.7$, $c_1=c_2=2$ of the earlier version of this study is discussed in Section~\ref{sec:psosetting}.
 \item \emph{SSA-VNS}: Algorithm~\ref{alg:hybrid} with SSA in Phase~1 (100 SSA iterations, 3,030 calls, $\xi_1$ decreasing over these 100 iterations).
-\item \emph{SSA}~\cite{Mirjalili2017}: 200 iterations; \emph{LX-SSA}~\cite{Solanki2023}: $\phi=0$, $\chi=1$ and 100 iterations.
-\item \emph{DE}~\cite{Storn1997}: DE/rand/1/bin with scale factor 0.5, crossover rate 0.9 and 200 iterations.
+\item \emph{SSA}~\cite{Mirjalili2017} (200 iterations), \emph{LX-SSA}~\cite{Solanki2023} ($\phi=0$, $\chi=1$, 100 iterations) and \emph{DE}~\cite{Storn1997} (DE/rand/1/bin, scale factor 0.5, crossover rate 0.9, 200 iterations).
 \item \emph{VNS}: Phase~2 of Algorithm~\ref{alg:hybrid}, started from the best member of the initial population.
-\item \emph{Multistart SLSQP (MS-SLSQP)}: the SLSQP solver of SciPy~\cite{Kraft1988} minimizes the wake loss with the spacing and boundary constraints imposed explicitly and forward-difference gradients (1-m step), starting from the members of the initial population in the order of their $F_p$ values and restarting until the budget is used up.
+\item \emph{Multistart SLSQP (MS-SLSQP)}: SciPy's SLSQP~\cite{Kraft1988} with explicit spacing and boundary constraints and forward-difference gradients (1-m step), started from the initial population in the order of the $F_p$ values and restarted until the budget is used up.
 \end{itemize}
 The ablation adds two variants. \emph{RS-VNS} is a random-multistart control: Phase~1 is replaced by pure random sampling with the same number of calls ($\operatorname{round}(\omega B)=3{,}015$ layouts, including the initial population), and the best sampled layout is refined by the same VNS. \emph{LX-SSA-VNS} uses LX-SSA in Phase~1 ($T_1=\operatorname{round}((\omega B-N_p)/(2N_p))=50$ iterations, 3,030 calls). SSA, LX-SSA, PSO and DE use the authors' original implementation, with the coefficients \eqref{eq:constriction} for PSO; VNS, RS-VNS, MS-SLSQP and the three hybrids were implemented for this study, and the hybrids call the original swarm code in Phase~1.
 
@@ -283,9 +253,9 @@ Every run of the main comparison has a budget of exactly 6,030 objective calls, 
 \label{sec:setup-beyond}
 \paragraph*{Initialization and budget} In the main comparison, the initial layouts are drawn uniformly in the bounding square and are usually infeasible. As an alternative, each initial layout is drawn inside the site and pushed apart by minimizing a smooth packing penalty with L-BFGS-B until the constraints hold, without objective calls. All ten methods (the eight of the main comparison, RS-VNS and LX-SSA-VNS) are run with this initialization at 6,030 calls, and with random initialization at 6,030, 30,030 and 120,030 calls, on the six largest cases (the largest $N$ of each farm and data set) and the Horns Rev~1 block, with 30 seeds (10 for Horns Rev~1 at 120,030 calls). All iteration counts scale with the budget; e.g., PSO-VNS uses 500 PSO iterations at 30,030 calls.
 
-\paragraph*{Horns Rev~1 16-turbine block} We use the Horns Rev~1 offshore site from PyWake~\cite{PyWake}: Vestas V80 turbines (rotor diameter 80~m, 2~MW) with tabulated power and thrust curves and a 25~m/s cut-out, the measured 12-sector wind climate, and the parallelogram spanned by the installed turbines as boundary. We use the Jensen wake with $K=0.04$, $5^\circ$ direction and 1~m/s speed bins (agreement with PyWake's Jensen model within 0.3\% in AEP), and optimize PyWake's 16-turbine example block with $4D$ (320~m) minimum spacing.
+\paragraph*{Horns Rev~1 16-turbine block} We use the Horns Rev~1 offshore site from PyWake~\cite{PyWake}: Vestas V80 turbines (rotor diameter 80~m, 2~MW) with tabulated power and thrust curves and a 25~m/s cut-out, the measured 12-sector wind climate, the installed outline as boundary, the Jensen wake with $K=0.04$ (within 0.3\% of PyWake's AEP), and PyWake's 16-turbine example block with $4D$ (320~m) spacing.
 
-\paragraph*{IEA37 Case Study~1} The optimization-only Case Study~1 of IEA Wind Task~37~\cite{Baker2019,IEA37repo} fixes the wake model and leaves the optimizer free. We use its 16- and 36-turbine scenarios (circular boundaries of radius 1300 and 2000~m, minimum spacing $2D=260$~m, IEA 3.35-MW reference turbine with $D=130$~m, 16 wind directions with a constant speed of 9.8~m/s, simplified Bastankhah Gaussian wake). Our implementation reproduces the official AEP calculator to a relative deviation below $10^{-11}$. All methods are run with the penalty~\eqref{eq:penalty} applied to the AEP loss, at 6,030 and 30,030 calls with 30 seeds, and compared with the submitted layouts~\cite{Baker2019,IEA37repo}.
+\paragraph*{IEA37 Case Study~1} Case Study~1 of IEA Wind Task~37~\cite{Baker2019,IEA37repo} fixes the wake model and leaves the optimizer free; we use its 16- and 36-turbine scenarios (circular boundaries of radius 1300 and 2000~m, minimum spacing $2D=260$~m, IEA 3.35-MW reference turbine with $D=130$~m, 16 wind directions with a constant speed of 9.8~m/s, simplified Bastankhah Gaussian wake). Our implementation reproduces the official AEP calculator to a relative deviation below $10^{-11}$. All methods are run with the penalty~\eqref{eq:penalty} applied to the AEP loss, at 6,030 and 30,030 calls with 30 seeds, and compared with the submitted layouts~\cite{Baker2019,IEA37repo}.
 
 \subsection{Performance Measures and Statistical Analysis}
 For each run we record the final objective, the wake loss (as a percentage of the wake-free objective), whether the final layout is feasible (spacing and boundary satisfied within $10^{-6}$~m), the convergence curve (best feasible objective at 201 equally spaced checkpoints), and the wall-clock time. Means and standard deviations are computed over the feasible runs. Within each case, the 30 seed-paired runs are compared by two-sided Wilcoxon signed-rank tests of PSO-VNS against each other method, with Holm's correction~\cite{Holm1979} over the comparisons of the case and matched-pairs rank-biserial correlations $r_{\rm rb}$ as effect sizes; a feasible run beats an infeasible one. Across the 68 cases, the methods are ranked within each case by their mean feasible objective and compared by a Friedman test with the Iman--Davenport correction and Holm-adjusted post hoc tests on the average ranks~\cite{Demsar2006}. Because mean-rank post hoc tests depend on the set of compared methods~\cite{Benavoli2016}, we also compare PSO-VNS with each method by Wilcoxon signed-rank tests on the per-case mean wake losses.
@@ -300,27 +270,27 @@ This section reports the 68 benchmark cases (\TBD{number of runs} runs) and the 
 
 \subsection{Overall Comparison}
 \label{sec:overall}
-\begin{table*}[!t]
+\begin{table}[!t]
 \centering
-\caption{Case-Level Analysis over the 68 Benchmark Cases. Avg.\ Rank: Average Rank of the Mean Feasible Objective (1 = Best); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs; ``$<$15'': Cases with Fewer Than 15 Feasible Runs (Ranked Last); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against PSO-VNS; Because Mean-Rank Tests Depend on the Pool of Methods~\cite{Benavoli2016}, $p_W$, $r_{\rm rb}$ and $\overline{\Delta L}$ Give the Holm-Adjusted Wilcoxon Test on the Per-Case Mean Wake Losses, the Rank-Biserial Correlation (Positive = PSO-VNS Better) and the Mean Wake-Loss Difference (Percentage Points, PSO-VNS Minus Method)}
+\caption{Case-Level Analysis over the 68 Benchmark Cases. Avg.\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against PSO-VNS. Because Mean-Rank Tests Depend on the Pool of Methods~\cite{Benavoli2016}, $p_W$ and $\overline{\Delta L}$ Give the Holm-Adjusted Wilcoxon Test on the Per-Case Mean Wake Losses and the Mean Wake-Loss Difference (Percentage Points, PSO-VNS Minus Method)}
 \label{tab:friedman68}
-\scriptsize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lcccccccc}
+\scriptsize\setlength{\tabcolsep}{2.8pt}
+\begin{tabular}{lcccccc}
 \toprule
-Method & Avg.\ rank & Best & Feas.\ (\%) & $<$15 & $p_z$ & $p_W$ & $r_{\rm rb}$ & $\overline{\Delta L}$ (pp) \\
+Method & Avg.\ rank & Best & Feas. & $p_z$ & $p_W$ & $\overline{\Delta L}$ \\
 \midrule
-PSO-VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & -- & -- & -- & -- \\
-PSO & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
-SSA-VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
-SSA & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
-LX-SSA & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
-DE & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
-VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
-MS-SLSQP & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+PSO-VNS & \TBD{} & \TBD{} & 100.0 & -- & -- & -- \\
+PSO & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+SSA-VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+SSA & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+LX-SSA & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+DE & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+MS-SLSQP & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 \bottomrule
-\multicolumn{9}{l}{Friedman $\chi^2_F=$ \TBD{} (7 d.f.), $p=$ \TBD{}; Iman--Davenport $F_F=$ \TBD{}, $p=$ \TBD{}.}
+\multicolumn{7}{l}{Friedman $\chi^2_F=$ \TBD{} (7 d.f.), $p=$ \TBD{}; Iman--Davenport $F_F=$ \TBD{}.}
 \end{tabular}
-\end{table*}
+\end{table}
 \begin{table}[!t]
 \centering
 \caption{Pairwise Outcome of PSO-VNS Against Each Method: Cases in Which PSO-VNS Is Significantly Better / Not Different / Worse (Wilcoxon Signed-Rank Test, 30 Seed-Paired Runs, Holm-Adjusted over the Seven Comparisons of Each Case, $\alpha=0.05$); Last Row: Median Rank-Biserial Correlation (Positive = PSO-VNS Better)}
@@ -337,7 +307,7 @@ II & 500 & 9 & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 II & 750 & 11 & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 II & 1000 & 14 & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 \midrule
-All & & 68 & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+All & & 68 & 14/50/4 & 50/18/0 & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 $\tilde r_{\rm rb}$ & & & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 \bottomrule
 \end{tabular}
@@ -349,29 +319,30 @@ $\tilde r_{\rm rb}$ & & & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & 
 \label{fig:ranks}
 \end{figure}
 
-Table~\ref{tab:friedman68} and Fig.~\ref{fig:ranks} summarize the comparison over all cases. The Friedman test \TBD{rejects/does not reject} the hypothesis that the eight methods perform equally ($\chi^2_F=$ \TBD{}, $p=$ \TBD{}). PSO-VNS has the best average rank (\TBD{}) and alone ranks first in \TBD{} cases, followed by \TBD{ordering of the other methods with ranks}. In the Holm-adjusted post hoc tests, PSO-VNS ranks significantly better than \TBD{methods and $p_{\rm Holm}$}, and the Wilcoxon tests on the per-case means \TBD{agree / differ, esp.\ for PSO}.
+Table~\ref{tab:friedman68} and Fig.~\ref{fig:ranks} summarize the comparison over all cases. The Friedman test \TBD{rejects/does not reject} the hypothesis that the eight methods perform equally ($\chi^2_F=$ \TBD{}, $p=$ \TBD{}). PSO-VNS has \TBD{the best average rank (x.xx)} and alone ranks first in \TBD{} cases, followed by \TBD{ordering of the other methods with ranks}. In the Holm-adjusted post hoc tests, PSO-VNS ranks significantly better than \TBD{methods and $p_{\rm Holm}$}.
 
-The run-level tests in Table~\ref{tab:wtl} show where these differences come from. Against PSO, which forms its own first phase, PSO-VNS is significantly better in \TBD{} cases and worse in \TBD{} ($\tilde r_{\rm rb}=$ \TBD{}); \TBD{where the ties occur, e.g., small $N$}. Against SSA-VNS, the same design with a salp swarm first phase, it is better in \TBD{} and worse in \TBD{} cases. Against SSA, LX-SSA and DE, it is significantly better in \TBD{}, \TBD{} and \TBD{} cases, respectively. The comparison with VNS \TBD{W/T/L and interpretation}, and MS-SLSQP \TBD{outcome, incl.\ cases it wins}.
+The run-level tests in Table~\ref{tab:wtl} show where these differences come from. PSO, which forms the first phase of PSO-VNS, is the closest competitor: PSO-VNS is significantly better in 14 cases, worse in 4 and tied in 50, and its mean wake loss over the 68 cases is 1.322\% against 1.341\%. Over all cases this difference is not significant (Wilcoxon test on the per-case means, $p=0.30$), but it concentrates in the larger cases: for $N\ge10$, PSO-VNS wins 9 cases and loses 2, with a mean gain of 0.08 percentage points, whereas for small $N$ both methods reach \TBD{nearly the same layouts}. PSO-VNS is thus at least as good as a correctly configured PSO and better on the larger farms. Against SSA-VNS, the same design with a salp swarm first phase, PSO-VNS is significantly better in 50 cases and never worse (1.322\% vs.\ 1.653\%, $p=1.9\times10^{-11}$). Against SSA, LX-SSA and DE, it is significantly better in \TBD{}, \TBD{} and \TBD{} cases, respectively, and against VNS and MS-SLSQP in \TBD{} and \TBD{} cases \TBD{losses, if any}.
 
 \subsection{Solution Quality, Feasibility and Convergence}
 \begin{figure*}[!t]
 \centering
-\pipefig{0.8\textwidth}{figures_mpce/wakeloss_vs_n.pdf}{7cm}
+\pipefig{0.75\textwidth}{figures_mpce/wakeloss_vs_n.pdf}{6.6cm}
 \caption{Mean wake loss (percentage of the wake-free objective) of the feasible runs versus the prescribed number of turbines; a point is omitted when a method has no feasible run. \TBD{regenerate with PSO-VNS}}
 \label{fig:wakeloss}
 \end{figure*}
 \begin{figure*}[!t]
 \centering
-\pipefig{0.8\textwidth}{figures_mpce/convergence_max.pdf}{7cm}
-\caption{Convergence for the largest turbine count of each farm: median (line) and interquartile range (band) of the best feasible wake loss over the 30 runs versus the number of objective calls (logarithmic scale). A curve starts once at least half of the runs have found a feasible layout; PSO-VNS and PSO coincide up to 3,030 calls, where PSO-VNS switches to VNS. \TBD{regenerate with PSO-VNS}}
+\pipefig{0.75\textwidth}{figures_mpce/ablation_convergence.pdf}{6.6cm}
+\caption{Convergence for the largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls for PSO-VNS, PSO, SSA-VNS, LX-SSA-VNS, RS-VNS and VNS. PSO-VNS and PSO coincide up to 3,030 calls (dotted line), where PSO-VNS switches to VNS. The curves of all eight methods of the main comparison are given in the supplementary material. \TBD{regenerate with the PSO-VNS variants}}
 \label{fig:conv-max}
+\label{fig:ablation}
 \end{figure*}
 
-Fig.~\ref{fig:wakeloss} shows how the wake loss depends on the case. It grows with $N$, falls as the farm becomes larger, and is higher for the broader wind rose of Data Set~II. For $N\le3$, all methods stay within \TBD{}\% of the wake-free objective. For 15 turbines in the 1000-m farm (Data Set~I), the mean wake loss is \TBD{}\% for PSO-VNS, \TBD{}\% for PSO, \TBD{}\% for SSA-VNS, \TBD{}\% for VNS and \TBD{}\% for SSA; for 12 turbines in the 750-m farm (Data Set~II), the corresponding values are \TBD{five values}. In the largest case of every farm, PSO-VNS reduces the mean wake loss of PSO by \TBD{range} percentage points.
+Fig.~\ref{fig:wakeloss} shows how the wake loss depends on the case. It grows with $N$, falls as the farm becomes larger, and is higher for the broader wind rose of Data Set~II. For $N\le3$, all methods stay within \TBD{}\% of the wake-free objective, whereas for 15 turbines in the 1000-m farm (Data Set~I), the mean wake loss is \TBD{}\% for PSO-VNS, \TBD{}\% for PSO, \TBD{}\% for SSA-VNS and \TBD{}\% for SSA. In the largest case of every farm, PSO-VNS reduces the mean wake loss of PSO by \TBD{range} percentage points.
 
-PSO-VNS ends with a feasible layout in \TBD{}\% of all runs; the other methods reach \TBD{} (PSO), \TBD{} (SSA-VNS), \TBD{} (SSA), \TBD{} (LX-SSA), \TBD{} (DE), \TBD{} (VNS) and \TBD{}\% (MS-SLSQP). The feasibility counts of the penalty-based methods are the same for both wind data sets, because as long as every candidate is infeasible, the penalty dominates $F_p$. \TBD{feasibility of the PSO phase at the switch in the densest cases (500~m, $N=10$) and after VNS}.
+PSO-VNS ends with a feasible layout in all runs; the other methods reach \TBD{} (PSO), \TBD{} (SSA-VNS), \TBD{} (SSA), \TBD{} (LX-SSA), \TBD{} (DE), \TBD{} (VNS) and \TBD{}\% (MS-SLSQP). The feasibility counts of the penalty-based methods are the same for both wind data sets, because as long as every candidate is infeasible, the penalty dominates $F_p$. \TBD{feasibility of the PSO phase at the switch in the densest cases (500~m, $N=10$) and after VNS}.
 
-Fig.~\ref{fig:conv-max} shows the effect of the second phase directly. Up to 3,030 calls, PSO-VNS and PSO follow the same trajectory. After the switch, \TBD{PSO-VNS drops / PSO stagnates or keeps improving}. Over all feasible runs, the VNS phase removes on average \TBD{}\% (median \TBD{}\%) of the wake loss left at the end of the PSO phase, and it turns \TBD{} runs that were still infeasible at the switch into feasible ones. \TBD{comparison with the SSA-VNS, VNS and MS-SLSQP curves}.
+Fig.~\ref{fig:conv-max} shows the effect of the second phase directly. Up to 3,030 calls, PSO-VNS and PSO follow the same trajectory. After the switch, \TBD{PSO-VNS drops / PSO stagnates or keeps improving}. Over all feasible runs, the VNS phase removes on average \TBD{}\% (median \TBD{}\%) of the wake loss left at the end of the PSO phase, and it turns \TBD{} runs that were still infeasible at the switch into feasible ones. \TBD{comparison with the SSA-VNS, RS-VNS and VNS curves}.
 
 \subsection{Effect of the PSO Coefficients}
 \label{sec:psosetting}
@@ -415,22 +386,35 @@ LX-SSA vs.\ SSA & Laplace step alone & \TBD{} & \TBD{} \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure*}[!t]
-\centering
-\pipefig{0.8\textwidth}{figures_mpce/ablation_convergence.pdf}{7cm}
-\caption{Ablation, largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls for PSO-VNS, PSO, VNS, RS-VNS, SSA-VNS and LX-SSA-VNS (dotted line: switch to VNS at 3,030 calls). \TBD{regenerate with the PSO-VNS ablation variants}}
-\label{fig:ablation}
-\end{figure*}
 
-To see where the improvement of PSO-VNS comes from, we compare it with variants that each remove or replace one ingredient (Table~\ref{tab:ablation} and Fig.~\ref{fig:ablation}). The Friedman test over the eight variants gives $\chi^2_F=$ \TBD{} (7 d.f., $p=$ \TBD{}), and PSO-VNS has the best average rank (\TBD{}).
+To see where the improvement of PSO-VNS comes from, we compare it with variants that each remove or replace one ingredient (Table~\ref{tab:ablation} and Fig.~\ref{fig:ablation}). The Friedman test over the eight variants gives $\chi^2_F=$ \TBD{} (7 d.f., $p=$ \TBD{}), and the variants rank \TBD{order of the average ranks}.
 
-\emph{VNS phase.} Switching to VNS after 3,030 calls instead of continuing the swarm \TBD{effect vs.\ PSO: W/T/L and mean difference}. Since PSO-VNS and PSO share their first 3,030 calls, this contrast measures only the use of the second half of the budget.
+\emph{VNS phase.} Since PSO-VNS and PSO share their first 3,030 calls, this contrast measures only the use of the second half of the budget. Switching to VNS instead of continuing the swarm gives a small gain overall that grows with $N$ (Section~\ref{sec:overall}; \TBD{W/T/L under the ablation's Holm adjustment}): a convergent PSO keeps improving in the second half on small layouts, whereas on larger layouts the coordinated single-turbine moves of VNS pay off.
 
 \emph{Swarm start.} Starting VNS from the PSO global best rather than from the best initial point \TBD{effect vs.\ VNS}. The random-multistart control RS-VNS spends the same 3,015 calls of Phase~1 on independent random layouts; \TBD{effect vs.\ RS-VNS: does the PSO phase add value beyond a good random start?}. For SSA the answer is negative: SSA-VNS and RS-VNS are statistically tied in \TBD{} of the 68 cases.
 
 \emph{Choice of the Phase-1 swarm.} With the same VNS phase, PSO-VNS \TBD{W/T/L} against SSA-VNS and \TBD{W/T/L} against LX-SSA-VNS, so a convergent PSO is \TBD{the better / an equally good} first phase. \TBD{brief interpretation, e.g., feasibility or quality of the start at the switch}.
 
 \emph{Laplace step.} The Laplace step of LX-SSA gave no gain: without the VNS phase, LX-SSA is \TBD{W/T/L} against SSA, and inside the hybrid, SSA-VNS is \TBD{W/T/L} against LX-SSA-VNS (mean wake-loss difference \TBD{} percentage points).
+
+\subsection{Budget Split}
+\label{sec:split}
+\begin{table}[!t]
+\centering
+\caption{Budget Split of PSO-VNS (25\%, 50\% and 75\% of the 6,030 Calls for PSO) on 12 Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the Three Splits, and Cases in Which the Default 50\% Split Is Significantly Better / Not Different / Worse (Wilcoxon, Holm-Adjusted)}
+\label{tab:split}
+\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{cccc}
+\toprule
+PSO share $\omega$ & Mean loss (\%) & Avg.\ rank & 50\% vs.\ $\omega$ (W/T/L) \\
+\midrule
+25\% & \TBD{} & \TBD{} & \TBD{} \\
+50\% & \TBD{} & \TBD{} & -- \\
+75\% & \TBD{} & \TBD{} & \TBD{} \\
+\bottomrule
+\end{tabular}
+\end{table}
+Table~\ref{tab:split} shows the effect of the split $\omega$ on the 12 cases with the middle and the largest $N$ of each farm. \TBD{number of cases where 50\% is best; significant differences; whether a larger PSO share helps small and a larger VNS share large layouts}. A corresponding study for SSA-VNS is given in the supplementary material.
 
 \section{Results Beyond the Benchmark}
 \label{sec:beyond}
@@ -464,7 +448,7 @@ MS-SLSQP & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 \end{table}
 \begin{figure*}[!t]
 \centering
-\pipefig{0.8\textwidth}{figures_mpce/budget_scaling.pdf}{8cm}
+\pipefig{0.75\textwidth}{figures_mpce/budget_scaling.pdf}{7.4cm}
 \caption{Budget scaling: mean wake loss of the six largest benchmark cases and AEP loss of the Horns Rev~1 block versus the budget (6,030, 30,030 and 120,030 calls, random initialization). \TBD{regenerate with PSO-VNS; check panel description}}
 \label{fig:budget}
 \end{figure*}
@@ -486,7 +470,7 @@ Layout / method & AEP & Feas. & $p_{\rm Holm}$ & 6k R & 6k F & 30k & 120k \\
 \midrule
 Installed layout & 139.51 & -- & -- & 6.53 & -- & -- & -- \\
 \midrule
-PSO-VNS & \TBD{} & \TBD{} & -- & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
+PSO-VNS & 138.73 & 30/30 & -- & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 SSA-VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 LX-SSA-VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 RS-VNS & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
@@ -500,7 +484,7 @@ MS-SLSQP & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} & \TBD{} \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:hr-site} gives the results for the 16-turbine block; the installed layout, a regular $7D$ grid, reaches 139.51~GWh/yr (wake loss 6.53\%). PSO-VNS attains \TBD{mean AEP, feasibility and significance against the other methods}. \TBD{whether PSO finds feasible layouts inside the parallelogram from random starts, and how feasible initialization changes this}. \TBD{whether any method improves on the installed layout at 6,030 calls and at the larger budgets}. The best layouts are shown in Fig.~\ref{fig:layouts}.
+Table~\ref{tab:hr-site} gives the results for the 16-turbine block; the installed layout, a regular $7D$ grid, reaches 139.51~GWh/yr (wake loss 6.53\%). PSO-VNS finds a feasible layout in all 30 runs, with a mean AEP of 138.73~GWh/yr (SD 0.83) at 6,030 calls, \TBD{significance against the other methods}. Its best run reaches 140.39~GWh/yr and exceeds the installed layout; \TBD{number of PSO-VNS runs above the installed layout; other methods}. \TBD{whether PSO finds feasible layouts inside the parallelogram from random starts, and how feasible initialization and larger budgets change this}. The best layouts are shown in Fig.~\ref{fig:layouts}.
 
 \subsection{IEA37 Case Study~1}
 \label{sec:iea37}
@@ -543,7 +527,7 @@ Table~\ref{tab:iea37} and Fig.~\ref{fig:layouts} place our methods in the contex
 \subsection{Published Kusiak--Song Results and Computational Cost}
 \label{sec:literature}
 \label{sec:runtime}
-The Kusiak--Song benchmark has been solved with evolution strategies~\cite{Kusiak2010}, ant colony optimization~\cite{Eroglu2012}, particle filtering~\cite{Eroglu2013} and biogeography-based optimization~\cite{Bansal2017}; a comparison with the published values is given in the supplementary material. \TBD{one-sentence summary, pending author verification of the PDFs}. At equal numbers of objective calls, all methods need almost the same time (\TBD{range of ms per call}); the objective evaluation dominates the cost, and one 6,030-call run of PSO-VNS takes \TBD{range}~s, depending on $N$.
+A comparison with the published results of the Kusiak--Song benchmark~\cite{Kusiak2010,Eroglu2012,Eroglu2013,Bansal2017} is given in the supplementary material \TBD{pending author verification of the PDFs}. At equal numbers of objective calls, all methods need almost the same time (\TBD{range} ms per call); one 6,030-call run of PSO-VNS takes \TBD{range}~s, depending on $N$.
 
 \section{Sensitivity to the Modeling Assumptions}
 \label{sec:robustness}
@@ -555,7 +539,7 @@ The Kusiak--Song benchmark has been solved with evolution strategies~\cite{Kusia
 \caption{Robustness to the Benchmark Model: All Feasible Final Layouts Re-Evaluated (Not Re-Optimized). $\Delta$: Mean Relative Change of the Objective (\%); Rank: Average Rank of PSO-VNS over the 68 Cases; Best: Best-Ranked Method; $\bar\tau$: Mean Kendall Correlation Between the Benchmark and Alternative Orderings Within a Case; Same: Cases (\%) with Unchanged Best Method. The Ranks of All Methods Are Given in the Supplementary Material}
 \label{tab:robust-final}
 \scriptsize\setlength{\tabcolsep}{2.4pt}
-\begin{tabular}{lccccccc}
+\begin{tabular}{lcccccc}
 \toprule
 & \multicolumn{2}{c}{$\Delta$ (\%)} & & & & \\
 \cmidrule(lr){2-3}
@@ -576,19 +560,19 @@ Table~\ref{tab:robust-final} shows two kinds of sensitivity. First, the absolute
 \subsection{Minimum Spacing and Boundary Handling}
 \label{sec:spacing}
 \label{sec:boundary}
-The $4D$ spacing is inherited from the benchmark literature. A multi-start packing search constructed feasible layouts with up to 13, 26 and 42 turbines at $4D$, 8, 19 and 29 at $5D$, and 7, 13 and 21 at $6D$ for $r=500$, 750 and 1000~m (constructive lower bounds), so the 500-m cases with $N\ge9$ (at $5D$) or $N\ge8$ (at $6D$) would be infeasible. The optimized layouts often lie on the $4D$ constraint: of the \TBD{} feasible final layouts of the eight methods, \TBD{}\% also satisfy $5D$ and \TBD{}\% satisfy $6D$, and for $N=11$--15 these shares fall to \TBD{}\% and \TBD{}\%, so layouts optimized for $4D$ cannot be transferred to a site with larger spacing requirements without re-optimization. Re-optimizing six representative cases with LX-SSA and SSA at $5D$ and $6D$ (Table~S7 of the supplementary material) lowers the mean objective by up to 0.95\% but does not reverse the comparison between the two methods.
+The $4D$ spacing is inherited from the benchmark literature. A multi-start packing search constructed feasible layouts with up to 13, 26 and 42 turbines at $4D$, 8, 19 and 29 at $5D$, and 7, 13 and 21 at $6D$ for $r=500$, 750 and 1000~m (constructive lower bounds), so the 500-m cases with $N\ge9$ (at $5D$) or $N\ge8$ (at $6D$) would be infeasible. The optimized layouts often lie on the $4D$ constraint: of the feasible final layouts of the eight methods, \TBD{}\% also satisfy $5D$ and \TBD{}\% satisfy $6D$ (\TBD{}\% and \TBD{}\% for $N=11$--15), so they cannot be transferred to sites with larger spacing without re-optimization; re-optimization at $5D$ and $6D$ is reported in the supplementary material.
 
 The boundary rule also matters: an otherwise identical SSA that projects every turbine radially onto the circle instead of clipping the coordinates attains higher mean objectives than the original SSA in six representative cases at 3,030 calls, by 26 to 649 objective units (Mann--Whitney $p<10^{-4}$ in every case). We therefore keep the rule of Section~\ref{sec:constraints} fixed for all methods.
 
 \section{Limitations}
 \label{sec:limits}
-Our results should be read within the following limits. The components of PSO-VNS are standard, and its gain comes mainly from \TBD{VNS phase / swarm start, according to the ablation}; in single cases, PSO-VNS differs significantly from PSO in \TBD{} and from VNS in \TBD{} of the 68 cases. The budget study covers up to 120,030 calls but only the six largest benchmark cases and the Horns Rev~1 block, and the largest farms have 36 turbines; farms with 80 or more turbines, where penalty-based search struggles to find feasible layouts, are outside our scope. The PSO coefficients are the standard constriction values, and the VNS settings and $\omega=0.5$ are untuned defaults. Our statement on the setting $w=0.7$, $c_1=c_2=2$ rests on the convergence theory and our own benchmark; we did not re-run the comparisons of other studies. The absolute energy depends strongly on the Jensen model, the linear power curve, the $4D$ spacing and the boundary rule, \TBD{the ranking under the Gaussian model}, and we did not re-optimize with the alternative models. Finally, $N$ is prescribed, and terrain, mixed turbine types, cables, grid connection, noise, environmental constraints and economic objectives are outside the scope of this study.
+Our results should be read within the following limits. The components of PSO-VNS are standard, and most of its advantage over the other methods comes from the convergent PSO phase: its gain over PSO alone is small and not significant over all 68 cases ($p=0.30$), with significant differences in 18 cases that mostly favor PSO-VNS and concentrate at $N\ge10$. The budget study covers up to 120,030 calls but only the six largest benchmark cases and the Horns Rev~1 block, and the largest farms have 36 turbines; farms with 80 or more turbines, where penalty-based search struggles to find feasible layouts, are outside our scope. The PSO coefficients are the standard constriction values, and the VNS settings and $\omega=0.5$ are untuned defaults. Our statement on the setting $w=0.7$, $c_1=c_2=2$ rests on the convergence theory and our own benchmark; we did not re-run the comparisons of other studies. The absolute energy depends strongly on the Jensen model, the linear power curve, the $4D$ spacing and the boundary rule, \TBD{the ranking under the Gaussian model}, and we did not re-optimize with the alternative models. Finally, $N$ is prescribed, and terrain, mixed turbine types, cables, grid connection, noise, environmental constraints and economic objectives are outside the scope of this study.
 
 \section{Conclusion}
 \label{sec:conclusion}
 This work presents PSO-VNS, a two-phase algorithm for the continuous wind farm layout problem in which PSO with constriction coefficients explores the layout space for the first half of the budget and the basic VNS then refines the global best layout. We evaluated it against seven methods on 68 benchmark cases at equal budgets, in an ablation, with feasibility-preserving initialization and larger budgets, on a Horns Rev~1 block and on IEA37 Case Study~1.
 
-PSO-VNS obtained the best average rank (\TBD{}), was \TBD{significance summary} and returned a feasible layout in \TBD{}\% of the runs. The ablation showed that \TBD{contributions of the VNS phase and of the swarm start, incl.\ vs.\ RS-VNS}, that PSO is a better first phase than SSA or LX-SSA, and that the Laplace step of our earlier LX-SSA did not improve the results, either alone or inside the hybrid. PSO configured inside its convergence region outperformed the salp swarm methods, whereas the frequently used setting $w=0.7$, $c_1=c_2=2$ violates the convergence condition and understates PSO; baselines in WFLOP comparisons should be checked against this condition. \TBD{one sentence each on feasible initialization, budget scaling, Horns Rev~1 and IEA37}. The ranking of the methods was \TBD{} under a cubic power curve and \TBD{} under a Gaussian wake model.
+PSO-VNS returned a feasible layout in every run, \TBD{obtained the best average rank (x.xx)}, and was at least as good as a correctly configured PSO, with its gain concentrated in the larger cases (9 wins and 2 losses for $N\ge10$). It clearly outperformed SSA-VNS (50 wins, no loss), SSA, LX-SSA and \TBD{the remaining methods}. The ablation showed that PSO is a better first phase than SSA or LX-SSA, \TBD{value of the swarm start vs.\ VNS and RS-VNS}, and that the Laplace step of our earlier LX-SSA did not improve the results, either alone or inside the hybrid. PSO configured inside its convergence region outperformed the salp swarm methods, whereas the frequently used setting $w=0.7$, $c_1=c_2=2$ violates the convergence condition and understates PSO; PSO baselines in WFLOP comparisons should be checked against this condition. On the Horns Rev~1 block, the best PSO-VNS layout exceeded the energy production of the installed layout. \TBD{one sentence each on feasible initialization, budget scaling and IEA37}. The ranking of the methods was \TBD{} under a cubic power curve and \TBD{} under a Gaussian wake model.
 
 In future work, we will study a switch between the two phases that is triggered by the stagnation of the swarm, investigate which properties of the swarm phase make it a good starting point for VNS, and extend the approach to larger farms and higher-fidelity wake and power models.
 
@@ -596,7 +580,7 @@ In future work, we will study a switch between the two phases that is triggered 
 \TBD{acknowledgment, or delete this section}
 
 \section*{Data Availability}
-The source code, the per-run results (including the final coordinates and convergence curves of all runs) and the scripts that generate all tables and figures are openly available at \TBD{Zenodo DOI}. The supplementary material contains the schematics of the farm, the wake model and the wake cone (Figs.~S1--S3), the pseudocode of SSA and LX-SSA, the per-case results of the 68 benchmark cases (Tables~S1--S6), the minimum-spacing re-optimization (Table~S7), the budget-split study of SSA-VNS, the comparison with published Kusiak--Song results, the coordinates of the best layouts, and further convergence, box-plot, feasibility and layout figures. \TBD{assemble supplementary file; check S-numbering}
+The source code, the per-run results (including the final coordinates and convergence curves of all runs) and the scripts that generate all tables and figures are openly available at \TBD{Zenodo DOI}. The supplementary material contains the schematics of the farm, the wake model and the wake cone (Figs.~S1--S3), the pseudocode of SSA and LX-SSA, the per-case results of the 68 benchmark cases (Tables~S1--S6), the minimum-spacing re-optimization (Table~S7), the budget-split study of SSA-VNS, the average ranks of all methods under the alternative models, the Gaussian wake equations, the discrete form of the expected power, the wind data of both data sets, the comparison with published Kusiak--Song results, the coordinates of the best layouts, and further convergence, box-plot, feasibility and layout figures. \TBD{assemble supplementary file; check S-numbering}
 
 \begin{thebibliography}{99}
 

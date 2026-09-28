@@ -1,6 +1,16 @@
 # Analysis supporting the revised manuscript
 
-## Final study (current manuscript): hybrid LX-SSA-VNS = LX-SSA + original basic VNS
+## MPCE resubmission (current): proposed method PSO-VNS (`PSOBV`)
+
+| Script | Purpose | Output |
+|---|---|---|
+| `mpce_experiments.py`, `iea37_experiments.py` | Runs (see their docstrings for experiments and method ids) | `mpce_<exp>_s<i>of<k>.csv` |
+| `mpce_results.py [--focus PSOBV\|PSOC\|SSABV] [--partial] [--common-seeds] [--skip-robust]` | All tables, statistics and figures; every section follows `--focus` (default `PSOBV`); the decision block (`summary["decision"]`, printed last) compares PSO-VNS with PSO and SSA-VNS regardless of the focus | `mpce_tab_*.tex`, `mpce_supplementary.tex`, `mpce_summary.json`, `mpce_*_tests.csv`, `../figures_mpce/*` |
+| `mpce_robustness.py` | Cubic power curve / Gaussian wake re-evaluation of the main-comparison layouts (cached in `mpce_reevaluation_cache.csv`) | `mpce_tab_robust.tex`, `mpce_reevaluation.csv` |
+
+Method ids: `PSOBV` = PSO-VNS (constriction-PSO phase 1 for half the budget, then basic VNS), `PSOC` = PSO with Clerc–Kennedy constriction coefficients, `SSABV` = SSA-VNS, `LXBV` = LX-SSA-VNS, `RSVNS` = random-sampling phase 1 + VNS, `BVNS` = basic VNS, `SLSQP` = MS-SLSQP; split variants `PSOBV25` / `PSOBV75`.
+
+## Final study (previous LXSSA manuscript): hybrid LX-SSA-VNS = LX-SSA + original basic VNS
 
 | Script | Purpose | Output |
 |---|---|---|

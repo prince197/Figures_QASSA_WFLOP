@@ -23,7 +23,8 @@ Inputs (all runs at 6,030 calls with random initialization unless stated)
   fresh_hr16.csv, fresh_vhr16.csv, fresh_bhr16.csv (Horns Rev 1, 16 turbines; AEP/IdealAEP)
   mpce_<exp>_s<i>of<k>.csv from mpce_experiments.py / iea37_experiments.py (read from --data-dir; all
   shards of an experiment are merged; an experiment is used only when all k shards are present, unless
-  --partial is given): rsvns, psoc, psobv (68 cases + HR16), slsqp, ssasplit, hr16new, feas, b30k,
+  --partial is given): rsvns, psoc, psobv (68 cases + HR16), slsqp, psosplit (PSOBV25 / PSOBV75 on the
+  12 split cases), ssasplit (dropped; used if present), hr16new (PSOC, RSVNS on HR16), feas, b30k,
   b120k, iea16, iea36 (nine methods M9) and the PSO-VNS-only arms feasp, b30kp, b120kp, iea16p, iea36p,
   which are merged with the nine-method experiments so that PSO-VNS is a tenth method (M10).
   iea37_published_results.csv (optional; columns case, participant/algorithm, AEP).
@@ -357,7 +358,7 @@ def split_section(R6, base, tabs, key, label, primary=True):
     Sp = Sp[[(d, r, n) in SPLITCASES for d, r, n in zip(Sp.Dataset, Sp.Radius, Sp.Turbines)]]
     if not {ids[0], ids[2]} <= set(Sp.Algorithm):
         log(f"  SKIPPED: no split runs for {LAB[base]} ({ids[0]} / {ids[2]} not in the data)"
-            + ("" if base != "SSABV" else " -- mpce_ssasplit missing"))
+            + {"SSABV": " -- mpce_ssasplit not present (experiment dropped)", "PSOBV": " -- mpce_psosplit missing"}.get(base, ""))
         return None
     lines, srows = [], []
     for (ds, r, n), s in Sp.groupby(CASE):
@@ -525,7 +526,7 @@ def load(data_dir, partial):
             avail[fn] = dict(status="missing", rows=0)
     B = pd.concat(base, ignore_index=True)
     new = {}
-    for exp in ("rsvns", "psoc", "psobv", "slsqp", "ssasplit", "hr16new", "feas", "b30k", "b120k", "iea16", "iea36",
+    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "ssasplit", "hr16new", "feas", "b30k", "b120k", "iea16", "iea36",
                 "feasp", "b30kp", "b120kp", "iea16p", "iea36p"):
         df, st = read_shards(exp, data_dir, partial)
         avail[f"mpce_{exp}"] = st
@@ -540,7 +541,7 @@ def load(data_dir, partial):
         m = (B.Algorithm == "SLSQP") & B.Dataset.isin(["1", "2"])
         B.loc[m, "Source"] = "FALLBACK fresh_grid SLSQP"
     fallbacks.append("SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (no rerun planned)")
-    for exp in ("rsvns", "psoc", "psobv", "slsqp", "ssasplit", "hr16new"):
+    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "ssasplit", "hr16new"):
         if exp in new:
             parts.append(new[exp])
     A6 = pd.concat(parts, ignore_index=True)
@@ -612,6 +613,7 @@ def main(argv=None):
         log(f"  {k:20s} {v['status']:45s} shards={v.get('shards', '-'):>6s} rows={v['rows']:6d}{extra}")
     for f in fallbacks:
         log(f"  FALLBACK: {f}")
+    dropped = 0
     if args.common_seeds:
         ALL, dropped = common_seeds(ALL)
         log(f"  --common-seeds: {dropped} runs dropped (seeds not shared by every method of a case/budget/init group)")
@@ -967,7 +969,7 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         log(f"  REPRODUCTION CHECK (SSA-VNS, old rule, 5 variants, Holm over 6 contrasts): SSABV avg rank {rep['ssabv_avg_rank']:.4f} "
             f"(expected 1.625), LXBV vs SSABV {rep['lxbv_vs_ssabv_wtl']} (expected 0/66/2), dL {rep['lxbv_minus_ssabv_dloss']:+.4f} "
             f"(expected +0.0631), phase-2 mean {p2s['mean']:.3f} (expected 36.664) -> {'PASS' if rep['pass'] else 'FAIL'}"
-            + ("" if not args.common_seeds else " [--common-seeds: seeds dropped, check not applicable]"))
+            + ("" if not dropped else " [--common-seeds dropped runs: check not applicable]"))
 
     # ablation convergence (largest N)
     fig, axes = plt.subplots(2, 3, figsize=(7.1, 4.2))
