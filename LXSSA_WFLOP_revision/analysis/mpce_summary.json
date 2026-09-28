@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 07:00:53",
+ "generated": "2026-09-28 07:06:32",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -115,9 +115,17 @@
    "rows": 0
   },
   "mpce_psosplit": {
-   "status": "missing",
-   "shards": "0",
-   "rows": 0
+   "status": "complete",
+   "shards": "1/1",
+   "rows": 720,
+   "methods": [
+    "PSOBV25",
+    "PSOBV75"
+   ],
+   "datasets": [
+    "1",
+    "2"
+   ]
   },
   "mpce_ssasplit": {
    "status": "missing",
@@ -722,6 +730,7 @@
     "median": 22.627381060054823,
     "n_runs_with_loss_at_switch": 1826,
     "infeasible_at_switch_made_feasible": 26,
+    "excluded_penalized_value_at_switch": 0,
     "final_infeasible": 0,
     "runs": 2040,
     "switch_call": 3030,
@@ -732,6 +741,7 @@
     "median": 29.194081556313783,
     "n_runs_with_loss_at_switch": 1770,
     "infeasible_at_switch_made_feasible": 79,
+    "excluded_penalized_value_at_switch": 0,
     "final_infeasible": 9,
     "runs": 2040,
     "switch_call": 3030,
@@ -742,6 +752,7 @@
     "median": 31.865080274316306,
     "n_runs_with_loss_at_switch": 1738,
     "infeasible_at_switch_made_feasible": 118,
+    "excluded_penalized_value_at_switch": 0,
     "final_infeasible": 2,
     "runs": 2040,
     "switch_call": 3030,
@@ -752,6 +763,7 @@
     "median": 54.25316066951532,
     "n_runs_with_loss_at_switch": 1180,
     "infeasible_at_switch_made_feasible": 668,
+    "excluded_penalized_value_at_switch": 0,
     "final_infeasible": 12,
     "runs": 2040,
     "switch_call": 3030,
@@ -771,6 +783,7 @@
    "median": 29.194081556313783,
    "n_runs_with_loss_at_switch": 1770,
    "infeasible_at_switch_made_feasible": 79,
+   "excluded_penalized_value_at_switch": 0,
    "final_infeasible": 9,
    "runs": 2040,
    "switch_call": 3030,
@@ -790,7 +803,176 @@
   },
   "pass": true
  },
- "split": null,
+ "split": {
+  "method": "PSOBV",
+  "primary": true,
+  "cases": [
+   {
+    "case": "1-500-6",
+    "best": "PSOBV75",
+    "p25_holm": 0.022606123238801956,
+    "p75_holm": 0.46454504504799843,
+    "rb25": 0.5225806451612903,
+    "rb75": -0.15698924731182795,
+    "loss": {
+     "PSOBV25": 0.5020291889049979,
+     "PSOBV": 0.4223507663006588,
+     "PSOBV75": 0.4093225034425144
+    }
+   },
+   {
+    "case": "1-500-10",
+    "best": "PSOBV75",
+    "p25_holm": 0.5561132747679949,
+    "p75_holm": 0.06907346844673157,
+    "rb25": 0.12688172043010754,
+    "rb75": -0.44086021505376344,
+    "loss": {
+     "PSOBV25": 3.791760304055784,
+     "PSOBV": 3.7711781610898103,
+     "PSOBV75": 3.585151240981863
+    }
+   },
+   {
+    "case": "1-750-8",
+    "best": "PSOBV75",
+    "p25_holm": 0.01422291249036789,
+    "p75_holm": 0.044907208532094955,
+    "rb25": 0.5526881720430108,
+    "rb75": -0.41935483870967744,
+    "loss": {
+     "PSOBV25": 0.47180707367076263,
+     "PSOBV": 0.39594495936978397,
+     "PSOBV75": 0.37545586833028294
+    }
+   },
+   {
+    "case": "1-750-12",
+    "best": "PSOBV75",
+    "p25_holm": 0.004040364176034927,
+    "p75_holm": 0.004040364176034927,
+    "rb25": 0.6258064516129033,
+    "rb75": -0.5870967741935483,
+    "loss": {
+     "PSOBV25": 2.1684327878521974,
+     "PSOBV": 1.7932173768970776,
+     "PSOBV75": 1.5174752546006665
+    }
+   },
+   {
+    "case": "1-1000-10",
+    "best": "PSOBV75",
+    "p25_holm": 0.0015957951545715332,
+    "p75_holm": 0.5291051845997572,
+    "rb25": 0.6731182795698925,
+    "rb75": -0.13548387096774195,
+    "loss": {
+     "PSOBV25": 0.5388079135047213,
+     "PSOBV": 0.4152207023683529,
+     "PSOBV75": 0.4084507148672138
+    }
+   },
+   {
+    "case": "1-1000-15",
+    "best": "PSOBV75",
+    "p25_holm": 0.5698575973510742,
+    "p75_holm": 3.19555401802063e-05,
+    "rb25": -0.12258064516129032,
+    "rb75": -0.8279569892473119,
+    "loss": {
+     "PSOBV25": 1.57490771851973,
+     "PSOBV": 1.6032939197128977,
+     "PSOBV75": 1.4058948010607988
+    }
+   },
+   {
+    "case": "2-500-6",
+    "best": "PSOBV75",
+    "p25_holm": 0.10984325781464577,
+    "p75_holm": 0.10984325781464577,
+    "rb25": 0.4021505376344086,
+    "rb75": -0.35053763440860214,
+    "loss": {
+     "PSOBV25": 2.4670233317194747,
+     "PSOBV": 2.371215589029492,
+     "PSOBV75": 2.2983875181453817
+    }
+   },
+   {
+    "case": "2-500-10",
+    "best": "PSOBV75",
+    "p25_holm": 0.11537585780024529,
+    "p75_holm": 0.9032264724373817,
+    "rb25": 0.3978494623655914,
+    "rb75": -0.02795698924731183,
+    "loss": {
+     "PSOBV25": 7.558934414451219,
+     "PSOBV": 7.3547332246678945,
+     "PSOBV75": 7.318821355821108
+    }
+   },
+   {
+    "case": "2-750-8",
+    "best": "PSOBV75",
+    "p25_holm": 0.12113046273589134,
+    "p75_holm": 0.12113046273589134,
+    "rb25": 0.3935483870967742,
+    "rb75": -0.3333333333333333,
+    "loss": {
+     "PSOBV25": 1.9906834083621967,
+     "PSOBV": 1.9000448822750482,
+     "PSOBV75": 1.8363265660294337
+    }
+   },
+   {
+    "case": "2-750-12",
+    "best": "PSOBV75",
+    "p25_holm": 0.06989291124045849,
+    "p75_holm": 0.006445977836847305,
+    "rb25": 0.38064516129032255,
+    "rb75": -0.6,
+    "loss": {
+     "PSOBV25": 5.695650782167851,
+     "PSOBV": 5.485716495491405,
+     "PSOBV75": 5.2430368242823935
+    }
+   },
+   {
+    "case": "2-1000-10",
+    "best": "PSOBV75",
+    "p25_holm": 0.015460003167390823,
+    "p75_holm": 0.013279072940349579,
+    "rb25": 0.5010752688172043,
+    "rb75": -0.556989247311828,
+    "loss": {
+     "PSOBV25": 1.8925242230207695,
+     "PSOBV": 1.7047803111000122,
+     "PSOBV75": 1.6099891295258701
+    }
+   },
+   {
+    "case": "2-1000-15",
+    "best": "PSOBV",
+    "p25_holm": 0.00046327337622642517,
+    "p75_holm": 0.9676735773682594,
+    "rb25": 0.7290322580645161,
+    "rb75": 0.010752688172043012,
+    "loss": {
+     "PSOBV25": 4.903896884438117,
+     "PSOBV": 4.498204766753881,
+     "PSOBV75": 4.50717281890563
+    }
+   }
+  ],
+  "best_count": {
+   "PSOBV75": 11,
+   "PSOBV": 1
+  },
+  "sig_vs25": 6,
+  "sig_vs75": 5,
+  "sig_vs25_50better": 6,
+  "sig_vs75_50better": 0
+ },
  "split_ssabv": null,
  "hr16": {
   "installed_aep": 139.51300511740232,
@@ -1773,6 +1955,7 @@
   "mpce_tab_friedman68.tex",
   "mpce_tab_cost.tex",
   "mpce_tab_ablation.tex",
+  "mpce_tab_split.tex",
   "mpce_tab_hr16.tex",
   "mpce_tab_iea37.tex",
   "mpce_tab_iea37_published.tex",
@@ -1806,7 +1989,7 @@
   "  mpce_psoc            complete                                      shards=   1/1 rows=  2040  methods=PSOC",
   "  mpce_psobv           complete                                      shards=   2/2 rows=  2070  methods=PSOBV",
   "  mpce_slsqp           missing                                       shards=     0 rows=     0",
-  "  mpce_psosplit        missing                                       shards=     0 rows=     0",
+  "  mpce_psosplit        complete                                      shards=   1/1 rows=   720  methods=PSOBV25,PSOBV75",
   "  mpce_ssasplit        missing                                       shards=     0 rows=     0",
   "  mpce_hr16new         complete                                      shards=   1/1 rows=    60  methods=PSOC,RSVNS",
   "  mpce_feas            missing                                       shards=     0 rows=     0",
@@ -1841,7 +2024,7 @@
   "  phase 2 of RS-VNS (switch at call 3,030) removes 57.13% (median 54.25%) of the loss left at the switch; 668 runs infeasible at the switch made feasible",
   "  REPRODUCTION CHECK (SSA-VNS, old rule, 5 variants, Holm over 6 contrasts): SSABV avg rank 1.6250 (expected 1.625), LXBV vs SSABV 0/66/2 (expected 0/66/2), dL +0.0631 (expected +0.0631), phase-2 mean 36.664 (expected 36.664) -> PASS",
   "\n[3] Budget split",
-  "  SKIPPED: no split runs for PSO-VNS (PSOBV25 / PSOBV75 not in the data) -- mpce_psosplit missing",
+  "  PSO-VNS: best split counts {'PSOBV75': 11, 'PSOBV': 1}; significant vs 25%: 6, vs 75%: 5",
   "  SKIPPED: no split runs for SSA-VNS (SSABV25 / SSABV75 not in the data) -- mpce_ssasplit not present (experiment dropped)",
   "\n[4] Horns Rev 1, 16 turbines",
   "  mean AEP: PSO-VNS 138.73(30), PSO 138.06(19), SSA-VNS 137.98(30), SSA 136.66(30), LX-SSA 136.46(28), DE nan(0), VNS 137.67(30), MS-SLSQP 136.80(30), RS-VNS 137.96(28); installed 139.51",
@@ -1861,6 +2044,6 @@
   "  CubicCutout  tau=0.94 same best=90%  PSO-VNS rank 1.80",
   "  Gauss        tau=0.67 same best=57%  PSO-VNS rank 1.93",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 8 tables, 12 figures, mpce_summary.json in 20 s"
+  "\nwrote 9 tables, 12 figures, mpce_summary.json in 19 s"
  ]
 }
