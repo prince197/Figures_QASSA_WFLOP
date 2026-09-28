@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 10:14:48",
+ "generated": "2026-09-28 10:20:33",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -909,6 +909,101 @@
    "DE": 7.007352941176471,
    "BVNS": 3.8308823529411766,
    "SLSQP": 5.455882352941177
+  }
+ },
+ "baseline": {
+  "pool": [
+   "LXBV",
+   "SSABV",
+   "LXSSA",
+   "SSA",
+   "PSO",
+   "DE",
+   "BVNS",
+   "SLSQP"
+  ],
+  "hybrids": [
+   "LXBV",
+   "SSABV"
+  ],
+  "labels": {
+   "LXBV": "LX-SSA-VNS",
+   "SSABV": "SSA-VNS",
+   "LXSSA": "LX-SSA",
+   "SSA": "SSA",
+   "PSO": "PSO",
+   "DE": "DE",
+   "BVNS": "VNS",
+   "SLSQP": "MS-SLSQP"
+  },
+  "note": "'PSO' denotes the PSO of the respective pool: old = w 0.7, c1 = c2 = 2 (fresh_grid PSO); constriction = Clerc-Kennedy (PSOC). W/T/L from the hybrid's side, Holm over the 7 comparisons of the hybrid within each case.",
+  "old": {
+   "pso_code": "PSO",
+   "n_cases": 68,
+   "n_runs": 16320,
+   "avg_rank": {
+    "LXBV": 2.6544117647058822,
+    "SSABV": 1.9852941176470589,
+    "LXSSA": 5.647058823529412,
+    "SSA": 4.8088235294117645,
+    "PSO": 5.044117647058823,
+    "DE": 6.992647058823529,
+    "BVNS": 3.588235294117647,
+    "SLSQP": 5.279411764705882
+   },
+   "best": "SSABV",
+   "best_label": "SSA-VNS",
+   "pso_avg_rank": 5.044117647058823,
+   "pso_position": 5,
+   "pso_feasible_pct": 85.98039215686275,
+   "wtl_vs_pso": {
+    "LXBV": {
+     "W": 35,
+     "T": 33,
+     "L": 0
+    },
+    "SSABV": {
+     "W": 41,
+     "T": 27,
+     "L": 0
+    }
+   },
+   "friedman_chi2": 231.1990645463048,
+   "friedman_p": 2.760494568470356e-46
+  },
+  "constriction": {
+   "pso_code": "PSOC",
+   "n_cases": 68,
+   "n_runs": 16320,
+   "avg_rank": {
+    "LXBV": 3.411764705882353,
+    "SSABV": 2.7720588235294117,
+    "LXSSA": 6.0588235294117645,
+    "SSA": 5.338235294117647,
+    "PSO": 1.5294117647058822,
+    "DE": 7.029411764705882,
+    "BVNS": 4.154411764705882,
+    "SLSQP": 5.705882352941177
+   },
+   "best": "PSO",
+   "best_label": "PSO",
+   "pso_avg_rank": 1.5294117647058822,
+   "pso_position": 1,
+   "pso_feasible_pct": 100.0,
+   "wtl_vs_pso": {
+    "LXBV": {
+     "W": 0,
+     "T": 21,
+     "L": 47
+    },
+    "SSABV": {
+     "W": 0,
+     "T": 22,
+     "L": 46
+    }
+   },
+   "friedman_chi2": 292.41630740393646,
+   "friedman_p": 2.517078465389707e-59
   }
  },
  "cost": {
@@ -4515,6 +4610,7 @@
  "tables": [
   "mpce_tab_wtl.tex",
   "mpce_tab_friedman68.tex",
+  "mpce_tab_baseline.tex",
   "mpce_tab_ablation.tex",
   "mpce_tab_split.tex",
   "mpce_tab_feasbudget.tex",
@@ -4574,6 +4670,8 @@
   "  W/T/L vs PSO-VNS: PSO 14/50/4, SSA-VNS 49/19/0, SSA 59/9/0, LX-SSA 60/8/0, DE 56/12/0, VNS 51/16/1, MS-SLSQP 59/9/0",
   "  spacing: {'all': {'n_layouts': 15614, 'pct_5d': 49.173818368131165, 'pct_6d': 35.79479953887537}, 'n11_15': {'n_layouts': 3036, 'pct_5d': 4.084321475625823, 'pct_6d': 0.06587615283267458}, 'n6_10': {'n_layouts': 6818, 'pct_5d': 32.45819888530361, 'pct_6d': 12.92167791141097}}",
   "  old PSO setting: avg rank 5.12 (position 5 of 8), feasible 86.0%, constriction vs old {'W': 56, 'T': 12}",
+  "  baseline pool (old PSO): SSA-VNS 1.99, LX-SSA-VNS 2.65, VNS 3.59, SSA 4.81, PSO 5.04, MS-SLSQP 5.28, LX-SSA 5.65, DE 6.99; PSO position 5; LX-SSA-VNS vs PSO 35/33/0, SSA-VNS vs PSO 41/27/0",
+  "  baseline pool (constriction PSO): PSO 1.53, SSA-VNS 2.77, LX-SSA-VNS 3.41, VNS 4.15, SSA 5.34, MS-SLSQP 5.71, LX-SSA 6.06, DE 7.03; PSO position 1; LX-SSA-VNS vs PSO 0/21/47, SSA-VNS vs PSO 0/22/46",
   "\n[2] Ablation",
   "  ablation hybrid PSO-VNS; avg ranks: PSO-VNS 1.868, SSA-VNS 3.787, LX-SSA-VNS 4.618, RS-VNS 4.456, VNS 5.316, PSO 2.103, SSA 6.559, LX-SSA 7.294",
   "  PSOBV-PSOC: 8/58/2  dL=-0.018",
@@ -4616,6 +4714,6 @@
   "  feasbudget: pending []; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}, 30030: {'PSOBV': 1.1666666666666667, 'SSABV': 4.166666666666667, 'LXBV': 5.666666666666667, 'RSVNS': 6.333333333333333, 'BVNS': 4.833333333333333, 'PSOC': 2.5, 'SSA': 8.666666666666666, 'LXSSA': 9.833333333333334, 'DE': 5.166666666666667, 'SLSQP': 6.666666666666667}, 120030: {'PSOBV': 2.1666666666666665, 'SSABV': 4.166666666666667, 'LXBV': 5.833333333333333, 'RSVNS': 4.666666666666667, 'BVNS': 3.1666666666666665, 'PSOC': 5.833333333333333, 'SSA': 8.833333333333334, 'LXSSA': 10.0, 'DE': 3.3333333333333335, 'SLSQP': 7.0}}",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 8 tables, 14 figures, mpce_summary.json in 32 s"
+  "\nwrote 9 tables, 14 figures, mpce_summary.json in 30 s"
  ]
 }
