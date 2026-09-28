@@ -82,3 +82,4 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
   PSO-VNS adds feasibility reliability (Horns Rev \NHRFeasPSOVNS{} vs \NHRFeasPSO{} of 30) and gains in the
   larger Data Set II layouts; at 6,030 evaluations its second phase acts as one compass-search descent".
 - LEAD TODO after rsdisc/omega90: if SSA-VNS vs RSD-VNS is tied/reversed, add a sentence in 07 (and abstract/intro/concl) that the SSA gain disappears against the stronger control; if ω=0.9 beats 0.75 revisit 07/10 split wording; restore Holm-family sentence in 07 when \NAblNContrasts exists.
+- LEAD TODO: 05 "margin far below wake-model uncertainty" lacks support → back it with own data (Jensen vs Gaussian re-evaluated wake-loss difference, macro) or cite; 04 line ~24 "corners … plausibly explains" must be gone (B2).
