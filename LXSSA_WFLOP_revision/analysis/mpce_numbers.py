@@ -1,0 +1,395 @@
+"""Write analysis/mpce_numbers.tex: one \\newcommand{\\N...}{...} per number (or data-dependent phrase) quoted in
+MPCE_PSO_VNS.tex, computed from mpce_summary.json (written by mpce_results.py).
+
+Usage (from analysis/):  python3 mpce_numbers.py [--summary mpce_summary.json] [--out mpce_numbers.tex] [--allow-partial]
+
+mpce_results.py calls this script at the end of every run, so normally nothing has to be run by hand.
+
+Pending data. Every macro lists the experiments (mpce_<exp>_s<i>of<k>.csv) it depends on. If one of them is not
+complete (missing, or only some shards present), the macro expands to \\TBD{pending: <what>} so that the paper
+still compiles; --allow-partial prints the values computed from incomplete shards instead (preview only).
+The main comparison uses the old-platform MS-SLSQP runs until mpce_slsqp exists (flagged by mpce_results.py);
+these macros are NOT marked pending, because the SLSQP rerun only replaces one baseline.
+
+Macro names contain letters only. Method codes: PSOVNS (PSOBV), PSO (PSOC, constriction coefficients),
+SSAVNS (SSABV), SSA, LXSSA, DE, VNS (BVNS), SLSQP (MS-SLSQP), LXSSAVNS (LXBV), RSVNS.
+"""
+import os, json, argparse, math
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+CODE = {"PSOBV": "PSOVNS", "PSOC": "PSO", "SSABV": "SSAVNS", "SSA": "SSA", "LXSSA": "LXSSA", "DE": "DE",
+        "BVNS": "VNS", "SLSQP": "SLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS"}
+LAB = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "DE": "DE",
+       "BVNS": "VNS", "SLSQP": "MS-SLSQP", "LXBV": "LX-SSA-VNS", "RSVNS": "RS-VNS"}
+MAIN8 = ["PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP"]
+M10 = ["PSOBV", "SSABV", "LXBV", "RSVNS", "BVNS", "PSOC", "SSA", "LXSSA", "DE", "SLSQP"]
+ORD = {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth", 7: "seventh", 8: "eighth",
+       9: "ninth", 10: "tenth"}
+WORD = {0: "no", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight",
+        9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
+BUDGETS = (6030, 30030, 120030)
+BNAME = {6030: "SixK", 30030: "ThirtyK", 120030: "OneTwentyK"}
+BTXT = {6030: "6{,}030", 30030: "30{,}030", 120030: "120{,}030"}
+
+# experiments each group of macros needs (see the module docstring)
+REQ_MAIN = ("psobv", "psoc")
+REQ_ABL = ("psobv", "psoc", "rsvns")
+REQ_SPLIT = ("psosplit",)
+REQ_HR = ("psobv", "hr16new")
+REQ_FEAS = ("feas", "feasp")
+REQ_B30 = ("b30k", "b30kp")
+REQ_B120 = ("b120k", "b120kp")
+REQ_IEA = ("iea16", "iea36", "iea16p", "iea36p")
+
+
+# ------------------------------------------------------------------ formatting
+def num(v, d=2, sign=False):
+    if v is None or (isinstance(v, float) and not math.isfinite(v)):
+        raise ValueError("missing value")
+    s = f"{v:+,.{d}f}" if sign else f"{v:,.{d}f}"
+    s = s.replace(",", "{,}")
+    return s.replace("-", "\\ensuremath{-}", 1) if s.startswith("-") else s      # works in and outside math
+
+
+def numd(v, d=2):
+    """like num, but '--' when the value does not exist (e.g. a method without feasible runs)."""
+    return "--" if v is None else num(v, d)
+
+
+def pval(p):
+    """p-value for print: two significant digits; scientific notation below 0.001, e.g. 1.9x10^-11 (\\ensuremath, so
+    the macro works in text and in math)."""
+    if p is None or not math.isfinite(p):
+        raise ValueError("missing p")
+    if p < 1e-3:
+        m, e = f"{p:.1e}".split("e")
+        return f"\\ensuremath{{{m}\\times10^{{{int(e)}}}}}"
+    if p >= 0.995:
+        return "1.0"
+    return f"{p:.2g}" if p < 0.1 else f"{p:.2f}"
+
+
+def listing(items):
+    items = list(items)
+    if len(items) <= 1:
+        return "".join(items)
+    return ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def wtl(d):
+    d = d or {}
+    return int(d.get("W", 0)), int(d.get("T", 0)), int(d.get("L", 0))
+
+
+class Macros:
+    def __init__(self, summary, allow_partial):
+        self.s = summary
+        self.allow = allow_partial
+        self.out, self.pending, self.errors = [], [], []
+        av = summary.get("data_availability", {})
+        self.status = {k.replace("mpce_", ""): v.get("status", "missing") for k, v in av.items() if k.startswith("mpce_")}
+
+    def missing(self, req):
+        bad = []
+        for e in req:
+            st = self.status.get(e, "missing")
+            if st == "complete" or (self.allow and st.startswith("PARTIAL")):
+                continue
+            bad.append(e)
+        return bad
+
+    def put(self, name, fn, req=(), what=None):
+        assert name.isalpha(), name
+        bad = self.missing(req)
+        val = None
+        if not bad:
+            try:
+                val = fn()
+            except (KeyError, TypeError, ValueError, IndexError, ZeroDivisionError, AttributeError) as e:
+                self.errors.append(f"{name}: {type(e).__name__} {e}")
+                bad = ["value missing in summary"]
+        if val is None:
+            txt = f"\\TBD{{pending: {', '.join(bad)}}}"
+            self.pending.append(name)
+        else:
+            txt = str(val)
+        self.out.append(f"\\newcommand{{\\{name}}}{{{txt}}}")
+
+
+def build(s, allow_partial=False):
+    M = Macros(s, allow_partial)
+    P = M.put
+    main = s.get("main") or {}
+    fr = main.get("friedman") or {}
+    cw = main.get("case_mean_wilcoxon") or {}
+    focus = s.get("focus", "PSOBV")
+    others = [a for a in MAIN8 if a != focus]
+
+    # ---------------- main comparison (68 cases)
+    P("NRunsMain", lambda: num(main["n_runs"], 0), REQ_MAIN, "runs of the main comparison")
+    P("NRunsBenchmark", lambda: num(s["ablation"]["n_runs_benchmark_total"], 0), REQ_ABL, "runs on the 68 cases")
+    P("NFriedChi", lambda: num(fr["chi2"], 1), REQ_MAIN)
+    P("NFriedDf", lambda: str(len(fr["avg_rank"]) - 1), REQ_MAIN)
+    P("NFriedP", lambda: pval(fr["p"]), REQ_MAIN)
+    P("NImanF", lambda: num(fr["iman_davenport"], 1), REQ_MAIN)
+    P("NFriedVerb", lambda: "rejects" if fr["p"] < 0.05 else "does not reject", REQ_MAIN)
+    for a in MAIN8:
+        c = CODE[a]
+        P(f"NRank{c}", lambda a=a: num(fr["avg_rank"][a], 2), REQ_MAIN)
+        P(f"NSoleBest{c}", lambda a=a: str(fr["sole_best_count"][a]), REQ_MAIN)
+        P(f"NLoss{c}", lambda a=a: num(main["mean_loss_pct_qualified_cases"][a], 3), REQ_MAIN)
+        P(f"NFeas{c}", lambda a=a: num(main["feasible_pct"][a], 1), REQ_MAIN)
+    order = sorted(fr.get("avg_rank", {}), key=lambda a: fr["avg_rank"][a])
+    P("NRankFirst", lambda: LAB[order[0]], REQ_MAIN)
+    P("NRankOrderOthers", lambda: listing(f"{LAB[a]} ({num(fr['avg_rank'][a], 2)})" for a in order[1:]), REQ_MAIN)
+    ph = fr.get("p_holm_vs_focus", {})
+    sig = [a for a in order if a in ph and ph[a] < 0.05]
+    ns = [a for a in order if a in ph and ph[a] >= 0.05]
+    P("NPostHocSigList", lambda: listing(LAB[a] for a in sig) if sig else "none of the other methods", REQ_MAIN)
+    P("NPostHocSigMaxP", lambda: pval(max(ph[a] for a in sig)), REQ_MAIN)
+    P("NPostHocNonSigList", lambda: listing(LAB[a] for a in ns) if ns else "any method", REQ_MAIN)
+    P("NPostHocNonSigP", lambda: pval(min(ph[a] for a in ns)) if ns else "--", REQ_MAIN)
+    for b in others:
+        c = CODE[b]
+        W, T, L = wtl(main["wtl"].get(b)) if main.get("wtl") else (None,) * 3
+        P(f"NWtl{c}", lambda W=W, T=T, L=L: f"{W}/{T}/{L}", REQ_MAIN)
+        P(f"NWtl{c}W", lambda W=W: str(W), REQ_MAIN)
+        P(f"NWtl{c}L", lambda L=L: str(L), REQ_MAIN)
+        P(f"NWtl{c}T", lambda T=T: str(T), REQ_MAIN)
+        P(f"NRrb{c}", lambda b=b: num(main["rank_biserial_median"][b], 2, sign=True), REQ_MAIN)
+        P(f"NPW{c}", lambda b=b: pval(cw[b]["p_holm"]), REQ_MAIN)            # Holm over the 7 methods
+        P(f"NPWraw{c}", lambda b=b: pval(cw[b]["p"]), REQ_MAIN)             # unadjusted
+        P(f"NDL{c}", lambda b=b: num(cw[b]["mean_dloss_pp"], 3, sign=True), REQ_MAIN)
+        P(f"NDLabs{c}", lambda b=b: num(-cw[b]["mean_dloss_pp"], 2), REQ_MAIN)
+        P(f"NLowerLoss{c}", lambda b=b: str(cw[b]["focus_lower_loss_cases"]), REQ_MAIN)
+        P(f"NHigherLoss{c}", lambda b=b: str(cw[b]["other_lower_loss_cases"]), REQ_MAIN)
+    P("NWtlPSOSig", lambda: str(sum(wtl(main["wtl"]["PSOC"])[::2])), REQ_MAIN)
+    byn = main.get("by_n", {})
+    P("NNLarge", lambda: str(byn["PSOC"]["n_large"]), REQ_MAIN)
+    P("NWtlPSOLargeW", lambda: str(wtl(byn["PSOC"]["wtl_large"])[0]), REQ_MAIN)
+    P("NWtlPSOLargeL", lambda: str(wtl(byn["PSOC"]["wtl_large"])[2]), REQ_MAIN)
+    P("NWtlPSOSmallW", lambda: str(wtl(byn["PSOC"]["wtl_small"])[0]), REQ_MAIN)
+    P("NWtlPSOSmallL", lambda: str(wtl(byn["PSOC"]["wtl_small"])[2]), REQ_MAIN)
+    P("NGainPSOLarge", lambda: num(-byn["PSOC"]["mean_dloss_pp_large"], 2), REQ_MAIN)
+    P("NAbsDiffPSOSmall", lambda: num(byn["PSOC"]["mean_abs_dloss_pp_small"], 2), REQ_MAIN)
+    # losses of PSO-VNS against the other methods (phrase)
+    def losses_phrase():
+        lost = [(b, wtl(main["wtl"][b])[2]) for b in others if b != "PSOC" and wtl(main["wtl"][b])[2] > 0]
+        never = [b for b in others if b != "PSOC" and wtl(main["wtl"][b])[2] == 0]
+        parts = []
+        if never:
+            parts.append(f"it is never significantly worse than {listing(LAB[b] for b in never)}")
+        if lost:
+            parts.append("significantly worse than " + listing(f"{LAB[b]} in {WORD.get(n, n)} case{'s' if n > 1 else ''}" for b, n in lost))
+        return " and ".join(parts)
+    P("NLossesPhrase", losses_phrase, REQ_MAIN)
+    P("NLossMaxSmallN", lambda: num(main["max_loss_n_le_3_pct"], 2), REQ_MAIN)
+    big = (main.get("loss_largest_n") or {}).get("1-1000-15", {})
+    for a in ("PSOBV", "PSOC", "SSABV", "SSA"):
+        P(f"NLossBigI{CODE[a]}", lambda a=a: num(big[a], 2), REQ_MAIN, "loss DS I, 1000 m, N = 15")
+    g = main.get("largest_n_loss_reduction_vs_phase1_pp") or {}
+    P("NBigGainMin", lambda: num(g["min"], 2, sign=True), REQ_MAIN)
+    P("NBigGainMax", lambda: num(g["max"], 2, sign=True), REQ_MAIN)
+    P("NBigGainPos", lambda: WORD[sum(1 for v in main["loss_largest_n"].values() if v["PSOC"] is not None and v["PSOBV"] is not None and v["PSOC"] > v["PSOBV"])], REQ_MAIN)
+    dn = main.get("dense_500_10") or {}
+    P("NDenseSwitchFeas", lambda: num(sum(v["feasible_at_switch_pct"] for v in dn.values()) / len(dn), 1), REQ_MAIN)
+    P("NDenseFinalFeas", lambda: num(sum(v["feasible_final_pct"] for v in dn.values()) / len(dn), 1), REQ_MAIN)
+    P("NDensePSOFinalFeas", lambda: num(sum(v["phase1_alone_final_feasible_pct"] for v in dn.values()) / len(dn), 1), REQ_MAIN)
+    fbd = main.get("feasible_runs_by_dataset") or {}
+
+    # ---------------- phase 2 / convergence
+    p2 = (s.get("ablation") or {}).get("phase2_loss_reduction_pct") or {}
+    P("NPhTwoMean", lambda: num(p2["PSOBV"]["mean"], 1), REQ_ABL)
+    P("NPhTwoMedian", lambda: num(p2["PSOBV"]["median"], 1), REQ_ABL)
+    P("NPhTwoMadeFeas", lambda: str(p2["PSOBV"]["infeasible_at_switch_made_feasible"]), REQ_ABL)
+    P("NPsoContMean", lambda: num(p2["PSOC_continued"]["mean"], 1), REQ_ABL)
+    P("NPsoContMedian", lambda: num(p2["PSOC_continued"]["median"], 1), REQ_ABL)
+    for a in ("PSOBV", "SSABV", "LXBV", "RSVNS"):
+        P(f"NPhTwoMean{CODE[a]}", lambda a=a: num(p2[a]["mean"], 1), REQ_ABL)
+        P(f"NSwitchFeas{CODE[a]}", lambda a=a: num(p2[a]["feasible_at_switch_pct"], 1), REQ_ABL)
+        P(f"NSwitchLoss{CODE[a]}", lambda a=a: num(p2[a]["mean_loss_at_switch_pct"], 2), REQ_ABL)
+
+    # ---------------- earlier PSO setting
+    ps = s.get("pso_setting") or {}
+    P("NOldPSORank", lambda: num(ps["old_avg_rank"], 2), REQ_MAIN)
+    P("NOldPSOPos", lambda: ORD[ps["old_rank_position"]], REQ_MAIN)
+    P("NPSOPos", lambda: ORD[ps["constriction_rank_position"]], REQ_MAIN)
+    P("NOldPSOFeas", lambda: num(ps["old_feasible_pct"], 1), REQ_MAIN)
+    P("NOldPSOWorse", lambda: str(wtl(ps["constriction_vs_old_wtl"])[0]), REQ_MAIN)
+    P("NOldPSOBetter", lambda: WORD.get(wtl(ps["constriction_vs_old_wtl"])[2], str(wtl(ps["constriction_vs_old_wtl"])[2])), REQ_MAIN)
+    P("NOldPSODL", lambda: num(ps["old_minus_constriction_loss_pp"], 2), REQ_MAIN)
+    P("NOldPSOCases", lambda: str(ps["n_cases_loss"]), REQ_MAIN)
+    P("NOldPSOBelowHalf", lambda: str(ps["old_cases_below_half_feasible"]), REQ_MAIN)
+
+    # ---------------- ablation
+    ab = s.get("ablation") or {}
+    fa = ab.get("friedman") or {}
+    P("NAblChi", lambda: num(fa["chi2"], 1), REQ_ABL)
+    P("NAblP", lambda: pval(fa["p"]), REQ_ABL)
+    P("NAblNVar", lambda: WORD[len(fa["avg_rank"])], REQ_ABL)
+    P("NAblOrder", lambda: listing(f"{LAB[a]} ({num(v, 2)})" for a, v in sorted(fa["avg_rank"].items(), key=lambda t: t[1])), REQ_ABL)
+    ct = ab.get("contrasts") or {}
+    for key in ("PSOBV-PSOC", "PSOBV-BVNS", "PSOBV-RSVNS", "PSOBV-SSABV", "PSOBV-LXBV", "SSABV-RSVNS", "SSABV-LXBV", "LXSSA-SSA"):
+        a, b = key.split("-")
+        nm = f"NAbl{CODE[a]}vs{CODE[b]}"
+        P(nm, lambda key=key: "%d/%d/%d" % wtl(ct[key]), REQ_ABL)
+        P(nm + "W", lambda key=key: str(wtl(ct[key])[0]), REQ_ABL)
+        P(nm + "T", lambda key=key: str(wtl(ct[key])[1]), REQ_ABL)
+        P(nm + "L", lambda key=key: str(wtl(ct[key])[2]), REQ_ABL)
+        P(nm + "DL", lambda key=key: num(ct[key]["dloss_pp"], 3, sign=True), REQ_ABL)
+
+    # ---------------- budget split
+    sp = s.get("split") or {}
+    P("NSplitCases", lambda: WORD.get(sp["n_cases"], str(sp["n_cases"])), REQ_SPLIT)
+    for w, k in ((25, "PSOBV25"), (50, "PSOBV"), (75, "PSOBV75")):
+        nm = {25: "TwentyFive", 50: "Fifty", 75: "SeventyFive"}[w]
+        P(f"NSplitLoss{nm}", lambda k=k: num(sp["mean_loss"][k], 3), REQ_SPLIT)
+        P(f"NSplitRank{nm}", lambda k=k: num(sp["avg_rank"][k], 2), REQ_SPLIT)
+        P(f"NSplitBest{nm}", lambda k=k: WORD.get(sp["best_count"].get(k, 0), str(sp["best_count"].get(k, 0))), REQ_SPLIT)
+    P("NSplitSeventyFiveLower", lambda: WORD.get(sp["n_lower_loss_than_50"]["PSOBV75"], str(sp["n_lower_loss_than_50"]["PSOBV75"])), REQ_SPLIT)
+    P("NSplitSeventyFiveSig", lambda: WORD.get(sp["wtl_50_vs_75"]["L"], str(sp["wtl_50_vs_75"]["L"])), REQ_SPLIT)
+    P("NSplitFiftyBetterSeventyFive", lambda: WORD.get(sp["wtl_50_vs_75"]["W"], str(sp["wtl_50_vs_75"]["W"])), REQ_SPLIT)
+    P("NSplitTwentyFiveSig", lambda: WORD.get(sp["wtl_50_vs_25"]["W"], str(sp["wtl_50_vs_25"]["W"])), REQ_SPLIT)
+    P("NSplitTwentyFiveBetter", lambda: WORD.get(sp["wtl_50_vs_25"]["L"], str(sp["wtl_50_vs_25"]["L"])), REQ_SPLIT)
+    P("NSplitGainSeventyFive", lambda: num(sp["mean_loss"]["PSOBV"] - sp["mean_loss"]["PSOBV75"], 2), REQ_SPLIT)
+
+    # ---------------- Horns Rev 16
+    hr = s.get("hr16") or {}
+    hm = hr.get("methods") or {}
+    P("NHRInstalled", lambda: num(hr["installed_aep"], 2), REQ_HR)
+    P("NHRInstalledLoss", lambda: num(hr["installed_loss_pct"], 2), REQ_HR)
+    P("NHRIdeal", lambda: num(hr["ideal_aep"], 2), REQ_HR)
+    for a in M10:
+        c = CODE[a]
+        P(f"NHRMean{c}", lambda a=a: numd(hm[a]["mean"], 2), REQ_HR)
+        P(f"NHRBest{c}", lambda a=a: numd(hm[a]["best"], 2), REQ_HR)
+        P(f"NHRFeas{c}", lambda a=a: f"{hm[a]['feasible']}/{hm[a]['runs']}", REQ_HR)
+        P(f"NHRAbove{c}", lambda a=a: str(hm[a]["runs_above_installed"]), REQ_HR)
+    P("NHRSDPSOVNS", lambda: num(hm["PSOBV"]["sd"], 2), REQ_HR)
+    P("NHRLossSixKPSOVNS", lambda: num(hm["PSOBV"]["loss_pct"], 2), REQ_HR)
+
+    def above_phrase():
+        o = [a for a in M10 if a != focus and a in hm and hm[a]["runs_above_installed"] > 0]
+        if not o:
+            return "no other method reaches it"
+        runs = lambda k: f"{WORD.get(k, k)} run{'s' if k != 1 else ''}"
+        return ("of the other methods, only " + listing(f"{LAB[a]} ({runs(hm[a]['runs_above_installed'])})" for a in o)
+                + (" does so" if len(o) == 1 else " do so"))
+    P("NHRAboveOthersPhrase", above_phrase, REQ_HR)
+    P("NHRMaxP", lambda: pval(max(v["p_holm"] for a, v in hm.items() if a != focus and v.get("p_holm") is not None)), REQ_HR)
+    P("NHRAboveOthers", lambda: (lambda o: "no other method" if not o else listing(f"{LAB[a]} ({hm[a]['runs_above_installed']})" for a in o))(
+        [a for a in M10 if a != focus and a in hm and hm[a]["runs_above_installed"] > 0]), REQ_HR)
+    lb = hr.get("loss_by_setting") or {}
+    for tag, nm, req in (("6030F", "FeasInit", REQ_FEAS), ("30030R", "ThirtyK", REQ_B30), ("120030R", "OneTwentyK", REQ_B120)):
+        P(f"NHRLoss{nm}PSOVNS", lambda tag=tag: num(lb["PSOBV"][tag]["loss"], 2), req + REQ_HR)
+        P(f"NHRMean{nm}PSOVNS", lambda tag=tag: num(lb["PSOBV"][tag]["mean_aep"], 2), req + REQ_HR)
+        P(f"NHRAbove{nm}PSOVNS", lambda tag=tag: str(lb["PSOBV"][tag]["runs_above_installed"]), req + REQ_HR)
+        P(f"NHRFeas{nm}PSO", lambda tag=tag: f"{lb['PSOC'][tag]['feasible']}/{lb['PSOC'][tag]['runs']}", req + REQ_HR)
+
+    # ---------------- feasible initialization and budget (six largest benchmark cases)
+    fb = s.get("feasbudget") or {}
+    ran, fea = fb.get("random") or {}, fb.get("feasible") or {}
+    for a in ("PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "RSVNS"):
+        c = CODE[a]
+        P(f"NFbRandFeas{c}", lambda a=a: num(ran[a]["feas"], 1), REQ_MAIN)
+        P(f"NFbRandLoss{c}", lambda a=a: numd(ran[a]["loss"], 2), REQ_MAIN)
+        P(f"NFbFeasFeas{c}", lambda a=a: num(fea[a]["feas"], 1), REQ_FEAS)
+        P(f"NFbFeasLoss{c}", lambda a=a: numd(fea[a]["loss"], 2), REQ_FEAS)
+    P("NFbFeasBestLoss", lambda: LAB[min((a for a in fea if fea[a] and fea[a]["loss"] is not None), key=lambda a: fea[a]["loss"])], REQ_FEAS)
+    P("NFbFeasBestRank", lambda: LAB[min(fb["rank_feasible_init"], key=fb["rank_feasible_init"].get)], REQ_FEAS)
+    P("NFbFeasRankPSOVNS", lambda: num(fb["rank_feasible_init"]["PSOBV"], 2), REQ_FEAS)
+    rk = fb.get("rank") or {}
+    for b in BUDGETS:
+        req = {6030: REQ_MAIN, 30030: REQ_B30, 120030: REQ_B120}[b]
+        for a in ("PSOBV", "PSOC", "BVNS", "RSVNS", "SLSQP", "SSABV"):
+            P(f"NBudRank{CODE[a]}{BNAME[b]}", lambda a=a, b=b: num(rk[str(b)][a], 2), req)
+            P(f"NBudLoss{CODE[a]}{BNAME[b]}", lambda a=a, b=b: num(fb["mean_loss"][str(b)][a], 2), req)
+        P(f"NBudBest{BNAME[b]}", lambda b=b: LAB[min(rk[str(b)], key=rk[str(b)].get)], req)
+        P(f"NBudGainPSO{BNAME[b]}", lambda b=b: num(fb["mean_loss"][str(b)]["PSOC"] - fb["mean_loss"][str(b)]["PSOBV"], 2, sign=True), req)
+
+    def budget_phrase():
+        best = {b: min(rk[str(b)], key=rk[str(b)].get) for b in BUDGETS}
+        if all(best[b] == focus for b in BUDGETS):
+            return f"{LAB[focus]} keeps the best average rank at all three budgets"
+        lost = [b for b in BUDGETS if best[b] != focus]
+        return (f"{LAB[focus]} has the best average rank at " + listing(BTXT[b] for b in BUDGETS if best[b] == focus) +
+                " calls, and " + listing(f"{LAB[best[b]]} at {BTXT[b]}" for b in lost) + " calls")
+    P("NBudgetPhrase", budget_phrase, REQ_MAIN + REQ_B30 + REQ_B120, "budget ranking")
+
+    def feas_phrase():
+        # which methods gain feasibility, and does the best method change
+        gain = [a for a in M10 if ran.get(a) and fea.get(a) and fea[a]["feas"] - ran[a]["feas"] >= 5]
+        txt = ("the share of feasible runs rises for " + listing(f"{LAB[a]} ({num(ran[a]['feas'], 1)}\\% to {num(fea[a]['feas'], 1)}\\%)" for a in gain)
+               if gain else "the share of feasible runs changes by less than five percentage points for every method")
+        return txt
+    P("NFeasInitPhrase", feas_phrase, REQ_MAIN + REQ_FEAS, "feasible-initialization summary")
+
+    # ---------------- IEA37
+    ic = (s.get("iea37_compact") or {}).get("methods", {})
+    pub = (s.get("iea37_compact") or {}).get("published", {})
+    for n, nm in ((16, "Sixteen"), (36, "ThirtySix")):
+        P(f"NIEAPubFeas{nm}", lambda n=n: str(pub[str(n)]["n_feasible"]), ("iea16", "iea36"))
+        for b in (6030, 30030):
+            k = f"{n}T_{b}"
+            P(f"NIEABest{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["best"], 1), REQ_IEA)
+            P(f"NIEAGap{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["best_gap_to_best_feasible_published_pct"], 2, sign=True), REQ_IEA)
+            P(f"NIEAMeanGap{nm}{BNAME[b]}", lambda k=k: num(ic["PSOBV"][k]["mean_gap_to_best_feasible_published_pct"], 2, sign=True), REQ_IEA)
+            P(f"NIEARank{nm}{BNAME[b]}", lambda k=k: ORD[ic["PSOBV"][k]["best_rank_among_feasible_published"]], REQ_IEA)
+            P(f"NIEAMeanRank{nm}{BNAME[b]}", lambda k=k: ORD[ic["PSOBV"][k]["mean_rank_among_feasible_published"]], REQ_IEA)
+            P(f"NIEABestOf{nm}{BNAME[b]}", lambda k=k: LAB[max((a for a in ic if ic[a].get(k) and ic[a][k]["best"] is not None),
+                                                                 key=lambda a: ic[a][k]["best"])], REQ_IEA)
+
+    P("NIEAPhrase", lambda: "reach " + listing(
+        f"{num(100 + ic['PSOBV'][f'{n}T_30030']['best_gap_to_best_feasible_published_pct'], 1)}\\% ({n} turbines)" for n in (16, 36))
+        + " of the AEP of the best feasible published layouts", REQ_IEA, "IEA37 summary")
+
+    # ---------------- cost
+    co = s.get("cost") or {}
+    P("NMsPerCallMin", lambda: num(min(co["ms_per_call"].values()), 2), REQ_MAIN)
+    P("NMsPerCallMax", lambda: num(max(co["ms_per_call"].values()), 2), REQ_MAIN)
+    P("NSecPerRunMin", lambda: num(co["sec_per_run_range"]["PSOBV"][0], 1), REQ_MAIN)
+    P("NSecPerRunMax", lambda: num(co["sec_per_run_range"]["PSOBV"][1], 1), REQ_MAIN)
+
+    # ---------------- robustness
+    rb = s.get("robustness") or {}
+    P("NCubicOverI", lambda: num(-rb["Cubic"]["rel_change_pct"]["1"], 1), REQ_MAIN)
+    P("NCubicOverII", lambda: num(-rb["Cubic"]["rel_change_pct"]["2"], 1), REQ_MAIN)
+    for col, nm in (("Cubic", "Cubic"), ("CubicCutout", "Cutout"), ("Gauss", "Gauss")):
+        P(f"NTau{nm}", lambda col=col: num(rb[col]["tau"], 2), REQ_MAIN)
+        P(f"NSame{nm}", lambda col=col: num(rb[col]["same_best_pct"], 0), REQ_MAIN)
+        P(f"NRank{nm}PSOVNS", lambda col=col: num(rb[col]["avg_rank"][focus], 2), REQ_MAIN)
+        P(f"NRank{nm}PSO", lambda col=col: num(rb[col]["avg_rank"]["PSOC"], 2), REQ_MAIN)
+        P(f"NPos{nm}PSOVNS", lambda col=col: ORD[1 + sorted(rb[col]["avg_rank"].values()).index(rb[col]["avg_rank"][focus])], REQ_MAIN)
+        P(f"NBest{nm}", lambda col=col: LAB[min(rb[col]["avg_rank"], key=rb[col]["avg_rank"].get)], REQ_MAIN)
+    P("NGaussDeltaI", lambda: num(rb["Gauss"]["rel_change_pct"]["1"], 1, sign=True), REQ_MAIN)
+
+    # ---------------- minimum spacing of the final layouts
+    sh = main.get("spacing_share") or {}
+    P("NSpFiveAll", lambda: num(sh["all"]["pct_5d"], 0), REQ_MAIN)
+    P("NSpSixAll", lambda: num(sh["all"]["pct_6d"], 0), REQ_MAIN)
+    P("NSpFiveLarge", lambda: num(sh["n11_15"]["pct_5d"], 1), REQ_MAIN)
+    P("NSpSixLarge", lambda: num(sh["n11_15"]["pct_6d"], 1), REQ_MAIN)
+    return M
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--summary", default=os.path.join(HERE, "mpce_summary.json"))
+    ap.add_argument("--out", default=os.path.join(HERE, "mpce_numbers.tex"))
+    ap.add_argument("--allow-partial", action="store_true")
+    a = ap.parse_args(argv)
+    s = json.load(open(a.summary))
+    M = build(s, a.allow_partial)
+    fb = [f for f in s.get("fallbacks", []) if "FALLBACK" in f or "fallback" in f or "old-platform" in f]
+    hdr = ["% generated by mpce_numbers.py from mpce_summary.json (" + s.get("generated", "?") + ") -- do not edit by hand",
+           "% pending macros (expand to \\TBD{pending: ...}): " + (", ".join(M.pending) if M.pending else "none")]
+    hdr += ["% data note: " + f for f in s.get("fallbacks", [])]
+    open(a.out, "w").write("\n".join(hdr + M.out) + "\n")
+    print(f"mpce_numbers.py: wrote {len(M.out)} macros to {os.path.relpath(a.out)} ({len(M.pending)} pending)")
+    for e in M.errors:
+        print("  value missing:", e)
+    return M
+
+
+if __name__ == "__main__":
+    main()

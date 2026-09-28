@@ -152,6 +152,221 @@ $N$ & Ideal & PSO-VNS & PSO & SSA-VNS & SSA & LX-SSA & DE & VNS & MS-SLSQP \\
 \end{tabular}}
 \end{table*}
 
+\begin{table*}[!htb]
+\centering
+\caption{Minimum-spacing sensitivity re-optimization with the original LX-SSA and SSA code (6,030 calls, 30 seed-paired runs per cell): mean benchmark objective, Wilcoxon signed-rank $p$ for LX-SSA vs.\ SSA, and the mean LX-SSA wake loss as a percentage of the ideal objective at $4D$ and $6D$. A superscript gives the number of feasible runs when fewer than 30.}
+\label{tab:spacing-authors}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{ccccccccccccc}
+\toprule
+& & & \multicolumn{3}{c}{$4D$ (308 m)} & \multicolumn{3}{c}{$5D$ (385 m)} & \multicolumn{3}{c}{$6D$ (462 m)} & \\
+\cmidrule(lr){4-6}\cmidrule(lr){7-9}\cmidrule(lr){10-12}
+DS & $r$ (m) & $N$ & LX-SSA & SSA & $p$ & LX-SSA & SSA & $p$ & LX-SSA & SSA & $p$ & LX-SSA loss (\%) \\
+\midrule
+1 & 500 & 4 & 56078.8 & 56086.8 & 0.237 & 56082.4 & 56085.2 & 0.700 & 56075.5 & 56083.9 & 0.839 & 0.19 $\rightarrow$ 0.19 \\
+1 & 750 & 8 & 111374.0 & 111506.5 & 0.245 & 111154.1 & 111163.4 & 0.871 & 110314.4$^{28}$ & 110847.5 & 0.021 & 0.88 $\rightarrow$ 1.85 \\
+1 & 1000 & 8 & 111924.6 & 111947.1 & 0.887 & 111953.5 & 111946.4 & 0.777 & 111781.5 & 111964.7 & 0.005 & 0.39 $\rightarrow$ 0.52 \\
+2 & 500 & 4 & 29004.2 & 29028.7 & 0.146 & 28999.5 & 29019.6 & 0.229 & 28981.8 & 28971.1 & 0.612 & 0.88 $\rightarrow$ 0.96 \\
+2 & 750 & 8 & 56659.2 & 56806.2 & 0.061 & 56621.0 & 56673.3 & 0.584 & 56533.9$^{28}$ & 56690.6 & 0.038 & 3.18 $\rightarrow$ 3.47 \\
+2 & 1000 & 8 & 57645.1 & 57739.3 & 0.084 & 57580.7 & 57655.7 & 0.140 & 57475.5 & 57587.2 & 0.114 & 1.50 $\rightarrow$ 1.79 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+\begin{table}[!htb]
+\centering
+\caption{Largest turbine count for which a layout satisfying the circular boundary and the minimum spacing was constructed (multi-start packing search; constructive lower bound), compared with the largest tested $N$.}
+\label{tab:capacity}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{ccccc}
+\toprule
+$r$ (m) & $4D$ (308 m) & $5D$ (385 m) & $6D$ (462 m) & Largest tested $N$ \\
+\midrule
+500 & 13 & 8 & 7 & 10 \\
+750 & 26 & 19 & 13 & 12 \\
+1000 & 42 & 29 & 21 & 15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table*}[!t]
+\centering
+\caption{Case-level analysis over the 68 benchmark cases. Ranks of the mean feasible objective within each case (1 = best); a method with fewer than 15 feasible runs out of 30 in a case is ranked below all other methods, by its number of feasible runs (``$<$15'': number of such cases). Friedman $\chi^2_F=319.4$ (7 d.f.), $p=4.39\times10^{-65}$; Iman--Davenport $F_F=136.6$, $p=6.02\times10^{-109}$. $p_z$: Holm-adjusted $p$ of the average-rank $z$ test against PSO-VNS (best-ranked method: PSO-VNS). Because mean-rank post hoc tests depend on the pool of compared methods \cite{Benavoli2016}, pairwise two-sided Wilcoxon signed-rank tests on the per-case mean wake losses (\%) are also given: $p_W$ (Holm-adjusted over the 7 comparisons), matched-pairs rank-biserial correlation $r_{\rm rb}$ (positive = PSO-VNS better) and mean difference $\overline{\Delta L}$ of the wake loss (percentage points, PSO-VNS minus method, over the cases where both methods have at least 15 feasible runs). ``Best'': cases in which the method alone ranks first; ``Feas.'': percentage of feasible runs.}
+\label{tab:friedman68-full}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccccc}
+\toprule
+Method & Avg.\ rank & Best & Feas.\ (\%) & $<$15 & $p_z$ & $p_W$ & $r_{\rm rb}$ & $\overline{\Delta L}$ (pp) \\
+\midrule
+PSO-VNS & 1.82 & 29 & 100.0 & 0 & -- & -- & -- & -- \\
+PSO & 1.97 & 25 & 100.0 & 0 & 0.713 & 0.296 & +0.16 & $-0.018$ \\
+SSA-VNS & 3.45 & 0 & 99.6 & 0 & $2.04\times10^{-4}$ & $5.69\times10^{-11}$ & +1.00 & $-0.330$ \\
+VNS & 4.41 & 3 & 100.0 & 0 & $1.94\times10^{-9}$ & $1.26\times10^{-10}$ & +0.98 & $-0.465$ \\
+SSA & 5.37 & 0 & 97.6 & 2 & $1.12\times10^{-16}$ & $4.55\times10^{-11}$ & +1.00 & $-0.611$ \\
+MS-SLSQP & 5.87 & 1 & 99.9 & 0 & $2.59\times10^{-21}$ & $2.72\times10^{-11}$ & +0.97 & $-0.443$ \\
+LX-SSA & 6.06 & 0 & 96.9 & 2 & $3.33\times10^{-23}$ & $4.55\times10^{-11}$ & +1.00 & $-0.765$ \\
+DE & 7.06 & 0 & 71.4 & 18 & $6.72\times10^{-35}$ & $5.59\times10^{-11}$ & +1.00 & $-0.887$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[p]
+\centering
+\caption{Coordinates (m, farm center at the origin) of the best layout of all methods and of the best PSO-VNS layout for the largest $N$ of each farm (6,030 calls); objective in benchmark units.}
+\label{tab:coords}
+\tiny\setlength{\tabcolsep}{3pt}
+\begin{tabular}{cccccl}
+\toprule
+DS & $r$ (m) & $N$ & Method & Objective & Coordinates $(x_i, y_i)$ \\
+\midrule
+I & 500 & 10 & MS-SLSQP & 138171.2 & \parbox[t]{9.2cm}{\raggedright (-315.2, 388.1); (277.9, -409.2); (-187.2, 43.6); (-27.6, -450.5); (-17.7, 306.6); (460.7, -160.4); (-365.7, -337.8); (-485.5, -33.0); (273.5, 408.8); (140.3, 40.7)} \\
+I & 500 & 10 & PSO-VNS & 137994.8 & \parbox[t]{9.2cm}{\raggedright (485.3, -32.1); (-346.0, 302.7); (322.3, -382.2); (-376.7, -328.3); (317.9, 385.7); (142.8, 131.7); (-59.3, -101.1); (-46.5, 497.1); (-497.9, -0.5); (-88.7, -476.6)} \\
+I & 750 & 12 & PSO-VNS & 167040.0 & \parbox[t]{9.2cm}{\raggedright (-71.5, 110.7); (192.8, -653.4); (741.7, 104.8); (395.5, 126.3); (65.5, -302.0); (-728.9, 172.1); (185.8, 655.0); (-226.9, 453.5); (-531.3, -385.6); (534.1, 524.5); (542.8, -343.4); (-223.2, -715.4)} \\
+I & 1000 & 15 & PSO & 208908.8 & \parbox[t]{9.2cm}{\raggedright (-466.8, -48.4); (923.5, 23.2); (684.6, 693.4); (-230.6, 303.0); (524.3, -694.5); (137.7, 67.9); (517.2, 119.0); (137.7, 964.0); (153.5, -960.7); (-232.5, -607.3); (675.4, -366.5); (-684.6, -361.8); (-980.6, 75.4); (-48.5, -210.1); (-687.0, 528.7)} \\
+I & 1000 & 15 & PSO-VNS & 208720.0 & \parbox[t]{9.2cm}{\raggedright (594.1, 135.8); (-268.3, -387.2); (786.8, -517.5); (-79.4, 263.7); (960.7, 115.7); (-852.8, -274.3); (-998.2, 26.9); (104.5, -420.5); (-552.9, -78.4); (342.1, -881.7); (97.7, 888.8); (-84.5, -912.6); (-515.9, 610.4); (-707.3, 234.6); (355.1, 465.8)} \\
+II & 500 & 10 & PSO-VNS & 68621.3 & \parbox[t]{9.2cm}{\raggedright (499.3, -17.9); (-357.0, 305.5); (302.3, -322.3); (-362.6, -295.2); (336.9, 352.5); (46.0, 150.6); (-45.5, -150.2); (-65.8, 495.6); (-499.5, -2.6); (-102.9, -475.6)} \\
+II & 750 & 12 & PSO-VNS & 83996.8 & \parbox[t]{9.2cm}{\raggedright (-159.3, -214.1); (492.9, 564.5); (-391.5, 639.1); (121.1, -739.2); (-44.2, 619.1); (-662.7, 13.0); (-641.7, -309.1); (-465.3, 325.3); (-348.1, -575.4); (665.0, -320.3); (98.2, 250.2); (724.3, 15.3)} \\
+II & 1000 & 15 & PSO-VNS & 105675.2 & \parbox[t]{9.2cm}{\raggedright (-19.0, 118.7); (-84.9, -328.5); (-602.6, 187.3); (639.7, -523.0); (-942.8, -326.2); (216.5, -974.4); (928.9, -325.3); (-386.7, 906.8); (349.5, 906.0); (-310.8, 528.7); (993.7, 2.3); (322.4, -676.0); (469.3, 84.1); (701.3, 536.4); (-435.2, -798.8)} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table}[!t]
+\centering
+\caption{Computational cost at 6,030 objective calls: mean wall-clock time per objective call (including the optimizer overhead) and range over $N$ of the mean time per run (single core). Times come from the machine that produced each result file.}
+\label{tab:cost}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcc}
+\toprule
+Method & ms per call & s per run \\
+\midrule
+PSO-VNS & 0.349 & 1.5--3.2 \\
+PSO & 0.244 & 1.0--2.2 \\
+SSA-VNS & 0.388 & 1.7--3.4 \\
+SSA & 0.399 & 1.7--3.6 \\
+LX-SSA & 0.396 & 1.7--3.6 \\
+DE & 0.467 & 2.0--4.3 \\
+VNS & 0.371 & 1.6--3.4 \\
+MS-SLSQP & 0.488 & 2.4--4.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htb]
+\centering
+\caption{Sensitivity of PSO-VNS to the budget split between the PSO and VNS phases (25\%, 50\% and 75\% of the 6,030 calls for PSO): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Holm-adjusted Wilcoxon signed-rank $p$ of the 50\% split against the 25\% and 75\% splits (30 seed-paired runs).}
+\label{tab:split-cases}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{cccccccc}
+\toprule
+DS & $r$ & $N$ & 25\% & 50\% & 75\% & $p$ (25) & $p$ (75) \\
+\midrule
+I & 500 & 6 & 83851.3 & 83918.5 & 83929.5 & 0.023 & 0.465 \\
+I & 500 & 10 & 135131.6 & 135160.5 & 135421.8 & 0.556 & 0.069 \\
+I & 750 & 8 & 111835.7 & 111921.0 & 111944.0 & 0.014 & 0.045 \\
+I & 750 & 12 & 164894.0 & 165526.4 & 165991.2 & 0.004 & 0.004 \\
+I & 1000 & 10 & 139700.6 & 139874.2 & 139883.7 & 0.002 & 0.529 \\
+I & 1000 & 15 & 207367.9 & 207308.1 & 207724.0 & 0.570 & $3.20\times10^{-5}$ \\
+II & 500 & 6 & 42809.4 & 42851.5 & 42883.5 & 0.110 & 0.110 \\
+II & 500 & 10 & 67624.1 & 67773.5 & 67799.8 & 0.115 & 0.903 \\
+II & 750 & 8 & 57358.0 & 57411.1 & 57448.4 & 0.121 & 0.121 \\
+II & 750 & 12 & 82784.6 & 82968.9 & 83182.0 & 0.070 & 0.006 \\
+II & 1000 & 10 & 71769.3 & 71906.7 & 71976.0 & 0.015 & 0.013 \\
+II & 1000 & 15 & 104349.6 & 104794.8 & 104784.9 & $4.63\times10^{-4}$ & 0.968 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htb]
+\centering
+\caption{Horns Rev~1 site case, 16-turbine block (Vestas V80 power and thrust curves, measured 12-sector wind climate, installed outline; Jensen wake $k=0.04$; minimum spacing $4D=320$~m; wake-free AEP 149.26~GWh/yr): AEP in GWh/yr, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls, mean wake loss (\%), feasible runs, Holm-adjusted Wilcoxon signed-rank $p$ of PSO-VNS vs.\ each method and rank-biserial $r_{\rm rb}$ (positive = PSO-VNS better); run-level Friedman $p=6.64\times10^{-28}$ (over the seeds common to all methods).}
+\label{tab:hr-site-full}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+Layout / method & AEP & Loss (\%) & Feas. & $p_{\rm Holm}$ & $r_{\rm rb}$ \\
+\midrule
+Installed layout & 139.51 & 6.53 & -- & -- & -- \\
+\midrule
+PSO-VNS & 138.73 (0.83) & 7.05 & 30/30 & -- & -- \\
+SSA-VNS & 137.98 (0.71) & 7.56 & 30/30 & $6.67\times10^{-4}$ & +0.68 \\
+LX-SSA-VNS & 137.77 (0.91) & 7.70 & 30/30 & $6.26\times10^{-4}$ & +0.72 \\
+RS-VNS & 137.96 (0.70) & 7.57 & 28/30 & $2.24\times10^{-4}$ & +0.78 \\
+VNS & 137.67 (1.02) & 7.77 & 30/30 & $2.24\times10^{-4}$ & +0.78 \\
+PSO & 138.06 (1.15) & 7.51 & 19/30 & $1.38\times10^{-5}$ & +0.88 \\
+SSA & 136.66 (1.00) & 8.44 & 30/30 & $2.79\times10^{-7}$ & +0.97 \\
+LX-SSA & 136.46 (0.90) & 8.58 & 28/30 & $1.49\times10^{-7}$ & +0.98 \\
+DE & -- & -- & 0/30 & $1.68\times10^{-8}$ & +1.00 \\
+MS-SLSQP & 136.80 (0.77) & 8.35 & 30/30 & $1.49\times10^{-7}$ & +0.98 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htb]
+\centering
+\caption{Feasibility-preserving versus uniform random initialization at 6,030 calls on the six largest benchmark cases and the Horns Rev 16-turbine block (7 cases, 30 seed-paired runs each): mean wake loss (\%) of the feasible runs averaged over the cases, percentage of feasible runs, and number of cases in which feasible initialization is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the methods of each case). Per-case values: Supplementary Table~\ref{tab:feasinit-cases}.}
+\label{tab:feasinit}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+Method & \multicolumn{2}{c}{Loss (\%)} & \multicolumn{2}{c}{Feas. (\%)} & W/T/L \\
+ & random & feasible & random & feasible & \\
+\midrule
+PSO-VNS & 4.509 & 4.370 & 100.0 & 100.0 & 1/6/0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[p]
+\centering
+\caption{Feasible versus random initialization per case (6,030 calls): mean wake loss (\%; Horns Rev: mean AEP in GWh/yr) of the feasible runs, feasible runs, Holm-adjusted Wilcoxon signed-rank $p$ (over the methods of the case) and rank-biserial $r_{\rm rb}$ (positive = feasible initialization better).}
+\label{tab:feasinit-cases}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccc}
+\toprule
+Method & Random & Feasible & Feas. (R) & Feas. (F) & $p_{\rm Holm}$ & $r_{\rm rb}$ \\
+\midrule
+\multicolumn{7}{l}{\emph{Data Set I, $r$ = 500 m, $N$ = 10}} \\
+PSO-VNS & 3.771 & 2.871 & 30/30 & 30/30 & 0.004 & +0.59 \\
+\multicolumn{7}{l}{\emph{Data Set I, $r$ = 750 m, $N$ = 12}} \\
+PSO-VNS & 1.793 & 1.909 & 30/30 & 30/30 & 0.339 & -0.20 \\
+\multicolumn{7}{l}{\emph{Data Set I, $r$ = 1000 m, $N$ = 15}} \\
+PSO-VNS & 1.603 & 1.586 & 30/30 & 30/30 & 0.598 & -0.11 \\
+\multicolumn{7}{l}{\emph{Data Set II, $r$ = 500 m, $N$ = 10}} \\
+PSO-VNS & 7.355 & 7.411 & 30/30 & 30/30 & 0.761 & -0.07 \\
+\multicolumn{7}{l}{\emph{Data Set II, $r$ = 750 m, $N$ = 12}} \\
+PSO-VNS & 5.486 & 5.304 & 30/30 & 30/30 & 0.096 & +0.35 \\
+\multicolumn{7}{l}{\emph{Data Set II, $r$ = 1000 m, $N$ = 15}} \\
+PSO-VNS & 4.498 & 4.549 & 30/30 & 30/30 & 0.556 & -0.13 \\
+\multicolumn{7}{l}{\emph{Horns Rev 1, 16 turbines}} \\
+PSO-VNS & 138.73 & 138.88 & 30/30 & 30/30 & 0.318 & +0.21 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table*}[!htb]
+\centering
+\caption{Budget scaling (random initialization) on the six largest benchmark cases and the Horns Rev 16-turbine block: average rank over the 7 cases (ranking rule of Table~\ref{M-tab:friedman68}), mean wake loss (\%) of the feasible runs averaged over the six benchmark cases in which the method has at least half of its runs feasible, and percentage of feasible runs. Per-case values: Table~\ref{tab:budget-cases}.}
+\label{tab:budget}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccccccc}
+\toprule
+Method & \multicolumn{3}{c}{6{,}030 calls} & \multicolumn{3}{c}{30{,}030 calls} & \multicolumn{3}{c}{120{,}030 calls} \\
+ & Rank & Loss & Feas. & Rank & Loss & Feas. & Rank & Loss & Feas. \\
+\midrule
+PSO-VNS & 1.43 & 4.084 & 100 & 1.14 & 3.336 & 100 & 2.71 & 3.126 & 100 \\
+PSO & 1.86 & 4.181 & 95 & 3.00 & 3.512 & 99 & 4.43 & 3.268 & 100 \\
+SSA-VNS & 4.14 & 4.678 & 96 & 4.71 & 3.725 & 100 & 4.71 & 3.209 & 100 \\
+SSA & 8.29 & 4.828 & 83 & 8.57 & 4.767 & 97 & 8.86 & 4.202 & 100 \\
+LX-SSA & 8.71 & 5.379 & 80 & 9.86 & 5.435 & 97 & 10.00 & 4.900 & 100 \\
+DE & 10.00 & -- & 1 & 5.71 & 3.930 & 82 & 3.43 & 3.286 & 100 \\
+VNS & 6.43 & 4.950 & 100 & 3.86 & 3.724 & 100 & 5.00 & 3.284 & 100 \\
+MS-SLSQP & 4.29 & 4.506 & 100 & 6.57 & 3.948 & 100 & 7.14 & 3.557 & 100 \\
+LX-SSA-VNS & 5.14 & 4.802 & 99 & 5.57 & 3.896 & 100 & 4.71 & 3.178 & 100 \\
+RS-VNS & 4.71 & 4.830 & 93 & 6.00 & 3.830 & 100 & 4.00 & 3.196 & 100 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 \begin{table}[p]
 \centering
 \caption{Budget scaling per case: mean wake loss (\%; Horns Rev: mean AEP in GWh/yr) of the feasible runs and feasible runs at each budget (random initialization).}
@@ -162,82 +377,170 @@ $N$ & Ideal & PSO-VNS & PSO & SSA-VNS & SSA & LX-SSA & DE & VNS & MS-SLSQP \\
 Method & 6{,}030 & Feas. & 30{,}030 & Feas. & 120{,}030 & Feas. \\
 \midrule
 \multicolumn{7}{l}{\emph{Data Set I, $r$ = 500 m, $N$ = 10 (wake loss, \%)}} \\
-PSO-VNS & 3.771 & 30/30 & -- & -- & 2.413 & 15/15 \\
-PSO & 3.604 & 30/30 & 2.622 & 10/10 & -- & -- \\
-SSA-VNS & 4.369 & 26/30 & 2.747 & 10/10 & -- & -- \\
-SSA & 5.582 & 12/30 & 5.529 & 8/10 & -- & -- \\
-LX-SSA & 6.756 & 13/30 & 4.569 & 9/10 & -- & -- \\
-DE & 6.737 & 1/30 & 3.123 & 10/10 & -- & -- \\
-VNS & 4.905 & 30/30 & 3.039 & 10/10 & -- & -- \\
-MS-SLSQP & 3.557 & 30/30 & 2.730 & 10/10 & -- & -- \\
-LX-SSA-VNS & 4.888 & 29/30 & 3.389 & 10/10 & -- & -- \\
-RS-VNS & 4.879 & 24/30 & 3.167 & 10/10 & -- & -- \\
+PSO-VNS & 3.771 & 30/30 & 2.506 & 30/30 & 2.261 & 22/22 \\
+PSO & 3.604 & 30/30 & 2.994 & 20/20 & 2.705 & 7/7 \\
+SSA-VNS & 4.369 & 26/30 & 2.848 & 20/20 & 2.202 & 8/8 \\
+SSA & 5.582 & 12/30 & 4.836 & 18/20 & 4.110 & 8/8 \\
+LX-SSA & 6.756 & 13/30 & 5.574 & 18/20 & 4.746 & 8/8 \\
+DE & 6.737 & 1/30 & 3.139 & 20/20 & 3.014 & 7/7 \\
+VNS & 4.905 & 30/30 & 2.961 & 20/20 & 2.420 & 7/7 \\
+MS-SLSQP & 3.557 & 30/30 & 2.647 & 20/20 & 1.994 & 8/8 \\
+LX-SSA-VNS & 4.888 & 29/30 & 3.556 & 20/20 & 2.080 & 8/8 \\
+RS-VNS & 4.879 & 24/30 & 3.181 & 20/20 & 2.139 & 7/7 \\
 \multicolumn{7}{l}{\emph{Data Set I, $r$ = 750 m, $N$ = 12 (wake loss, \%)}} \\
-PSO-VNS & 1.793 & 30/30 & -- & -- & 1.031 & 15/15 \\
-PSO & 1.615 & 30/30 & 1.280 & 10/10 & -- & -- \\
-SSA-VNS & 2.533 & 30/30 & 1.630 & 10/10 & -- & -- \\
-SSA & 3.349 & 30/30 & 2.235 & 10/10 & -- & -- \\
-LX-SSA & 4.105 & 28/30 & 2.404 & 10/10 & -- & -- \\
-DE & -- & 0/30 & 1.224 & 10/10 & -- & -- \\
-VNS & 2.869 & 30/30 & 1.681 & 10/10 & -- & -- \\
-MS-SLSQP & 2.305 & 30/30 & 1.916 & 10/10 & -- & -- \\
-LX-SSA-VNS & 2.431 & 30/30 & 1.507 & 10/10 & -- & -- \\
-RS-VNS & 2.404 & 30/30 & 1.743 & 10/10 & -- & -- \\
+PSO-VNS & 1.793 & 30/30 & 1.214 & 30/30 & 1.057 & 23/23 \\
+PSO & 1.615 & 30/30 & 1.310 & 20/20 & 1.123 & 8/8 \\
+SSA-VNS & 2.533 & 30/30 & 1.702 & 20/20 & 1.143 & 7/7 \\
+SSA & 3.349 & 30/30 & 2.277 & 20/20 & 1.920 & 7/7 \\
+LX-SSA & 4.105 & 28/30 & 2.451 & 20/20 & 2.206 & 8/8 \\
+DE & -- & 0/30 & 1.150 & 20/20 & 1.194 & 7/7 \\
+VNS & 2.869 & 30/30 & 1.698 & 20/20 & 1.224 & 7/7 \\
+MS-SLSQP & 2.305 & 30/30 & 1.895 & 20/20 & 1.549 & 7/7 \\
+LX-SSA-VNS & 2.431 & 30/30 & 1.566 & 20/20 & 1.227 & 8/8 \\
+RS-VNS & 2.404 & 30/30 & 1.718 & 20/20 & 1.172 & 8/8 \\
 \multicolumn{7}{l}{\emph{Data Set I, $r$ = 1000 m, $N$ = 15 (wake loss, \%)}} \\
-PSO-VNS & 1.603 & 30/30 & -- & -- & 1.032 & 15/15 \\
-PSO & 1.624 & 30/30 & 1.136 & 10/10 & -- & -- \\
-SSA-VNS & 1.693 & 30/30 & 1.351 & 10/10 & -- & -- \\
-SSA & 2.804 & 30/30 & 1.971 & 10/10 & -- & -- \\
-LX-SSA & 3.325 & 29/30 & 2.305 & 10/10 & -- & -- \\
-DE & -- & 0/30 & 1.838 & 7/10 & -- & -- \\
-VNS & 1.993 & 30/30 & 1.375 & 10/10 & -- & -- \\
-MS-SLSQP & 2.196 & 30/30 & 1.865 & 10/10 & -- & -- \\
-LX-SSA-VNS & 1.777 & 30/30 & 1.460 & 10/10 & -- & -- \\
-RS-VNS & 1.946 & 30/30 & 1.667 & 10/10 & -- & -- \\
+PSO-VNS & 1.603 & 30/30 & 1.160 & 30/30 & 1.036 & 22/22 \\
+PSO & 1.624 & 30/30 & 1.164 & 20/20 & 1.105 & 8/8 \\
+SSA-VNS & 1.693 & 30/30 & 1.439 & 20/20 & 1.201 & 7/7 \\
+SSA & 2.804 & 30/30 & 2.012 & 20/20 & 1.538 & 7/7 \\
+LX-SSA & 3.325 & 29/30 & 2.622 & 20/20 & 2.074 & 7/7 \\
+DE & -- & 0/30 & 2.220 & 15/20 & 0.999 & 8/8 \\
+VNS & 1.993 & 30/30 & 1.372 & 20/20 & 1.178 & 8/8 \\
+MS-SLSQP & 2.196 & 30/30 & 1.902 & 20/20 & 1.646 & 7/7 \\
+LX-SSA-VNS & 1.777 & 30/30 & 1.553 & 20/20 & 1.150 & 7/7 \\
+RS-VNS & 1.946 & 30/30 & 1.529 & 20/20 & 1.108 & 8/8 \\
 \multicolumn{7}{l}{\emph{Data Set II, $r$ = 500 m, $N$ = 10 (wake loss, \%)}} \\
-PSO-VNS & 7.355 & 30/30 & -- & -- & 6.518 & 15/15 \\
-PSO & 7.767 & 30/30 & 6.904 & 10/10 & -- & -- \\
-SSA-VNS & 8.266 & 25/30 & 7.120 & 10/10 & -- & -- \\
-SSA & 9.942 & 12/30 & 9.106 & 8/10 & -- & -- \\
-LX-SSA & 9.959 & 13/30 & 8.811 & 9/10 & -- & -- \\
-DE & 12.185 & 1/30 & 7.067 & 10/10 & -- & -- \\
-VNS & 8.336 & 30/30 & 7.060 & 10/10 & -- & -- \\
-MS-SLSQP & 8.018 & 29/30 & 7.176 & 10/10 & -- & -- \\
-LX-SSA-VNS & 8.548 & 29/30 & 7.039 & 10/10 & -- & -- \\
-RS-VNS & 8.652 & 24/30 & 7.125 & 10/10 & -- & -- \\
+PSO-VNS & 7.355 & 30/30 & 6.750 & 30/30 & 6.391 & 23/23 \\
+PSO & 7.767 & 30/30 & 7.006 & 20/20 & 6.311 & 7/7 \\
+SSA-VNS & 8.266 & 25/30 & 7.112 & 20/20 & 6.418 & 8/8 \\
+SSA & 9.942 & 12/30 & 8.325 & 18/20 & 7.708 & 8/8 \\
+LX-SSA & 9.959 & 13/30 & 9.145 & 18/20 & 9.190 & 7/7 \\
+DE & 12.185 & 1/30 & 6.920 & 20/20 & 6.821 & 8/8 \\
+VNS & 8.336 & 30/30 & 6.981 & 20/20 & 6.681 & 8/8 \\
+MS-SLSQP & 8.018 & 29/30 & 7.259 & 20/20 & 6.988 & 8/8 \\
+LX-SSA-VNS & 8.548 & 29/30 & 7.185 & 20/20 & 6.556 & 7/7 \\
+RS-VNS & 8.652 & 24/30 & 7.262 & 20/20 & 6.675 & 7/7 \\
 \multicolumn{7}{l}{\emph{Data Set II, $r$ = 750 m, $N$ = 12 (wake loss, \%)}} \\
-PSO-VNS & 5.486 & 30/30 & -- & -- & 4.299 & 15/15 \\
-PSO & 5.594 & 30/30 & 4.716 & 10/10 & -- & -- \\
-SSA-VNS & 6.019 & 30/30 & 4.955 & 10/10 & -- & -- \\
-SSA & 6.792 & 30/30 & 5.927 & 10/10 & -- & -- \\
-LX-SSA & 7.339 & 28/30 & 6.315 & 10/10 & -- & -- \\
-DE & -- & 0/30 & 4.963 & 10/10 & -- & -- \\
-VNS & 6.170 & 30/30 & 4.935 & 10/10 & -- & -- \\
-MS-SLSQP & 5.602 & 30/30 & 5.178 & 10/10 & -- & -- \\
-LX-SSA-VNS & 5.946 & 30/30 & 4.702 & 10/10 & -- & -- \\
-RS-VNS & 5.888 & 30/30 & 4.876 & 10/10 & -- & -- \\
+PSO-VNS & 5.486 & 30/30 & 4.525 & 30/30 & 4.320 & 22/22 \\
+PSO & 5.594 & 30/30 & 4.566 & 20/20 & 4.499 & 7/7 \\
+SSA-VNS & 6.019 & 30/30 & 4.881 & 20/20 & 4.428 & 8/8 \\
+SSA & 6.792 & 30/30 & 5.918 & 20/20 & 5.163 & 8/8 \\
+LX-SSA & 7.339 & 28/30 & 6.642 & 20/20 & 5.700 & 8/8 \\
+DE & -- & 0/30 & 4.739 & 20/20 & 4.132 & 7/7 \\
+VNS & 6.170 & 30/30 & 5.050 & 20/20 & 4.145 & 7/7 \\
+MS-SLSQP & 5.602 & 30/30 & 5.129 & 20/20 & 4.789 & 8/8 \\
+LX-SSA-VNS & 5.946 & 30/30 & 4.891 & 20/20 & 4.363 & 8/8 \\
+RS-VNS & 5.888 & 30/30 & 4.934 & 20/20 & 4.399 & 7/7 \\
 \multicolumn{7}{l}{\emph{Data Set II, $r$ = 1000 m, $N$ = 15 (wake loss, \%)}} \\
-PSO-VNS & 4.498 & 30/30 & -- & -- & 3.684 & 15/15 \\
-PSO & 4.880 & 30/30 & 3.955 & 10/10 & -- & -- \\
-SSA-VNS & 5.190 & 30/30 & 4.124 & 10/10 & -- & -- \\
-SSA & 6.365 & 30/30 & 5.073 & 10/10 & -- & -- \\
-LX-SSA & 6.747 & 29/30 & 6.198 & 10/10 & -- & -- \\
-DE & -- & 0/30 & 4.902 & 7/10 & -- & -- \\
-VNS & 5.425 & 30/30 & 4.233 & 10/10 & -- & -- \\
-MS-SLSQP & 5.356 & 30/30 & 4.776 & 10/10 & -- & -- \\
-LX-SSA-VNS & 5.220 & 30/30 & 4.711 & 10/10 & -- & -- \\
-RS-VNS & 5.210 & 30/30 & 4.408 & 10/10 & -- & -- \\
+PSO-VNS & 4.498 & 30/30 & 3.862 & 30/30 & 3.691 & 23/23 \\
+PSO & 4.880 & 30/30 & 4.031 & 20/20 & 3.864 & 8/8 \\
+SSA-VNS & 5.190 & 30/30 & 4.365 & 20/20 & 3.864 & 7/7 \\
+SSA & 6.365 & 30/30 & 5.234 & 20/20 & 4.772 & 7/7 \\
+LX-SSA & 6.747 & 29/30 & 6.178 & 20/20 & 5.483 & 8/8 \\
+DE & -- & 0/30 & 5.414 & 15/20 & 3.553 & 7/7 \\
+VNS & 5.425 & 30/30 & 4.283 & 20/20 & 4.056 & 7/7 \\
+MS-SLSQP & 5.356 & 30/30 & 4.854 & 20/20 & 4.374 & 7/7 \\
+LX-SSA-VNS & 5.220 & 30/30 & 4.624 & 20/20 & 3.695 & 8/8 \\
+RS-VNS & 5.210 & 30/30 & 4.354 & 20/20 & 3.684 & 8/8 \\
 \multicolumn{7}{l}{\emph{Horns Rev 1, 16 turbines (AEP, GWh/yr)}} \\
-PSO-VNS & 138.73 & 30/30 & -- & -- & 139.71 & 5/5 \\
-PSO & 138.06 & 19/30 & 139.41 & 9/10 & -- & -- \\
-SSA-VNS & 137.98 & 30/30 & 138.73 & 10/10 & -- & -- \\
-SSA & 136.66 & 30/30 & 137.01 & 10/10 & -- & -- \\
-LX-SSA & 136.46 & 28/30 & 136.91 & 10/10 & -- & -- \\
-DE & -- & 0/30 & 138.90 & 4/10 & -- & -- \\
-VNS & 137.67 & 30/30 & 139.22 & 10/10 & -- & -- \\
-MS-SLSQP & 136.80 & 30/30 & 137.77 & 10/10 & -- & -- \\
-LX-SSA-VNS & 137.77 & 30/30 & 138.64 & 10/10 & -- & -- \\
-RS-VNS & 137.96 & 28/30 & 138.71 & 10/10 & -- & -- \\
+PSO-VNS & 138.73 & 30/30 & 139.62 & 30/30 & 139.71 & 7/7 \\
+PSO & 138.06 & 19/30 & 139.15 & 18/20 & 139.31 & 2/2 \\
+SSA-VNS & 137.98 & 30/30 & 138.63 & 20/20 & 139.59 & 3/3 \\
+SSA & 136.66 & 30/30 & 137.45 & 20/20 & 138.02 & 3/3 \\
+LX-SSA & 136.46 & 28/30 & 136.74 & 20/20 & 136.92 & 3/3 \\
+DE & -- & 0/30 & 138.70 & 5/20 & 140.46 & 2/2 \\
+VNS & 137.67 & 30/30 & 139.38 & 20/20 & 140.06 & 2/2 \\
+MS-SLSQP & 136.80 & 30/30 & 137.77 & 20/20 & 138.35 & 3/3 \\
+LX-SSA-VNS & 137.77 & 30/30 & 138.81 & 20/20 & 138.95 & 3/3 \\
+RS-VNS & 137.96 & 28/30 & 138.76 & 20/20 & 139.55 & 2/2 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{table}[p]
+\centering
+\caption{IEA Wind Task~37 Case Study~1 (16- and 36-turbine scenarios; official AEP model): AEP (MWh) mean, best and SD over the feasible runs, mean wake loss relative to the wake-free AEP (\%), feasible runs, rank (ranking rule of Table~\ref{M-tab:friedman68}) and Holm-adjusted Wilcoxon signed-rank $p$ of PSO-VNS vs.\ each method, per scenario and budget.}
+\label{tab:iea37-detail}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lccccccc}
+\toprule
+Method & Mean & Best & SD & Loss (\%) & Feas. & Rank & $p_{\rm Holm}$ \\
+\midrule
+\multicolumn{8}{l}{\emph{IEA37 CS1, 16 turbines, 6{,}030 calls}} \\
+PSO & 390{,}540 & 403{,}753 & 7{,}192 & 16.82 & 30/30 & 1 & -- \\
+SSA-VNS & 388{,}563 & 403{,}251 & 8{,}564 & 17.25 & 30/30 & 2 & -- \\
+VNS & 387{,}637 & 400{,}169 & 5{,}591 & 17.44 & 30/30 & 3 & -- \\
+LX-SSA-VNS & 386{,}930 & 397{,}429 & 6{,}911 & 17.59 & 30/30 & 4 & -- \\
+RS-VNS & 386{,}206 & 398{,}682 & 5{,}817 & 17.75 & 30/30 & 5 & -- \\
+MS-SLSQP & 382{,}605 & 405{,}434 & 20{,}279 & 18.51 & 18/30 & 6 & -- \\
+SSA & 378{,}073 & 395{,}150 & 9{,}076 & 19.48 & 30/30 & 7 & -- \\
+LX-SSA & 373{,}977 & 393{,}285 & 7{,}867 & 20.35 & 30/30 & 8 & -- \\
+DE & 338{,}611 & 357{,}391 & 8{,}837 & 27.88 & 27/30 & 9 & -- \\
+\multicolumn{8}{l}{\emph{IEA37 CS1, 16 turbines, 30{,}030 calls}} \\
+PSO & 401{,}347 & 412{,}702 & 4{,}764 & 14.52 & 30/30 & 1 & -- \\
+LX-SSA-VNS & 399{,}197 & 407{,}330 & 4{,}330 & 14.98 & 30/30 & 2 & -- \\
+SSA-VNS & 396{,}921 & 406{,}925 & 6{,}267 & 15.47 & 30/30 & 3 & -- \\
+VNS & 396{,}192 & 404{,}076 & 4{,}928 & 15.62 & 30/30 & 4 & -- \\
+RS-VNS & 396{,}163 & 408{,}205 & 4{,}977 & 15.63 & 30/30 & 5 & -- \\
+MS-SLSQP & 394{,}567 & 410{,}350 & 15{,}316 & 15.97 & 29/30 & 6 & -- \\
+SSA & 392{,}876 & 401{,}459 & 4{,}394 & 16.33 & 30/30 & 7 & -- \\
+LX-SSA & 390{,}267 & 398{,}770 & 5{,}052 & 16.88 & 30/30 & 8 & -- \\
+DE & 359{,}952 & 397{,}403 & 12{,}352 & 23.34 & 30/30 & 9 & -- \\
+\multicolumn{8}{l}{\emph{IEA37 CS1, 36 turbines, 6{,}030 calls}} \\
+VNS & 741{,}566 & 785{,}791 & 24{,}100 & 29.81 & 30/30 & 1 & -- \\
+PSO & 729{,}189 & 787{,}989 & 21{,}150 & 30.98 & 27/30 & 2 & -- \\
+SSA-VNS & 728{,}870 & 766{,}803 & 22{,}859 & 31.01 & 30/30 & 3 & -- \\
+SSA & 717{,}258 & 750{,}707 & 19{,}300 & 32.11 & 30/30 & 4 & -- \\
+LX-SSA-VNS & 715{,}952 & 757{,}838 & 30{,}626 & 32.23 & 29/30 & 5 & -- \\
+LX-SSA & 709{,}661 & 746{,}301 & 19{,}845 & 32.83 & 30/30 & 6 & -- \\
+RS-VNS & 709{,}276 & 750{,}170 & 21{,}667 & 32.86 & 28/30 & 7 & -- \\
+MS-SLSQP & 733{,}342 & 748{,}571 & 13{,}798 & 30.58 & 4/30 & 8 & -- \\
+DE & -- & -- & -- & -- & 0/30 & 9 & -- \\
+\multicolumn{8}{l}{\emph{IEA37 CS1, 36 turbines, 30{,}030 calls}} \\
+PSO & 802{,}252 & 830{,}256 & 13{,}260 & 24.06 & 30/30 & 1 & -- \\
+VNS & 801{,}797 & 824{,}230 & 11{,}876 & 24.10 & 30/30 & 2 & -- \\
+SSA-VNS & 791{,}404 & 819{,}931 & 14{,}356 & 25.09 & 30/30 & 3 & -- \\
+RS-VNS & 787{,}892 & 807{,}208 & 9{,}532 & 25.42 & 30/30 & 4 & -- \\
+LX-SSA-VNS & 785{,}677 & 810{,}989 & 13{,}216 & 25.63 & 30/30 & 5 & -- \\
+SSA & 771{,}298 & 802{,}538 & 14{,}756 & 26.99 & 30/30 & 6 & -- \\
+LX-SSA & 752{,}030 & 789{,}311 & 18{,}838 & 28.82 & 30/30 & 7 & -- \\
+MS-SLSQP & 798{,}913 & 833{,}365 & 41{,}511 & 24.38 & 14/30 & 8 & -- \\
+DE & -- & -- & -- & -- & 0/30 & 9 & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table*}[!htb]
+\centering
+\caption{IEA Wind Task~37 Case Study~1: AEP (MWh, official calculator) of the baseline (example) layout, of the best feasible and the best overall participant layout, our best feasible layout over all methods and budgets, the best PSO-VNS layout, mean PSO-VNS AEP (budgets 6{,}030 / 30{,}030 calls), and difference (\%) of the best PSO-VNS layout from the best feasible participant layout and from the baseline. ``infeas.'': violates the boundary or spacing constraint by more than 1~mm.}
+\label{tab:iea37-pub}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccc}
+\toprule
+Scenario & Baseline & Best feasible publ. & Best publ. & Our best & PSO-VNS best & PSO-VNS mean & $\Delta_{\rm publ}$ & $\Delta_{\rm base}$ \\
+\midrule
+IEA37 CS1, 16 turbines & 366{,}941.6 & 418{,}924.4 (par4) & 421{,}561.9 (par12, infeas.) & 412{,}702.4 (PSO) & -- &  & +nan & +nan \\
+IEA37 CS1, 36 turbines & 737{,}883.1 & 863{,}676.3 (par4) & 882{,}383.3 (par12, infeas.) & 833{,}365.0 (MS-SLSQP) & -- &  & +nan & +nan \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\begin{table*}[!htb]
+\centering
+\caption{Robustness of the results to the benchmark model. All feasible final layouts of the 8 methods are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model (both evaluated on the stored coordinates, rounded to 1~mm); average rank of each method over the 68 cases (ranking rule of Table~\ref{M-tab:friedman68}: methods with fewer than half of their runs feasible are ranked last, by their number of feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and the alternative ordering of the methods with at least 15 feasible runs within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
+\label{tab:robust}
+\scriptsize\setlength{\tabcolsep}{1.8pt}
+\begin{tabular}{lcccccccccccc}
+\toprule
+& \multicolumn{2}{c}{$\Delta$ (\%)} & \multicolumn{8}{c}{Average rank} & & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-11}
+Model & DS I & DS II & PSO-VNS & PSO & SSA-VNS & SSA & LX-SSA & DE & VNS & MS-SLSQP & $\bar\tau$ & Same best (\%) \\
+\midrule
+Benchmark (linear curve, Jensen) & +0.0 & +0.0 & 1.82 & 1.97 & 3.45 & 5.37 & 6.06 & 7.06 & 4.41 & 5.87 & -- & -- \\
+Cubic power curve & -17.7 & -36.9 & 1.82 & 1.90 & 3.54 & 5.63 & 5.97 & 6.91 & 4.42 & 5.81 & 0.95 & 94 \\
+Cubic curve with 25 m/s cut-out & -21.5 & -37.0 & 1.80 & 1.91 & 3.54 & 5.65 & 5.97 & 6.93 & 4.42 & 5.78 & 0.94 & 90 \\
+Gaussian wake ($k^*=0.04$) & -0.3 & -0.4 & 1.93 & 1.90 & 3.96 & 5.41 & 6.04 & 6.96 & 5.09 & 4.72 & 0.67 & 57 \\
+\bottomrule
+\end{tabular}
+\end{table*}

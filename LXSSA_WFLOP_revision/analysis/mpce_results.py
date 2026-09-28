@@ -170,11 +170,12 @@ def holm(p):
     return out
 
 
-def fmt_p(p):
+def fmt_p(p, d=3):
+    """p for tables: d significant digits, scientific notation below 0.001."""
     if not np.isfinite(p):
         return "--"
     if p < 1e-3:
-        m, e = f"{p:.2e}".split("e")
+        m, e = f"{p:.{d - 1}e}".split("e")
         return f"${m}\\times10^{{{int(e)}}}$"
     return f"{p:.3f}"
 
@@ -412,7 +413,7 @@ def split_section(R6, base, tabs, key, label, primary=True, supp=None):
     # compact main-text table: mean loss over the cases, average rank among the three splits, W/T/L of 50% vs each
     Ssp = case_stats(Sp, list(ids))
     Rsp = rank_matrix(Ssp, list(ids))
-    avg_sp = Rsp.mean(0).to_dict()
+    avg_sp = Rsp.mean(axis=0).to_dict()
     mloss = {a: float(np.mean([c["loss"][a] for c in srows])) for a in ids}
     def wtl_split(pcol, rbcol):
         w = int(((SR[pcol] < 0.05) & (SR[rbcol] > 0)).sum()); l = int(((SR[pcol] < 0.05) & (SR[rbcol] < 0)).sum())
@@ -737,7 +738,7 @@ def main(argv=None):
         at = open(os.path.join(HERE, "authors_tables.tex")).read()
         m_ = re.search(r"\\begin\{table\*\}\[!t\]\n(?:(?!\\end\{table\*\}).)*?\\label\{tab:spacing-authors\}.*?\\end\{table\*\}", at, re.S)
         if m_:
-            t_ = m_.group(0).replace("with the authors' LX-SSA and SSA code", "re-optimization with the original LX-SSA and SSA code") \
+            t_ = m_.group(0).replace("Minimum-spacing sensitivity with the authors' LX-SSA and SSA code", "Minimum-spacing re-optimization with the original LX-SSA and SSA code") \
                 .replace("DS & Radius &", "DS & $r$ (m) &").replace("[!t]", "[!htb]", 1)
             supp.append(t_)
         cap = pd.read_csv(os.path.join(HERE, "packing_capacity.csv"))
@@ -804,16 +805,16 @@ def main(argv=None):
         if a == FOCUS:
             pz = pw = dl = "--"
         else:
-            pz = fmt_p(FR["p_holm_vs_focus"][a]); pw = fmt_p(CW[a]["p_holm"])
+            pz = fmt_p(FR["p_holm_vs_focus"][a], 2); pw = fmt_p(CW[a]["p_holm"], 2)
             dl = f"${CW[a]['mean_dloss_pp']:+.3f}$"
         lines.append(f"{LAB[a]} & {FR['avg_rank'][a]:.2f} & {FR['sole_best_count'][a]} & {feas_pct[a]:.1f} & {pz} & {pw} & {dl} \\\\")
     tabs["friedman68"] = table(
         "table", "Case-Level Analysis over the %d Benchmark Cases. Avg.\\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\\%%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against %s. Because Mean-Rank Tests Depend on the Pool of Methods~\\cite{Benavoli2016}, $p_W$ and $\\overline{\\Delta L}$ Give the Holm-Adjusted Two-Sided Wilcoxon Signed-Rank Test on the %d Per-Case Mean Wake Losses and the Mean Wake-Loss Difference (Percentage Points, %s Minus Method; Negative = %s Better)"
         % (FR["n_cases"], fl, FR["n_cases"], fl, fl),
         "tab:friedman68", "lcccccc",
-        "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines, sep="2.8pt",
-        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$.}"
-              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"]).strip("$"), FR["iman_davenport"])])
+        "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines,
+        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$}"
+              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"], 2).strip("$"), FR["iman_davenport"])], sep="2pt")
 
     # --- further numbers quoted in the text (all written to summary["main"])
     ref = PHASE1.get(FOCUS)                      # phase-1 method of the focus hybrid (PSO for PSO-VNS)
@@ -830,6 +831,8 @@ def main(argv=None):
     sm = S[(S.Turbines <= 3) & S.Qualified]
     summary["main"]["max_loss_n_le_3_pct"] = float(sm.Loss.max())
     summary["main"]["n_runs"] = int(len(G))
+    summary["main"]["feasible_runs_by_dataset"] = {a: {ds: int(G[(G.Algorithm == a) & (G.Dataset == ds)].Feasible.sum()) for ds in ("1", "2")}
+                                                   for a in MAINP}
     # feasibility of the phase-1 swarm at the switch in the densest cases (500 m, N = 10)
     if FOCUS in HYBRIDS:
         dense = {}
@@ -991,6 +994,13 @@ def main(argv=None):
     FG.save(fig, "layouts_max")
     BL = pd.DataFrame(best_rows).drop_duplicates()
     BL.to_csv(OUT("mpce_best_layouts_maxN.csv"), index=False)
+    cl = []
+    for _, b_ in BL.iterrows():
+        xy = coords(b_.Coordinates)
+        cl.append(f"{'I' if b_.Dataset == '1' else 'II'} & {b_.Radius} & {b_.Turbines} & {LAB[b_.Algorithm]} & {b_.Objective:.1f} & "
+                  "\\parbox[t]{9.2cm}{\\raggedright " + "; ".join(f"({x:.1f}, {y:.1f})" for x, y in xy) + "} \\\\")
+    supp.append(table("table*", "Coordinates (m, farm center at the origin) of the best layout of all methods and of the best %s layout for the largest $N$ of each farm (6,030 calls); objective in benchmark units." % fl,
+                      "tab:coords", "cccccl", "DS & $r$ (m) & $N$ & Method & Objective & Coordinates $(x_i, y_i)$", cl, size="\\tiny", pos="p"))
     summary["main"]["best_layout_maxN"] = [
         dict(case=f"{d}-{r}-{n}", best_method=g.sort_values("Objective").Algorithm.iloc[-1],
              focus_gap_pp=float((g.Objective.max() - g[g.Algorithm == FOCUS].Objective.max()) / g.Ideal.iloc[0] * 100)
@@ -1073,7 +1083,7 @@ def main(argv=None):
 \toprule
 Variant & Phase 1 & Phase 2 & Avg.\ rank & Feas.\ (\%%) \\
 \midrule
-""" % (nw.get(len(ablp), len(ablp)), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), nw.get(len(CONTR), len(CONTR)).lower()) + "\n".join(rows1) + r"""
+""" % (nw.get(len(ablp), len(ablp)), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), nw.get(len(CONTR), len(CONTR))) + "\n".join(rows1) + r"""
 \bottomrule
 \end{tabular}
 
@@ -1107,7 +1117,7 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
     for alg, v in ph2.items():
         if v is None:
             continue
-        log(f"  phase 2 of {LAB[alg]} (switch at call {v['switch_call']:,}) removes {v['mean']:.2f}% (median {v['median']:.2f}%) "
+        log(f"  phase 2 of {LAB.get(alg, alg)} (switch at call {v['switch_call']:,}) removes {v['mean']:.2f}% (median {v['median']:.2f}%) "
             f"of the loss left at the switch; {v['infeasible_at_switch_made_feasible']} runs infeasible at the switch made feasible")
 
     # reproduction check against the parent of commit a9779a3 (old rule, five variants, six contrasts);
@@ -1402,13 +1412,13 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
             isHR = c[0] == "HR"
             for a in ms_all:
                 y = sc[sc.Algorithm == a].sort_values("Budget")
-                v = (y.Mean if isHR else y.Loss).where(y.Qualified)
+                v = y.Loss.where(y.Qualified)
                 ax.plot(y.Budget, v, color=COL[a], ls=ls(a), marker=mk(a), ms=ms(a), lw=lw(a, 1.1), zorder=zo(a))
             ax.set_xscale("log")
             ax.set_xticks(bl); ax.set_xticklabels([f"{b // 1000}k" if b % 1000 == 30 else str(b) for b in bl], fontsize=6)
             ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
             ax.set_title(case_name("-".join(map(str, c))).replace("Data Set ", "DS "), fontsize=7.5, color=INK)
-            ax.set_ylabel("Mean AEP (GWh/yr)" if isHR else "Mean wake loss (%)", fontsize=7)
+            ax.set_ylabel("Mean AEP loss (%)" if isHR else "Mean wake loss (%)", fontsize=7)
         axes.flat[-1].axis("off")
         h = [plt.Line2D([], [], color=COL[a], ls=ls(a), lw=lw(a), marker=mk(a), ms=ms(a, 4), label=LAB[a]) for a in ms_all]
         axes.flat[-1].legend(handles=h, loc="center", fontsize=7)
@@ -1488,10 +1498,10 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
                           f"{'--' if not np.isfinite(bl_aep) else f'{100 * (fb / bl_aep - 1):+.2f}'} \\\\")
             lay.append((n, cname, top, fbest, pf_who, x.Radius.iloc[0]))
         bl_txt = " / ".join(f"{b:,}".replace(",", "{,}") for b in sorted(IE.Budget.unique()))
-        tabs["iea37"] = table("table", "IEA Wind Task~37 Case Study~1 (16- and 36-turbine scenarios; official AEP model): AEP (MWh) mean, best and SD over the feasible runs, mean wake loss relative to the wake-free AEP (\\%%), feasible runs, rank (ranking rule of Table~\\ref{tab:friedman68}) and Holm-adjusted Wilcoxon signed-rank $p$ of %s vs.\\ each method, per scenario and budget." % fl,
-                              "tab:iea37", "lccccccc", "Method & Mean & Best & SD & Loss (\\%) & Feas. & Rank & $p_{\\rm Holm}$", lines, sep="2.5pt")
-        tabs["iea37_published"] = table("table*", "IEA Wind Task~37 Case Study~1: AEP (MWh, official calculator) of the baseline (example) layout, of the best feasible and the best overall participant layout%s, our best feasible layout over all methods and budgets, the best %s layout, mean %s AEP (budgets %s calls), and difference (\\%%) of the best %s layout from the best feasible participant layout and from the baseline. ``infeas.'': violates the boundary or spacing constraint by more than 1~mm." % ("" if pub is not None else " (published results file not available)", fl, fl, bl_txt, fl),
-                                        "tab:iea37-pub", "lcccccccc", f"Scenario & Baseline & Best feasible publ. & Best publ. & Our best & {fl} best & {fl} mean & $\\Delta_{{\\rm publ}}$ & $\\Delta_{{\\rm base}}$", plines, sep="2.5pt", resize=True)
+        supp.append(table("table", "IEA Wind Task~37 Case Study~1 (16- and 36-turbine scenarios; official AEP model): AEP (MWh) mean, best and SD over the feasible runs, mean wake loss relative to the wake-free AEP (\\%%), feasible runs, rank (ranking rule of Table~\\ref{tab:friedman68}) and Holm-adjusted Wilcoxon signed-rank $p$ of %s vs.\\ each method, per scenario and budget." % fl,
+                              "tab:iea37-detail", "lccccccc", "Method & Mean & Best & SD & Loss (\\%) & Feas. & Rank & $p_{\\rm Holm}$", lines, sep="2.5pt", pos="p"))
+        supp.append(table("table*", "IEA Wind Task~37 Case Study~1: AEP (MWh, official calculator) of the baseline (example) layout, of the best feasible and the best overall participant layout%s, our best feasible layout over all methods and budgets, the best %s layout, mean %s AEP (budgets %s calls), and difference (\\%%) of the best %s layout from the best feasible participant layout and from the baseline. ``infeas.'': violates the boundary or spacing constraint by more than 1~mm." % ("" if pub is not None else " (published results file not available)", fl, fl, bl_txt, fl),
+                                        "tab:iea37-pub", "lcccccccc", f"Scenario & Baseline & Best feasible publ. & Best publ. & Our best & {fl} best & {fl} mean & $\\Delta_{{\\rm publ}}$ & $\\Delta_{{\\rm base}}$", plines, sep="2.5pt", resize=True, pos="!htb"))
         summary["iea37"] = isum
         summary["iea37_published_file"] = pub is not None
         for k, v in isum.items():
@@ -1543,6 +1553,11 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         log("\n[8] Robustness SKIPPED (--skip-robust)")
     else:
         robustness(G, MAINP, args, summary, tabs, OUT)
+        supp.append(tabs.pop("robust").replace("[!t]", "[!htb]", 1).replace("{\\tabcolsep}{3pt}", "{\\tabcolsep}{1.8pt}"))
+
+    # =========================================================== 8b. main-text tables and figures in the manuscript layout
+    log("\n[8b] Main-text tables (manuscript layout)")
+    main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args)
 
     # =========================================================== 9. decision block (independent of --focus)
     log("\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)")
@@ -1551,8 +1566,15 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
     # =========================================================== write
     hdr = "%% generated by mpce_results.py -- do not edit by hand\n"
     for fn in glob.glob(OUT("mpce_tab_*.tex")):             # remove tables of sections skipped in this run
-        if os.path.basename(fn)[9:-4] not in tabs and not (args.skip_robust and fn.endswith("_robust.tex")):
+        if os.path.basename(fn)[9:-4] not in tabs and not (args.skip_robust and fn.endswith(("_robust.tex", "_robust_final.tex"))):
             os.remove(fn); log(f"  removed stale {os.path.basename(fn)}")
+    # cross-document references (xr): the main text reads the supplement's labels with prefix "S-" and the
+    # supplement (MPCE_PSO_VNS_supplement.tex) reads the main text's labels with prefix "M-"
+    supp_lbl = set(re.findall(r"\\label\{([^}]*)\}", "\n".join(supp)))
+    main_lbl = (set(re.findall(r"\\label\{([^}]*)\}", "\n".join(tabs.values()))) | {"tab:friedman68"}) - supp_lbl
+    xref = lambda txt, lbls, pre: re.sub(r"\\ref\{([^}]*)\}", lambda m_: "\\ref{%s%s}" % (pre if m_.group(1) in lbls else "", m_.group(1)), txt)
+    tabs = {k: xref(v, supp_lbl, "S-") for k, v in tabs.items()}
+    supp = [xref(v, main_lbl, "M-") for v in supp]
     for k, v in tabs.items():
         open(OUT(f"mpce_tab_{k}.tex"), "w").write(hdr + v)
     open(OUT("mpce_supplementary.tex"), "w").write(
@@ -1568,6 +1590,233 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
     print("=" * 78, flush=True)
     summary["decision"]["printed"] = dec_lines
     json.dump(clean(summary), open(OUT("mpce_summary.json"), "w"), indent=1)
+    # numbers quoted in the manuscript (mpce_numbers.tex) and the check of the data-dependent statements
+    import mpce_numbers, mpce_check_final
+    mpce_numbers.main(["--summary", OUT("mpce_summary.json"), "--out", OUT("mpce_numbers.tex")])
+    mpce_check_final.main(["--summary", OUT("mpce_summary.json")])
+
+
+PEND = "\\TBD{}"            # table cell whose data are still missing (the manuscript defines \TBD)
+
+
+def _complete(x, methods, cases, runs):
+    """dict method -> True if x holds `runs` runs of the method in every case of `cases`."""
+    out = {}
+    for a in methods:
+        xa = x[x.Algorithm == a]
+        out[a] = all(((xa.Dataset == d) & (xa.Radius == r) & (xa.Turbines == n)).sum() >= runs for d, r, n in cases)
+    return out
+
+
+def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
+    """Tables of the manuscript whose layout differs from the per-section tables: merged feasible-initialization
+    + budget table (tab:feasbudget), Horns Rev 16 table with ten methods and loss columns for all settings
+    (tab:hr-site), compact IEA37 table (tab:iea37), single-column robustness table (tab:robust-final), and the
+    combined IEA37 + Horns Rev layout figure (layouts_iea37_hr16). Missing data -> \TBD{} cells."""
+    meth = [a for a in HR_ORDER if a in M10]
+    cases6 = LARGE
+    # ---------------- feasible initialization + budget (six largest benchmark cases)
+    rows, fb = [], dict(methods=meth, random={}, feasible={}, rank={}, complete={})
+    sel = lambda X: X[[(d, r, n) in cases6 for d, r, n in zip(X.Dataset, X.Radius, X.Turbines)]]
+    X6 = sel(R6[R6.Algorithm.isin(meth)])
+    F6 = sel(ALL[(ALL.Init == "feasible") & (ALL.Budget == 6030) & ALL.Algorithm.isin(meth)])
+    def loss_feas(X, a):
+        xa = X[X.Algorithm == a]
+        if not len(xa):
+            return None
+        Sa = case_stats(xa, [a])
+        return dict(loss=float(Sa[Sa.Qualified].Loss.mean()) if Sa.Qualified.any() else None,
+                    feas=float(100 * xa.Feasible.mean()), n=int(len(xa)))
+    cr = _complete(X6, meth, cases6, 30); cf = _complete(F6, meth, cases6, 30)
+    fb["complete"]["random_6030"] = all(cr.values()); fb["complete"]["feasible_6030"] = all(cf.values())
+    ranks = {}
+    for b in BUDGETS:
+        Xb = sel(ALL[(ALL.Init == "random") & (ALL.Budget == b) & ALL.Algorithm.isin(meth)])
+        cb = _complete(Xb, meth, cases6, 30)
+        fb["complete"][f"rank_{b}"] = all(cb.values())
+        if all(cb.values()):
+            Sb = case_stats(Xb, meth)
+            ranks[b] = rank_matrix(Sb, meth).mean(axis=0).to_dict()
+            fb["rank"][b] = ranks[b]
+            fb.setdefault("mean_loss", {})[b] = {a: float(Sb[(Sb.Algorithm == a) & Sb.Qualified].Loss.mean()) for a in meth}
+            fb.setdefault("feas_pct", {})[b] = {a: float(100 * Xb[Xb.Algorithm == a].Feasible.mean()) for a in meth}
+    f3 = lambda v: "--" if v is None or not np.isfinite(v) else f"{v:.3f}"      # data present, no qualified case
+    for a in meth:
+        r_ = loss_feas(X6, a) if cr[a] else None
+        f_ = loss_feas(F6, a) if cf[a] else None
+        fb["random"][a] = r_; fb["feasible"][a] = f_
+        c = [f3(r_["loss"]) if r_ else PEND, f"{r_['feas']:.1f}" if r_ else PEND,
+             f3(f_["loss"]) if f_ else PEND, f"{f_['feas']:.1f}" if f_ else PEND]
+        c += [f"{ranks[b][a]:.2f}" if b in ranks else PEND for b in BUDGETS]
+        rows.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
+    if fb["complete"]["feasible_6030"]:
+        fb["rank_feasible_init"] = rank_matrix(case_stats(F6, meth), meth).mean(axis=0).to_dict()
+    pend = [k for k, v in fb["complete"].items() if not v]
+    short = {"random_6030": "6k", "feasible_6030": "feas", "rank_6030": "6k", "rank_30030": "b30k", "rank_120030": "b120k"}
+    foot = ["\\multicolumn{8}{l}{\\TBD{pending: %s}}" % ", ".join(dict.fromkeys(short[k] for k in pend))] if pend else None
+    fb["pending"] = pend
+    for b in ranks:
+        o = sorted(ranks[b], key=ranks[b].get)
+        fb.setdefault("best", {})[b] = o[0]
+        fb.setdefault("focus_position", {})[b] = 1 + o.index(FOCUS) if FOCUS in o else None
+    summary["feasbudget"] = fb
+    tabs["feasbudget"] = (
+        "\\begin{table}[!t]\n\\centering\n\\caption{Six Largest Benchmark Cases: Mean Wake Loss (\\%) and Feasible Runs (\\%) at 6,030 Calls with Random and Feasibility-Preserving Initialization, and Average Rank at 6,030, 30,030 and 120,030 Calls (Random Initialization; 30 Seeds)}\n"
+        "\\label{tab:feasbudget}\n\\scriptsize\\setlength{\\tabcolsep}{2.4pt}\n\\begin{tabular}{lccccccc}\n\\toprule\n"
+        "& \\multicolumn{2}{c}{Random init.} & \\multicolumn{2}{c}{Feasible init.} & \\multicolumn{3}{c}{Avg.\\ rank} \\\\\n"
+        "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\\cmidrule(lr){6-8}\n"
+        "Method & Loss & Feas. & Loss & Feas. & 6,030 & 30,030 & 120,030 \\\\\n\\midrule\n" + "\n".join(rows) +
+        "\n\\bottomrule\n" + ("\n".join(foot) + "\n" if foot else "") + "\\end{tabular}\n\\end{table}\n")
+    log(f"  feasbudget: pending {pend}; ranks {ranks}")
+
+    # ---------------- Horns Rev 16 (ten methods; loss at 6k random / 6k feasible / 30k / 120k)
+    hsum = summary.get("hr16") or {}
+    H = ALL[(ALL.Dataset == "HR") & (ALL.Turbines == 16)]
+    settings = [("6030R", 6030, "random", 30), ("6030F", 6030, "feasible", 30), ("30030R", 30030, "random", 30),
+                ("120030R", 120030, "random", 10)]
+    hl, hloss = [], {}
+    ideal = hsum.get("ideal_aep", np.nan)
+    hl.append(f"Installed layout & {inst:.2f} & -- & -- & {100 * (1 - inst / ideal):.2f} & -- & -- & -- \\\\" if np.isfinite(ideal) else
+              f"Installed layout & {inst:.2f} & -- & -- & {PEND} & -- & -- & -- \\\\")
+    hl.append("\\midrule")
+    for a in meth:
+        m6 = (hsum.get("methods") or {}).get(a)
+        c = [f"{m6['mean']:.2f}" if m6 and m6.get("feasible") else ("--" if m6 else PEND),
+             f"{m6['feasible']}/{m6['runs']}" if m6 else PEND,
+             "--" if a == FOCUS else (fmt_p(m6["p_holm"], 2) if m6 and m6.get("p_holm") is not None else PEND)]
+        hloss[a] = {}
+        for tag, b, init, nrun in settings:
+            y = H[(H.Algorithm == a) & (H.Budget == b) & (H.Init == init)]
+            if len(y) < nrun:
+                c.append(PEND); hloss[a][tag] = None; continue
+            nf = int(y.Feasible.sum())
+            v = float(y[y.Feasible].LossPct.mean()) if nf else np.nan
+            hloss[a][tag] = dict(loss=v if np.isfinite(v) else None, feasible=nf, runs=int(len(y)),
+                                 mean_aep=float(y[y.Feasible].Objective.mean()) if nf else None,
+                                 runs_above_installed=int((y.Feasible & (y.Objective > inst)).sum()))
+            cell = "--" if not nf else f"{v:.2f}"
+            if 0 < nf < len(y):
+                cell += f"$^{{{nf}}}$"
+            c.append(cell)
+        hl.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
+    if hsum:
+        hsum["loss_by_setting"] = hloss
+    tabs["hr16"] = (
+        "\\begin{table}[!t]\n\\centering\n\\caption{Horns Rev~1 16-Turbine Block (Wake-Free AEP %.2f GWh/yr): Mean AEP (GWh/yr) over the Feasible Runs of 30 Seeds at 6,030 Calls, Feasible Runs, Holm-Adjusted Wilcoxon $p$ of %s vs.\\ Each Method, and Mean AEP Loss (\\%%) at 6,030 Calls with Random (R) and Feasibility-Preserving (F) Initialization and at 30,030 and 120,030 Calls (R; 10 Seeds at 120,030); Superscript: Feasible Runs When Not All Runs Are Feasible}\n"
+        % (ideal, LAB[FOCUS]) +
+        "\\label{tab:hr-site}\n\\scriptsize\\setlength{\\tabcolsep}{2.2pt}\n\\begin{tabular}{lccccccc}\n\\toprule\n"
+        "& \\multicolumn{3}{c}{6,030 calls, R} & \\multicolumn{4}{c}{Loss (\\%)} \\\\\n\\cmidrule(lr){2-4}\\cmidrule(lr){5-8}\n"
+        "Layout / method & AEP & Feas. & $p_{\\rm Holm}$ & 6k R & 6k F & 30k & 120k \\\\\n\\midrule\n" + "\n".join(hl) +
+        "\n\\bottomrule\n\\end{tabular}\n\\end{table}\n")
+
+    # ---------------- IEA37 compact table (best feasible run of each method)
+    isum = summary.get("iea37") or {}
+    pub = load_published(args.data_dir)
+    IE = ALL[ALL.Dataset.str.startswith("IEA37")]
+    il, ib = [], {}
+    pubv = {}
+    for n in (16, 36):
+        P = pub[pub.Turbines == n] if pub is not None else None
+        base = float(P[P.Baseline].AEP.iloc[0]) if P is not None and P.Baseline.any() else BASELINE_IEA[n]
+        pf = P[(~P.Baseline) & P.Feasible] if P is not None else None
+        pubv[n] = dict(base=base, best_feasible=float(pf.AEP.max()) if pf is not None and len(pf) else np.nan,
+                       best_feasible_by=str(pf.sort_values("AEP").Participant.iloc[-1]) if pf is not None and len(pf) else "--",
+                       feasible_aeps=sorted(map(float, pf.AEP)) if pf is not None else [])
+    num = lambda v: PEND if v is None or not np.isfinite(v) else f"{v:,.1f}".replace(",", "{,}")
+    il.append("Example layout & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\" % (num(pubv[16]["base"]), num(pubv[36]["base"])))
+    il.append("Best feasible published$^{a}$ & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\" % (num(pubv[16]["best_feasible"]), num(pubv[36]["best_feasible"])))
+    il.append("\\midrule")
+    for a in MAIN8:
+        c = []
+        for n in (16, 36):
+            for b in (6030, 30030):
+                y = IE[(IE.Turbines == n) & (IE.Budget == b) & (IE.Algorithm == a)]
+                if len(y) < 30:
+                    c.append(PEND); ib.setdefault(a, {})[f"{n}T_{b}"] = None; continue
+                v = float(y[y.Feasible].Objective.max()) if y.Feasible.any() else np.nan
+                mv = float(y[y.Feasible].Objective.mean()) if y.Feasible.any() else np.nan
+                ib.setdefault(a, {})[f"{n}T_{b}"] = dict(best=v, mean=mv, feasible=int(y.Feasible.sum()), runs=int(len(y)),
+                                                        best_rank_among_feasible_published=int(1 + sum(p > v for p in pubv[n]["feasible_aeps"])) if np.isfinite(v) else None,
+                                                        mean_rank_among_feasible_published=int(1 + sum(p > mv for p in pubv[n]["feasible_aeps"])) if np.isfinite(mv) else None,
+                                                        best_gap_to_best_feasible_published_pct=float(100 * (v / pubv[n]["best_feasible"] - 1)) if np.isfinite(v) else None,
+                                                        mean_gap_to_best_feasible_published_pct=float(100 * (mv / pubv[n]["best_feasible"] - 1)) if np.isfinite(mv) else None)
+                c.append("--" if not np.isfinite(v) else num(v))
+        il.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
+    summary["iea37_compact"] = dict(published={str(k): {kk: vv for kk, vv in v.items() if kk != "feasible_aeps"} | dict(n_feasible=len(v["feasible_aeps"]))
+                                               for k, v in pubv.items()}, methods=ib)
+    who = {pubv[16]["best_feasible_by"], pubv[36]["best_feasible_by"]}
+    whot = ("Participant~%s in both scenarios" % next(iter(who)).replace("par", "")) if len(who) == 1 else \
+        "Participants %s (16) and %s (36)" % (pubv[16]["best_feasible_by"].replace("par", ""), pubv[36]["best_feasible_by"].replace("par", ""))
+    tabs["iea37"] = (
+        "\\begin{table}[!t]\n\\centering\n\\caption{IEA37 Case Study~1, 16- and 36-Turbine Scenarios: AEP in MWh of the Best Run of Each Method at 6,030 and 30,030 Calls (30 Seeds), Compared with the Example Layout and the Best Feasible Published Layout~\\cite{Baker2019,IEA37repo}}\n"
+        "\\label{tab:iea37}\n\\scriptsize\\setlength{\\tabcolsep}{2.5pt}\n\\begin{tabular}{lcccc}\n\\toprule\n"
+        "& \\multicolumn{2}{c}{16 turbines ($r=1300$~m)} & \\multicolumn{2}{c}{36 turbines ($r=2000$~m)} \\\\\n\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n"
+        "Method / source & 6,030 & 30,030 & 6,030 & 30,030 \\\\\n\\midrule\n" + "\n".join(il) + "\n\\bottomrule\n"
+        "\\multicolumn{5}{p{0.92\\columnwidth}}{$^{a}$" + whot + " (SNOPT with wake expansion continuation \\TBD{verify against Baker et al.\\ (2019)}). A higher submitted AEP places turbines up to 3.5~m outside the boundary and is not counted.}\n"
+        "\\end{tabular}\n\\end{table}\n")
+
+    # ---------------- robustness, single column
+    rb = summary.get("robustness")
+    if rb:
+        rl = []
+        for col, name in (("Objective", "Benchmark"), ("Cubic", "Cubic curve"), ("CubicCutout", "Cubic, 25 m/s cut-out"), ("Gauss", "Gaussian wake")):
+            v = rb.get(col)
+            if not v:
+                continue
+            ar = v["avg_rank"]; best = min(ar, key=ar.get)
+            v["best_method"] = best
+            v["focus_rank_position"] = int(1 + sorted(ar.values()).index(ar[FOCUS]))
+            d1, d2 = v["rel_change_pct"]["1"], v["rel_change_pct"]["2"]
+            rl.append(f"{name} & {d1:+.1f} & {d2:+.1f} & {ar[FOCUS]:.2f} & {LAB[best]} & " +
+                      ("-- & --" if col == "Objective" else f"{v['tau']:.2f} & {v['same_best_pct']:.0f}") + " \\\\")
+        tabs["robust_final"] = (
+            "\\begin{table}[!t]\n\\centering\n\\caption{Robustness to the Benchmark Model: All Feasible Final Layouts Re-Evaluated (Not Re-Optimized). $\\Delta$: Mean Relative Change of the Objective (\\%); Rank: Average Rank of " + LAB[FOCUS] +
+            " over the 68 Cases; Best: Best-Ranked Method; $\\bar\\tau$: Mean Kendall Correlation Between the Benchmark and Alternative Orderings Within a Case; Same: Cases (\\%) with Unchanged Best Method. The Ranks of All Methods Are Given in Table~\\ref{tab:robust}}\n"
+            "\\label{tab:robust-final}\n\\scriptsize\\setlength{\\tabcolsep}{2.4pt}\n\\begin{tabular}{lcccccc}\n\\toprule\n"
+            "& \\multicolumn{2}{c}{$\\Delta$ (\\%)} & & & & \\\\\n\\cmidrule(lr){2-3}\nModel & DS I & DS II & Rank & Best & $\\bar\\tau$ & Same \\\\\n\\midrule\n" +
+            "\n".join(rl) + "\n\\bottomrule\n\\end{tabular}\n\\end{table}\n")
+
+    # ---------------- combined layout figure: IEA37 16 / 36 (best focus layout at the largest budget) + Horns Rev 16
+    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.75))
+    for ax, n in zip(axes[:2], (16, 36)):
+        rad = {16: 1300, 36: 2000}[n]
+        t = np.linspace(0, 2 * np.pi, 200)
+        ax.plot(rad * np.cos(t), rad * np.sin(t), color=MUTED, lw=0.8)
+        who_n = pubv[n]["best_feasible_by"]
+        try:
+            import iea37_model as iem
+            xy, _ = iem.load_submission(str(who_n).replace("par", ""), n)
+            ax.scatter(xy[:, 0], xy[:, 1], marker="s", s=20, facecolor="none", edgecolor=INK, lw=0.9,
+                       label=f"best feasible published ({num(pubv[n]['best_feasible']).replace('{,}', ',')})", zorder=3)
+        except Exception as e:                                  # pragma: no cover
+            log(f"  participant layout not drawn: {e}")
+        y = IE[(IE.Turbines == n) & (IE.Algorithm == FOCUS) & IE.Feasible]
+        if len(y):
+            y = y[y.Budget == y.Budget.max()]
+            bst = y.sort_values("Objective").iloc[-1]; xy = coords(bst.Coordinates)
+            ax.scatter(xy[:, 0], xy[:, 1], marker="o", s=12, color=COL[FOCUS],
+                       label=f"best {LAB[FOCUS]}, {int(bst.Budget):,} calls ({bst.Objective:,.1f})", zorder=4)
+        else:
+            ax.text(0, 0, f"{LAB[FOCUS]} runs pending", ha="center", va="center", fontsize=7, color="#c00000")
+        ax.set_aspect("equal"); ax.tick_params(labelsize=6)
+        ax.set_title(f"IEA37 CS1, {n} turbines (AEP in MWh)", fontsize=7.5, color=INK)
+        ax.legend(fontsize=5.8, loc="upper left", bbox_to_anchor=(0, -0.08), ncol=1)
+    ax = axes[2]
+    H6 = H[(H.Budget == 6030) & (H.Init == "random") & H.Feasible]
+    if hr is not None:
+        xy0, poly = hr.site(16)
+        pp = np.vstack([poly, poly[:1]])
+        ax.plot(pp[:, 0], pp[:, 1], color=MUTED, lw=0.8)
+        ax.scatter(xy0[:, 0], xy0[:, 1], marker="x", s=14, color=INK, lw=0.8, label=f"installed ({inst:.2f})", zorder=3)
+    y = H6[H6.Algorithm == FOCUS]
+    if len(y):
+        bst = y.sort_values("Objective").iloc[-1]; xy = coords(bst.Coordinates)
+        ax.scatter(xy[:, 0], xy[:, 1], marker="o", s=12, color=COL[FOCUS], label=f"best {LAB[FOCUS]}, 6,030 calls ({bst.Objective:.2f})", zorder=4)
+    ax.set_aspect("equal"); ax.tick_params(labelsize=6)
+    ax.set_title("Horns Rev 1, 16 turbines (AEP in GWh/yr)", fontsize=7.5, color=INK)
+    ax.legend(fontsize=5.8, loc="upper left", bbox_to_anchor=(0, -0.08), ncol=1)
+    fig.tight_layout()
+    FG.save(fig, "layouts_iea37_hr16")
 
 
 def decision_block(ALL):
