@@ -37,25 +37,19 @@ These results support PSO-VNS as a simple reference method, within limits. Under
 \label{sec:quality}
 \begin{figure*}[!t]
 \centering
-\pipefig{0.66\textwidth}{figures_mpce/wakeloss_vs_n.pdf}{6.2cm}
-\caption{Mean wake loss (percentage of the wake-free objective) of the feasible runs versus the prescribed number of turbines; a point is omitted when a method has fewer than 15 feasible runs.}
-\label{fig:wakeloss}
-\end{figure*}
-\begin{figure*}[!t]
-\centering
-\pipefig{0.66\textwidth}{figures_mpce/ablation_convergence.pdf}{6.2cm}
+\pipefig{0.7\textwidth}{figures_mpce/ablation_convergence.pdf}{6.6cm}
 \caption{Convergence of the eight ablation variants (Table~\ref{tab:ablation}) for the largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls. PSO-VNS and PSO coincide up to 3,030 calls (dotted line), where PSO-VNS switches to VNS. The curves of the eight methods of the main comparison are given in Fig.~\ref{S-fig:S-conv-max} of the supplementary material.}
 \label{fig:conv-max}
 \label{fig:ablation}
 \end{figure*}
 
-The wake loss grows with $N$, falls as the farm becomes larger, and is higher for the broader wind rose of Data Set~II (Fig.~\ref{fig:wakeloss}). For $N\le3$, all methods stay within \NLossMaxSmallN\% of the wake-free objective; for 15 turbines in the 1000-m farm of Data Set~I, the mean wake loss is \NLossBigIPSOVNS\% for PSO-VNS, \NLossBigIPSO\% for PSO, \NLossBigISSAVNS\% for SSA-VNS and \NLossBigISSA\% for SSA. Over the six largest cases, the mean wake loss of PSO minus that of PSO-VNS ranges from \NBigGainMin{} to \NBigGainMax{} percentage points, with PSO-VNS lower in \NBigGainPos{} of them.
+The wake loss grows with $N$, falls as the farm becomes larger, and is higher for the broader wind rose of Data Set~II (wake loss versus $N$ for all methods in Section~\ref{S-sec:S-figs} of the supplementary material). For $N\le3$, all methods stay within \NLossMaxSmallN\% of the wake-free objective; for 15 turbines in the 1000-m farm of Data Set~I, the mean wake loss is \NLossBigIPSOVNS\% for PSO-VNS, \NLossBigIPSO\% for PSO, \NLossBigISSAVNS\% for SSA-VNS and \NLossBigISSA\% for SSA. Over the six largest cases, the mean wake loss of PSO minus that of PSO-VNS ranges from \NBigGainMin{} to \NBigGainMax{} percentage points, with PSO-VNS lower in \NBigGainPos{} of them.
 
-PSO-VNS ends with a feasible layout in all runs; the other methods do so in \NFeasPSO{} (PSO), \NFeasSSAVNS{} (SSA-VNS), \NFeasSSA{} (SSA), \NFeasLXSSA{} (LX-SSA), \NFeasDE{} (DE), \NFeasVNS{} (VNS) and \NFeasSLSQP\% (MS-SLSQP) of the runs. The counts of PSO, SSA, LX-SSA and DE are the same for both wind data sets, because as long as every candidate is infeasible, the penalty dominates $F_p$. In the densest cases (500~m, $N=10$), the global best of the PSO phase is feasible at the switch in only \NDenseSwitchFeas\% of the runs, but all runs are feasible after the VNS phase.
+PSO-VNS ends with a feasible layout in all runs; the shares of the other methods are given in Table~\ref{tab:friedman68} (e.g., \NFeasDE\% for DE). The feasibility counts of PSO, SSA, LX-SSA and DE are the same for both wind data sets, because as long as every candidate is infeasible, the penalty dominates $F_p$. In the densest cases (500~m, $N=10$), the global best of the PSO phase is feasible at the switch in only \NDenseSwitchFeas\% of the runs, but all runs are feasible after the VNS phase.
 % CHECK-FINAL [C08]: main.feasible_pct.PSOBV == 100
 % CHECK-FINAL [C09]: feasible_runs_by_dataset equal for PSOC, SSA, LXSSA, DE
 % CHECK-FINAL [C24]: dense_500_10: feasible at switch < final (= 100)
 
-Fig.~\ref{fig:conv-max} shows the second phase directly: PSO-VNS and PSO both keep improving after the switch. Over all feasible runs, the VNS phase removes on average \NPhTwoMean\% (median \NPhTwoMedian\%) of the wake loss left at the end of the PSO phase and makes \NPhTwoMadeFeas{} runs that were infeasible at the switch feasible, whereas continuing PSO for the same 3,000 calls removes \NPsoContMean\% (median \NPsoContMedian\%). On average the two uses of the second half thus differ little, in line with Table~\ref{tab:wtl}; the advantage of VNS appears in the larger layouts. The VNS phases of SSA-VNS and RS-VNS remove larger shares (\NPhTwoMeanSSAVNS\% and \NPhTwoMeanRSVNS\%) but start from worse or more often infeasible layouts (feasible at the switch in \NSwitchFeasPSOVNS\%, \NSwitchFeasSSAVNS\% and \NSwitchFeasRSVNS\% of the PSO-VNS, SSA-VNS and RS-VNS runs).
+Fig.~\ref{fig:conv-max} shows the second phase directly: PSO-VNS and PSO both keep improving after the switch. Over all feasible runs, the VNS phase removes on average \NPhTwoMean\% (median \NPhTwoMedian\%) of the wake loss left at the end of the PSO phase and makes \NPhTwoMadeFeas{} runs that were infeasible at the switch feasible, whereas continuing PSO for the same 3,000 calls removes \NPsoContMean\% (median \NPsoContMedian\%). The VNS phases of SSA-VNS and RS-VNS remove larger shares (\NPhTwoMeanSSAVNS\% and \NPhTwoMeanRSVNS\%) but start from worse or more often infeasible layouts (feasible at the switch in \NSwitchFeasPSOVNS\%, \NSwitchFeasSSAVNS\% and \NSwitchFeasRSVNS\% of the PSO-VNS, SSA-VNS and RS-VNS runs).
 % CHECK-FINAL [C10]: phase2 PSOBV.mean >= PSOC_continued.mean > 0 ("both keep improving")
 % CHECK-FINAL [C11]: phase2 SSABV/RSVNS mean > PSOBV; feasible at switch PSOBV > SSABV > RSVNS; VNS ranks below every hybrid and RS-VNS
