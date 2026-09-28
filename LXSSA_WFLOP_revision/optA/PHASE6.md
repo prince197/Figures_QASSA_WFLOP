@@ -96,3 +96,9 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
   control. A PSO phase beats both controls clearly." Laplace step harmful stays.
 - ω = 0.9 does not beat 0.75 (0/12/0; p 0.15); 0.75 best of five settings.
 - Hard-coded counts to replace by macros: \NAblNContrasts (fifteen), \NAblNVar (nine), \NAblDf (8), \NSplitNSettings (five).
+
+## W2 extension results — LEAD DECISION D12 (wording)
+- SSA-VNS vs RSD-VNS: worse on case means (p_Holm all-family 0.037) but NOT at cluster level (2/4 clusters, CR p 0.55, bootstrap CI contains 0). WRITE: "the SSA phase gives no gain over sampling in the disc (the case means even favour the disc control, but not at the level of farm clusters)". Never "significantly worse" / "slightly worse" as a robust claim.
+- LX-SSA-VNS vs RSD-VNS: worse (case means, bootstrap, LOCO) but CR p 0.087 → write "worse", not "clearly worse at farm level".
+- NOW FALSE, fix everywhere: "leaving out any cluster changes no verdict" (now: changes only \NXLocoChanged…); "every significant pair unanimous in 6/6 clusters"; "Holm loses only the pooled N ≥ 10 subgroup" (use \NXMultLostHolm); "ω = 0.9 better than 0.5" is unadjusted only.
+- Margin justification (05, supplement): "the Jensen and Gaussian wake losses of the same final layouts differ by \NXModelShiftMean pp on average (\NXModelShiftRatio times the margin), whereas the PSO-VNS − PSO difference changes by only \NXModelShiftPairMean pp" (X29, X30). Never "ten times".

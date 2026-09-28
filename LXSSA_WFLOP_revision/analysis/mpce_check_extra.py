@@ -138,9 +138,10 @@ CHECKS = [
             "CI \\NXEnPSOVNSvsPSOdsIILargePctCI) and positive in every case.",
      lambda s: (lambda e: 0.1 <= e["mean_gain_pct_aep"] < 0.3 and e["ci95_gain_pct_aep"][0] > 0
                 and e["min_gain_pct_aep"] > 0)(s["energy"]["PSOBV-PSOC_dsIILarge"])),
-    ("X29", "The wake-model uncertainty exceeds ten times the equivalence margin: the wake loss of the same final layouts "
-            "differs between the Jensen and the Gaussian wake model by \\NXModelShiftMean pp on average (> 10 x 0.05 pp).",
-     lambda s: s["model_shift"]["mean_abs_shift_pp"] > 10 * EQ_MARGIN),
+    ("X29", "The wake-model uncertainty is several times the equivalence margin: the wake loss of the same final layouts "
+            "differs between the Jensen and the Gaussian wake model by \\NXModelShiftMean pp on average "
+            "(\\NXModelShiftRatio times the margin; > 5 x 0.05 pp). [Replaces the earlier '> 10 x' version, which the data do not support.]",
+     lambda s: s["model_shift"]["mean_abs_shift_pp"] > 5 * EQ_MARGIN),
     ("X30", "The wake loss of the same final layouts differs between the Jensen and Gaussian wake models by \\NXModelShiftMean pp "
             "on average (median \\NXModelShiftMedian pp; \\NXModelShiftRatio times the equivalence margin; above the margin for "
             "\\NXModelShiftAboveMarginPct% of the \\NXModelShiftNLayouts layouts), whereas the per-case PSO-VNS - PSO difference "
