@@ -32,3 +32,11 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
   larger than ~20 CPU-minutes must be prepared as an experiment in mpce_experiments.py and reported to the
   lead, who runs it on cloud workers.
 - Report: files created, macros (with values), checks (PASS/FAIL), and what the lead must integrate where.
+
+## W1 results (equivalence, ±0.05 pp) — notes for Phase B text
+- PSO-VNS vs PSO: ΔL −0.018, 90% CI [−0.041, 0.004], TOST p 0.011, minimal margin 0.041, EQUIVALENT; Bayes P(rope) 0.997 (write "> 0.99"). C49.
+- LX-SSA-VNS vs RS-VNS: EQUIVALENT (min margin 0.035; P(rope) 0.99). C50.
+- SSA-VNS vs RS-VNS: NOT shown equivalent (90% CI [−0.101, −0.039]; min margin 0.102); Bayes 0.30 better / 0.70 rope → write "a small gain that could not be shown to be equivalent to zero at ±0.05 pp; the Bayesian analysis finds it more likely practically negligible (0.70)". Never "exceeds the margin". C51.
+- SSA-VNS vs LX-SSA-VNS: not equivalent; Bayes 0.53 better / 0.47 rope.
+- Spread: no significant difference (SD p 0.55, worst p 0.80) → do NOT claim PSO-VNS is more robust in spread; the robustness advantage is feasibility (Horns Rev 30/30 vs 19/30). C52.
+- Supplement: add \SuppTableOpt{tab:equivalence} after tab:switch; add Benavoli2017 bibitem.

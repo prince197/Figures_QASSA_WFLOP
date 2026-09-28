@@ -245,6 +245,26 @@ CONDITIONS += [
      "iea37_compact.methods.*.36T_30030.best",
      lambda s: (lambda m: max((a for a in m if m[a].get("36T_30030") and m[a]["36T_30030"].get("best") is not None),
                               key=lambda a: m[a]["36T_30030"]["best"]) == "SLSQP")(g(s, "iea37_compact", "methods"))),
+    # practical equivalence at the single margin equivalence.margin_pp (= EQ_MARGIN of mpce_results.py, set after the
+    # primary analysis; never tune it to make these pass)
+    ("C49", "equivalence (PSO-VNS vs PSO): the case means are practically equivalent at the margin (90 % bootstrap CI inside "
+            "(-m, m)) and the Bayesian signed-rank test gives P(rope) > 0.5",
+     "equivalence.pairs.PSOBV-PSOC.{equivalent, ci90_mean_dloss_pp, bayes.p_rope}, equivalence.margin_pp",
+     lambda s: (lambda r, m: r["equivalent"] and -m < r["ci90_mean_dloss_pp"][0] and r["ci90_mean_dloss_pp"][1] < m
+                and r["bayes"]["p_rope"] > 0.5)(g(s, "equivalence", "pairs", "PSOBV-PSOC"), g(s, "equivalence", "margin_pp"))),
+    ("C50", "equivalence (LX-SSA-VNS vs RS-VNS): practically equivalent at the margin (90 % bootstrap CI inside (-m, m))",
+     "equivalence.pairs.LXBV-RSVNS.{equivalent, ci90_mean_dloss_pp}, equivalence.margin_pp",
+     lambda s: (lambda r, m: r["equivalent"] and -m < r["ci90_mean_dloss_pp"][0] and r["ci90_mean_dloss_pp"][1] < m)(
+         g(s, "equivalence", "pairs", "LXBV-RSVNS"), g(s, "equivalence", "margin_pp"))),
+    ("C51", "equivalence (SSA-VNS vs RS-VNS): NOT equivalent at the margin (90 % bootstrap CI not inside (-m, m)); "
+            "SSA-VNS has the lower mean loss and a mean gain larger than m (the CI itself does not exclude gains below m)",
+     "equivalence.pairs.SSABV-RSVNS.{equivalent, ci90_mean_dloss_pp, mean_dloss_pp}, equivalence.margin_pp",
+     lambda s: (lambda r, m: not r["equivalent"] and not (-m < r["ci90_mean_dloss_pp"][0] and r["ci90_mean_dloss_pp"][1] < m)
+                and r["mean_dloss_pp"] < -m)(g(s, "equivalence", "pairs", "SSABV-RSVNS"), g(s, "equivalence", "margin_pp"))),
+    ("C52", "spread (PSO-VNS vs PSO, 68 cases, 6,030): no significant difference in the per-case SD of the feasible-run wake "
+            "loss nor in the worst feasible run (Wilcoxon p >= 0.05 for both)",
+     "spread.sd_p, spread.worst_p",
+     lambda s: g(s, "spread", "sd_p") >= 0.05 and g(s, "spread", "worst_p") >= 0.05),
 ]
 
 
