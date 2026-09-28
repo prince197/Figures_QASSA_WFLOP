@@ -119,6 +119,12 @@ CONDITIONS = [
          g(s, "hr16", "loss_by_setting", "PSOBV"))),
     ("C26", "budget 6,030 on the six largest cases: PSO-VNS ranks first (column 6,030 of Table feasbudget)",
      "feasbudget.rank.6030", lambda s: min(g(s, "feasbudget", "rank", "6030"), key=g(s, "feasbudget", "rank", "6030").get) == "PSOBV"),
+    ("C27", "previous study's method pool (Table baseline): under the old PSO setting at least one salp-swarm hybrid (SSA-VNS or "
+            "LX-SSA-VNS) ranks ahead of PSO; under the corrected setting PSO ranks ahead of every salp-swarm method (SSA, LX-SSA, SSA-VNS, LX-SSA-VNS)",
+     "baseline.old.avg_rank, baseline.constriction.avg_rank",
+     lambda s: (lambda o, c: any(o[h] < o["PSO"] for h in ("SSABV", "LXBV"))
+                and all(c["PSO"] < c[a] for a in ("SSA", "LXSSA", "SSABV", "LXBV")))(
+         g(s, "baseline", "old", "avg_rank"), g(s, "baseline", "constriction", "avg_rank"))),
 ]
 
 

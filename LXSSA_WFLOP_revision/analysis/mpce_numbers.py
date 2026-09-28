@@ -221,6 +221,17 @@ def build(s, allow_partial=False):
     P("NOldPSOCases", lambda: str(ps["n_cases_loss"]), REQ_MAIN)
     P("NOldPSOBelowHalf", lambda: str(ps["old_cases_below_half_feasible"]), REQ_MAIN)
 
+    # ---------------- previous study's method pool with the old / constriction PSO setting (tab:baseline)
+    bs = s.get("baseline") or {}
+    for tag, nm in (("old", "Old"), ("constriction", "New")):
+        P(f"NBase{nm}Best", lambda tag=tag: bs[tag]["best_label"], REQ_MAIN)
+        P(f"NBase{nm}PSORank", lambda tag=tag: num(bs[tag]["avg_rank"]["PSO"], 2), REQ_MAIN)
+        P(f"NBase{nm}LXBVRank", lambda tag=tag: num(bs[tag]["avg_rank"]["LXBV"], 2), REQ_MAIN)
+        P(f"NBase{nm}SSAVNSRank", lambda tag=tag: num(bs[tag]["avg_rank"]["SSABV"], 2), REQ_MAIN)
+        P(f"NBase{nm}PSOPos", lambda tag=tag: str(int(bs[tag]["pso_position"])), REQ_MAIN)
+        P(f"NBase{nm}LXBVvsPSO", lambda tag=tag: "%d/%d/%d" % wtl(bs[tag]["wtl_vs_pso"]["LXBV"]), REQ_MAIN)
+        P(f"NBase{nm}SSAVNSvsPSO", lambda tag=tag: "%d/%d/%d" % wtl(bs[tag]["wtl_vs_pso"]["SSABV"]), REQ_MAIN)
+
     # ---------------- ablation
     ab = s.get("ablation") or {}
     fa = ab.get("friedman") or {}

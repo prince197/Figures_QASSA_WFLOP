@@ -1,13 +1,14 @@
 \documentclass[11pt]{letter}
-\usepackage[a4paper,top=0.7in,bottom=0.7in,left=0.9in,right=0.9in]{geometry}
+\usepackage[a4paper,top=0.6in,bottom=0.6in,left=0.85in,right=0.85in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
 \usepackage{xcolor}
 \usepackage{url}
-\usepackage{enumitem}
 % Visible placeholder for information the authors still have to supply
 \newcommand{\TBD}[1]{\textcolor{red}{[TBD: #1]}}
-\setlength{\parskip}{0.35em}
+% Result numbers come from the same generated macro file as the manuscript (never typed by hand)
+\input{analysis/mpce_numbers.tex}
+\setlength{\parskip}{0.3em}
 \longindentation=0pt
 \indentedwidth=\textwidth
 \signature{Prince Solanki \TBD{confirm corresponding author}, on behalf of all authors\\
@@ -17,18 +18,16 @@ Department of Mathematics, School of Sciences, IILM University, Greater Noida, U
 \begin{document}
 \pagestyle{empty}
 \begin{letter}{The Editor-in-Chief\\Journal of Modern Power Systems and Clean Energy}
-\vspace{-3em}
+\vspace{-3.2em}
 \opening{Dear Editor-in-Chief,}
 
-We submit the manuscript \textit{``A Two-Phase Particle Swarm and Variable Neighborhood Search Algorithm for Continuous Wind Farm Layout Optimization''} by Prince Solanki, Pulkit Dwivedi, Vanita Garg and Vinay Shukla for consideration as a regular paper in the \textit{Journal of Modern Power Systems and Clean Energy}.
+We submit the manuscript \textit{``Revisiting Metaheuristic Comparisons for Continuous Wind Farm Layout Optimization: Baseline Configuration, Component Analysis and a Two-Phase PSO--VNS Design''} by Prince Solanki, Pulkit Dwivedi, Vanita Garg and Vinay Shukla for consideration as a regular paper in the \textit{Journal of Modern Power Systems and Clean Energy}.
 
-\textbf{Disclosure of an earlier submission.} A related manuscript by the same authors, \textit{``A Hybrid Laplacian Salp Swarm and Variable Neighborhood Search Algorithm for Continuous Wind Farm Layout Optimization''} (Manuscript ID \TBD{ID of the earlier MPCE submission}; decision: \TBD{e.g., rejected}), was previously submitted to the journal. The present manuscript is a new paper with a different proposed method. It takes all 22 comments of the three earlier reviewers into account; a point-by-point mapping is attached.
+\textbf{What the paper contributes.} Many metaheuristics have been proposed for wind farm layout optimization, but their comparisons are hard to trust because baselines, budgets, feasibility and statistics are handled differently. We define a controlled evaluation protocol (equal budgets that count every objective and gradient call, seed-paired runs, feasibility-aware ranking, case-mean and run-level tests with Holm correction, an ablation with a random-sampling control, robustness re-evaluation, open code and data) and apply it to eight methods on 68 benchmark cases, a Horns Rev~1 block and IEA37 Case Study~1. Three findings follow. (M1)~Baseline configuration changes the conclusions: the PSO setting $w=0.7$, $c_1=c_2=2$, common in layout studies, violates the particle convergence condition; with it PSO ranks \NOldPSOPos{} and salp-swarm hybrids appear better, whereas with the Clerc--Kennedy constriction setting PSO ranks \NPSOPos{} and outperforms every salp-swarm method. (M2)~In two-phase swarm--VNS hybrids the VNS phase helps every swarm, but the salp-swarm phases are statistically tied with random sampling and the Laplace step adds nothing; only a PSO phase beats random sampling. (M3)~The resulting simple design, PSO followed by basic VNS (PSO-VNS), is the most consistent performer and is feasible in every run. We state its limits plainly: it is not significantly better than PSO over all cases, VNS alone is best from feasible starts, PSO ranks first under a Gaussian wake re-evaluation, and on IEA37 a gap to the gradient-based published optima remains. The paper closes with recommendations for benchmarking layout methods.
 
-\textbf{How the earlier review shaped this paper.} The reviewers asked for equal-budget comparisons with stronger baselines and proper statistics, for an ablation that isolates the Laplace mechanism of the salp swarm method, for a real site, and for tests of the power-curve, wake-model and $4D$-spacing assumptions. In answering the first two, we found that the earlier PSO baseline ($w=0.7$, $c_1=c_2=2$) lies outside the convergence region of PSO. With the Clerc--Kennedy constriction coefficients, plain PSO outperformed the salp swarm methods and our SSA-VNS hybrid, the Laplace step gave no gain, and the salp swarm phase gave the VNS no better start than random multistart. As neither was the source of the gain, the proposed PSO-VNS replaces the salp swarm phase by constriction PSO for half of the budget, followed by the basic VNS.
+\textbf{Fit to the journal.} The layout fixes the energy yield of a wind farm for its lifetime, and layout optimizers are used at the planning stage to compare sites, turbine counts and spacing rules. Such decisions can rely on an optimizer only if its reported advantage survives a fair comparison. The paper gives planners and method developers a reproducible way to evaluate layout methods, a simple reference method, and checks of the conclusions against the power-curve, wake-model and spacing assumptions. It continues the journal's line of work on metaheuristic layout optimization.
 
-\textbf{New in this submission} relative to the earlier one: a correctly configured PSO baseline; a component ablation with a random-multistart control (RS-VNS) and a Laplace-step check; feasibility-preserving initialization; budgets of up to 120,030 objective calls; IEA Wind Task~37 Case Study~1 (16 and 36 turbines) with a comparison to the published layouts; a Horns Rev~1 site case; robustness to the power-curve and wake-model choices; and openly available code and per-run data.
-
-\textbf{Main findings.} On 68 benchmark cases (30 seed-paired runs, equal budgets), PSO-VNS is feasible in every run and at least as good as the correctly configured PSO (significantly better in 14 cases, worse in 4; mean wake loss 1.322\% vs.\ 1.341\%, not significant over all cases), with its gain concentrated on the larger farms (9 wins and 2 losses for 10 or more turbines). It is never worse than SSA-VNS and outperforms the other references. On a Horns Rev~1 16-turbine block, its best layout yields 140.39~GWh/yr against 139.51~GWh/yr for the installed layout. We state openly that the gain over PSO is modest and that PSO ranks slightly ahead of PSO-VNS when the layouts are re-evaluated with a Gaussian wake model.
+\textbf{Disclosure of an earlier submission.} A related manuscript by the same authors, \textit{``A Hybrid Laplacian Salp Swarm and Variable Neighborhood Search Algorithm for Continuous Wind Farm Layout Optimization''} (Manuscript ID \TBD{ID of the earlier MPCE submission}; decision: \TBD{e.g., rejected}), was previously submitted to the journal. The present manuscript is a new paper with a different thesis, and the 22 comments of the three reviewers shaped it directly. The requests for equal-budget comparisons with stronger baselines and proper statistics led us to recheck the PSO baseline, which revealed M1. The request for an ablation of the Laplace mechanism led to the component analysis with a random-sampling control, which revealed M2 and made us drop the salp-swarm phase. The requests for a real site and for tests of the power curve, wake model and $4D$ spacing led to the Horns Rev~1 and IEA37 cases and to the sensitivity analysis. A point-by-point mapping of all 22 comments is attached; it also names the points that are only partly addressed.
 
 The manuscript is original, not published and not under consideration elsewhere; all authors approved its submission and declare no competing interests. Code and data: \TBD{Zenodo DOI}.
 

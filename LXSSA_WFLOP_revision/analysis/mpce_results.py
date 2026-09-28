@@ -36,7 +36,9 @@ Outputs (in --out-dir, default: this folder)
   in --fig-dir (default ../figures_mpce). At the end, mpce_numbers.py writes mpce_numbers.tex (the "N..." macros
   of the manuscript) and mpce_check_final.py prints PASS / FAIL of its CHECK-FINAL statements. The main-text
   tables (mpce_tab_*.tex) follow the layout of MPCE_PSO_VNS.tex; everything else goes to mpce_supplementary.tex
-  (input by MPCE_PSO_VNS_supplement.tex). Full rebuild incl. LaTeX: sh build_mpce_paper.sh [--partial].
+  (input by MPCE_PSO_VNS_supplement.tex). mpce_tab_baseline.tex (tab:baseline, summary["baseline"]): the previous
+  study's method pool (LXBV, SSABV, LXSSA, SSA, PSO, DE, BVNS, SLSQP) ranked with the old and with the constriction
+  PSO setting (baseline_setting). Full rebuild incl. LaTeX: sh build_mpce_paper.sh [--partial].
 
 Ranking rule (survivorship-bias correction; used for every case-level ranking below).
   Ranking methods by the mean objective of their *feasible* runs rewards a method that is
@@ -892,6 +894,7 @@ def main(argv=None):
             f"feasible {summary['pso_setting']['old_feasible_pct']:.1f}%, constriction vs old {summary['pso_setting']['constriction_vs_old_wtl']}")
     else:
         summary["pso_setting"] = None
+    summary["baseline"] = baseline_setting(R6, PO, tabs)
 
     # --- figures: average ranks
     fig, ax = plt.subplots(figsize=(3.4, 2.1))
@@ -1826,6 +1829,81 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
     ax.legend(fontsize=5.8, loc="upper left", bbox_to_anchor=(0, -0.08), ncol=1)
     fig.tight_layout()
     FG.save(fig, "layouts_iea37_hr16")
+
+
+BASE_POOL = ["LXBV", "SSABV", "LXSSA", "SSA", "PSO", "DE", "BVNS", "SLSQP"]    # previous study's methods ("PSO" = pool's PSO)
+BASE_HYB = ["LXBV", "SSABV"]                                                   # salp-swarm hybrids compared with PSO (W/T/L)
+
+
+def baseline_setting(R6, PO, tabs):
+    """Previous study's method pool (68 cases, 6,030 calls) with the old PSO setting (w = 0.7, c1 = c2 = 2;
+    fresh_grid.csv "PSO") and with the constriction setting ("PSOC"): average ranks (feasibility-aware rule),
+    best method, PSO rank position, and run-level W/T/L of LX-SSA-VNS and SSA-VNS against PSO (seed-paired
+    Wilcoxon, Holm over the seven comparisons of the hybrid in each case, as in the main W/T/L table).
+    Writes tabs["baseline"] (tab:baseline); returns summary["baseline"] (None if a method has no data)."""
+    if PO is None or not len(PO):
+        log("  baseline setting: old-setting PSO runs missing -> section skipped")
+        return None
+    PO = PO[PO.Dataset.isin(["1", "2"]) & (PO.Budget == 6030)]
+    B6 = R6[R6.Dataset.isin(["1", "2"])]
+    out = dict(pool=BASE_POOL, hybrids=BASE_HYB, labels={a: LAB["PSOC" if a == "PSO" else a] for a in BASE_POOL},
+               note="'PSO' denotes the PSO of the respective pool: old = w 0.7, c1 = c2 = 2 (fresh_grid PSO); "
+                    "constriction = Clerc-Kennedy (PSOC). W/T/L from the hybrid's side, Holm over the 7 comparisons "
+                    "of the hybrid within each case.")
+    for tag, pso in (("old", "PSO"), ("constriction", "PSOC")):
+        pool = [pso if a == "PSO" else a for a in BASE_POOL]
+        D = pd.concat([B6[B6.Algorithm.isin([a for a in pool if a != "PSO"])], PO] if pso == "PSO"
+                      else [B6[B6.Algorithm.isin(pool)]], ignore_index=True)
+        miss = [a for a in pool if a not in set(D.Algorithm)]
+        if miss:
+            log(f"  baseline setting ({tag}): no data for {miss} -> section skipped")
+            return None
+        S = case_stats(D, pool)
+        R = rank_matrix(S, pool)
+        FB = friedman_block(R, pool, focus="LXBV")
+        ar = {("PSO" if a == pso else a): v for a, v in FB["avg_rank"].items()}
+        wt = {}
+        for h in BASE_HYB:
+            oc = []
+            for _, sub in D.groupby(CASE):
+                for x in paired_vs(sub, h, [a for a in pool if a != h]):
+                    if x["Baseline"] == pso:
+                        oc.append(x["Outcome"])
+            wt[h] = pd.Series(oc, dtype=object).value_counts().to_dict()
+        best = min(ar, key=ar.get)
+        out[tag] = dict(pso_code=pso, n_cases=int(FB["n_cases"]), n_runs=int(len(D)), avg_rank=ar, best=best,
+                        best_label=out["labels"][best], pso_avg_rank=float(ar["PSO"]),
+                        pso_position=int(1 + sorted(ar.values()).index(ar["PSO"])),
+                        pso_feasible_pct=float(100 * D[D.Algorithm == pso].Feasible.mean()),
+                        wtl_vs_pso={h: dict(W=int(wt[h].get("W", 0)), T=int(wt[h].get("T", 0)), L=int(wt[h].get("L", 0)))
+                                    for h in BASE_HYB},
+                        friedman_chi2=float(FB["chi2"]), friedman_p=float(FB["p"]))
+        log(f"  baseline pool ({tag} PSO): " + ", ".join(f"{out['labels'][a]} {v:.2f}" for a, v in sorted(ar.items(), key=lambda t: t[1]))
+            + f"; PSO position {out[tag]['pso_position']}; " + ", ".join(f"{LAB[h]} vs PSO {wtl_str(out[tag]['wtl_vs_pso'][h])}" for h in BASE_HYB))
+    o, c = out["old"], out["constriction"]
+    lines = []
+    for a in BASE_POOL:
+        cells = []
+        for t in (o, c):
+            v = f"{t['avg_rank'][a]:.2f}"
+            cells.append(f"\\textbf{{{v}}}" if a == t["best"] else v)
+        lines.append(f"{out['labels'][a]} & " + " & ".join(cells) + " \\\\")
+    lines.append("\\midrule")
+    lines.append("PSO position & %d & %d \\\\" % (o["pso_position"], c["pso_position"]))
+    for h in BASE_HYB:
+        lines.append(f"{LAB[h]} vs.\\ PSO (W/T/L) & {wtl_str(o['wtl_vs_pso'][h])} & {wtl_str(c['wtl_vs_pso'][h])} \\\\")
+    tabs["baseline"] = table(
+        "table", "Effect of the PSO Setting on the Comparison of the Previous Study's Methods (%d Cases, 6,030 Evaluations): "
+        "Average Rank (1 = Best) with the Old ($w=0.7$, $c_1=c_2=2$) and the Constriction Setting, and Run-Level W/T/L of "
+        "the Salp-Swarm Hybrids against PSO" % o["n_cases"],
+        "tab:baseline", "lcc",
+        "& \\multicolumn{2}{c}{PSO setting} \\\\\n\\cmidrule(lr){2-3}\nMethod & Old & Constriction", lines,
+        foot=["\\multicolumn{3}{p{0.95\\columnwidth}}{Ranks: feasibility-aware rule (fewer than 15 of 30 feasible runs "
+              "in a case = ranked last); bold: best average rank. W/T/L: cases in which the hybrid is significantly "
+              "better / not different / worse than PSO (two-sided Wilcoxon signed-rank test, 30 seed-paired runs, "
+              "Holm-adjusted over the seven comparisons of the hybrid in each case, $\\alpha=0.05$).}"], sep="4pt",
+        size="\\footnotesize")
+    return out
 
 
 def decision_block(ALL):
