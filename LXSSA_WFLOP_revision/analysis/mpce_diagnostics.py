@@ -698,7 +698,8 @@ def first_feasible_calls():
     layout, Phase 1 of the hybrids (identical to their stand-alone Phase 1 up to the switch), over 68 x 30 runs."""
     out = {}
     for a, files in (("PSOBV", STORED["PSOBV"]), ("SSABV", STORED["SSABV"]), ("RSVNS", STORED["RSVNS"])):
-        d = pd.concat([pd.read_csv(os.path.join(HERE, f)) for f in files]); d = d[d.Algorithm == a]
+        d = pd.concat([pd.read_csv(os.path.join(HERE, f)) for f in files])
+        d = d[(d.Algorithm == a) & (d.Dataset.astype(str) != "HR")]
         calls = []
         for cv in d.Curve:
             v = np.array([np.nan if s == "nan" else float(s) for s in cv.split(";")])
