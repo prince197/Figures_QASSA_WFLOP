@@ -10,6 +10,7 @@ constriction coefficients (w = 0.7298, c1 = c2 = 1.49618), DE, SLSQP = MS-SLSQP.
 Experiments
   rsvns    RS-VNS on the 68 benchmark cases, 30 seeds, 6,030 calls
   slsqp    MS-SLSQP rerun on the 68 cases (SLSQP results are platform dependent; rerun for consistency)
+  psobv    PSO-VNS (constriction PSO phase 1 + VNS) on the 68 cases and HR16, 30 seeds
   psoc     constriction PSO on the 68 cases, 30 seeds, 6,030 calls
   ssasplit SSA-VNS with 25% / 75% budget split on the 12 split cases
   hr16new  PSOC and RSVNS on the Horns Rev 1 16-turbine block, 30 seeds
@@ -66,6 +67,8 @@ def run_method(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, 
         split = {"25": 0.25, "75": 0.75}.get(alg[-2:], 0.5)
         pos, _, _ = HybridBVNS(NP, budget, split, 0.0, 1.0, radius, "SSA" if alg.startswith("SSA") else "LXSSA",
                                seed=seed).optimize(fp, dim, lb, ub)
+    elif alg == "PSOBV":
+        pos, _, _ = HybridBVNS(NP, budget, 0.5, 0.0, 1.0, radius, "PSOC", seed=seed).optimize(fp, dim, lb, ub)
     elif alg == "RSVNS":
         pos, _, _ = RSVNS(NP, budget, 0.5, radius, seed=seed).optimize(fp, dim, lb, ub)
     elif alg == "BVNS":
@@ -151,6 +154,9 @@ def tasks(exp):
         return [(run_grid, ("RSVNS", *c, s, 6030, "random")) for c in GRID for s in S30]
     if exp == "slsqp":
         return [(run_grid, ("SLSQP", *c, s, 6030, "random")) for c in GRID for s in S30]
+    if exp == "psobv":
+        return [(run_hr, ("PSOBV", 16, s, 6030, "random")) for s in S30] + \
+               [(run_grid, ("PSOBV", *c, s, 6030, "random")) for c in GRID for s in S30]
     if exp == "psoc":
         return [(run_grid, ("PSOC", *c, s, 6030, "random")) for c in GRID for s in S30]
     if exp == "ssasplit":

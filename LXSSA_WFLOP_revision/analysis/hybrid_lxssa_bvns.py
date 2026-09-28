@@ -8,12 +8,13 @@ Phase 2 (intensification): BVNS starts from the LX-SSA food source H - a complet
 best-improvement local search from H, then shaking in nested l_inf neighbourhoods of the whole
 layout, each followed by the complete local search - until the budget is exhausted.
 
-`phase1="SSA"` gives the ablation variant SSA-VNS (standard SSA, T1 = round((split*B - Np)/Np)).
+`phase1="SSA"` gives SSA-VNS (standard SSA, T1 = round((split*B - Np)/Np)); `phase1="PSOC"` gives
+PSO-VNS (PSO with Clerc-Kennedy constriction coefficients, same T1 as SSA).
 The random stream is seeded once and phase 1 draws the initial population first, so for a
 given seed all methods start from the same initial population (paired comparison).
 """
 import numpy as np
-from authors_optimizers import LXSSA, SSA
+from authors_optimizers import LXSSA, SSA, PSO
 from original_vns import BVNS, BudgetExhausted
 
 
@@ -39,6 +40,8 @@ class HybridBVNS:
         # ---- Phase 1: LX-SSA or SSA (no re-seeding: continues the seeded random stream) ----
         if self.phase1 == "LXSSA":
             opt = LXSSA(self.pop_size, self.iters1, self.phi, self.chi, seed=None)
+        elif self.phase1 == "PSOC":
+            opt = PSO(self.pop_size, self.iters1, w=0.7298, c1=1.49618, c2=1.49618, seed=None)
         else:
             opt = SSA(self.pop_size, self.iters1, seed=None)
         h, fh, _ = opt.optimize(f, dim, lb, ub)
