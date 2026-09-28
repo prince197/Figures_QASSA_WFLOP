@@ -24,7 +24,9 @@ Inputs (all runs at 6,030 calls with random initialization unless stated)
   mpce_<exp>_s<i>of<k>.csv from mpce_experiments.py / iea37_experiments.py (read from --data-dir; all
   shards of an experiment are merged; an experiment is used only when all k shards are present, unless
   --partial is given): rsvns, psoc, psobv (68 cases + HR16), slsqp, psosplit (PSOBV25 / PSOBV75 on the
-  12 split cases), ssasplit (dropped; used if present), hr16new (PSOC, RSVNS on HR16), feas, b30k,
+  12 split cases), omega90 (Phase 6: PSOBV90 = PSO-VNS with omega = 0.9 on the 12 split cases), rsdisc (Phase 6:
+  RSDVNS = RS-VNS whose Phase-1 samples are uniform in the farm disc, 68 cases; component-analysis control),
+  ssasplit (dropped; used if present), hr16new (PSOC, RSVNS on HR16), feas, b30k,
   b120k, iea16, iea36 (nine methods M9) and the PSO-VNS-only arms feasp, b30kp, b120kp, iea16p, iea36p,
   which are merged with the nine-method experiments so that PSO-VNS is a tenth method (M10).
   hrfix (24 shards): ALL Horns Rev 1 runs again after the direction-binning fix (commit 7676da9); once any hrfix
@@ -72,8 +74,8 @@ PHASE1 = {"PSOBV": "PSOC", "SSABV": "SSA", "LXBV": "LXSSA"}
 PHASE1_ITER_CALLS = {"PSOC": 30, "SSA": 30, "LXSSA": 60, "RS": 30}  # calls per phase-1 iteration (Np = 30)
 DECISION_PAIRS = [("PSOBV", "PSOC"), ("PSOBV", "SSABV")]
 LAB = {"PSOBV": "PSO-VNS", "SSABV": "SSA-VNS", "SSABV25": "SSA-VNS (25\\%)", "SSABV75": "SSA-VNS (75\\%)",
-       "PSOBV25": "PSO-VNS (25\\%)", "PSOBV75": "PSO-VNS (75\\%)", "LXBV": "LX-SSA-VNS",
-       "RSVNS": "RS-VNS", "BVNS": "VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "PSOC": "PSO", "PSO": "PSO (old)",
+       "PSOBV25": "PSO-VNS (25\\%)", "PSOBV75": "PSO-VNS (75\\%)", "PSOBV90": "PSO-VNS (90\\%)", "LXBV": "LX-SSA-VNS",
+       "RSVNS": "RS-VNS", "RSDVNS": "RSD-VNS", "BVNS": "VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "PSOC": "PSO", "PSO": "PSO (old)",
        "DE": "DE", "SLSQP": "MS-SLSQP"}
 # Colour follows the method, independent of the focus (categorical palette of final_results.py; the
 # eight slots blue, orange, aqua, yellow, magenta, green, violet, red go to the eight methods of the
@@ -82,16 +84,17 @@ LAB = {"PSOBV": "PSO-VNS", "SSABV": "SSA-VNS", "SSABV25": "SSA-VNS (25\\%)", "SS
 # blue-violet: CVD dE 13.0, normal dE 16.3; red-aqua would be CVD dE 6.9 and red-orange a hard fail).
 # Hence PSO-VNS = violet, LX-SSA moves to magenta and VNS to red. LX-SSA-VNS and RS-VNS appear only in
 # the ablation / nine-method sections: two neutral greys (dE 15.5) with their own markers and dashes
-# (composite encoding instead of generated hues). The focus is additionally drawn with a star marker, a
-# solid, thicker line and on top (see mk / ls / lw).
+# (composite encoding instead of generated hues). The disc-sampling control RSD-VNS (Phase 6) is a third, lighter
+# grey with its own marker (octagon) and dash pattern (same composite encoding). The focus is additionally drawn
+# with a star marker, a solid, thicker line and on top (see mk / ls / lw).
 COL = {"PSOBV": "#4a3aa7", "SSABV": "#2a78d6", "PSOC": "#1baf7a", "PSO": "#1baf7a", "SSA": "#eb6834",
        "DE": "#eda100", "LXSSA": "#e87ba4", "SLSQP": "#008300", "BVNS": "#e34948", "LXBV": "#5f5e5a",
-       "RSVNS": "#8d8b85"}
+       "RSVNS": "#8d8b85", "RSDVNS": "#aeaba4"}
 MRK = {"PSOBV": "p", "SSABV": "d", "SSA": "s", "PSOC": "^", "PSO": "^", "DE": "v", "BVNS": "D", "SLSQP": "P",
-       "LXSSA": "o", "LXBV": "X", "RSVNS": "h"}
+       "LXSSA": "o", "LXBV": "X", "RSVNS": "h", "RSDVNS": "8"}
 LS = {"PSOBV": (0, (7, 2)), "SSABV": (0, (3, 1.5)), "SSA": "--", "PSOC": "-.", "PSO": "-.", "DE": ":",
       "BVNS": (0, (5, 1)), "SLSQP": (0, (3, 1, 1, 1)), "LXSSA": (0, (1, 1)), "LXBV": (0, (4, 2, 1, 2)),
-      "RSVNS": (0, (6, 2, 2, 2))}
+      "RSVNS": (0, (6, 2, 2, 2)), "RSDVNS": (0, (2, 1.2))}
 
 
 def set_focus(f):
@@ -124,9 +127,12 @@ def zo(a):
 
 
 def switch_call(alg, budget, np_=30, split=0.5):
-    """First call of phase 2 of a hybrid (HybridBVNS / RSVNS iteration arithmetic)."""
-    p1 = "RS" if alg == "RSVNS" else PHASE1[alg.rstrip("0123456789")]
-    if alg[-2:] in ("25", "75"):
+    """First call of phase 2 of a hybrid (HybridBVNS / RSVNS iteration arithmetic). Split variants carry the share
+    in their label: PSOBV25 / PSOBV75 / PSOBV90 (omega = 0.25 / 0.75 / 0.9; PSOBV90 -> 30 + 180 x 30 = 5,430 PSO
+    evaluations at 6,030). RSVNS and the disc-sampling control RSDVNS (Phase 6) share the random-sampling Phase 1
+    (split 0.5: 3,015 samples incl. the common initial population; checkpoint arithmetic of RSVNS)."""
+    p1 = "RS" if alg in ("RSVNS", "RSDVNS") else PHASE1[alg.rstrip("0123456789")]
+    if alg[-2:] in ("25", "75", "90"):
         split = int(alg[-2:]) / 100
     per = PHASE1_ITER_CALLS[p1]
     return np_ + max(1, int(round((split * budget - np_) / per))) * per
@@ -653,49 +659,58 @@ def phase2_stat(D, alg, switch=None, validate=True):
 
 def split_section(R6, base, tabs, key, label, primary=True, supp=None):
     """Budget-split table of hybrid `base` (omega = 25 / 50 / 75 % of the calls for phase 1, if its split runs
-    exist, and omega = 100 %, i.e. the phase-1 swarm alone at the same budget and seeds: PSO for PSO-VNS).
-    Run-level tests: per case, seed-paired Wilcoxon of 50 % vs 25 %, 50 % vs 75 %, 50 % vs 100 % and 75 % vs
-    100 %, Holm-adjusted over these four comparisons of the case (one family per case). Case level: Wilcoxon
-    on the 12 per-case mean losses (case_mean_wilcoxon; unadjusted) for the same four pairs."""
+    exist; omega = 90 % if its runs exist (Phase 6, experiment omega90: PSOBV90, 5,430 PSO evaluations); and
+    omega = 100 %, i.e. the phase-1 swarm alone at the same budget and seeds: PSO for PSO-VNS).
+    Run-level tests: per case, seed-paired Wilcoxon of 50 % vs 25 %, 50 % vs 75 %, [50 % vs 90 %,] 50 % vs 100 %,
+    75 % vs 100 % [and 90 % vs 75 %], Holm-adjusted over these comparisons of the case (one family per case: four
+    without omega = 0.9, six with it). Case level: Wilcoxon on the 12 per-case mean losses (case_mean_wilcoxon;
+    unadjusted) for the same pairs; the pairs without omega = 0.9 go to out["case_mean"] (keys as before, re-tested
+    by mpce_inference_extra.py X01), those with omega = 0.9 to out["case_mean_omega90"]."""
     ids = (f"{base}25", base, f"{base}75")
+    i90 = f"{base}90"
     if base not in PHASE1:
         log(f"  SKIPPED: {LAB[base]} is not a two-phase hybrid (no budget split)")
         return None
     p1c = PHASE1[base]                               # omega = 1: the phase-1 swarm alone (same budget, same seeds)
-    Sp = R6[R6.Algorithm.isin(ids + (p1c,))]
+    Sp = R6[R6.Algorithm.isin(ids + (i90, p1c))]
     Sp = Sp[[(d, r, n) in SPLITCASES for d, r, n in zip(Sp.Dataset, Sp.Radius, Sp.Turbines)]]
     if not {ids[0], ids[2]} <= set(Sp.Algorithm):
         log(f"  SKIPPED: no split runs for {LAB[base]} ({ids[0]} / {ids[2]} not in the data)"
             + {"SSABV": " -- mpce_ssasplit not present (experiment dropped)", "PSOBV": " -- mpce_psosplit missing"}.get(base, ""))
         return None
-    ids4 = ids + ((p1c,) if p1c in set(Sp.Algorithm) else ())
-    has100 = len(ids4) == 4
-    Sp = Sp[Sp.Algorithm.isin(ids4)]
-    comps = [(base, ids[0]), (base, ids[2])] + ([(base, p1c), (ids[2], p1c)] if has100 else [])
+    has90 = i90 in set(Sp.Algorithm)
+    has100 = p1c in set(Sp.Algorithm)
+    idsN = ids + ((i90,) if has90 else ()) + ((p1c,) if has100 else ())   # in order of omega
+    Sp = Sp[Sp.Algorithm.isin(idsN)]
+    # (tag, a, b): run-level comparisons of one case, one Holm family; p<tag>_holm / rb<tag> in the per-case rows
+    comps = [("25", base, ids[0]), ("75", base, ids[2])]
+    comps += [("90", base, i90)] if has90 else []
+    comps += [("100", base, p1c), ("75v100", ids[2], p1c)] if has100 else []
+    comps += [("90v75", i90, ids[2])] if has90 else []
+    shares = {ids[0]: 0.25, base: 0.5, ids[2]: 0.75, i90: 0.9, p1c: 1.0}
     lines, srows = [], []
     for (ds, r, n), s in Sp.groupby(CASE):
-        if s.Algorithm.nunique() < len(ids4):
+        if s.Algorithm.nunique() < len(idsN):
             continue
         piv = s.assign(S=goodness(s)).pivot_table(index="Seed", columns="Algorithm", values="S")
         fm = s[s.Feasible].groupby("Algorithm").Objective.mean(); fc = s.groupby("Algorithm").Feasible.sum()
         nr = s.groupby("Algorithm").size()
         lmn = s[s.Feasible].groupby("Algorithm").LossPct.mean()
         ps, rbs = [], []
-        for a, b in comps:
+        for _, a, b in comps:
             p, rb, _ = wil((piv[a] - piv[b]).dropna().values); ps.append(p); rbs.append(rb)
         ph = holm(ps)
         cells = []
-        for a in ids4:
+        for a in idsN:
             v = fm.get(a, np.nan)
             c = "--" if not np.isfinite(v) else f"{v:.1f}"
             if fc.get(a, 0) < nr.get(a, 0):
                 c += f"$^{{{int(fc.get(a, 0))}}}$"
             cells.append(c)
-        best = max(ids4, key=lambda a: fm.get(a, -np.inf) if fc.get(a, 0) >= np.ceil(nr.get(a, 0) / 2) else -np.inf)
-        row = dict(case=f"{ds}-{r}-{n}", best=best, p25_holm=float(ph[0]), p75_holm=float(ph[1]),
-                   rb25=rbs[0], rb75=rbs[1], loss={a: float(lmn.get(a, np.nan)) for a in ids4})
-        if has100:
-            row.update(p100_holm=float(ph[2]), rb100=rbs[2], p75v100_holm=float(ph[3]), rb75v100=rbs[3])
+        best = max(idsN, key=lambda a: fm.get(a, -np.inf) if fc.get(a, 0) >= np.ceil(nr.get(a, 0) / 2) else -np.inf)
+        row = dict(case=f"{ds}-{r}-{n}", best=best, loss={a: float(lmn.get(a, np.nan)) for a in idsN})
+        for (tag, _, _), h, rb in zip(comps, ph, rbs):
+            row[f"p{tag}_holm"] = float(h); row[f"rb{tag}"] = rb
         srows.append(row)
         lines.append(f"{'I' if ds == '1' else 'II'} & {r} & {n} & " + " & ".join(cells) + " & "
                      + " & ".join(fmt_p(x) for x in ph) + " \\\\")
@@ -703,48 +718,67 @@ def split_section(R6, base, tabs, key, label, primary=True, supp=None):
     pre = "" if primary else f"Secondary analysis ({LAB[base]}, not the proposed method). "
     SR = pd.DataFrame(srows)
     # compact main-text table: mean loss over the cases, average rank among the splits, W/T/L of 50% vs each
-    Ssp = case_stats(Sp, list(ids4))
-    Rsp = rank_matrix(Ssp, list(ids4))
+    Ssp = case_stats(Sp, list(idsN))
+    Rsp = rank_matrix(Ssp, list(idsN))
     avg_sp = Rsp.mean(axis=0).to_dict()
-    mloss = {a: float(np.mean([c["loss"][a] for c in srows])) for a in ids4}
-    def wtl_split(pcol, rbcol):
+    mloss = {a: float(np.mean([c["loss"][a] for c in srows])) for a in idsN}
+    def wtl_split(tag):
+        pcol, rbcol = f"p{tag}_holm", f"rb{tag}"
+        if pcol not in SR:
+            return None
         w = int(((SR[pcol] < 0.05) & (SR[rbcol] > 0)).sum()); l = int(((SR[pcol] < 0.05) & (SR[rbcol] < 0)).sum())
         return dict(W=w, T=int(len(SR) - w - l), L=l)
-    w25, w75 = wtl_split("p25_holm", "rb25"), wtl_split("p75_holm", "rb75")
-    w100 = wtl_split("p100_holm", "rb100") if has100 else None
-    w75v100 = wtl_split("p75v100_holm", "rb75v100") if has100 else None
-    lower = {a: int(sum(c["loss"][a] < c["loss"][base] - 1e-12 for c in srows)) for a in ids4 if a != base}
-    cm = {}
-    for a, b in comps:                       # case-mean Wilcoxon (12 cases), a vs b, unadjusted
+    W_ = {tag: wtl_split(tag) for tag, _, _ in comps}
+    w25, w75, w90, w100, w75v100, w90v75 = (W_.get(t) for t in ("25", "75", "90", "100", "75v100", "90v75"))
+    lower = {a: int(sum(c["loss"][a] < c["loss"][base] - 1e-12 for c in srows)) for a in idsN if a != base}
+    cm, cm90 = {}, {}
+    for _, a, b in comps:                    # case-mean Wilcoxon (12 cases), a vs b, unadjusted
         x = case_mean_wilcoxon(Ssp, a, [b])[b]
-        cm[f"{a}-{b}"] = dict(p=x["p"], wins=x["wins"], losses=x["losses"], mean_dloss_pp=x["mean_dloss_pp"],
-                              n_cases=x["n_cases"])
-    wcol = {ids[0]: w25, ids[2]: w75, p1c: w100}
-    shares = dict(zip(ids4, (0.25, 0.5, 0.75, 1.0)))
+        (cm90 if i90 in (a, b) else cm)[f"{a}-{b}"] = dict(p=x["p"], wins=x["wins"], losses=x["losses"],
+                                                          mean_dloss_pp=x["mean_dloss_pp"], n_cases=x["n_cases"])
+    wcol = {ids[0]: w25, ids[2]: w75, i90: w90, p1c: w100}
     cl = [f"${shares[a]:g}${' (' + p1 + ' alone)' if a == p1c else ''} & {mloss[a]:.3f} & {avg_sp[a]:.2f} & "
-          + ("--" if a == base else wtl_str(wcol[a])) + " \\\\" for a in ids4]
-    nsh = {3: "Three", 4: "Four"}[len(ids4)]
+          + ("--" if a == base else wtl_str(wcol[a])) + " \\\\" for a in idsN]
+    nsh = {3: "Three", 4: "Four", 5: "Five"}[len(idsN)]
+    ncw = {2: "Two", 4: "Four", 3: "Three", 6: "Six"}.get(len(comps), str(len(comps)))
+    om = ", ".join(f"${shares[a]:g}$" for a in idsN if a != p1c)
     if primary:
-        foot = (["\\multicolumn{4}{l}{$\\omega=0.75$ vs.\\ $\\omega=1$ (%s alone): %s (W/T/L from the $\\omega=0.75$ side)}" % (p1, wtl_str(w75v100))]
-                if has100 else None)
-        tabs[key] = table("table", f"Budget Split of {LAB[base]}: Share $\\omega$ of the 6,030 Evaluations for {p1} ($\\omega=0.25$, $0.5$, $0.75${'; $' + chr(92) + 'omega=1$: ' + p1 + ' Alone, Same Seeds' if has100 else ''}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the {nsh} Settings, and Cases in Which the Default $\\omega=0.5$ Is Significantly Better / Not Different / Worse (Run-Level Wilcoxon, Holm-Adjusted over the {len(comps)} Comparisons of Each Case)",
+        foot = []
+        if has100:
+            foot.append("\\multicolumn{4}{l}{$\\omega=0.75$ vs.\\ $\\omega=1$ (%s alone): %s (W/T/L from the $\\omega=0.75$ side)}" % (p1, wtl_str(w75v100)))
+        if has90:
+            foot.append("\\multicolumn{4}{l}{$\\omega=0.9$ vs.\\ $\\omega=0.75$: %s (W/T/L from the $\\omega=0.9$ side)}" % wtl_str(w90v75))
+        foot = "\\\\\n".join(foot) if foot else None
+        foot = [foot] if foot else None
+        tabs[key] = table("table", f"Budget Split of {LAB[base]}: Share $\\omega$ of the 6,030 Evaluations for {p1} (${chr(92)}omega={om[1:]}{'; $' + chr(92) + 'omega=1$: ' + p1 + ' Alone, Same Seeds' if has100 else ''}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the {nsh} Settings, and Cases in Which the Default $\\omega=0.5$ Is Significantly Better / Not Different / Worse (Run-Level Wilcoxon, Holm-Adjusted over the {ncw} Comparisons of Each Case)",
                           label, "cccc", f"$\\omega$ & Mean loss (\\%) & Avg.\\ rank & $0.5$ vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt", foot=foot)
         label = label + "-cases"
-    heads = ["$\\omega=0.25$", "$0.5$", "$0.75$"] + (["$1$"] if has100 else [])
-    pheads = ["$p$ (0.5/0.25)", "$p$ (0.5/0.75)"] + (["$p$ (0.5/1)", "$p$ (0.75/1)"] if has100 else [])
-    (supp.append if supp is not None else (lambda t: tabs.__setitem__(key, t)))(table("table*" if has100 else "table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases (25\\%, 50\\% and 75\\% of the 6,030 calls for {p1}{'; 100' + chr(92) + '%: ' + p1 + ' alone, same seeds' if has100 else ''}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the {len(comps)} comparisons of each case.",
-                      label, "ccc" + "c" * (len(heads) + len(pheads)), "DS & $r$ & $N$ & " + " & ".join(heads + pheads), lines, sep="2.5pt", pos="!htb"))
+    heads = ["$\\omega=0.25$", "$0.5$", "$0.75$"] + (["$0.9$"] if has90 else []) + (["$1$"] if has100 else [])
+    lab_p = {"25": "0.5/0.25", "75": "0.5/0.75", "90": "0.5/0.9", "100": "0.5/1", "75v100": "0.75/1", "90v75": "0.9/0.75"}
+    pheads = [f"$p$ ({lab_p[t]})" for t, _, _ in comps]
+    pct = ", ".join(f"{int(round(100 * shares[a]))}\\%" for a in idsN if a != p1c)
+    (supp.append if supp is not None else (lambda t: tabs.__setitem__(key, t)))(table("table*" if has100 else "table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases ({pct} of the 6,030 calls for {p1}{'; 100' + chr(92) + '%: ' + p1 + ' alone, same seeds' if has100 else ''}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the {len(comps)} comparisons of each case.",
+                      label, "ccc" + "c" * (len(heads) + len(pheads)), "DS & $r$ & $N$ & " + " & ".join(heads + pheads), lines, sep="2.5pt" if len(comps) <= 4 else "1.8pt", pos="!htb"))
     out = dict(method=base, primary=primary, cases=srows, best_count=SR.best.value_counts().to_dict(),
-               n_cases=int(len(SR)), settings={a: shares[a] for a in ids4}, omega1_method=p1c if has100 else None,
-               holm_family="per case, over the %d run-level comparisons %s" % (len(comps), ", ".join(f"{a} vs {b}" for a, b in comps)),
-               avg_rank=avg_sp, mean_loss=mloss, wtl_50_vs_25=w25, wtl_50_vs_75=w75,
-               wtl_50_vs_100=w100, wtl_75_vs_100=w75v100, case_mean=cm,
+               n_cases=int(len(SR)), settings={a: shares[a] for a in idsN}, omega1_method=p1c if has100 else None,
+               omega90_method=i90 if has90 else None, n_settings=len(idsN), n_comparisons=len(comps),
+               holm_family="per case, over the %d run-level comparisons %s" % (len(comps), ", ".join(f"{a} vs {b}" for _, a, b in comps)),
+               avg_rank=avg_sp, mean_loss=mloss, wtl_50_vs_25=w25, wtl_50_vs_75=w75, wtl_50_vs_90=w90,
+               wtl_50_vs_100=w100, wtl_75_vs_100=w75v100, wtl_90_vs_75=w90v75, case_mean=cm, case_mean_omega90=cm90,
                n_lower_loss_than_50=lower,
                sig_vs25=int((SR.p25_holm < 0.05).sum()), sig_vs75=int((SR.p75_holm < 0.05).sum()),
                sig_vs25_50better=int(((SR.p25_holm < 0.05) & (SR.rb25 > 0)).sum()),
                sig_vs75_50better=int(((SR.p75_holm < 0.05) & (SR.rb75 > 0)).sum()))
+    if has90:
+        # omega = 0.9 against omega = 0.75 per case: lower mean loss (feasible runs), and the best setting overall
+        out["n_lower_loss_90_than_75"] = int(sum(c["loss"][i90] < c["loss"][ids[2]] - 1e-12 for c in srows))
+        out["n_higher_loss_90_than_75"] = int(sum(c["loss"][i90] > c["loss"][ids[2]] + 1e-12 for c in srows))
+        out["best_mean_loss"] = min(mloss, key=mloss.get)
+        out["best_avg_rank"] = min(avg_sp, key=avg_sp.get)
     log(f"  {LAB[base]}: best split counts {out['best_count']}; significant vs 25%: {out['sig_vs25']}, vs 75%: {out['sig_vs75']}"
-        + (f"; 75% vs 100% ({p1}): {wtl_str(w75v100)}; avg ranks {', '.join(f'{a} {v:.2f}' for a, v in avg_sp.items())}" if has100 else ""))
+        + (f"; 75% vs 100% ({p1}): {wtl_str(w75v100)}" if has100 else "")
+        + (f"; 90% vs 75%: {wtl_str(w90v75)}, 50% vs 90%: {wtl_str(w90)}" if has90 else "")
+        + f"; avg ranks {', '.join(f'{a} {v:.2f}' for a, v in avg_sp.items())}; mean loss {', '.join(f'{a} {v:.4f}' for a, v in mloss.items())}")
     return out
 
 
@@ -878,8 +912,8 @@ def load(data_dir, partial):
             avail[fn] = dict(status="missing", rows=0)
     B = pd.concat(base, ignore_index=True)
     new = {}
-    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "ssasplit", "hr16new", "feas", "b30k", "b120k", "iea16", "iea36",
-                "feasp", "b30kp", "b120kp", "iea16p", "iea36p"):
+    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "omega90", "rsdisc", "ssasplit", "hr16new", "feas", "b30k", "b120k",
+                "iea16", "iea36", "feasp", "b30kp", "b120kp", "iea16p", "iea36p"):
         df, st = read_shards(exp, data_dir, partial)
         avail[f"mpce_{exp}"] = st
         if df is not None:
@@ -917,7 +951,7 @@ def load(data_dir, partial):
     if hrfix is None:
         fallbacks.append("SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (old model, replaced by mpce_hrfix)")
         fallbacks.append("Horns Rev 16: mpce_hrfix missing -> old runs (direction binning before commit 7676da9)")
-    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "ssasplit", "hr16new"):
+    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "omega90", "rsdisc", "ssasplit", "hr16new"):
         if exp in new:
             parts.append(new[exp])
     if hrfix is not None:
@@ -945,9 +979,9 @@ def load(data_dir, partial):
 
 def common_seeds(ALL):
     """Keep, within every case x budget x initialization, only the seeds that every method of the group has
-    (split variants *25 / *75 are not used to define the intersection)."""
+    (split variants *25 / *75 / *90 are not used to define the intersection)."""
     grp = CASE + ["Budget", "Init"]
-    core = ALL[~ALL.Algorithm.str.contains(r"(?:25|75)$")]
+    core = ALL[~ALL.Algorithm.str.contains(r"(?:25|75|90)$")]
     sets = core.groupby(grp + ["Algorithm"]).Seed.agg(frozenset)
     keep = sets.groupby(level=list(range(len(grp)))).agg(lambda v: frozenset.intersection(*v))
     k = pd.Series([keep.get(tuple(t), frozenset()) for t in ALL[grp].itertuples(index=False)], index=ALL.index)
@@ -1631,6 +1665,9 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     # =========================================================== 3. budget split
     log("\n[3] Budget split")
     summary["split"] = split_section(R6, FOCUS, tabs, "split", "tab:split", primary=True, supp=supp)
+    if summary["split"]:
+        summary["holm_families"]["split"] = "per case: the %d run-level comparisons of the split table (%s)" % (
+            summary["split"]["n_comparisons"], summary["split"]["holm_family"].split("comparisons ", 1)[1])
     if FOCUS != "SSABV":
         summary["split_ssabv"] = split_section(R6, "SSABV", tabs, "split_ssabv", "tab:split-ssabv", primary=False, supp=supp)
 
