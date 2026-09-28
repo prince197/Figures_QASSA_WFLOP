@@ -56,7 +56,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.ticker
-from scipy.stats import wilcoxon, friedmanchisquare, rankdata, norm, f as f_dist
+from scipy.stats import wilcoxon, friedmanchisquare, rankdata, norm, f as f_dist, t as t_dist
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -164,6 +164,15 @@ LEGACY_HR16 = dict(ideal=149.2632720953485, installed=139.51300511740232)
 PYWAKE_HR80_AEP = 662.5
 PYWAKE_HR80_LOSS_PCT = 10.96
 BOOT_N, BOOT_SEED = 10000, 20260928   # bootstrap over cases (percentile 95 % CI), fixed seed
+# Practical equivalence of case-mean wake losses (equivalence_block): one margin for EVERY case-mean comparison,
+# in percentage points (pp) of wake loss. It was chosen AFTER the primary analysis (post hoc, when "PSO-VNS is
+# not significantly different from PSO" had to be turned into a practical-equivalence statement); the paper
+# therefore also reports, for every pair, the smallest margin at which equivalence holds (min_margin_pp), so a
+# reader can apply any other margin. Do not tune this constant to make a particular pair (non-)equivalent.
+EQ_MARGIN = 0.05
+# Bayesian signed-rank test (Benavoli et al. 2017, JMLR 18:77): Dirichlet-process prior strength s, pseudo-
+# observation z0, Monte Carlo samples of the posterior, fixed seed
+BAYES_S, BAYES_Z0, BAYES_N, BAYES_SEED = 0.5, 0.0, 50000, 20260928
 RANK_RULE = ("Within each case a method is ranked by the mean objective of its feasible runs only if at "
              "least half of its runs (15 of 30; 5 of 10) are feasible; methods with fewer feasible runs "
              "receive the worst ranks, below all qualifying methods, ordered by their number of feasible "
@@ -304,15 +313,240 @@ def paired_vs(sub, focus, others):
     return rows
 
 
-def boot_ci(x, n=BOOT_N, seed=BOOT_SEED, level=0.95):
-    """Percentile bootstrap CI of the mean of x (resampling the cases with replacement, fixed seed)."""
+def boot_means(x, n=BOOT_N, seed=BOOT_SEED):
+    """Bootstrap distribution of the mean of x (n resamples of the cases with replacement, fixed seed)."""
     x = np.asarray(x, float); x = x[np.isfinite(x)]
     if len(x) < 2:
-        return [None, None]
+        return None
     rng = np.random.default_rng(seed)
-    m = x[rng.integers(0, len(x), (n, len(x)))].mean(1)
+    return x[rng.integers(0, len(x), (n, len(x)))].mean(1)
+
+
+def boot_ci(x, n=BOOT_N, seed=BOOT_SEED, level=0.95):
+    """Percentile bootstrap CI of the mean of x (resampling the cases with replacement, fixed seed)."""
+    m = boot_means(x, n, seed)
+    if m is None:
+        return [None, None]
     a = (1 - level) / 2
     return [float(np.quantile(m, a)), float(np.quantile(m, 1 - a))]
+
+
+def tost(d, margin=EQ_MARGIN, n=BOOT_N, seed=BOOT_SEED):
+    """Equivalence (TOST) of the mean of the case-mean differences d (pp) within (-margin, margin).
+
+    The bootstrap resamples are those of boot_ci (same n, same seed), so ci95 equals the 95 % CI of the \\NCm...
+    macros. Decision rule: equivalence holds iff the 90 % percentile bootstrap CI lies strictly inside
+    (-margin, margin) (TOST at alpha = 0.05). TOST p-value (primary, "p_tost"): NONPARAMETRIC BOOTSTRAP, the
+    inversion of the same percentile interval: p_low = share of bootstrap means <= -margin, p_high = share
+    >= +margin, each with the add-one correction (k + 1) / (n + 1), p_tost = max(p_low, p_high); its floor is
+    1 / (n + 1) (p_tost_at_floor = True: no bootstrap mean outside the margin, i.e. p <= 1/(n+1)). A paired-t
+    TOST on the case means (Schuirmann) is stored for reference as p_tost_t. min_margin_pp = max(|lo90|, |hi90|):
+    equivalence holds for every margin larger than this."""
+    d = np.asarray(d, float); d = d[np.isfinite(d)]
+    m = boot_means(d, n, seed)
+    if m is None:
+        return None
+    lo90, hi90 = float(np.quantile(m, 0.05)), float(np.quantile(m, 0.95))
+    k_lo, k_hi = int((m <= -margin).sum()), int((m >= margin).sum())
+    p_lo, p_hi = (k_lo + 1) / (n + 1), (k_hi + 1) / (n + 1)
+    se = d.std(ddof=1) / np.sqrt(len(d))
+    if se > 0:
+        pt = max(float(t_dist.sf((d.mean() + margin) / se, len(d) - 1)), float(t_dist.cdf((d.mean() - margin) / se, len(d) - 1)))
+    else:
+        pt = 0.0 if abs(d.mean()) < margin else 1.0
+    return dict(n_cases=int(len(d)), mean_dloss_pp=float(d.mean()),
+                ci95_mean_dloss_pp=[float(np.quantile(m, 0.025)), float(np.quantile(m, 0.975))],
+                ci90_mean_dloss_pp=[lo90, hi90], margin_pp=margin,
+                equivalent=bool(-margin < lo90 and hi90 < margin),
+                p_tost=float(max(p_lo, p_hi)), p_tost_low=float(p_lo), p_tost_high=float(p_hi),
+                p_tost_at_floor=bool(k_lo == 0 and k_hi == 0), p_tost_t=pt,
+                min_margin_pp=float(max(abs(lo90), abs(hi90))))
+
+
+def bayes_signrank(d, rope=EQ_MARGIN, s=BAYES_S, z0=BAYES_Z0, n=BAYES_N, seed=BAYES_SEED):
+    """Bayesian signed-rank test with a region of practical equivalence (Benavoli, Corani, Demsar, Zaffalon 2017,
+    "Time for a change", JMLR 18:77, Sec. 5), implemented with numpy.
+
+    d = case-mean differences L(A) - L(B) (pp; negative = A better), rope = (-rope, rope). Prior: Dirichlet
+    process with strength s and base measure concentrated on the pseudo-observation z0, so the posterior weights
+    of (z0, d_1, ..., d_n) are Dirichlet(s, 1, ..., 1). For every Monte Carlo sample w of the weights
+      theta_A   = sum_ij w_i w_j [z_i + z_j < -2 rope]      (A better)
+      theta_B   = sum_ij w_i w_j [z_i + z_j > +2 rope]      (B better)
+      theta_rope = 1 - theta_A - theta_B                   (sums exactly at +-2 rope count 1/2, as in baycomp)
+    (i, j over all n + 1 points incl. i = j and z0; the Walsh averages (z_i + z_j) / 2 compared with the rope).
+    Reported: P(A better), P(practically equivalent), P(B better) = share of the posterior samples in which
+    theta_A, theta_rope, theta_B is the largest of the three (ties split equally), as in the paper's simplex plots.
+    Unit checks (_bayes_selftest, run by equivalence_block): all d = 0 -> P(rope) = 1 (every Walsh average is 0);
+    all d = -1 pp with rope 0.05 -> P(A better) ~ 1; all d = +1 pp -> P(B better) ~ 1."""
+    d = np.asarray(d, float); d = d[np.isfinite(d)]
+    z = np.r_[z0, d]
+    ws = np.r_[s, np.ones(len(d))]
+    W = np.random.default_rng(seed).dirichlet(ws, n)                    # (n, len(z))
+    sums = z[:, None] + z[None, :]
+    below = (sums < -2 * rope) + 0.5 * (sums == -2 * rope)
+    above = (sums > 2 * rope) + 0.5 * (sums == 2 * rope)
+    tA = ((W @ below) * W).sum(1)
+    tB = ((W @ above) * W).sum(1)
+    T = np.c_[tA, 1 - tA - tB, tB]
+    win = (T >= T.max(1, keepdims=True) - 1e-15).astype(float)
+    pr = (win / win.sum(1, keepdims=True)).mean(0)
+    return dict(p_a_better=float(pr[0]), p_rope=float(pr[1]), p_b_better=float(pr[2]), rope_pp=rope,
+                prior_strength=s, prior_z0=z0, mc_samples=n, seed=seed, n_cases=int(len(d)),
+                mean_theta=[float(tA.mean()), float((1 - tA - tB).mean()), float(tB.mean())])
+
+
+def _bayes_selftest():
+    """Unit checks of bayes_signrank (see its docstring); cheap (2,000 samples)."""
+    r0 = bayes_signrank(np.zeros(20), n=2000)
+    rA = bayes_signrank(-np.ones(20), n=2000)
+    rB = bayes_signrank(np.ones(20), n=2000)
+    ok = r0["p_rope"] > 0.999 and rA["p_a_better"] > 0.99 and rB["p_b_better"] > 0.99
+    assert ok, ("bayes_signrank self-test failed", r0, rA, rB)
+    return ok
+
+
+# the nine component-analysis pairs of the \NCm... macros (ablation.case_mean keys; first minus second)
+EQ_PAIRS_ABL = ["SSABV-RSVNS", "LXBV-RSVNS", "PSOBV-RSVNS", "SSABV-LXBV", "LXSSA-SSA", "SSABV-SSA", "LXBV-LXSSA",
+                "PSOBV-PSOC", "PSOBV-BVNS"]
+
+
+def case_mean_diffs(S, a, b, val="Loss"):
+    """Per-case differences val(a) - val(b) over the cases in which BOTH methods qualify (>= half of the runs
+    feasible) -- the case set of mean_dloss_pp / ci95_mean_dloss_pp of case_mean_wilcoxon (\\NCm...DL, CI).
+    Cases in which only one method qualifies (imputed in the Wilcoxon test only) or neither does are excluded;
+    their counts are returned."""
+    P = S.pivot_table(index=CASE, columns="Algorithm", values=val)
+    Q = S.pivot_table(index=CASE, columns="Algorithm", values="Qualified").astype(float)
+    qa, qb = Q[a] > 0.5, Q[b] > 0.5
+    both = qa & qb
+    return (P[a] - P[b])[both], dict(only_a_qualified=int((qa & ~qb).sum()), only_b_qualified=int((~qa & qb).sum()),
+                                     neither_qualified=int((~qa & ~qb).sum()), n_both_qualified=int(both.sum()))
+
+
+def equivalence_block(S, SA, G, summary, supp):
+    """Practical equivalence of the case-mean wake losses at EQ_MARGIN (summary["equivalence"], tab:equivalence)
+    and spread / worst run of PSO-VNS vs PSO (summary["spread"]).
+
+    Pairs: the nine component-analysis pairs of the \\NCm... macros (case stats SA of the ablation variants) and
+    the focus vs each other method of the main comparison (case stats S); a pair in both groups is computed from
+    both and must agree (same runs). d = L(A) - L(B) (pp, negative = A better) over the cases in which both
+    methods qualify (case_mean_diffs). tost(): 90 % bootstrap CI (BOOT_N case resamples, seed BOOT_SEED),
+    bootstrap TOST p, minimal margin; bayes_signrank(): Bayesian signed-rank test with ROPE (-EQ_MARGIN,
+    EQ_MARGIN)."""
+    _bayes_selftest()
+    pairs, groups = {}, {}
+    main_pairs = [f"{FOCUS}-{b}" for b in summary.get("main_methods", []) if b != FOCUS]
+    for grp, keys, Sx in (("ablation", EQ_PAIRS_ABL, SA), ("main", main_pairs, S)):
+        for key in keys:
+            a, b = key.split("-")
+            if Sx is None or a not in set(Sx.Algorithm) or b not in set(Sx.Algorithm):
+                continue
+            d, cnt = case_mean_diffs(Sx, a, b)
+            r = tost(d.values)
+            if r is None:
+                continue
+            r.update(cnt)
+            r["bayes"] = bayes_signrank(d.values)
+            if key in pairs:                                   # same runs -> identical case means
+                assert np.isclose(pairs[key]["mean_dloss_pp"], r["mean_dloss_pp"]) and pairs[key]["n_cases"] == r["n_cases"], key
+            else:
+                pairs[key] = r
+            groups.setdefault(key, []).append(grp)
+    for key in pairs:
+        pairs[key]["groups"] = groups[key]
+    summary["equivalence"] = dict(
+        margin_pp=EQ_MARGIN,
+        margin_note="one margin for every case-mean comparison, chosen after the primary analysis (post hoc); "
+                    "min_margin_pp = smallest margin at which the 90 % CI lies inside (-m, m)",
+        rule="equivalent iff the 90 % percentile bootstrap CI of the mean case-mean difference lies strictly inside (-m, m) (TOST, alpha 0.05)",
+        p_tost="nonparametric bootstrap TOST p (add-one, floor 1/(BOOT_N+1)); p_tost_t = paired-t TOST on the case means, for reference",
+        bootstrap=dict(resamples=BOOT_N, seed=BOOT_SEED, unit="cases"),
+        bayes=dict(test="Bayesian signed-rank test (Benavoli et al. 2017, JMLR 18:77)", prior_strength=BAYES_S,
+                   prior_z0=BAYES_Z0, mc_samples=BAYES_N, seed=BAYES_SEED, rope=[-EQ_MARGIN, EQ_MARGIN],
+                   probabilities="share of posterior samples in which each of theta_A, theta_rope, theta_B is the largest"),
+        case_set="cases in which both methods have >= 15 of 30 feasible runs (as mean_dloss_pp / ci95 of the \\NCm macros)",
+        sign="d = L(A) - L(B), pp; negative = A (first method) better",
+        pairs=pairs)
+    for key, r in pairs.items():
+        a, b = key.split("-")
+        log(f"  EQ {LAB[a]:>10s} vs {LAB[b]:10s} n={r['n_cases']:2d} dL={r['mean_dloss_pp']:+.4f} "
+            f"90%CI=[{r['ci90_mean_dloss_pp'][0]:+.4f}, {r['ci90_mean_dloss_pp'][1]:+.4f}] p_TOST={r['p_tost']:.4g} "
+            f"(t {r['p_tost_t']:.3g}) m_min={r['min_margin_pp']:.4f} eq@{EQ_MARGIN}={'yes' if r['equivalent'] else 'no'}  "
+            f"Bayes P(A)={r['bayes']['p_a_better']:.3f} P(rope)={r['bayes']['p_rope']:.3f} P(B)={r['bayes']['p_b_better']:.3f}")
+
+    # --- supplementary table (tab:equivalence)
+    f3 = lambda v: f"{v:.3f}".replace("-", "$-$")
+    ci = lambda c: f"[{f3(c[0])}, {f3(c[1])}]"
+    up3 = lambda v: f"{np.ceil(v * 1000 - 1e-9) / 1000:.3f}"
+    def row(key):
+        a, b = key.split("-"); r = pairs[key]; y = r["bayes"]
+        pt = ("$\\le" + fmt_p(r["p_tost"], 2).strip("$") + "$") if r["p_tost_at_floor"] else fmt_p(r["p_tost"])
+        return (f"{LAB[a]} vs.\\ {LAB[b]} & {r['n_cases']} & ${r['mean_dloss_pp']:+.3f}$ & {ci(r['ci95_mean_dloss_pp'])} & "
+                f"{ci(r['ci90_mean_dloss_pp'])} & {pt} & {up3(r['min_margin_pp'])} & {'yes' if r['equivalent'] else 'no'} & "
+                f"{y['p_a_better']:.2f} & {y['p_rope']:.2f} & {y['p_b_better']:.2f} \\\\")
+    ab_ = [k for k in EQ_PAIRS_ABL if k in pairs]
+    mn_ = [k for k in main_pairs if k in pairs and k not in ab_]
+    dup = [k for k in main_pairs if k in ab_]
+    lines = (["\\multicolumn{11}{l}{\\emph{Component-analysis contrasts}} \\\\"] + [row(k) for k in ab_]
+             + ["\\midrule", "\\multicolumn{11}{l}{\\emph{Main comparison, %s vs.\\ each method%s}} \\\\"
+                % (LAB[FOCUS], (" (" + " and ".join(LAB[k.split('-')[1]] for k in dup) + ": see above)") if dup else "")]
+             + [row(k) for k in mn_])
+    nexc = {k: pairs[k]["only_a_qualified"] + pairs[k]["only_b_qualified"] + pairs[k]["neither_qualified"] for k in pairs}
+    exc = [f"{LAB[k.split('-')[0]]} vs.\\ {LAB[k.split('-')[1]]} {v}" for k, v in nexc.items() if v]
+    supp.append(table(
+        "table*", "Practical equivalence of the per-case mean wake losses at 6,030 evaluations. $\\overline{\\Delta L}$: mean "
+        "difference of the case-mean wake losses, first minus second method (percentage points, pp; negative = first method "
+        "better), over the $n$ cases in which both methods have at least 15 feasible runs out of 30 (cases excluded: %s); "
+        "95\\%% and 90\\%% percentile bootstrap CIs (%s resamples of the cases, fixed seed). One equivalence margin "
+        "$m=%.2f$~pp is applied to every comparison; it was set after the primary analysis. Two one-sided tests (TOST): "
+        "the pair is equivalent at $m$ (``Eq.'') if the 90\\%% CI lies inside $(-m, m)$; $p_{\\rm TOST}$: bootstrap TOST "
+        "$p$ (share of bootstrap means beyond $\\mp m$, add-one corrected; $\\le$: no bootstrap mean beyond the margin); "
+        "$m_{\\min}$: smallest margin at which equivalence holds, $\\max(|{\\rm lo}_{90}|, |{\\rm hi}_{90}|)$, rounded up. "
+        "Bayesian signed-rank test \\cite{Benavoli2017} on the case-mean differences with region of practical equivalence "
+        "$(-m, m)$ (Dirichlet-process prior strength $s=%.1f$ at $z_0=0$, %s Monte Carlo samples, fixed seed): posterior "
+        "probability that the first method is better ($P_{\\rm A}$), that the two are practically equivalent "
+        "($P_{\\rm rope}$) and that the second is better ($P_{\\rm B}$)."
+        % ("; ".join(exc) if exc else "none", f"{BOOT_N:,}".replace(",", "{,}"), EQ_MARGIN, BAYES_S,
+           f"{BAYES_N:,}".replace(",", "{,}")),
+        "tab:equivalence", "lcccccccccc",
+        "Pair (first vs.\\ second) & $n$ & $\\overline{\\Delta L}$ (pp) & 95\\% CI & 90\\% CI & $p_{\\rm TOST}$ & $m_{\\min}$ & "
+        "Eq. & $P_{\\rm A}$ & $P_{\\rm rope}$ & $P_{\\rm B}$", lines, size="\\scriptsize", sep="2.5pt", pos="!htb"))
+
+    # --- spread and worst run, PSO-VNS vs PSO (68 cases, 6,030 evaluations, random initialization): per case the SD
+    # of the wake loss (%) of the feasible runs and the worst (highest-loss) feasible run; cases in which both
+    # methods qualify; Wilcoxon signed-rank (wil: |d| <= 1e-9 dropped) on the per-case values, unadjusted
+    A_, B_ = "PSOBV", "PSOC"
+    if {A_, B_} <= set(S.Algorithm):
+        worst = G[G.Feasible].groupby(CASE + ["Algorithm"]).LossPct.max().rename("Worst").reset_index()
+        Sw = S.merge(worst, on=CASE + ["Algorithm"], how="left")
+        sd_d, cnt = case_mean_diffs(Sw, B_, A_, "LossSD")           # > 0: PSO-VNS has the smaller SD
+        wr_d, _ = case_mean_diffs(Sw, B_, A_, "Worst")              # > 0: PSO-VNS has the better (lower-loss) worst run
+        Q = Sw[Sw.Qualified.astype(bool)].pivot_table(index=CASE, columns="Algorithm", values=["LossSD", "Worst"])
+        both = Q["LossSD"][[A_, B_]].dropna().index
+        psd, rsd, _ = wil(sd_d.values)
+        pwr, rwr, _ = wil(wr_d.values)
+        sp = dict(pair=[A_, B_], n_cases=int(len(sd_d)), **cnt,
+                  mean_sd_pp={A_: float(Q["LossSD"].loc[both, A_].mean()), B_: float(Q["LossSD"].loc[both, B_].mean())},
+                  median_sd_pp={A_: float(Q["LossSD"].loc[both, A_].median()), B_: float(Q["LossSD"].loc[both, B_].median())},
+                  sd_wins=int((sd_d > 1e-9).sum()), sd_losses=int((sd_d < -1e-9).sum()), sd_ties=int((sd_d.abs() <= 1e-9).sum()),
+                  sd_p=psd, sd_rb=rsd,
+                  mean_worst_loss_pct={A_: float(Q["Worst"].loc[both, A_].mean()), B_: float(Q["Worst"].loc[both, B_].mean())},
+                  worst_wins=int((wr_d > 1e-9).sum()), worst_losses=int((wr_d < -1e-9).sum()),
+                  worst_ties=int((wr_d.abs() <= 1e-9).sum()), worst_p=pwr, worst_rb=rwr,
+                  note="per case: SD of the wake loss (%) of the feasible runs and loss of the worst feasible run, 30 runs, "
+                       "6,030 evaluations; wins = cases in which PSO-VNS has the smaller SD / lower worst-run loss "
+                       "(|d| <= 1e-9 = tie); Wilcoxon signed-rank on the per-case values (ties dropped), unadjusted; "
+                       "rb > 0 = PSO-VNS smaller")
+        sp["sd_direction"] = ("PSOBV_smaller" if sp["sd_p"] < 0.05 and sp["sd_rb"] > 0 else
+                              "PSOC_smaller" if sp["sd_p"] < 0.05 else "no_significant_difference")
+        sp["worst_direction"] = ("PSOBV_better" if sp["worst_p"] < 0.05 and sp["worst_rb"] > 0 else
+                                 "PSOC_better" if sp["worst_p"] < 0.05 else "no_significant_difference")
+        summary["spread"] = sp
+        log(f"  SPREAD PSO-VNS vs PSO ({sp['n_cases']} cases): mean SD {sp['mean_sd_pp'][A_]:.4f} vs {sp['mean_sd_pp'][B_]:.4f} pp, "
+            f"smaller SD in {sp['sd_wins']}/{sp['sd_losses']}/{sp['sd_ties']} (PSO-VNS/PSO/tie) cases, p={sp['sd_p']:.3g} "
+            f"r_rb={sp['sd_rb']:+.2f}; worst run better in {sp['worst_wins']}/{sp['worst_losses']}/{sp['worst_ties']}, "
+            f"p={sp['worst_p']:.3g} r_rb={sp['worst_rb']:+.2f}; mean worst loss {sp['mean_worst_loss_pct'][A_]:.4f} vs "
+            f"{sp['mean_worst_loss_pct'][B_]:.4f} %")
 
 
 def case_mean_wilcoxon(S, focus, others, val="Loss"):
@@ -1338,6 +1572,10 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         log(f"  phase 2 of {LAB.get(alg, alg)} (switch at call {v['switch_call']:,}) removes {v['mean']:.2f}% (median {v['median']:.2f}%) "
             f"of the loss left at the switch; {v['infeasible_at_switch_made_feasible']} runs infeasible at the switch made feasible")
 
+    # practical equivalence of the case means (EQ_MARGIN) and spread / worst run of PSO-VNS vs PSO
+    log("\n[2b] Practical equivalence (margin %.2f pp, set after the primary analysis) and spread" % EQ_MARGIN)
+    equivalence_block(S, SA, G, summary, supp)
+
     # reproduction check against the parent of commit a9779a3 (old rule, five variants, six contrasts);
     # independent of --focus (SSA-VNS numbers of the earlier pipeline)
     OLDV = ["SSABV", "LXBV", "BVNS", "LXSSA", "SSA"]
@@ -1816,6 +2054,10 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     summary["pairing"] = pairing_check(ALL)
     summary["main"]["loss_monotone"] = loss_monotone(S, FOCUS)
     summary["boundary_rule"] = boundary_rule()
+    if summary.get("spread") and (summary.get("hr16") or {}).get("methods"):      # reused: \NHRFeasPSOVNS, \NHRFeasPSO
+        hm_ = summary["hr16"]["methods"]
+        summary["spread"]["hr16_feasible"] = {a: dict(feasible=hm_[a]["feasible"], runs=hm_[a]["runs"])
+                                              for a in ("PSOBV", "PSOC") if a in hm_}
     summary["provenance"] = {f"{a}|{ds}|{b}|{i}": sorted(set(x.Source))
                              for (a, ds, b, i), x in ALL.groupby(["Algorithm", "Dataset", "Budget", "Init"])}
     po_ = new.get("pso_old")

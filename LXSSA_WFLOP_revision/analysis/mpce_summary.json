@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 11:19:10",
+ "generated": "2026-09-28 16:37:00",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -2361,6 +2361,683 @@
     "pct_runs_improved": 100.0,
     "mean_loss_at_switch_pct": 1.6305117052735143,
     "feasible_at_switch_pct": 98.72549019607844
+   }
+  }
+ },
+ "equivalence": {
+  "margin_pp": 0.05,
+  "margin_note": "one margin for every case-mean comparison, chosen after the primary analysis (post hoc); min_margin_pp = smallest margin at which the 90 % CI lies inside (-m, m)",
+  "rule": "equivalent iff the 90 % percentile bootstrap CI of the mean case-mean difference lies strictly inside (-m, m) (TOST, alpha 0.05)",
+  "p_tost": "nonparametric bootstrap TOST p (add-one, floor 1/(BOOT_N+1)); p_tost_t = paired-t TOST on the case means, for reference",
+  "bootstrap": {
+   "resamples": 10000,
+   "seed": 20260928,
+   "unit": "cases"
+  },
+  "bayes": {
+   "test": "Bayesian signed-rank test (Benavoli et al. 2017, JMLR 18:77)",
+   "prior_strength": 0.5,
+   "prior_z0": 0.0,
+   "mc_samples": 50000,
+   "seed": 20260928,
+   "rope": [
+    -0.05,
+    0.05
+   ],
+   "probabilities": "share of posterior samples in which each of theta_A, theta_rope, theta_B is the largest"
+  },
+  "case_set": "cases in which both methods have >= 15 of 30 feasible runs (as mean_dloss_pp / ci95 of the \\NCm macros)",
+  "sign": "d = L(A) - L(B), pp; negative = A (first method) better",
+  "pairs": {
+   "SSABV-RSVNS": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.06838100203927398,
+    "ci95_mean_dloss_pp": [
+     -0.10839127903015813,
+     -0.03419461894539902
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.10114221208547006,
+     -0.038960842391647287
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 0.8392160783921608,
+    "p_tost_low": 0.8392160783921608,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.8303648598032651,
+    "min_margin_pp": 0.10114221208547006,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 0.30268,
+     "p_rope": 0.69732,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.4245183346930123,
+      0.49390127236788905,
+      0.08158039293909862
+     ]
+    },
+    "groups": [
+     "ablation"
+    ]
+   },
+   "LXBV-RSVNS": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.005318954168216957,
+    "ci95_mean_dloss_pp": [
+     -0.04113028786738296,
+     0.02617976973261124
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.03447309258436416,
+     0.021193782701174585
+    ],
+    "margin_pp": 0.05,
+    "equivalent": true,
+    "p_tost": 0.007699230076992301,
+    "p_tost_low": 0.007699230076992301,
+    "p_tost_high": 0.00019998000199980003,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.004979134537660641,
+    "min_margin_pp": 0.03447309258436416,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 0.00282,
+     "p_rope": 0.99464,
+     "p_b_better": 0.00254,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.22917768061935737,
+      0.5468787948461504,
+      0.2239435245344922
+     ]
+    },
+    "groups": [
+     "ablation"
+    ]
+   },
+   "PSOBV-RSVNS": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.39876420141526936,
+    "ci95_mean_dloss_pp": [
+     -0.4947123949449109,
+     -0.3084839501645202
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.4789447421298934,
+     -0.32374111944814815
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9999999997447936,
+    "min_margin_pp": 0.4789447421298934,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.8820584698470396,
+      0.11794153015296027,
+      0.0
+     ]
+    },
+    "groups": [
+     "ablation"
+    ]
+   },
+   "SSABV-LXBV": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.06306204787105701,
+    "ci95_mean_dloss_pp": [
+     -0.09082431735488208,
+     -0.03819974539749959
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.08600249485504578,
+     -0.04185097815407432
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 0.8411158884111589,
+    "p_tost_low": 0.8411158884111589,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.8296494163770702,
+    "min_margin_pp": 0.08600249485504578,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 0.526,
+     "p_rope": 0.474,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.4894467363954086,
+      0.4801439628080947,
+      0.030409300796496733
+     ]
+    },
+    "groups": [
+     "ablation"
+    ]
+   },
+   "LXSSA-SSA": {
+    "n_cases": 66,
+    "mean_dloss_pp": 0.1533401056307556,
+    "ci95_mean_dloss_pp": [
+     0.09635291655909073,
+     0.21704146049320389
+    ],
+    "ci90_mean_dloss_pp": [
+     0.1042471205550876,
+     0.20629528219225016
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 9.999000099990002e-05,
+    "p_tost_high": 1.0,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9992613439478935,
+    "min_margin_pp": 0.20629528219225016,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 2,
+    "n_both_qualified": 66,
+    "bayes": {
+     "p_a_better": 0.0,
+     "p_rope": 0.1174,
+     "p_b_better": 0.8826,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 66,
+     "mean_theta": [
+      0.02208980641738558,
+      0.40484761716328854,
+      0.5730625764193259
+     ]
+    },
+    "groups": [
+     "ablation"
+    ]
+   },
+   "SSABV-SSA": {
+    "n_cases": 66,
+    "mean_dloss_pp": -0.2937283450962897,
+    "ci95_mean_dloss_pp": [
+     -0.3828420569386629,
+     -0.21428560191668836
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.3676545221942505,
+     -0.22623590489369577
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9999997343136232,
+    "min_margin_pp": 0.3676545221942505,
+    "only_a_qualified": 2,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 66,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 66,
+     "mean_theta": [
+      0.8250010348385293,
+      0.1613433773734593,
+      0.013655587788011358
+     ]
+    },
+    "groups": [
+     "ablation"
+    ]
+   },
+   "LXBV-LXSSA": {
+    "n_cases": 66,
+    "mean_dloss_pp": -0.39423367083213484,
+    "ci95_mean_dloss_pp": [
+     -0.5281054800700089,
+     -0.275657224424716
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.5053731241006085,
+     -0.2926316938804076
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9999992440977902,
+    "min_margin_pp": 0.5053731241006085,
+    "only_a_qualified": 2,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 66,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 66,
+     "mean_theta": [
+      0.8312995424124177,
+      0.16870045758758243,
+      0.0
+     ]
+    },
+    "groups": [
+     "ablation"
+    ]
+   },
+   "PSOBV-PSOC": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.018043354866491453,
+    "ci95_mean_dloss_pp": [
+     -0.044557155232241775,
+     0.007836351844264924
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.04072520168205542,
+     0.004022874580121633
+    ],
+    "margin_pp": 0.05,
+    "equivalent": true,
+    "p_tost": 0.010698930106989302,
+    "p_tost_low": 0.010698930106989302,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.01044695536191255,
+    "min_margin_pp": 0.04072520168205542,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 0.0028,
+     "p_rope": 0.9972,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.2525701559480233,
+      0.6240917380869978,
+      0.12333810596497895
+     ]
+    },
+    "groups": [
+     "ablation",
+     "main"
+    ]
+   },
+   "PSOBV-BVNS": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.4651915315379654,
+    "ci95_mean_dloss_pp": [
+     -0.5588084171062448,
+     -0.3710324258786756
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.5453836434035709,
+     -0.38616166021183107
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9999999999984651,
+    "min_margin_pp": 0.5453836434035709,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.89875647505979,
+      0.0951975727298209,
+      0.006045952210389038
+     ]
+    },
+    "groups": [
+     "ablation",
+     "main"
+    ]
+   },
+   "PSOBV-SSABV": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.33038319937599553,
+    "ci95_mean_dloss_pp": [
+     -0.40921041880830655,
+     -0.25501077770319525
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.39656052357320776,
+     -0.2660918120821734
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.999999999507437,
+    "min_margin_pp": 0.39656052357320776,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.8707615120474657,
+      0.12923848795253431,
+      0.0
+     ]
+    },
+    "groups": [
+     "main"
+    ]
+   },
+   "PSOBV-SSA": {
+    "n_cases": 66,
+    "mean_dloss_pp": -0.6112577561750174,
+    "ci95_mean_dloss_pp": [
+     -0.7621328774677965,
+     -0.47130747446941157
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.7349195409957193,
+     -0.4930762348085908
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.999999999898301,
+    "min_margin_pp": 0.7349195409957193,
+    "only_a_qualified": 2,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 66,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 66,
+     "mean_theta": [
+      0.9127649862002445,
+      0.08723501379975554,
+      0.0
+     ]
+    },
+    "groups": [
+     "main"
+    ]
+   },
+   "PSOBV-LXSSA": {
+    "n_cases": 66,
+    "mean_dloss_pp": -0.7645978618057732,
+    "ci95_mean_dloss_pp": [
+     -0.9637343464000522,
+     -0.5796123134859866
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.9295108882509302,
+     -0.6058274955089032
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9999999996140408,
+    "min_margin_pp": 0.9295108882509302,
+    "only_a_qualified": 2,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 66,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 66,
+     "mean_theta": [
+      0.9205729687528446,
+      0.07942703124715546,
+      0.0
+     ]
+    },
+    "groups": [
+     "main"
+    ]
+   },
+   "PSOBV-DE": {
+    "n_cases": 50,
+    "mean_dloss_pp": -0.8865753016721861,
+    "ci95_mean_dloss_pp": [
+     -1.1907629352222189,
+     -0.6044665694355134
+    ],
+    "ci90_mean_dloss_pp": [
+     -1.136584058402803,
+     -0.6484352781924478
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9999994768836864,
+    "min_margin_pp": 1.136584058402803,
+    "only_a_qualified": 18,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 50,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 50,
+     "mean_theta": [
+      0.8859549854497812,
+      0.11404501455021876,
+      0.0
+     ]
+    },
+    "groups": [
+     "main"
+    ]
+   },
+   "PSOBV-SLSQP": {
+    "n_cases": 68,
+    "mean_dloss_pp": -0.4354035666654407,
+    "ci95_mean_dloss_pp": [
+     -0.5190172939173615,
+     -0.35339651874398986
+    ],
+    "ci90_mean_dloss_pp": [
+     -0.5047906016739213,
+     -0.36562501386650575
+    ],
+    "margin_pp": 0.05,
+    "equivalent": false,
+    "p_tost": 1.0,
+    "p_tost_low": 1.0,
+    "p_tost_high": 9.999000099990002e-05,
+    "p_tost_at_floor": false,
+    "p_tost_t": 0.9999999999998552,
+    "min_margin_pp": 0.5047906016739213,
+    "only_a_qualified": 0,
+    "only_b_qualified": 0,
+    "neither_qualified": 0,
+    "n_both_qualified": 68,
+    "bayes": {
+     "p_a_better": 1.0,
+     "p_rope": 0.0,
+     "p_b_better": 0.0,
+     "rope_pp": 0.05,
+     "prior_strength": 0.5,
+     "prior_z0": 0.0,
+     "mc_samples": 50000,
+     "seed": 20260928,
+     "n_cases": 68,
+     "mean_theta": [
+      0.9281884672821552,
+      0.057102555260676854,
+      0.014708977457167852
+     ]
+    },
+    "groups": [
+     "main"
+    ]
+   }
+  }
+ },
+ "spread": {
+  "pair": [
+   "PSOBV",
+   "PSOC"
+  ],
+  "n_cases": 68,
+  "only_a_qualified": 0,
+  "only_b_qualified": 0,
+  "neither_qualified": 0,
+  "n_both_qualified": 68,
+  "mean_sd_pp": {
+   "PSOBV": 0.23007345380162944,
+   "PSOC": 0.22884653235115177
+  },
+  "median_sd_pp": {
+   "PSOBV": 0.1811073206381796,
+   "PSOC": 0.1698631985071576
+  },
+  "sd_wins": 33,
+  "sd_losses": 27,
+  "sd_ties": 8,
+  "sd_p": 0.5460754013196345,
+  "sd_rb": -0.08961748633879782,
+  "mean_worst_loss_pct": {
+   "PSOBV": 1.8904991379522045,
+   "PSOC": 1.8885056000663392
+  },
+  "worst_wins": 36,
+  "worst_losses": 24,
+  "worst_ties": 8,
+  "worst_p": 0.8023596079110755,
+  "worst_rb": 0.03715846994535519,
+  "note": "per case: SD of the wake loss (%) of the feasible runs and loss of the worst feasible run, 30 runs, 6,030 evaluations; wins = cases in which PSO-VNS has the smaller SD / lower worst-run loss (|d| <= 1e-9 = tie); Wilcoxon signed-rank on the per-case values (ties dropped), unadjusted; rb > 0 = PSO-VNS smaller",
+  "sd_direction": "no_significant_difference",
+  "worst_direction": "no_significant_difference",
+  "hr16_feasible": {
+   "PSOBV": {
+    "feasible": 30,
+    "runs": 30
+   },
+   "PSOC": {
+    "feasible": 19,
+    "runs": 30
    }
   }
  },
@@ -6767,6 +7444,22 @@
   "  phase 2 of LX-SSA-VNS (switch at call 3,030) removes 38.96% (median 31.87%) of the loss left at the switch; 118 runs infeasible at the switch made feasible",
   "  phase 2 of RS-VNS (switch at call 3,030) removes 57.13% (median 54.25%) of the loss left at the switch; 668 runs infeasible at the switch made feasible",
   "  phase 2 of PSOC_continued (switch at call 3,030) removes 29.16% (median 20.58%) of the loss left at the switch; 26 runs infeasible at the switch made feasible",
+  "\n[2b] Practical equivalence (margin 0.05 pp, set after the primary analysis) and spread",
+  "  EQ    SSA-VNS vs RS-VNS     n=68 dL=-0.0684 90%CI=[-0.1011, -0.0390] p_TOST=0.8392 (t 0.83) m_min=0.1011 eq@0.05=no  Bayes P(A)=0.303 P(rope)=0.697 P(B)=0.000",
+  "  EQ LX-SSA-VNS vs RS-VNS     n=68 dL=-0.0053 90%CI=[-0.0345, +0.0212] p_TOST=0.007699 (t 0.00498) m_min=0.0345 eq@0.05=yes  Bayes P(A)=0.003 P(rope)=0.995 P(B)=0.003",
+  "  EQ    PSO-VNS vs RS-VNS     n=68 dL=-0.3988 90%CI=[-0.4789, -0.3237] p_TOST=1 (t 1) m_min=0.4789 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ    SSA-VNS vs LX-SSA-VNS n=68 dL=-0.0631 90%CI=[-0.0860, -0.0419] p_TOST=0.8411 (t 0.83) m_min=0.0860 eq@0.05=no  Bayes P(A)=0.526 P(rope)=0.474 P(B)=0.000",
+  "  EQ     LX-SSA vs SSA        n=66 dL=+0.1533 90%CI=[+0.1042, +0.2063] p_TOST=1 (t 0.999) m_min=0.2063 eq@0.05=no  Bayes P(A)=0.000 P(rope)=0.117 P(B)=0.883",
+  "  EQ    SSA-VNS vs SSA        n=66 dL=-0.2937 90%CI=[-0.3677, -0.2262] p_TOST=1 (t 1) m_min=0.3677 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ LX-SSA-VNS vs LX-SSA     n=66 dL=-0.3942 90%CI=[-0.5054, -0.2926] p_TOST=1 (t 1) m_min=0.5054 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ    PSO-VNS vs PSO        n=68 dL=-0.0180 90%CI=[-0.0407, +0.0040] p_TOST=0.0107 (t 0.0104) m_min=0.0407 eq@0.05=yes  Bayes P(A)=0.003 P(rope)=0.997 P(B)=0.000",
+  "  EQ    PSO-VNS vs VNS        n=68 dL=-0.4652 90%CI=[-0.5454, -0.3862] p_TOST=1 (t 1) m_min=0.5454 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ    PSO-VNS vs SSA-VNS    n=68 dL=-0.3304 90%CI=[-0.3966, -0.2661] p_TOST=1 (t 1) m_min=0.3966 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ    PSO-VNS vs SSA        n=66 dL=-0.6113 90%CI=[-0.7349, -0.4931] p_TOST=1 (t 1) m_min=0.7349 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ    PSO-VNS vs LX-SSA     n=66 dL=-0.7646 90%CI=[-0.9295, -0.6058] p_TOST=1 (t 1) m_min=0.9295 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ    PSO-VNS vs DE         n=50 dL=-0.8866 90%CI=[-1.1366, -0.6484] p_TOST=1 (t 1) m_min=1.1366 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  EQ    PSO-VNS vs MS-SLSQP   n=68 dL=-0.4354 90%CI=[-0.5048, -0.3656] p_TOST=1 (t 1) m_min=0.5048 eq@0.05=no  Bayes P(A)=1.000 P(rope)=0.000 P(B)=0.000",
+  "  SPREAD PSO-VNS vs PSO (68 cases): mean SD 0.2301 vs 0.2288 pp, smaller SD in 33/27/8 (PSO-VNS/PSO/tie) cases, p=0.546 r_rb=-0.09; worst run better in 36/24/8, p=0.802 r_rb=+0.04; mean worst loss 1.8905 vs 1.8885 %",
   "  REPRODUCTION CHECK (SSA-VNS, old rule, 5 variants, Holm over 6 contrasts): SSABV avg rank 1.6250 (expected 1.625), LXBV vs SSABV 0/66/2 (expected 0/66/2), dL +0.0631 (expected +0.0631), phase-2 mean 36.664 (expected 36.664) -> PASS",
   "\n[3] Budget split",
   "  PSO-VNS: best split counts {'PSOBV75': 11, 'PSOBV': 1}; significant vs 25%: 6, vs 75%: 4; 75% vs 100% (PSO): 10/2/0; avg ranks PSOBV25 3.75, PSOBV 2.42, PSOBV75 1.08, PSOC 2.75",
@@ -6798,6 +7491,6 @@
   "  feasbudget: pending []; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}, 30030: {'PSOBV': 1.1666666666666667, 'SSABV': 4.166666666666667, 'LXBV': 5.666666666666667, 'RSVNS': 6.333333333333333, 'BVNS': 4.833333333333333, 'PSOC': 2.5, 'SSA': 8.666666666666666, 'LXSSA': 9.833333333333334, 'DE': 5.166666666666667, 'SLSQP': 6.666666666666667}, 120030: {'PSOBV': 2.1666666666666665, 'SSABV': 4.166666666666667, 'LXBV': 5.833333333333333, 'RSVNS': 4.666666666666667, 'BVNS': 3.1666666666666665, 'PSOC': 5.833333333333333, 'SSA': 8.833333333333334, 'LXSSA': 10.0, 'DE': 3.3333333333333335, 'SLSQP': 7.0}}",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 9 tables, 14 figures, mpce_summary.json in 32 s"
+  "\nwrote 9 tables, 14 figures, mpce_summary.json in 44 s"
  ]
 }

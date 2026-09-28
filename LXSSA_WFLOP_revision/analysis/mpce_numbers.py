@@ -433,6 +433,37 @@ def build(s, allow_partial=False):
         P(f"NCm{nm}DL", lambda key=key: num(cm[key]["mean_dloss_pp"], 3, sign=True), REQ_ABL)
         P(f"NCm{nm}CI", lambda key=key: "[%s, %s]" % tuple(num(v, 3) for v in cm[key]["ci95_mean_dloss_pp"]), REQ_ABL)
     P("NAblFriedVerb", lambda: "rejects" if fa["p"] < 0.05 else "does not reject", REQ_ABL)
+    # practical equivalence of the case means (summary equivalence; mpce_results.equivalence_block): one margin
+    # EQ_MARGIN (pp) for every pair, set after the primary analysis. Same case set as \NCm...DL / CI (both methods
+    # >= 15 feasible runs). CI = 90 % percentile bootstrap CI of the mean L(A) - L(B) (10,000 case resamples,
+    # fixed seed) as "[a, b]"; P = bootstrap TOST p (add-one; at its floor 1/10001 it is a bound, see
+    # p_tost_at_floor); Min = smallest margin at which equivalence holds, rounded UP to 3 decimals; Holds =
+    # "yes" iff the 90 % CI lies inside (-m, m). Bay...: Bayesian signed-rank test (Benavoli et al. 2017) with
+    # ROPE (-m, m): Better = P(A better), Rope = P(practically equivalent), Worse = P(B better), 2 decimals.
+    eq = s.get("equivalence") or {}
+    eqp = eq.get("pairs") or {}
+    P("NEqMargin", lambda: num(eq["margin_pp"], 2), REQ_ABL)
+    for nm, key in (("PSOVNSvsPSO", "PSOBV-PSOC"), ("SSAVNSvsRSVNS", "SSABV-RSVNS"), ("LXSSAVNSvsRSVNS", "LXBV-RSVNS"),
+                    ("PSOVNSvsRSVNS", "PSOBV-RSVNS"), ("SSAVNSvsLXSSAVNS", "SSABV-LXBV")):
+        P(f"NEq{nm}CI", lambda key=key: "[%s, %s]" % tuple(num(v, 3) for v in eqp[key]["ci90_mean_dloss_pp"]), REQ_ABL)
+        P(f"NEq{nm}P", lambda key=key: pval(eqp[key]["p_tost"]), REQ_ABL)
+        P(f"NEq{nm}Min", lambda key=key: ceil_num(eqp[key]["min_margin_pp"], 3), REQ_ABL)
+        P(f"NEq{nm}Holds", lambda key=key: "yes" if eqp[key]["equivalent"] else "no", REQ_ABL)
+        P(f"NBay{nm}Better", lambda key=key: num(eqp[key]["bayes"]["p_a_better"], 2), REQ_ABL)
+        P(f"NBay{nm}Rope", lambda key=key: num(eqp[key]["bayes"]["p_rope"], 2), REQ_ABL)
+        P(f"NBay{nm}Worse", lambda key=key: num(eqp[key]["bayes"]["p_b_better"], 2), REQ_ABL)
+    # spread and worst run, PSO-VNS vs PSO (summary spread): mean over the cases of the per-case SD of the
+    # feasible-run wake loss (pp, 3 decimals); cases in which PSO-VNS has the smaller / larger SD and the better /
+    # worse worst feasible run (ties excluded); Wilcoxon p on the per-case SDs / worst runs (unadjusted)
+    spr = s.get("spread") or {}
+    P("NSdPSOVNS", lambda: num(spr["mean_sd_pp"]["PSOBV"], 3), REQ_MAIN)
+    P("NSdPSO", lambda: num(spr["mean_sd_pp"]["PSOC"], 3), REQ_MAIN)
+    P("NSdWinsPSOVNS", lambda: str(spr["sd_wins"]), REQ_MAIN)
+    P("NSdLossesPSOVNS", lambda: str(spr["sd_losses"]), REQ_MAIN)
+    P("NSdP", lambda: pval(spr["sd_p"]), REQ_MAIN)
+    P("NWorstWinsPSOVNS", lambda: str(spr["worst_wins"]), REQ_MAIN)
+    P("NWorstLossesPSOVNS", lambda: str(spr["worst_losses"]), REQ_MAIN)
+    P("NWorstP", lambda: pval(spr["worst_p"]), REQ_MAIN)
     # exploratory N >= 10 subgroups, PSO-VNS vs PSO (case-mean Wilcoxon unadjusted; run level: main-table family)
     sg = (main.get("subgroup_vs_phase1") or {}).get("groups") or {}
     for g_ in ("Large", "dsILarge", "dsIILarge"):

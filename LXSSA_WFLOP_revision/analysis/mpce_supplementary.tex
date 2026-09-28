@@ -435,6 +435,36 @@ PSO continued (no VNS) & 3{,}030 & 98.7 & 1.63 & 29.2 & 20.6 & 26 \\
 
 \begin{table*}[!htb]
 \centering
+\caption{Practical equivalence of the per-case mean wake losses at 6,030 evaluations. $\overline{\Delta L}$: mean difference of the case-mean wake losses, first minus second method (percentage points, pp; negative = first method better), over the $n$ cases in which both methods have at least 15 feasible runs out of 30 (cases excluded: LX-SSA vs.\ SSA 2; SSA-VNS vs.\ SSA 2; LX-SSA-VNS vs.\ LX-SSA 2; PSO-VNS vs.\ SSA 2; PSO-VNS vs.\ LX-SSA 2; PSO-VNS vs.\ DE 18); 95\% and 90\% percentile bootstrap CIs (10{,}000 resamples of the cases, fixed seed). One equivalence margin $m=0.05$~pp is applied to every comparison; it was set after the primary analysis. Two one-sided tests (TOST): the pair is equivalent at $m$ (``Eq.'') if the 90\% CI lies inside $(-m, m)$; $p_{\rm TOST}$: bootstrap TOST $p$ (share of bootstrap means beyond $\mp m$, add-one corrected; $\le$: no bootstrap mean beyond the margin); $m_{\min}$: smallest margin at which equivalence holds, $\max(|{\rm lo}_{90}|, |{\rm hi}_{90}|)$, rounded up. Bayesian signed-rank test \cite{Benavoli2017} on the case-mean differences with region of practical equivalence $(-m, m)$ (Dirichlet-process prior strength $s=0.5$ at $z_0=0$, 50{,}000 Monte Carlo samples, fixed seed): posterior probability that the first method is better ($P_{\rm A}$), that the two are practically equivalent ($P_{\rm rope}$) and that the second is better ($P_{\rm B}$).}
+\label{tab:equivalence}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lcccccccccc}
+\toprule
+Pair (first vs.\ second) & $n$ & $\overline{\Delta L}$ (pp) & 95\% CI & 90\% CI & $p_{\rm TOST}$ & $m_{\min}$ & Eq. & $P_{\rm A}$ & $P_{\rm rope}$ & $P_{\rm B}$ \\
+\midrule
+\multicolumn{11}{l}{\emph{Component-analysis contrasts}} \\
+SSA-VNS vs.\ RS-VNS & 68 & $-0.068$ & [$-$0.108, $-$0.034] & [$-$0.101, $-$0.039] & 0.839 & 0.102 & no & 0.30 & 0.70 & 0.00 \\
+LX-SSA-VNS vs.\ RS-VNS & 68 & $-0.005$ & [$-$0.041, 0.026] & [$-$0.034, 0.021] & 0.008 & 0.035 & yes & 0.00 & 0.99 & 0.00 \\
+PSO-VNS vs.\ RS-VNS & 68 & $-0.399$ & [$-$0.495, $-$0.308] & [$-$0.479, $-$0.324] & 1.000 & 0.479 & no & 1.00 & 0.00 & 0.00 \\
+SSA-VNS vs.\ LX-SSA-VNS & 68 & $-0.063$ & [$-$0.091, $-$0.038] & [$-$0.086, $-$0.042] & 0.841 & 0.087 & no & 0.53 & 0.47 & 0.00 \\
+LX-SSA vs.\ SSA & 66 & $+0.153$ & [0.096, 0.217] & [0.104, 0.206] & 1.000 & 0.207 & no & 0.00 & 0.12 & 0.88 \\
+SSA-VNS vs.\ SSA & 66 & $-0.294$ & [$-$0.383, $-$0.214] & [$-$0.368, $-$0.226] & 1.000 & 0.368 & no & 1.00 & 0.00 & 0.00 \\
+LX-SSA-VNS vs.\ LX-SSA & 66 & $-0.394$ & [$-$0.528, $-$0.276] & [$-$0.505, $-$0.293] & 1.000 & 0.506 & no & 1.00 & 0.00 & 0.00 \\
+PSO-VNS vs.\ PSO & 68 & $-0.018$ & [$-$0.045, 0.008] & [$-$0.041, 0.004] & 0.011 & 0.041 & yes & 0.00 & 1.00 & 0.00 \\
+PSO-VNS vs.\ VNS & 68 & $-0.465$ & [$-$0.559, $-$0.371] & [$-$0.545, $-$0.386] & 1.000 & 0.546 & no & 1.00 & 0.00 & 0.00 \\
+\midrule
+\multicolumn{11}{l}{\emph{Main comparison, PSO-VNS vs.\ each method (PSO and VNS: see above)}} \\
+PSO-VNS vs.\ SSA-VNS & 68 & $-0.330$ & [$-$0.409, $-$0.255] & [$-$0.397, $-$0.266] & 1.000 & 0.397 & no & 1.00 & 0.00 & 0.00 \\
+PSO-VNS vs.\ SSA & 66 & $-0.611$ & [$-$0.762, $-$0.471] & [$-$0.735, $-$0.493] & 1.000 & 0.735 & no & 1.00 & 0.00 & 0.00 \\
+PSO-VNS vs.\ LX-SSA & 66 & $-0.765$ & [$-$0.964, $-$0.580] & [$-$0.930, $-$0.606] & 1.000 & 0.930 & no & 1.00 & 0.00 & 0.00 \\
+PSO-VNS vs.\ DE & 50 & $-0.887$ & [$-$1.191, $-$0.604] & [$-$1.137, $-$0.648] & 1.000 & 1.137 & no & 1.00 & 0.00 & 0.00 \\
+PSO-VNS vs.\ MS-SLSQP & 68 & $-0.435$ & [$-$0.519, $-$0.353] & [$-$0.505, $-$0.366] & 1.000 & 0.505 & no & 1.00 & 0.00 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!htb]
+\centering
 \caption{Sensitivity of PSO-VNS to the budget split between the PSO and VNS phases (25\%, 50\% and 75\% of the 6,030 evaluations for PSO; 100\%: PSO alone, same seeds): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the 4 comparisons of each case.}
 \label{tab:split-cases}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
