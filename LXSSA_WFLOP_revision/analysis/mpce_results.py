@@ -961,8 +961,10 @@ def main(argv=None):
            + (", Otherwise %d" % FR["n_cases"] if any(CW[b]["n_both_qualified"] < FR["n_cases"] for b in others) else ""), fl, fl),
         "tab:friedman68", "lcccccc",
         "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines,
-        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$ (%d, %d d.f.), $p=%s$}"
-              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"], 2).strip("$"), FR["iman_davenport"], len(MAINP) - 1,
+        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$;}\\\\"
+              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"], 2).strip("$")),
+              "\\multicolumn{7}{l}{Iman--Davenport $F_F=%.1f$ (%d, %d d.f.), $p=%s$}"
+              % (FR["iman_davenport"], len(MAINP) - 1,
                  (len(MAINP) - 1) * (FR["n_cases"] - 1), fmt_p(FR["iman_davenport_p"], 2).strip("$"))], sep="2pt")
 
     # --- further numbers quoted in the text (all written to summary["main"])
@@ -1275,7 +1277,7 @@ Variant & Phase 1 & Phase 2 & Avg.\ rank & Feas.\ (\%%) \\
 \end{tabular}
 
 \smallskip
-\begin{tabular}{l>{\raggedright\arraybackslash}p{2.3cm}ccc}
+\begin{tabular}{l>{\raggedright\arraybackslash}p{1.95cm}ccc}
 \toprule
 Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
 \midrule
@@ -1820,10 +1822,11 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     pv = pd.concat([ALL] + ([po_.assign(Algorithm="PSO")] if po_ is not None and len(po_) else []), ignore_index=True)
     pv = pv.assign(Study=np.where(pv.Dataset.isin(["1", "2"]), "Benchmark",
                                   np.where(pv.Dataset == "HR", "Horns Rev 1", "IEA37")))
+    PROV_LAB = {'PSOBV25': 'PSO-VNS ($' + chr(92) + 'omega=0.25$)', 'PSOBV75': 'PSO-VNS ($' + chr(92) + 'omega=0.75$)'}
     pvl = []
     for (st_, b, i), x in pv.groupby(["Study", "Budget", "Init"]):
         for src, y in x.groupby("Source"):
-            pvl.append(f"{st_} & {b:,} & {i} & {', '.join(LAB.get(a, a).replace(chr(92) + '%', '%') for a in sorted(y.Algorithm.unique()))} & "
+            pvl.append(f"{st_} & {b:,} & {i} & {', '.join(PROV_LAB.get(a, LAB.get(a, a)) for a in sorted(y.Algorithm.unique()))} & "
                        f"\\texttt{{{src.replace('_', chr(92) + '_')}}} & {len(y)} \\\\".replace(",", "{,}", 1))
     supp.append(table("table*", "Provenance of the per-run results used in this paper: study, budget (evaluations), initialization, methods, source file (\\texttt{mpce\\_<exp>}: all shards \\texttt{mpce\\_<exp>\\_s<i>of<k>.csv} of experiment \\texttt{<exp>} of \\texttt{mpce\\_experiments.py} / \\texttt{iea37\\_experiments.py}; \\texttt{fresh\\_*.csv}: earlier grid runs, see the repository README) and number of runs.",
                       "tab:provenance", "lccp{7.2cm}ll", "Study & Budget & Init. & Methods & Source & Runs",

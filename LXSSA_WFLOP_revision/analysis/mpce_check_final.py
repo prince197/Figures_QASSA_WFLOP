@@ -106,10 +106,10 @@ CONDITIONS = [
      "split.n_lower_loss_than_50, split.wtl_50_vs_75, split.wtl_50_vs_25, split.avg_rank",
      lambda s: (lambda p: p["n_lower_loss_than_50"]["PSOBV75"] >= 10 and p["wtl_50_vs_75"]["W"] == 0 and p["wtl_50_vs_25"]["L"] == 0
                 and p["avg_rank"]["PSOBV75"] < p["avg_rank"]["PSOBV"] < p["avg_rank"]["PSOBV25"])(g(s, "split"))),
-    ("C19", "Horns Rev 16: PSO-VNS has the highest mean AEP, is significantly better than every other method, and its best run exceeds the installed layout",
-     "hr16.methods.*.mean/p_holm/best, hr16.installed_aep",
-     lambda s: (lambda h, inst: all(h["PSOBV"]["mean"] > v["mean"] for a, v in h.items() if a != "PSOBV" and v.get("mean") is not None)
-                and all(v["p_holm"] < 0.05 for a, v in h.items() if a != "PSOBV") and h["PSOBV"]["best"] > inst)(g(s, "hr16", "methods"), g(s, "hr16", "installed_aep"))),
+    ("C19", "Horns Rev 16 (6,030, random starts): PSO-VNS has the highest mean AEP and is significantly better than every other method",
+     "hr16.methods.*.mean/p_holm",
+     lambda s: (lambda h: all(h["PSOBV"]["mean"] > v["mean"] for a, v in h.items() if a != "PSOBV" and v.get("mean") is not None)
+                and all(v["p_holm"] < 0.05 for a, v in h.items() if a != "PSOBV"))(g(s, "hr16", "methods"))),
     ("C20", "Horns Rev 16: PSO finds feasible layouts in only part of its random-start runs (fewer than 30 of 30)",
      "hr16.methods.PSOC.feasible", lambda s: g(s, "hr16", "methods", "PSOC", "feasible") < g(s, "hr16", "methods", "PSOC", "runs")),
     ("C21", "ranking stable under the cubic curves: tau >= 0.9 and PSO-VNS keeps the best rank",
@@ -141,9 +141,10 @@ CONDITIONS = [
      "feasbudget.rank.{6030,30030,120030}",
      lambda s: all((lambda r: all(r["PSOBV"] < v for a, v in r.items() if a != "PSOBV"))(g(s, "feasbudget", "rank", b))
                    for b in ("6030", "30030", "120030"))),
-    ("C30", "Horns Rev 1 at 30,030 evaluations: PSO-VNS mean AEP exceeds the installed layout",
-     "hr16.loss_by_setting.PSOBV.30030R.mean_aep, hr16.installed_aep",
-     lambda s: g(s, "hr16", "loss_by_setting", "PSOBV", "30030R", "mean_aep") > g(s, "hr16", "installed_aep")),
+    ("C30", "Horns Rev 1 at 30,030 evaluations: PSO-VNS has the highest mean AEP and at least one of its runs exceeds the installed layout",
+     "hr16.loss_by_setting.*.30030R.mean_aep/runs_above_installed",
+     lambda s: (lambda L: all(L["PSOBV"]["30030R"]["mean_aep"] > v["30030R"]["mean_aep"] for a, v in L.items() if a != "PSOBV" and "30030R" in v)
+                and L["PSOBV"]["30030R"]["runs_above_installed"] >= 1)(g(s, "hr16", "loss_by_setting"))),
 ]
 
 
@@ -163,10 +164,9 @@ def _hr_mean(s, a, tag):
 
 
 CONDITIONS += [
-    ("C31", "Horns Rev 1, 6,030 evaluations: the PSO-VNS mean AEP is below the installed block, but at least one run (its best) exceeds it",
-     "hr16.methods.PSOBV.mean/best/runs_above_installed, hr16.installed_aep",
-     lambda s: (lambda h, inst: h["mean"] < inst and h["runs_above_installed"] >= 1 and h["best"] > inst)(
-         g(s, "hr16", "methods", "PSOBV"), g(s, "hr16", "installed_aep"))),
+    ("C31", "Horns Rev 1, 6,030 evaluations: the PSO-VNS mean AEP is below the installed block (the mean is never claimed to exceed it)",
+     "hr16.methods.PSOBV.mean, hr16.installed_aep",
+     lambda s: g(s, "hr16", "methods", "PSOBV", "mean") < g(s, "hr16", "installed_aep")),
     ("C32", "PSO-VNS vs PSO (D2): not significant over all 68 cases (case-mean p >= 0.05); Data Set II, N >= 10: PSO-VNS lower "
             "case-mean loss in more cases than PSO (wins > losses, mean dL < 0); Data Set I, N >= 10: PSO lower in at least half",
      "main.case_mean_wilcoxon.PSOC.p, main.subgroup_vs_phase1.groups.dsIILarge/dsILarge",
