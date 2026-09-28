@@ -15,3 +15,4 @@
 - 10: "behind salp-swarm hybrids" plural — fine if both LXBV and SSABV rank ahead of old PSO in tab:baseline (check C27 numbers).
 - Pipeline asked for C28 (feasible-start: BVNS 1st, PSOBV 2nd), C29 (PSOBV best at all budgets), C30 (HR16 30k mean > installed; macros \NHRThirtyKMean, \NHRThirtyKAbove).
 - 04_methods: new labels sec:vns, sec:template; constriction factor symbol is κ (χ = Laplace scale); references sec:psosetting (06) — 06 must keep it; possible duplication with 05_setup (iteration counts, RS-VNS/LX-SSA-VNS details) → trim in 05 during integration.
+- figures_mpce/boxplots_max.pdf was 0 bytes (likely mid-write by the pipeline run); Phase-2 full build must regenerate it; supplement has a guard (\pipefig TBD box). Supplement keeps sec:psosetting dependency.
