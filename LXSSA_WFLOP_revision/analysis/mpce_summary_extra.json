@@ -1,0 +1,4283 @@
+{
+ "generated": "2026-09-28 16:45:51",
+ "script": "mpce_inference_extra.py",
+ "n_cases": 68,
+ "clusters": [
+  "1-500",
+  "1-750",
+  "1-1000",
+  "2-500",
+  "2-750",
+  "2-1000"
+ ],
+ "cluster_sizes": {
+  "1-500": 9,
+  "1-750": 11,
+  "1-1000": 14,
+  "2-500": 9,
+  "2-750": 11,
+  "2-1000": 14
+ },
+ "thresholds": [
+  1,
+  10,
+  15,
+  20,
+  25,
+  30
+ ],
+ "base_threshold": 15,
+ "boot": {
+  "n": 10000,
+  "seed": 20260928
+ },
+ "perm": {
+  "n": 20000,
+  "seed": 20260929
+ },
+ "energy_factor_mwh_per_objective": 0.584,
+ "reproduction": {
+  "max_abs_diff_avg_rank": 0.0,
+  "max_abs_diff_log10p_main": 0.0,
+  "max_abs_diff_log10p_ablation": 0.0,
+  "max_abs_diff_log10p_subgroups": 0.0,
+  "max_abs_diff_log10p_split": 0.0,
+  "summary_generated": "2026-09-28 16:38:39",
+  "ok": true
+ },
+ "threshold": {
+  "1": {
+   "threshold": 1,
+   "friedman": {
+    "n_cases": 68,
+    "chi2": 319.4658792650917,
+    "p": 4.193564557527969e-65,
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.352941176470588,
+     "LXSSA": 6.102941176470588,
+     "DE": 7.029411764705882,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "best_ranked": "PSOBV",
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 1.5164622450010074e-16,
+     "LXSSA": 1.1352807231104165e-23,
+     "DE": 1.6149275977848322e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "posthoc_nonsig": [
+     "PSOC"
+    ]
+   },
+   "ablation_friedman": {
+    "avg_rank": {
+     "PSOBV": 1.8676470588235294,
+     "SSABV": 3.786764705882353,
+     "LXBV": 4.617647058823529,
+     "RSVNS": 4.455882352941177,
+     "BVNS": 5.3161764705882355,
+     "PSOC": 2.1029411764705883,
+     "SSA": 6.529411764705882,
+     "LXSSA": 7.323529411764706
+    },
+    "best_ranked": "PSOBV"
+   },
+   "main_case_mean": {
+    "PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.2958623332952982
+    },
+    "SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 6.432815216388295e-11
+    },
+    "SSA": {
+     "p": 7.577765262336002e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.657967643929042,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.546659157401601e-11
+    },
+    "LXSSA": {
+     "p": 7.577765262336002e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.8243032776334868,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.546659157401601e-11
+    },
+    "DE": {
+     "p": 1.608203804097074e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -1.2564100462115597,
+     "n_both": 60,
+     "imputed": 8,
+     "dropped": 0,
+     "p_holm": 6.432815216388295e-11
+    },
+    "BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.2591055737542433e-10
+    },
+    "SLSQP": {
+     "p": 5.974424383134514e-12,
+     "rb": 0.9599317988064792,
+     "n_cases": 68,
+     "wins": 66,
+     "losses": 2,
+     "mean_dloss_pp": -0.4354035666654407,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.18209706819416e-11
+    }
+   },
+   "ablation_case_mean": {
+    "PSOBV-PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.5917246665905964
+    },
+    "SSABV-SSA": {
+     "p": 5.682944530037198e-11,
+     "rb": 0.956989247311828,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 2,
+     "mean_dloss_pp": -0.32758444455304647,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 3.9780611710260384e-10
+    },
+    "LXBV-LXSSA": {
+     "p": 7.577765262336002e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.4308580303864343,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 8.335541788569602e-11
+    },
+    "PSOBV-BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 3.9780611710260384e-10
+    },
+    "PSOBV-RSVNS": {
+     "p": 2.6491274058951022e-11,
+     "rb": 0.9977401129943503,
+     "n_cases": 68,
+     "wins": 58,
+     "losses": 1,
+     "mean_dloss_pp": -0.39876420141526936,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1193019247160818e-10
+    },
+    "SSABV-RSVNS": {
+     "p": 0.00044561122684435374,
+     "rb": 0.521311475409836,
+     "n_cases": 68,
+     "wins": 42,
+     "losses": 18,
+     "mean_dloss_pp": -0.06838100203927398,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.0013368336805330613
+    },
+    "LXBV-RSVNS": {
+     "p": 0.7183098583564869,
+     "rb": -0.053551912568306013,
+     "n_cases": 68,
+     "wins": 27,
+     "losses": 33,
+     "mean_dloss_pp": -0.005318954168216957,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.7183098583564869
+    },
+    "PSOBV-SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.706792905204275e-10
+    },
+    "PSOBV-LXBV": {
+     "p": 1.6295557943119345e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.39344524724705243,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.6295557943119345e-10
+    },
+    "SSABV-LXBV": {
+     "p": 5.378103296945853e-06,
+     "rb": 0.6754098360655738,
+     "n_cases": 68,
+     "wins": 47,
+     "losses": 13,
+     "mean_dloss_pp": -0.06306204787105701,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1512413187783413e-05
+    },
+    "LXSSA-SSA": {
+     "p": 8.323790149028167e-08,
+     "rb": -0.7828981054787506,
+     "n_cases": 68,
+     "wins": 9,
+     "losses": 53,
+     "mean_dloss_pp": 0.16633563370444476,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.1618950745140835e-07
+    }
+   },
+   "imputed_main": 8,
+   "dropped_main": 0,
+   "imputed_ablation": 0,
+   "unqualified_cells_main": 8,
+   "conclusions": {
+    "best_ranked_PSOBV": true,
+    "posthoc_only_PSOC_nonsig": true,
+    "PSOBV-PSOC_ns": true,
+    "SSABV-RSVNS_A": true,
+    "LXBV-RSVNS_ns": true,
+    "SSABV-LXBV_A": true,
+    "PSOBV-RSVNS_A": true
+   },
+   "all_unchanged": true
+  },
+  "10": {
+   "threshold": 10,
+   "friedman": {
+    "n_cases": 68,
+    "chi2": 319.80183727034125,
+    "p": 3.554389386470417e-65,
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.352941176470588,
+     "LXSSA": 6.088235294117647,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "best_ranked": "PSOBV",
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 1.5164622450010074e-16,
+     "LXSSA": 1.627216333404128e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "posthoc_nonsig": [
+     "PSOC"
+    ]
+   },
+   "ablation_friedman": {
+    "avg_rank": {
+     "PSOBV": 1.8676470588235294,
+     "SSABV": 3.786764705882353,
+     "LXBV": 4.617647058823529,
+     "RSVNS": 4.455882352941177,
+     "BVNS": 5.3161764705882355,
+     "PSOC": 2.1029411764705883,
+     "SSA": 6.529411764705882,
+     "LXSSA": 7.323529411764706
+    },
+    "best_ranked": "PSOBV"
+   },
+   "main_case_mean": {
+    "PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.2958623332952982
+    },
+    "SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 5.68930968401425e-11
+    },
+    "SSA": {
+     "p": 7.577765262336002e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.657967643929042,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.546659157401601e-11
+    },
+    "LXSSA": {
+     "p": 7.577765262336002e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.8243032776334868,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.546659157401601e-11
+    },
+    "DE": {
+     "p": 1.3982864665308031e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.8865753016721861,
+     "n_both": 50,
+     "imputed": 18,
+     "dropped": 0,
+     "p_holm": 5.5931458661232125e-11
+    },
+    "BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.2591055737542433e-10
+    },
+    "SLSQP": {
+     "p": 5.974424383134514e-12,
+     "rb": 0.9599317988064792,
+     "n_cases": 68,
+     "wins": 66,
+     "losses": 2,
+     "mean_dloss_pp": -0.4354035666654407,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.18209706819416e-11
+    }
+   },
+   "ablation_case_mean": {
+    "PSOBV-PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.5917246665905964
+    },
+    "SSABV-SSA": {
+     "p": 5.682944530037198e-11,
+     "rb": 0.956989247311828,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 2,
+     "mean_dloss_pp": -0.32758444455304647,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 3.9780611710260384e-10
+    },
+    "LXBV-LXSSA": {
+     "p": 7.577765262336002e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.4308580303864343,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 8.335541788569602e-11
+    },
+    "PSOBV-BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 3.9780611710260384e-10
+    },
+    "PSOBV-RSVNS": {
+     "p": 2.6491274058951022e-11,
+     "rb": 0.9977401129943503,
+     "n_cases": 68,
+     "wins": 58,
+     "losses": 1,
+     "mean_dloss_pp": -0.39876420141526936,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1193019247160818e-10
+    },
+    "SSABV-RSVNS": {
+     "p": 0.00044561122684435374,
+     "rb": 0.521311475409836,
+     "n_cases": 68,
+     "wins": 42,
+     "losses": 18,
+     "mean_dloss_pp": -0.06838100203927398,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.0013368336805330613
+    },
+    "LXBV-RSVNS": {
+     "p": 0.7183098583564869,
+     "rb": -0.053551912568306013,
+     "n_cases": 68,
+     "wins": 27,
+     "losses": 33,
+     "mean_dloss_pp": -0.005318954168216957,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.7183098583564869
+    },
+    "PSOBV-SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.706792905204275e-10
+    },
+    "PSOBV-LXBV": {
+     "p": 1.6295557943119345e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.39344524724705243,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.6295557943119345e-10
+    },
+    "SSABV-LXBV": {
+     "p": 5.378103296945853e-06,
+     "rb": 0.6754098360655738,
+     "n_cases": 68,
+     "wins": 47,
+     "losses": 13,
+     "mean_dloss_pp": -0.06306204787105701,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1512413187783413e-05
+    },
+    "LXSSA-SSA": {
+     "p": 8.323790149028167e-08,
+     "rb": -0.7828981054787506,
+     "n_cases": 68,
+     "wins": 9,
+     "losses": 53,
+     "mean_dloss_pp": 0.16633563370444476,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.1618950745140835e-07
+    }
+   },
+   "imputed_main": 18,
+   "dropped_main": 0,
+   "imputed_ablation": 0,
+   "unqualified_cells_main": 18,
+   "conclusions": {
+    "best_ranked_PSOBV": true,
+    "posthoc_only_PSOC_nonsig": true,
+    "PSOBV-PSOC_ns": true,
+    "SSABV-RSVNS_A": true,
+    "LXBV-RSVNS_ns": true,
+    "SSABV-LXBV_A": true,
+    "PSOBV-RSVNS_A": true
+   },
+   "all_unchanged": true
+  },
+  "15": {
+   "threshold": 15,
+   "friedman": {
+    "n_cases": 68,
+    "chi2": 319.2979002624672,
+    "p": 4.555038515279214e-65,
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.382352941176471,
+     "LXSSA": 6.0588235294117645,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "best_ranked": "PSOBV",
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 8.322717950001036e-17,
+     "LXSSA": 3.3307905761444154e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "posthoc_nonsig": [
+     "PSOC"
+    ]
+   },
+   "ablation_friedman": {
+    "avg_rank": {
+     "PSOBV": 1.8676470588235294,
+     "SSABV": 3.786764705882353,
+     "LXBV": 4.617647058823529,
+     "RSVNS": 4.455882352941177,
+     "BVNS": 5.3161764705882355,
+     "PSOC": 2.1029411764705883,
+     "SSA": 6.5588235294117645,
+     "LXSSA": 7.294117647058823
+    },
+    "best_ranked": "PSOBV"
+   },
+   "main_case_mean": {
+    "PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.2958623332952982
+    },
+    "SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 5.68930968401425e-11
+    },
+    "SSA": {
+     "p": 7.576651760171568e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.6112577561750174,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 4.5459910561029406e-11
+    },
+    "LXSSA": {
+     "p": 7.576651760171568e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.7645978618057732,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 4.5459910561029406e-11
+    },
+    "DE": {
+     "p": 1.3982864665308031e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.8865753016721861,
+     "n_both": 50,
+     "imputed": 18,
+     "dropped": 0,
+     "p_holm": 5.5931458661232125e-11
+    },
+    "BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.2591055737542433e-10
+    },
+    "SLSQP": {
+     "p": 5.974424383134514e-12,
+     "rb": 0.9599317988064792,
+     "n_cases": 68,
+     "wins": 66,
+     "losses": 2,
+     "mean_dloss_pp": -0.4354035666654407,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.18209706819416e-11
+    }
+   },
+   "ablation_case_mean": {
+    "PSOBV-PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.5917246665905964
+    },
+    "SSABV-SSA": {
+     "p": 5.68217838734419e-11,
+     "rb": 0.956989247311828,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 2,
+     "mean_dloss_pp": -0.2937283450962897,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 3.977524871140933e-10
+    },
+    "LXBV-LXSSA": {
+     "p": 7.576651760171568e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.39423367083213484,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 8.334316936188725e-11
+    },
+    "PSOBV-BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 3.977524871140933e-10
+    },
+    "PSOBV-RSVNS": {
+     "p": 2.6491274058951022e-11,
+     "rb": 0.9977401129943503,
+     "n_cases": 68,
+     "wins": 58,
+     "losses": 1,
+     "mean_dloss_pp": -0.39876420141526936,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1193019247160818e-10
+    },
+    "SSABV-RSVNS": {
+     "p": 0.00044561122684435374,
+     "rb": 0.521311475409836,
+     "n_cases": 68,
+     "wins": 42,
+     "losses": 18,
+     "mean_dloss_pp": -0.06838100203927398,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.0013368336805330613
+    },
+    "LXBV-RSVNS": {
+     "p": 0.7183098583564869,
+     "rb": -0.053551912568306013,
+     "n_cases": 68,
+     "wins": 27,
+     "losses": 33,
+     "mean_dloss_pp": -0.005318954168216957,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.7183098583564869
+    },
+    "PSOBV-SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.706792905204275e-10
+    },
+    "PSOBV-LXBV": {
+     "p": 1.6295557943119345e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.39344524724705243,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.6295557943119345e-10
+    },
+    "SSABV-LXBV": {
+     "p": 5.378103296945853e-06,
+     "rb": 0.6754098360655738,
+     "n_cases": 68,
+     "wins": 47,
+     "losses": 13,
+     "mean_dloss_pp": -0.06306204787105701,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1512413187783413e-05
+    },
+    "LXSSA-SSA": {
+     "p": 1.868005162193947e-07,
+     "rb": -0.7737704918032787,
+     "n_cases": 66,
+     "wins": 9,
+     "losses": 51,
+     "mean_dloss_pp": 0.1533401056307556,
+     "n_both": 66,
+     "imputed": 0,
+     "dropped": 2,
+     "p_holm": 9.340025810969735e-07
+    }
+   },
+   "imputed_main": 22,
+   "dropped_main": 0,
+   "imputed_ablation": 4,
+   "unqualified_cells_main": 22,
+   "conclusions": {
+    "best_ranked_PSOBV": true,
+    "posthoc_only_PSOC_nonsig": true,
+    "PSOBV-PSOC_ns": true,
+    "SSABV-RSVNS_A": true,
+    "LXBV-RSVNS_ns": true,
+    "SSABV-LXBV_A": true,
+    "PSOBV-RSVNS_A": true
+   },
+   "all_unchanged": true
+  },
+  "20": {
+   "threshold": 20,
+   "friedman": {
+    "n_cases": 68,
+    "chi2": 319.2979002624672,
+    "p": 4.555038515279214e-65,
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.382352941176471,
+     "LXSSA": 6.0588235294117645,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "best_ranked": "PSOBV",
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 8.322717950001036e-17,
+     "LXSSA": 3.3307905761444154e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "posthoc_nonsig": [
+     "PSOC"
+    ]
+   },
+   "ablation_friedman": {
+    "avg_rank": {
+     "PSOBV": 1.8676470588235294,
+     "SSABV": 3.786764705882353,
+     "LXBV": 4.617647058823529,
+     "RSVNS": 4.455882352941177,
+     "BVNS": 5.3161764705882355,
+     "PSOC": 2.1029411764705883,
+     "SSA": 6.5588235294117645,
+     "LXSSA": 7.294117647058823
+    },
+    "best_ranked": "PSOBV"
+   },
+   "main_case_mean": {
+    "PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.2958623332952982
+    },
+    "SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 5.68930968401425e-11
+    },
+    "SSA": {
+     "p": 7.576651760171568e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.6112577561750174,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 4.5459910561029406e-11
+    },
+    "LXSSA": {
+     "p": 7.576651760171568e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.7645978618057732,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 4.5459910561029406e-11
+    },
+    "DE": {
+     "p": 1.2300360115565833e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.7377506895649932,
+     "n_both": 46,
+     "imputed": 22,
+     "dropped": 0,
+     "p_holm": 4.920144046226333e-11
+    },
+    "BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.2591055737542433e-10
+    },
+    "SLSQP": {
+     "p": 5.974424383134514e-12,
+     "rb": 0.9599317988064792,
+     "n_cases": 68,
+     "wins": 66,
+     "losses": 2,
+     "mean_dloss_pp": -0.4354035666654407,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.18209706819416e-11
+    }
+   },
+   "ablation_case_mean": {
+    "PSOBV-PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.5917246665905964
+    },
+    "SSABV-SSA": {
+     "p": 5.68217838734419e-11,
+     "rb": 0.956989247311828,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 2,
+     "mean_dloss_pp": -0.2937283450962897,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 3.977524871140933e-10
+    },
+    "LXBV-LXSSA": {
+     "p": 7.576651760171568e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.39423367083213484,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 8.334316936188725e-11
+    },
+    "PSOBV-BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 3.977524871140933e-10
+    },
+    "PSOBV-RSVNS": {
+     "p": 2.6491274058951022e-11,
+     "rb": 0.9977401129943503,
+     "n_cases": 68,
+     "wins": 58,
+     "losses": 1,
+     "mean_dloss_pp": -0.39876420141526936,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1193019247160818e-10
+    },
+    "SSABV-RSVNS": {
+     "p": 0.00044561122684435374,
+     "rb": 0.521311475409836,
+     "n_cases": 68,
+     "wins": 42,
+     "losses": 18,
+     "mean_dloss_pp": -0.06838100203927398,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.0013368336805330613
+    },
+    "LXBV-RSVNS": {
+     "p": 0.7183098583564869,
+     "rb": -0.053551912568306013,
+     "n_cases": 68,
+     "wins": 27,
+     "losses": 33,
+     "mean_dloss_pp": -0.005318954168216957,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.7183098583564869
+    },
+    "PSOBV-SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.706792905204275e-10
+    },
+    "PSOBV-LXBV": {
+     "p": 1.6295557943119345e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.39344524724705243,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.6295557943119345e-10
+    },
+    "SSABV-LXBV": {
+     "p": 5.378103296945853e-06,
+     "rb": 0.6754098360655738,
+     "n_cases": 68,
+     "wins": 47,
+     "losses": 13,
+     "mean_dloss_pp": -0.06306204787105701,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1512413187783413e-05
+    },
+    "LXSSA-SSA": {
+     "p": 1.868005162193947e-07,
+     "rb": -0.7737704918032787,
+     "n_cases": 66,
+     "wins": 9,
+     "losses": 51,
+     "mean_dloss_pp": 0.1533401056307556,
+     "n_both": 66,
+     "imputed": 0,
+     "dropped": 2,
+     "p_holm": 9.340025810969735e-07
+    }
+   },
+   "imputed_main": 26,
+   "dropped_main": 0,
+   "imputed_ablation": 4,
+   "unqualified_cells_main": 26,
+   "conclusions": {
+    "best_ranked_PSOBV": true,
+    "posthoc_only_PSOC_nonsig": true,
+    "PSOBV-PSOC_ns": true,
+    "SSABV-RSVNS_A": true,
+    "LXBV-RSVNS_ns": true,
+    "SSABV-LXBV_A": true,
+    "PSOBV-RSVNS_A": true
+   },
+   "all_unchanged": true
+  },
+  "25": {
+   "threshold": 25,
+   "friedman": {
+    "n_cases": 68,
+    "chi2": 319.2979002624672,
+    "p": 4.555038515279214e-65,
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.382352941176471,
+     "LXSSA": 6.0588235294117645,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "best_ranked": "PSOBV",
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 8.322717950001036e-17,
+     "LXSSA": 3.3307905761444154e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "posthoc_nonsig": [
+     "PSOC"
+    ]
+   },
+   "ablation_friedman": {
+    "avg_rank": {
+     "PSOBV": 1.8676470588235294,
+     "SSABV": 3.786764705882353,
+     "LXBV": 4.602941176470588,
+     "RSVNS": 4.485294117647059,
+     "BVNS": 5.301470588235294,
+     "PSOC": 2.1029411764705883,
+     "SSA": 6.5588235294117645,
+     "LXSSA": 7.294117647058823
+    },
+    "best_ranked": "PSOBV"
+   },
+   "main_case_mean": {
+    "PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.2958623332952982
+    },
+    "SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 5.68930968401425e-11
+    },
+    "SSA": {
+     "p": 7.576651760171568e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.6112577561750174,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 4.5399821950783814e-11
+    },
+    "LXSSA": {
+     "p": 7.566636991797302e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.6963105046063961,
+     "n_both": 64,
+     "imputed": 4,
+     "dropped": 0,
+     "p_holm": 4.5399821950783814e-11
+    },
+    "DE": {
+     "p": 1.1294299666524984e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.6309630205992629,
+     "n_both": 44,
+     "imputed": 24,
+     "dropped": 0,
+     "p_holm": 4.5399821950783814e-11
+    },
+    "BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.2591055737542433e-10
+    },
+    "SLSQP": {
+     "p": 5.974424383134514e-12,
+     "rb": 0.9599317988064792,
+     "n_cases": 68,
+     "wins": 66,
+     "losses": 2,
+     "mean_dloss_pp": -0.4354035666654407,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.18209706819416e-11
+    }
+   },
+   "ablation_case_mean": {
+    "PSOBV-PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.5917246665905964
+    },
+    "SSABV-SSA": {
+     "p": 5.68217838734419e-11,
+     "rb": 0.956989247311828,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 2,
+     "mean_dloss_pp": -0.2937283450962897,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 3.977524871140933e-10
+    },
+    "LXBV-LXSSA": {
+     "p": 7.566636991797302e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.34116400279422504,
+     "n_both": 64,
+     "imputed": 4,
+     "dropped": 0,
+     "p_holm": 8.323300690977033e-11
+    },
+    "PSOBV-BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 3.977524871140933e-10
+    },
+    "PSOBV-RSVNS": {
+     "p": 2.6486993762392182e-11,
+     "rb": 0.9977401129943503,
+     "n_cases": 68,
+     "wins": 58,
+     "losses": 1,
+     "mean_dloss_pp": -0.3744124229127375,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 2.1189595009913746e-10
+    },
+    "SSABV-RSVNS": {
+     "p": 0.0004455912875658757,
+     "rb": 0.521311475409836,
+     "n_cases": 68,
+     "wins": 42,
+     "losses": 18,
+     "mean_dloss_pp": -0.056883011834009685,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 0.0013367738626976272
+    },
+    "LXBV-RSVNS": {
+     "p": 0.9882529658655401,
+     "rb": -0.002185792349726776,
+     "n_cases": 68,
+     "wins": 28,
+     "losses": 32,
+     "mean_dloss_pp": -0.00404823193909919,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 0.9882529658655401
+    },
+    "PSOBV-SSABV": {
+     "p": 1.8964365613380834e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.33038319937599553,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.706792905204275e-10
+    },
+    "PSOBV-LXBV": {
+     "p": 1.6295557943119345e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.39344524724705243,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.6295557943119345e-10
+    },
+    "SSABV-LXBV": {
+     "p": 5.378103296945853e-06,
+     "rb": 0.6754098360655738,
+     "n_cases": 68,
+     "wins": 47,
+     "losses": 13,
+     "mean_dloss_pp": -0.06306204787105701,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 2.1512413187783413e-05
+    },
+    "LXSSA-SSA": {
+     "p": 1.86782736442039e-07,
+     "rb": -0.7737704918032787,
+     "n_cases": 66,
+     "wins": 9,
+     "losses": 51,
+     "mean_dloss_pp": 0.13223623344610894,
+     "n_both": 64,
+     "imputed": 2,
+     "dropped": 2,
+     "p_holm": 9.33913682210195e-07
+    }
+   },
+   "imputed_main": 30,
+   "dropped_main": 0,
+   "imputed_ablation": 14,
+   "unqualified_cells_main": 30,
+   "conclusions": {
+    "best_ranked_PSOBV": true,
+    "posthoc_only_PSOC_nonsig": true,
+    "PSOBV-PSOC_ns": true,
+    "SSABV-RSVNS_A": true,
+    "LXBV-RSVNS_ns": true,
+    "SSABV-LXBV_A": true,
+    "PSOBV-RSVNS_A": true
+   },
+   "all_unchanged": true
+  },
+  "30": {
+   "threshold": 30,
+   "friedman": {
+    "n_cases": 68,
+    "chi2": 319.07108027006734,
+    "p": 5.093058780440518e-65,
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.4779411764705883,
+     "SSA": 5.397058823529412,
+     "LXSSA": 6.044117647058823,
+     "DE": 7.044117647058823,
+     "BVNS": 4.352941176470588,
+     "SLSQP": 5.897058823529412
+    },
+    "best_ranked": "PSOBV",
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000152563508126823,
+     "SSA": 6.154515988436521e-17,
+     "LXSSA": 4.756717860478793e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 4.660596355365826e-09,
+     "SLSQP": 1.3083778214234417e-21
+    },
+    "posthoc_nonsig": [
+     "PSOC"
+    ]
+   },
+   "ablation_friedman": {
+    "avg_rank": {
+     "PSOBV": 1.8676470588235294,
+     "SSABV": 3.8455882352941178,
+     "LXBV": 4.588235294117647,
+     "RSVNS": 4.485294117647059,
+     "BVNS": 5.257352941176471,
+     "PSOC": 2.1029411764705883,
+     "SSA": 6.573529411764706,
+     "LXSSA": 7.279411764705882
+    },
+    "best_ranked": "PSOBV"
+   },
+   "main_case_mean": {
+    "PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.2958623332952982
+    },
+    "SSABV": {
+     "p": 1.8961408840617913e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.3175294110787278,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 5.688422652185374e-11
+    },
+    "SSA": {
+     "p": 7.538881860464906e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.5385769256932649,
+     "n_both": 62,
+     "imputed": 6,
+     "dropped": 0,
+     "p_holm": 4.3592098481674286e-11
+    },
+    "LXSSA": {
+     "p": 7.265349746945715e-12,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 62,
+     "losses": 0,
+     "mean_dloss_pp": -0.5120420764937973,
+     "n_both": 56,
+     "imputed": 12,
+     "dropped": 0,
+     "p_holm": 4.3592098481674286e-11
+    },
+    "DE": {
+     "p": 1.0203046454778392e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.5290622200781893,
+     "n_both": 42,
+     "imputed": 26,
+     "dropped": 0,
+     "p_holm": 4.3592098481674286e-11
+    },
+    "BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 1.2591055737542433e-10
+    },
+    "SLSQP": {
+     "p": 5.974424383134514e-12,
+     "rb": 0.9599317988064792,
+     "n_cases": 68,
+     "wins": 66,
+     "losses": 2,
+     "mean_dloss_pp": -0.43219746708542883,
+     "n_both": 67,
+     "imputed": 1,
+     "dropped": 0,
+     "p_holm": 4.18209706819416e-11
+    }
+   },
+   "ablation_case_mean": {
+    "PSOBV-PSOC": {
+     "p": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "n_cases": 68,
+     "wins": 34,
+     "losses": 26,
+     "mean_dloss_pp": -0.018043354866491453,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 0.5917246665905964
+    },
+    "SSABV-SSA": {
+     "p": 1.3023490812103655e-10,
+     "rb": 0.9540983606557377,
+     "n_cases": 66,
+     "wins": 58,
+     "losses": 2,
+     "mean_dloss_pp": -0.24864440712863609,
+     "n_both": 62,
+     "imputed": 4,
+     "dropped": 2,
+     "p_holm": 7.814094487262193e-10
+    },
+    "LXBV-LXSSA": {
+     "p": 1.5878570181275183e-11,
+     "rb": 1.0,
+     "n_cases": 66,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.21515001076022253,
+     "n_both": 56,
+     "imputed": 10,
+     "dropped": 2,
+     "p_holm": 1.74664271994027e-10
+    },
+    "PSOBV-BVNS": {
+     "p": 6.295527868771217e-11,
+     "rb": 0.9785310734463277,
+     "n_cases": 68,
+     "wins": 55,
+     "losses": 4,
+     "mean_dloss_pp": -0.4651915315379654,
+     "n_both": 68,
+     "imputed": 0,
+     "dropped": 0,
+     "p_holm": 4.406869508139852e-10
+    },
+    "PSOBV-RSVNS": {
+     "p": 2.6486993762392182e-11,
+     "rb": 0.9977401129943503,
+     "n_cases": 68,
+     "wins": 58,
+     "losses": 1,
+     "mean_dloss_pp": -0.3744124229127375,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 2.1189595009913746e-10
+    },
+    "SSABV-RSVNS": {
+     "p": 0.0012274208092315625,
+     "rb": 0.4880187025131502,
+     "n_cases": 66,
+     "wins": 40,
+     "losses": 18,
+     "mean_dloss_pp": -0.056883011834009685,
+     "n_both": 66,
+     "imputed": 0,
+     "dropped": 2,
+     "p_holm": 0.0036822624276946873
+    },
+    "LXBV-RSVNS": {
+     "p": 0.6339643823801138,
+     "rb": -0.07188778492109878,
+     "n_cases": 66,
+     "wins": 26,
+     "losses": 32,
+     "mean_dloss_pp": -0.00404823193909919,
+     "n_both": 66,
+     "imputed": 0,
+     "dropped": 2,
+     "p_holm": 0.6339643823801138
+    },
+    "PSOBV-SSABV": {
+     "p": 1.8961408840617913e-11,
+     "rb": 0.9967213114754099,
+     "n_cases": 68,
+     "wins": 59,
+     "losses": 1,
+     "mean_dloss_pp": -0.3175294110787278,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 1.74664271994027e-10
+    },
+    "PSOBV-LXBV": {
+     "p": 1.6293000864348577e-11,
+     "rb": 1.0,
+     "n_cases": 68,
+     "wins": 60,
+     "losses": 0,
+     "mean_dloss_pp": -0.37036419097363826,
+     "n_both": 66,
+     "imputed": 2,
+     "dropped": 0,
+     "p_holm": 1.74664271994027e-10
+    },
+    "SSABV-LXBV": {
+     "p": 1.5315487761868667e-05,
+     "rb": 0.6528345996493279,
+     "n_cases": 66,
+     "wins": 45,
+     "losses": 13,
+     "mean_dloss_pp": -0.0528347798949105,
+     "n_both": 66,
+     "imputed": 0,
+     "dropped": 2,
+     "p_holm": 6.126195104747467e-05
+    },
+    "LXSSA-SSA": {
+     "p": 1.424550497895365e-06,
+     "rb": -0.7406015037593985,
+     "n_cases": 62,
+     "wins": 9,
+     "losses": 47,
+     "mean_dloss_pp": 0.07240612954000072,
+     "n_both": 56,
+     "imputed": 6,
+     "dropped": 6,
+     "p_holm": 7.122752489476825e-06
+    }
+   },
+   "imputed_main": 47,
+   "dropped_main": 0,
+   "imputed_ablation": 26,
+   "unqualified_cells_main": 47,
+   "conclusions": {
+    "best_ranked_PSOBV": true,
+    "posthoc_only_PSOC_nonsig": true,
+    "PSOBV-PSOC_ns": true,
+    "SSABV-RSVNS_A": true,
+    "LXBV-RSVNS_ns": true,
+    "SSABV-LXBV_A": true,
+    "PSOBV-RSVNS_A": true
+   },
+   "all_unchanged": true
+  }
+ },
+ "threshold_summary": {
+  "conclusions": [
+   "best_ranked_PSOBV",
+   "posthoc_only_PSOC_nonsig",
+   "PSOBV-PSOC_ns",
+   "SSABV-RSVNS_A",
+   "LXBV-RSVNS_ns",
+   "SSABV-LXBV_A",
+   "PSOBV-RSVNS_A"
+  ],
+  "unchanged": {
+   "best_ranked_PSOBV": true,
+   "posthoc_only_PSOC_nonsig": true,
+   "PSOBV-PSOC_ns": true,
+   "SSABV-RSVNS_A": true,
+   "LXBV-RSVNS_ns": true,
+   "SSABV-LXBV_A": true,
+   "PSOBV-RSVNS_A": true
+  },
+  "all_unchanged": true,
+  "best_ranked": {
+   "1": "PSOBV",
+   "10": "PSOBV",
+   "15": "PSOBV",
+   "20": "PSOBV",
+   "25": "PSOBV",
+   "30": "PSOBV"
+  },
+  "rank_PSOBV": {
+   "1": 1.8161764705882353,
+   "10": 1.8161764705882353,
+   "15": 1.8161764705882353,
+   "20": 1.8161764705882353,
+   "25": 1.8161764705882353,
+   "30": 1.8161764705882353
+  },
+  "rank_PSOC": {
+   "1": 1.9705882352941178,
+   "10": 1.9705882352941178,
+   "15": 1.9705882352941178,
+   "20": 1.9705882352941178,
+   "25": 1.9705882352941178,
+   "30": 1.9705882352941178
+  },
+  "p_PSOBV_PSOC": {
+   "1": 0.2958623332952982,
+   "10": 0.2958623332952982,
+   "15": 0.2958623332952982,
+   "20": 0.2958623332952982,
+   "25": 0.2958623332952982,
+   "30": 0.2958623332952982
+  },
+  "order_identical": true,
+  "orders": {
+   "1": [
+    "PSOBV",
+    "PSOC",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ],
+   "10": [
+    "PSOBV",
+    "PSOC",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ],
+   "15": [
+    "PSOBV",
+    "PSOC",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ],
+   "20": [
+    "PSOBV",
+    "PSOC",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ],
+   "25": [
+    "PSOBV",
+    "PSOC",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ],
+   "30": [
+    "PSOBV",
+    "PSOC",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ]
+  }
+ },
+ "case_level": {
+  "PSOBV-PSOC": {
+   "p": 0.2958623332952982,
+   "rb": 0.1551912568306011,
+   "n_cases": 68,
+   "wins": 34,
+   "losses": 26,
+   "mean_dloss_pp": -0.018043354866491453,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "ns"
+  },
+  "PSOBV-SSABV": {
+   "p": 1.8964365613380834e-11,
+   "rb": 0.9967213114754099,
+   "n_cases": 68,
+   "wins": 59,
+   "losses": 1,
+   "mean_dloss_pp": -0.33038319937599553,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "PSOBV-SSA": {
+   "p": 7.576651760171568e-12,
+   "rb": 1.0,
+   "n_cases": 68,
+   "wins": 62,
+   "losses": 0,
+   "mean_dloss_pp": -0.6112577561750174,
+   "n_both": 66,
+   "imputed": 2,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "PSOBV-LXSSA": {
+   "p": 7.576651760171568e-12,
+   "rb": 1.0,
+   "n_cases": 68,
+   "wins": 62,
+   "losses": 0,
+   "mean_dloss_pp": -0.7645978618057732,
+   "n_both": 66,
+   "imputed": 2,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "PSOBV-DE": {
+   "p": 1.3982864665308031e-11,
+   "rb": 1.0,
+   "n_cases": 68,
+   "wins": 60,
+   "losses": 0,
+   "mean_dloss_pp": -0.8865753016721861,
+   "n_both": 50,
+   "imputed": 18,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "PSOBV-BVNS": {
+   "p": 6.295527868771217e-11,
+   "rb": 0.9785310734463277,
+   "n_cases": 68,
+   "wins": 55,
+   "losses": 4,
+   "mean_dloss_pp": -0.4651915315379654,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "PSOBV-SLSQP": {
+   "p": 5.974424383134514e-12,
+   "rb": 0.9599317988064792,
+   "n_cases": 68,
+   "wins": 66,
+   "losses": 2,
+   "mean_dloss_pp": -0.4354035666654407,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "SSABV-SSA": {
+   "p": 5.68217838734419e-11,
+   "rb": 0.956989247311828,
+   "n_cases": 68,
+   "wins": 60,
+   "losses": 2,
+   "mean_dloss_pp": -0.2937283450962897,
+   "n_both": 66,
+   "imputed": 2,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "LXBV-LXSSA": {
+   "p": 7.576651760171568e-12,
+   "rb": 1.0,
+   "n_cases": 68,
+   "wins": 62,
+   "losses": 0,
+   "mean_dloss_pp": -0.39423367083213484,
+   "n_both": 66,
+   "imputed": 2,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "PSOBV-RSVNS": {
+   "p": 2.6491274058951022e-11,
+   "rb": 0.9977401129943503,
+   "n_cases": 68,
+   "wins": 58,
+   "losses": 1,
+   "mean_dloss_pp": -0.39876420141526936,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "SSABV-RSVNS": {
+   "p": 0.00044561122684435374,
+   "rb": 0.521311475409836,
+   "n_cases": 68,
+   "wins": 42,
+   "losses": 18,
+   "mean_dloss_pp": -0.06838100203927398,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "LXBV-RSVNS": {
+   "p": 0.7183098583564869,
+   "rb": -0.053551912568306013,
+   "n_cases": 68,
+   "wins": 27,
+   "losses": 33,
+   "mean_dloss_pp": -0.005318954168216957,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "ns"
+  },
+  "PSOBV-LXBV": {
+   "p": 1.6295557943119345e-11,
+   "rb": 1.0,
+   "n_cases": 68,
+   "wins": 60,
+   "losses": 0,
+   "mean_dloss_pp": -0.39344524724705243,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "SSABV-LXBV": {
+   "p": 5.378103296945853e-06,
+   "rb": 0.6754098360655738,
+   "n_cases": 68,
+   "wins": 47,
+   "losses": 13,
+   "mean_dloss_pp": -0.06306204787105701,
+   "n_both": 68,
+   "imputed": 0,
+   "dropped": 0,
+   "verdict": "A"
+  },
+  "LXSSA-SSA": {
+   "p": 1.868005162193947e-07,
+   "rb": -0.7737704918032787,
+   "n_cases": 66,
+   "wins": 9,
+   "losses": 51,
+   "mean_dloss_pp": 0.1533401056307556,
+   "n_both": 66,
+   "imputed": 0,
+   "dropped": 2,
+   "verdict": "B"
+  }
+ },
+ "cluster": {
+  "PSOBV-PSOC": {
+   "a": "PSOBV",
+   "b": "PSOC",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.018043354866491453,
+   "cluster_means_pp": {
+    "1-500": 0.06440576055940113,
+    "1-750": 0.04304763567588359,
+    "1-1000": -0.007899367576912484,
+    "2-500": -0.06314714517219028,
+    "2-750": -0.030917375707339136,
+    "2-1000": -0.09007981307025219
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 4,
+   "clusters_favour_second": 2,
+   "n_clusters": 6,
+   "sign_test_p": 0.6875,
+   "wilcoxon_exact_p": 0.6875,
+   "cluster_signflip_p": 0.5625,
+   "cr1_t": -0.7509964440115412,
+   "cr1_p": 0.48647503405775055,
+   "cr1_ci95": [
+    -0.07980386071654344,
+    0.043717150983560535
+   ],
+   "cluster_boot_ci95": [
+    -0.05791712314431584,
+    0.025471836862786985
+   ],
+   "case_boot_ci95": [
+    -0.044557155232241775,
+    0.007836351844264924
+   ],
+   "cluster_boot_excludes_zero": false,
+   "cr1_excludes_zero": false
+  },
+  "PSOBV-SSABV": {
+   "a": "PSOBV",
+   "b": "SSABV",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.33038319937599553,
+   "cluster_means_pp": {
+    "1-500": -0.4678561674731932,
+    "1-750": -0.24926746897528276,
+    "1-1000": -0.15569742102690576,
+    "2-500": -0.4405715360465503,
+    "2-750": -0.37900471961748283,
+    "2-1000": -0.37138930407092113
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -6.515760409303247,
+   "cr1_p": 0.0012725661821396629,
+   "cr1_ci95": [
+    -0.460725169885338,
+    -0.20004122886665304
+   ],
+   "cluster_boot_ci95": [
+    -0.4189878711525524,
+    -0.24193138719053697
+   ],
+   "case_boot_ci95": [
+    -0.40921041880830655,
+    -0.25501077770319525
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "PSOBV-SSA": {
+   "a": "PSOBV",
+   "b": "SSA",
+   "n_cases": 66,
+   "mean_dloss_pp": -0.6112577561750174,
+   "cluster_means_pp": {
+    "1-500": -0.6698039408846921,
+    "1-750": -0.469143560044706,
+    "1-1000": -0.37059164676364775,
+    "2-500": -0.7316751989315146,
+    "2-750": -0.7181598721826782,
+    "2-1000": -0.7773255699878006
+   },
+   "cluster_n": {
+    "1-500": 8,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 8,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -7.900067801690466,
+   "cr1_p": 0.0005228065847280872,
+   "cr1_ci95": [
+    -0.8101532750943722,
+    -0.4123622372556627
+   ],
+   "cluster_boot_ci95": [
+    -0.7417477660896769,
+    -0.4759785982503142
+   ],
+   "case_boot_ci95": [
+    -0.7621328774677965,
+    -0.47130747446941157
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "PSOBV-LXSSA": {
+   "a": "PSOBV",
+   "b": "LXSSA",
+   "n_cases": 66,
+   "mean_dloss_pp": -0.7645978618057732,
+   "cluster_means_pp": {
+    "1-500": -0.9134466987374448,
+    "1-750": -0.5936009121246545,
+    "1-1000": -0.4783111809344627,
+    "2-500": -0.9608207863199982,
+    "2-750": -0.8897236622727025,
+    "2-1000": -0.889742296233434
+   },
+   "cluster_n": {
+    "1-500": 8,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 8,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -8.636888047798593,
+   "cr1_p": 0.0003436199265283559,
+   "cr1_ci95": [
+    -0.9921637818740843,
+    -0.537031941737462
+   ],
+   "cluster_boot_ci95": [
+    -0.9163444244418752,
+    -0.6079147008555581
+   ],
+   "case_boot_ci95": [
+    -0.9637343464000522,
+    -0.5796123134859866
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "PSOBV-DE": {
+   "a": "PSOBV",
+   "b": "DE",
+   "n_cases": 50,
+   "mean_dloss_pp": -0.8865753016721861,
+   "cluster_means_pp": {
+    "1-500": -0.4309323485258938,
+    "1-750": -0.6543987066341829,
+    "1-1000": -0.7497763733950742,
+    "2-500": -0.786280172621986,
+    "2-750": -1.1102438368051606,
+    "2-1000": -1.332800863805588
+   },
+   "cluster_n": {
+    "1-500": 6,
+    "1-750": 8,
+    "1-1000": 11,
+    "2-500": 6,
+    "2-750": 8,
+    "2-1000": 11
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -6.331742874858599,
+   "cr1_p": 0.0014491189843344997,
+   "cr1_ci95": [
+    -1.2465100639398663,
+    -0.526640539404506
+   ],
+   "cluster_boot_ci95": [
+    -1.134993109363852,
+    -0.6357064140341198
+   ],
+   "case_boot_ci95": [
+    -1.1907629352222189,
+    -0.6044665694355134
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "PSOBV-BVNS": {
+   "a": "PSOBV",
+   "b": "BVNS",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.4651915315379654,
+   "cluster_means_pp": {
+    "1-500": -0.5125747661692244,
+    "1-750": -0.38011153206786474,
+    "1-1000": -0.25198188670519317,
+    "2-500": -0.5267214162430134,
+    "2-750": -0.5678671079418653,
+    "2-1000": -0.5945605034922694
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -7.498547065416149,
+   "cr1_p": 0.0006668536390045903,
+   "cr1_ci95": [
+    -0.6246641454498669,
+    -0.30571891762606385
+   ],
+   "cluster_boot_ci95": [
+    -0.5642222979933915,
+    -0.35276023325907213
+   ],
+   "case_boot_ci95": [
+    -0.5588084171062448,
+    -0.3710324258786756
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "PSOBV-SLSQP": {
+   "a": "PSOBV",
+   "b": "SLSQP",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.4354035666654407,
+   "cluster_means_pp": {
+    "1-500": -0.14423944473273373,
+    "1-750": -0.36460921483728687,
+    "1-1000": -0.3906793666268644,
+    "2-500": -0.43192575735792915,
+    "2-750": -0.5032375269970903,
+    "2-1000": -0.6718664586771249
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -6.139122358503541,
+   "cr1_p": 0.0016657482184628384,
+   "cr1_ci95": [
+    -0.617716352481013,
+    -0.2530907808498684
+   ],
+   "cluster_boot_ci95": [
+    -0.555996874807806,
+    -0.30496192810295647
+   ],
+   "case_boot_ci95": [
+    -0.5190172939173615,
+    -0.35339651874398986
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "SSABV-SSA": {
+   "a": "SSABV",
+   "b": "SSA",
+   "n_cases": 66,
+   "mean_dloss_pp": -0.2937283450962897,
+   "cluster_means_pp": {
+    "1-500": -0.21815077087421314,
+    "1-750": -0.21987609106942327,
+    "1-1000": -0.21489422573674202,
+    "2-500": -0.34998675577873894,
+    "2-750": -0.3391551525651954,
+    "2-1000": -0.4059362659168794
+   },
+   "cluster_n": {
+    "1-500": 8,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 8,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -7.787914942694342,
+   "cr1_p": 0.0005589640713068891,
+   "cr1_ci95": [
+    -0.3906801934500438,
+    -0.1967764967425356
+   ],
+   "cluster_boot_ci95": [
+    -0.36109112353777295,
+    -0.23332443238454098
+   ],
+   "case_boot_ci95": [
+    -0.3828420569386629,
+    -0.21428560191668836
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "LXBV-LXSSA": {
+   "a": "LXBV",
+   "b": "LXSSA",
+   "n_cases": 66,
+   "mean_dloss_pp": -0.39423367083213484,
+   "cluster_means_pp": {
+    "1-500": -0.4292952655720638,
+    "1-750": -0.31957528757134485,
+    "1-1000": -0.28821993517678085,
+    "2-500": -0.5394448538230363,
+    "2-750": -0.4228330748405665,
+    "2-1000": -0.43342358862529584
+   },
+   "cluster_n": {
+    "1-500": 8,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 8,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -10.949795194544082,
+   "cr1_p": 0.00011046565709973917,
+   "cr1_ci95": [
+    -0.4867842523939032,
+    -0.30168308927036647
+   ],
+   "cluster_boot_ci95": [
+    -0.4599813328828416,
+    -0.33476052031640335
+   ],
+   "case_boot_ci95": [
+    -0.5281054800700089,
+    -0.275657224424716
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "PSOBV-RSVNS": {
+   "a": "PSOBV",
+   "b": "RSVNS",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.39876420141526936,
+   "cluster_means_pp": {
+    "1-500": -0.6801329184015711,
+    "1-750": -0.30387198104729124,
+    "1-1000": -0.17338614797176774,
+    "2-500": -0.5593675121159896,
+    "2-750": -0.44338276174217145,
+    "2-1000": -0.37951811280653125
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -5.55438432313615,
+   "cr1_p": 0.0026001935676572196,
+   "cr1_ci95": [
+    -0.5833131906867461,
+    -0.21421521214379258
+   ],
+   "cluster_boot_ci95": [
+    -0.5375145732056444,
+    -0.2813195615690718
+   ],
+   "case_boot_ci95": [
+    -0.4947123949449109,
+    -0.3084839501645202
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "SSABV-RSVNS": {
+   "a": "SSABV",
+   "b": "RSVNS",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.06838100203927398,
+   "cluster_means_pp": {
+    "1-500": -0.21227675092837778,
+    "1-750": -0.05460451207200849,
+    "1-1000": -0.01768872694486193,
+    "2-500": -0.11879597606943923,
+    "2-750": -0.06437804212468871,
+    "2-1000": -0.008128808735610107
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -2.401905471037329,
+   "cr1_p": 0.061475818641738254,
+   "cr1_ci95": [
+    -0.14156413262636264,
+    0.0048021285478146575
+   ],
+   "cluster_boot_ci95": [
+    -0.12716596573627342,
+    -0.026047424297652392
+   ],
+   "case_boot_ci95": [
+    -0.10839127903015813,
+    -0.03419461894539902
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": false
+  },
+  "LXBV-RSVNS": {
+   "a": "LXBV",
+   "b": "RSVNS",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.005318954168216957,
+   "cluster_means_pp": {
+    "1-500": -0.12569039967237647,
+    "1-750": -0.029846356493981575,
+    "1-1000": 0.016705097785914138,
+    "2-500": -0.052203460418719136,
+    "2-750": 0.023507825689964543,
+    "2-1000": 0.0768005948016069
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 3,
+   "clusters_favour_second": 3,
+   "n_clusters": 6,
+   "sign_test_p": 1.0,
+   "wilcoxon_exact_p": 0.6875,
+   "cluster_signflip_p": 0.8125,
+   "cr1_t": -0.1925017108089621,
+   "cr1_p": 0.8549237489602652,
+   "cr1_ci95": [
+    -0.076345891601357,
+    0.0657079832649231
+   ],
+   "cluster_boot_ci95": [
+    -0.060952402550331845,
+    0.03844752412055495
+   ],
+   "case_boot_ci95": [
+    -0.04113028786738296,
+    0.02617976973261124
+   ],
+   "cluster_boot_excludes_zero": false,
+   "cr1_excludes_zero": false
+  },
+  "PSOBV-LXBV": {
+   "a": "PSOBV",
+   "b": "LXBV",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.39344524724705243,
+   "cluster_means_pp": {
+    "1-500": -0.5544425187291946,
+    "1-750": -0.2740256245533097,
+    "1-1000": -0.19009124575768183,
+    "2-500": -0.5071640516972704,
+    "2-750": -0.466890587432136,
+    "2-1000": -0.45631870760813814
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -6.434902041771598,
+   "cr1_p": 0.0013468240603595751,
+   "cr1_ci95": [
+    -0.5506167471899275,
+    -0.23627374730417733
+   ],
+   "cluster_boot_ci95": [
+    -0.4992242239292421,
+    -0.2878041997944568
+   ],
+   "case_boot_ci95": [
+    -0.486973085195001,
+    -0.30340651810484154
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "SSABV-LXBV": {
+   "a": "SSABV",
+   "b": "LXBV",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.06306204787105701,
+   "cluster_means_pp": {
+    "1-500": -0.08658635125600132,
+    "1-750": -0.02475815557802692,
+    "1-1000": -0.03439382473077607,
+    "2-500": -0.0665925156507201,
+    "2-750": -0.08788586781465325,
+    "2-1000": -0.08492940353721701
+   },
+   "cluster_n": {
+    "1-500": 9,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 9,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 6,
+   "clusters_favour_second": 0,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": -5.265350443141124,
+   "cr1_p": 0.0032843427111517525,
+   "cr1_ci95": [
+    -0.09384939175745179,
+    -0.03227470398466224
+   ],
+   "cluster_boot_ci95": [
+    -0.08381567785568118,
+    -0.04148357848938561
+   ],
+   "case_boot_ci95": [
+    -0.09082431735488208,
+    -0.03819974539749959
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  },
+  "LXSSA-SSA": {
+   "a": "LXSSA",
+   "b": "SSA",
+   "n_cases": 66,
+   "mean_dloss_pp": 0.1533401056307556,
+   "cluster_means_pp": {
+    "1-500": 0.2436427578527526,
+    "1-750": 0.12445735207994851,
+    "1-1000": 0.10771953417081492,
+    "2-500": 0.2291455873884838,
+    "2-750": 0.17156379009002437,
+    "2-1000": 0.11241672624563341
+   },
+   "cluster_n": {
+    "1-500": 8,
+    "1-750": 11,
+    "1-1000": 14,
+    "2-500": 8,
+    "2-750": 11,
+    "2-1000": 14
+   },
+   "clusters_favour_first": 0,
+   "clusters_favour_second": 6,
+   "n_clusters": 6,
+   "sign_test_p": 0.03125,
+   "wilcoxon_exact_p": 0.03125,
+   "cluster_signflip_p": 0.03125,
+   "cr1_t": 6.950176745171626,
+   "cr1_p": 0.0009473659562414681,
+   "cr1_ci95": [
+    0.0966259666007214,
+    0.21005424466078979
+   ],
+   "cluster_boot_ci95": [
+    0.1210165741040048,
+    0.2019128291480152
+   ],
+   "case_boot_ci95": [
+    0.09635291655909073,
+    0.21704146049320389
+   ],
+   "cluster_boot_excludes_zero": true,
+   "cr1_excludes_zero": true
+  }
+ },
+ "loco": {
+  "per_cluster": [
+   {
+    "dropped": "1-500",
+    "n_cases": 59,
+    "best_ranked": "PSOBV",
+    "posthoc_nonsig": [
+     "PSOC"
+    ],
+    "avg_rank_PSOBV": 1.7542372881355932,
+    "avg_rank_PSOC": 1.9661016949152543,
+    "tests": {
+     "PSOBV-PSOC": {
+      "p": 0.1030723146979412,
+      "wins": 31,
+      "losses": 21,
+      "mean_dloss_pp": -0.03062033857552592,
+      "verdict": "ns"
+     },
+     "PSOBV-SSABV": {
+      "p": 4.1748860104862094e-10,
+      "wins": 51,
+      "losses": 1,
+      "mean_dloss_pp": -0.3094127466154059,
+      "verdict": "A"
+     },
+     "PSOBV-SSA": {
+      "p": 1.6256984569330967e-10,
+      "wins": 54,
+      "losses": 0,
+      "mean_dloss_pp": -0.6031824203529934,
+      "verdict": "A"
+     },
+     "PSOBV-LXSSA": {
+      "p": 1.6256984569330967e-10,
+      "wins": 54,
+      "losses": 0,
+      "mean_dloss_pp": -0.7440669877462321,
+      "verdict": "A"
+     },
+     "PSOBV-DE": {
+      "p": 3.114703506686344e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.9487084316466806,
+      "verdict": "A"
+     },
+     "PSOBV-BVNS": {
+      "p": 1.1767500110416035e-09,
+      "wins": 48,
+      "losses": 3,
+      "mean_dloss_pp": -0.4579635804925191,
+      "verdict": "A"
+     },
+     "PSOBV-SLSQP": {
+      "p": 2.3900953516978203e-11,
+      "wins": 59,
+      "losses": 0,
+      "mean_dloss_pp": -0.47981843272297225,
+      "verdict": "A"
+     },
+     "SSABV-SSA": {
+      "p": 1.6256984569330967e-10,
+      "wins": 54,
+      "losses": 0,
+      "mean_dloss_pp": -0.3041528380924382,
+      "verdict": "A"
+     },
+     "LXBV-LXSSA": {
+      "p": 1.6256984569330967e-10,
+      "wins": 54,
+      "losses": 0,
+      "mean_dloss_pp": -0.3893975887990412,
+      "verdict": "A"
+     },
+     "PSOBV-RSVNS": {
+      "p": 5.796704657296606e-10,
+      "wins": 50,
+      "losses": 1,
+      "mean_dloss_pp": -0.35584354967159626,
+      "verdict": "A"
+     },
+     "SSABV-RSVNS": {
+      "p": 0.0024245412629409283,
+      "wins": 37,
+      "losses": 15,
+      "mean_dloss_pp": -0.04643080305619035,
+      "verdict": "A"
+     },
+     "LXBV-RSVNS": {
+      "p": 0.38695257485010826,
+      "wins": 23,
+      "losses": 29,
+      "mean_dloss_pp": 0.013042791756146355,
+      "verdict": "ns"
+     },
+     "PSOBV-LXBV": {
+      "p": 3.503864964208263e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.3688863414277426,
+      "verdict": "A"
+     },
+     "SSABV-LXBV": {
+      "p": 9.601363908189271e-06,
+      "wins": 41,
+      "losses": 11,
+      "mean_dloss_pp": -0.05947359481233671,
+      "verdict": "A"
+     },
+     "LXSSA-SSA": {
+      "p": 1.3112848345740091e-06,
+      "wins": 8,
+      "losses": 45,
+      "mean_dloss_pp": 0.1408845673932388,
+      "verdict": "B"
+     }
+    }
+   },
+   {
+    "dropped": "1-750",
+    "n_cases": 57,
+    "best_ranked": "PSOBV",
+    "posthoc_nonsig": [
+     "PSOC"
+    ],
+    "avg_rank_PSOBV": 1.8070175438596492,
+    "avg_rank_PSOC": 2.017543859649123,
+    "tests": {
+     "PSOBV-PSOC": {
+      "p": 0.09130577606126522,
+      "wins": 30,
+      "losses": 20,
+      "mean_dloss_pp": -0.029832844269405936,
+      "verdict": "ns"
+     },
+     "PSOBV-SSABV": {
+      "p": 5.329070518200751e-15,
+      "wins": 49,
+      "losses": 1,
+      "mean_dloss_pp": -0.3460371122603435,
+      "verdict": "A"
+     },
+     "PSOBV-SSA": {
+      "p": 3.503132619800553e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.6396805954010797,
+      "verdict": "A"
+     },
+     "PSOBV-LXSSA": {
+      "p": 3.503132619800553e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.7987972517419967,
+      "verdict": "A"
+     },
+     "PSOBV-DE": {
+      "p": 6.652665494223396e-10,
+      "wins": 50,
+      "losses": 0,
+      "mean_dloss_pp": -0.9307994150127582,
+      "verdict": "A"
+     },
+     "PSOBV-BVNS": {
+      "p": 3.6770586575585185e-13,
+      "wins": 46,
+      "losses": 4,
+      "mean_dloss_pp": -0.48161047880412516,
+      "verdict": "A"
+     },
+     "PSOBV-SLSQP": {
+      "p": 3.7331241679903215e-10,
+      "wins": 55,
+      "losses": 2,
+      "mean_dloss_pp": -0.4490656345621019,
+      "verdict": "A"
+     },
+     "SSABV-SSA": {
+      "p": 2.3126691729229972e-09,
+      "wins": 50,
+      "losses": 2,
+      "mean_dloss_pp": -0.308498795901663,
+      "verdict": "A"
+     },
+     "LXBV-LXSSA": {
+      "p": 3.503132619800553e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.40916534748429284,
+      "verdict": "A"
+     },
+     "PSOBV-RSVNS": {
+      "p": 5.329070518200751e-15,
+      "wins": 49,
+      "losses": 1,
+      "mean_dloss_pp": -0.4170767351704933,
+      "verdict": "A"
+     },
+     "SSABV-RSVNS": {
+      "p": 0.0004885945525092694,
+      "wins": 37,
+      "losses": 13,
+      "mean_dloss_pp": -0.07103962291014977,
+      "verdict": "A"
+     },
+     "LXBV-RSVNS": {
+      "p": 0.5398998476772991,
+      "wins": 22,
+      "losses": 28,
+      "mean_dloss_pp": -0.0005855958246483498,
+      "verdict": "ns"
+     },
+     "PSOBV-LXBV": {
+      "p": 1.7763568394002505e-15,
+      "wins": 50,
+      "losses": 0,
+      "mean_dloss_pp": -0.4164911393458449,
+      "verdict": "A"
+     },
+     "SSABV-LXBV": {
+      "p": 1.7496796758109667e-06,
+      "wins": 41,
+      "losses": 9,
+      "mean_dloss_pp": -0.07045402708550143,
+      "verdict": "A"
+     },
+     "LXSSA-SSA": {
+      "p": 7.723469384046666e-07,
+      "wins": 9,
+      "losses": 41,
+      "mean_dloss_pp": 0.159116656340917,
+      "verdict": "B"
+     }
+    }
+   },
+   {
+    "dropped": "1-1000",
+    "n_cases": 54,
+    "best_ranked": "PSOBV",
+    "posthoc_nonsig": [
+     "PSOC"
+    ],
+    "avg_rank_PSOBV": 1.8796296296296295,
+    "avg_rank_PSOC": 1.962962962962963,
+    "tests": {
+     "PSOBV-PSOC": {
+      "p": 0.6291000869826036,
+      "wins": 25,
+      "losses": 23,
+      "mean_dloss_pp": -0.020673277497123037,
+      "verdict": "ns"
+     },
+     "PSOBV-SSABV": {
+      "p": 2.1316282072803006e-14,
+      "wins": 47,
+      "losses": 1,
+      "mean_dloss_pp": -0.3756721048739076,
+      "verdict": "A"
+     },
+     "PSOBV-SSA": {
+      "p": 1.1098341111028545e-09,
+      "wins": 49,
+      "losses": 0,
+      "mean_dloss_pp": -0.6760524779396171,
+      "verdict": "A"
+     },
+     "PSOBV-LXSSA": {
+      "p": 1.1098341111028545e-09,
+      "wins": 49,
+      "losses": 0,
+      "mean_dloss_pp": -0.8416750451172798,
+      "verdict": "A"
+     },
+     "PSOBV-DE": {
+      "p": 1.4201683663255724e-09,
+      "wins": 48,
+      "losses": 0,
+      "mean_dloss_pp": -0.925159614775987,
+      "verdict": "A"
+     },
+     "PSOBV-BVNS": {
+      "p": 2.4016344468691386e-12,
+      "wins": 43,
+      "losses": 4,
+      "mean_dloss_pp": -0.5204681061242397,
+      "verdict": "A"
+     },
+     "PSOBV-SLSQP": {
+      "p": 1.2436781851661132e-09,
+      "wins": 52,
+      "losses": 2,
+      "mean_dloss_pp": -0.44699872963840487,
+      "verdict": "A"
+     },
+     "SSABV-SSA": {
+      "p": 7.277696552242815e-09,
+      "wins": 47,
+      "losses": 2,
+      "mean_dloss_pp": -0.31495291569309103,
+      "verdict": "A"
+     },
+     "LXBV-LXSSA": {
+      "p": 1.1098341111028545e-09,
+      "wins": 49,
+      "losses": 0,
+      "mean_dloss_pp": -0.42277583043165323,
+      "verdict": "A"
+     },
+     "PSOBV-RSVNS": {
+      "p": 4.263256414560601e-14,
+      "wins": 46,
+      "losses": 1,
+      "mean_dloss_pp": -0.45719554860432543,
+      "verdict": "A"
+     },
+     "SSABV-RSVNS": {
+      "p": 0.0005198003694104614,
+      "wins": 33,
+      "losses": 15,
+      "mean_dloss_pp": -0.08152344373041782,
+      "verdict": "A"
+     },
+     "LXBV-RSVNS": {
+      "p": 1.0,
+      "wins": 21,
+      "losses": 27,
+      "mean_dloss_pp": -0.011028893563732427,
+      "verdict": "ns"
+     },
+     "PSOBV-LXBV": {
+      "p": 7.105427357601002e-15,
+      "wins": 48,
+      "losses": 0,
+      "mean_dloss_pp": -0.44616665504059294,
+      "verdict": "A"
+     },
+     "SSABV-LXBV": {
+      "p": 3.2084462439740946e-05,
+      "wins": 36,
+      "losses": 12,
+      "mean_dloss_pp": -0.07049455016668542,
+      "verdict": "A"
+     },
+     "LXSSA-SSA": {
+      "p": 5.953464068397807e-07,
+      "wins": 6,
+      "losses": 41,
+      "mean_dloss_pp": 0.16562256717766272,
+      "verdict": "B"
+     }
+    }
+   },
+   {
+    "dropped": "2-500",
+    "n_cases": 59,
+    "best_ranked": "PSOBV",
+    "posthoc_nonsig": [
+     "PSOC"
+    ],
+    "avg_rank_PSOBV": 1.805084745762712,
+    "avg_rank_PSOC": 1.9661016949152543,
+    "tests": {
+     "PSOBV-PSOC": {
+      "p": 0.338957938217626,
+      "wins": 30,
+      "losses": 22,
+      "mean_dloss_pp": -0.011163115667317055,
+      "verdict": "ns"
+     },
+     "PSOBV-SSABV": {
+      "p": 4.1748860104862094e-10,
+      "wins": 51,
+      "losses": 1,
+      "mean_dloss_pp": -0.31357480903641927,
+      "verdict": "A"
+     },
+     "PSOBV-SSA": {
+      "p": 1.6256984569330967e-10,
+      "wins": 54,
+      "losses": 0,
+      "mean_dloss_pp": -0.5946484537258455,
+      "verdict": "A"
+     },
+     "PSOBV-LXSSA": {
+      "p": 1.6256984569330967e-10,
+      "wins": 54,
+      "losses": 0,
+      "mean_dloss_pp": -0.7375326308382938,
+      "verdict": "A"
+     },
+     "PSOBV-DE": {
+      "p": 3.114703506686344e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.9002519101790317,
+      "verdict": "A"
+     },
+     "PSOBV-BVNS": {
+      "p": 7.7975798000283e-10,
+      "wins": 48,
+      "losses": 3,
+      "mean_dloss_pp": -0.4558056169219411,
+      "verdict": "A"
+     },
+     "PSOBV-SLSQP": {
+      "p": 2.078906715227843e-10,
+      "wins": 57,
+      "losses": 2,
+      "mean_dloss_pp": -0.4359340799496374,
+      "verdict": "A"
+     },
+     "SSABV-SSA": {
+      "p": 1.3121791921431745e-09,
+      "wins": 52,
+      "losses": 2,
+      "mean_dloss_pp": -0.2859685643125036,
+      "verdict": "A"
+     },
+     "LXBV-LXSSA": {
+      "p": 1.6256984569330967e-10,
+      "wins": 54,
+      "losses": 0,
+      "mean_dloss_pp": -0.37420454214373466,
+      "verdict": "A"
+     },
+     "PSOBV-RSVNS": {
+      "p": 5.145276051717656e-10,
+      "wins": 51,
+      "losses": 0,
+      "mean_dloss_pp": -0.37426539130837994,
+      "verdict": "A"
+     },
+     "SSABV-RSVNS": {
+      "p": 0.005032745406190832,
+      "wins": 35,
+      "losses": 17,
+      "mean_dloss_pp": -0.06069058227196065,
+      "verdict": "A"
+     },
+     "LXBV-RSVNS": {
+      "p": 0.3435779717758627,
+      "wins": 22,
+      "losses": 30,
+      "mean_dloss_pp": 0.0018329196666054062,
+      "verdict": "ns"
+     },
+     "PSOBV-LXBV": {
+      "p": 3.503864964208263e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.3760983109749853,
+      "verdict": "A"
+     },
+     "SSABV-LXBV": {
+      "p": 2.6893974601938884e-05,
+      "wins": 41,
+      "losses": 11,
+      "mean_dloss_pp": -0.06252350193856605,
+      "verdict": "A"
+     },
+     "LXSSA-SSA": {
+      "p": 7.997998522529751e-07,
+      "wins": 8,
+      "losses": 45,
+      "mean_dloss_pp": 0.14288417711244825,
+      "verdict": "B"
+     }
+    }
+   },
+   {
+    "dropped": "2-750",
+    "n_cases": 57,
+    "best_ranked": "PSOBV",
+    "posthoc_nonsig": [
+     "PSOC"
+    ],
+    "avg_rank_PSOBV": 1.8157894736842106,
+    "avg_rank_PSOC": 1.9298245614035088,
+    "tests": {
+     "PSOBV-PSOC": {
+      "p": 0.5462652589115535,
+      "wins": 27,
+      "losses": 23,
+      "mean_dloss_pp": -0.015558894704222602,
+      "verdict": "ns"
+     },
+     "PSOBV-SSABV": {
+      "p": 1.7763568394002505e-15,
+      "wins": 50,
+      "losses": 0,
+      "mean_dloss_pp": -0.3210000989785154,
+      "verdict": "A"
+     },
+     "PSOBV-SSA": {
+      "p": 3.503132619800553e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.5898773329734852,
+      "verdict": "A"
+     },
+     "PSOBV-LXSSA": {
+      "p": 3.503132619800553e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.7395727017123871,
+      "verdict": "A"
+     },
+     "PSOBV-DE": {
+      "p": 6.652665494223396e-10,
+      "wins": 50,
+      "losses": 0,
+      "mean_dloss_pp": -0.8439717711706672,
+      "verdict": "A"
+     },
+     "PSOBV-BVNS": {
+      "p": 1.9539925233402755e-13,
+      "wins": 47,
+      "losses": 2,
+      "mean_dloss_pp": -0.4453769466179145,
+      "verdict": "A"
+     },
+     "PSOBV-SLSQP": {
+      "p": 4.3489080866208564e-10,
+      "wins": 55,
+      "losses": 2,
+      "mean_dloss_pp": -0.42231280239091173,
+      "verdict": "A"
+     },
+     "SSABV-SSA": {
+      "p": 2.889770021730376e-09,
+      "wins": 50,
+      "losses": 2,
+      "mean_dloss_pp": -0.2846429836025086,
+      "verdict": "A"
+     },
+     "LXBV-LXSSA": {
+      "p": 3.503132619800553e-10,
+      "wins": 52,
+      "losses": 0,
+      "mean_dloss_pp": -0.38851379003044856,
+      "verdict": "A"
+     },
+     "PSOBV-RSVNS": {
+      "p": 7.105427357601002e-15,
+      "wins": 48,
+      "losses": 1,
+      "mean_dloss_pp": -0.39015360205393745,
+      "verdict": "A"
+     },
+     "SSABV-RSVNS": {
+      "p": 0.002996250182501825,
+      "wins": 33,
+      "losses": 17,
+      "mean_dloss_pp": -0.06915350307542201,
+      "verdict": "A"
+     },
+     "LXBV-RSVNS": {
+      "p": 0.5984627102635613,
+      "wins": 22,
+      "losses": 28,
+      "mean_dloss_pp": -0.01088201694786602,
+      "verdict": "ns"
+     },
+     "PSOBV-LXBV": {
+      "p": 1.7763568394002505e-15,
+      "wins": 50,
+      "losses": 0,
+      "mean_dloss_pp": -0.37927158510607145,
+      "verdict": "A"
+     },
+     "SSABV-LXBV": {
+      "p": 9.372738659862989e-06,
+      "wins": 39,
+      "losses": 11,
+      "mean_dloss_pp": -0.058271486127556,
+      "verdict": "A"
+     },
+     "LXSSA-SSA": {
+      "p": 8.403119267086367e-08,
+      "wins": 7,
+      "losses": 43,
+      "mean_dloss_pp": 0.14969536873890185,
+      "verdict": "B"
+     }
+    }
+   },
+   {
+    "dropped": "2-1000",
+    "n_cases": 54,
+    "best_ranked": "PSOBV",
+    "posthoc_nonsig": [
+     "PSOC"
+    ],
+    "avg_rank_PSOBV": 1.8425925925925926,
+    "avg_rank_PSOC": 1.9814814814814814,
+    "tests": {
+     "PSOBV-PSOC": {
+      "p": 0.6582943823976919,
+      "wins": 27,
+      "losses": 21,
+      "mean_dloss_pp": 0.0006327639270761475,
+      "verdict": "ns"
+     },
+     "PSOBV-SSABV": {
+      "p": 3.552713678800501e-14,
+      "wins": 47,
+      "losses": 1,
+      "mean_dloss_pp": -0.31975198704768143,
+      "verdict": "A"
+     },
+     "PSOBV-SSA": {
+      "p": 1.1098341111028545e-09,
+      "wins": 49,
+      "losses": 0,
+      "mean_dloss_pp": -0.5665471909177298,
+      "verdict": "A"
+     },
+     "PSOBV-LXSSA": {
+      "p": 1.1098341111028545e-09,
+      "wins": 49,
+      "losses": 0,
+      "mean_dloss_pp": -0.7309051294598644,
+      "verdict": "A"
+     },
+     "PSOBV-DE": {
+      "p": 1.4201683663255724e-09,
+      "wins": 48,
+      "losses": 0,
+      "mean_dloss_pp": -0.7607168097884064,
+      "verdict": "A"
+     },
+     "PSOBV-BVNS": {
+      "p": 2.4016344468691386e-12,
+      "wins": 43,
+      "losses": 4,
+      "mean_dloss_pp": -0.43165142769796067,
+      "verdict": "A"
+     },
+     "PSOBV-SLSQP": {
+      "p": 1.4603908107301216e-09,
+      "wins": 52,
+      "losses": 2,
+      "mean_dloss_pp": -0.3740983724401893,
+      "verdict": "A"
+     },
+     "SSABV-SSA": {
+      "p": 1.0361456426025864e-08,
+      "wins": 47,
+      "losses": 2,
+      "mean_dloss_pp": -0.2635185202599771,
+      "verdict": "A"
+     },
+     "LXBV-LXSSA": {
+      "p": 1.1098341111028545e-09,
+      "wins": 49,
+      "losses": 0,
+      "mean_dloss_pp": -0.3836825391185915,
+      "verdict": "A"
+     },
+     "PSOBV-RSVNS": {
+      "p": 4.263256414560601e-14,
+      "wins": 46,
+      "losses": 1,
+      "mean_dloss_pp": -0.4037539280916089,
+      "verdict": "A"
+     },
+     "SSABV-RSVNS": {
+      "p": 0.00014651492903539065,
+      "wins": 35,
+      "losses": 13,
+      "mean_dloss_pp": -0.08400194104392757,
+      "verdict": "A"
+     },
+     "LXBV-RSVNS": {
+      "p": 0.31046798724077007,
+      "wins": 25,
+      "losses": 23,
+      "mean_dloss_pp": -0.02660920760483796,
+      "verdict": "ns"
+     },
+     "PSOBV-LXBV": {
+      "p": 7.105427357601002e-15,
+      "wins": 48,
+      "losses": 0,
+      "mean_dloss_pp": -0.37714472048677095,
+      "verdict": "A"
+     },
+     "SSABV-LXBV": {
+      "p": 0.000177063001451927,
+      "wins": 37,
+      "losses": 11,
+      "mean_dloss_pp": -0.05739273343908962,
+      "verdict": "A"
+     },
+     "LXSSA-SSA": {
+      "p": 4.4199519777521346e-07,
+      "wins": 7,
+      "losses": 40,
+      "mean_dloss_pp": 0.16435793854213465,
+      "verdict": "B"
+     }
+    }
+   }
+  ],
+  "pairs": {
+   "PSOBV-PSOC": {
+    "p_min": 0.09130577606126522,
+    "p_max": 0.6582943823976919,
+    "mean_dloss_min": -0.03062033857552592,
+    "mean_dloss_max": 0.0006327639270761475,
+    "full_verdict": "ns",
+    "verdicts": [
+     "ns",
+     "ns",
+     "ns",
+     "ns",
+     "ns",
+     "ns"
+    ],
+    "direction_flips": 1,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-SSABV": {
+    "p_min": 1.7763568394002505e-15,
+    "p_max": 4.1748860104862094e-10,
+    "mean_dloss_min": -0.3756721048739076,
+    "mean_dloss_max": -0.3094127466154059,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-SSA": {
+    "p_min": 1.6256984569330967e-10,
+    "p_max": 1.1098341111028545e-09,
+    "mean_dloss_min": -0.6760524779396171,
+    "mean_dloss_max": -0.5665471909177298,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-LXSSA": {
+    "p_min": 1.6256984569330967e-10,
+    "p_max": 1.1098341111028545e-09,
+    "mean_dloss_min": -0.8416750451172798,
+    "mean_dloss_max": -0.7309051294598644,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-DE": {
+    "p_min": 3.114703506686344e-10,
+    "p_max": 1.4201683663255724e-09,
+    "mean_dloss_min": -0.9487084316466806,
+    "mean_dloss_max": -0.7607168097884064,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-BVNS": {
+    "p_min": 1.9539925233402755e-13,
+    "p_max": 1.1767500110416035e-09,
+    "mean_dloss_min": -0.5204681061242397,
+    "mean_dloss_max": -0.43165142769796067,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-SLSQP": {
+    "p_min": 2.3900953516978203e-11,
+    "p_max": 1.4603908107301216e-09,
+    "mean_dloss_min": -0.47981843272297225,
+    "mean_dloss_max": -0.3740983724401893,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "SSABV-SSA": {
+    "p_min": 1.6256984569330967e-10,
+    "p_max": 1.0361456426025864e-08,
+    "mean_dloss_min": -0.31495291569309103,
+    "mean_dloss_max": -0.2635185202599771,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "LXBV-LXSSA": {
+    "p_min": 1.6256984569330967e-10,
+    "p_max": 1.1098341111028545e-09,
+    "mean_dloss_min": -0.42277583043165323,
+    "mean_dloss_max": -0.37420454214373466,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-RSVNS": {
+    "p_min": 5.329070518200751e-15,
+    "p_max": 5.796704657296606e-10,
+    "mean_dloss_min": -0.45719554860432543,
+    "mean_dloss_max": -0.35584354967159626,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "SSABV-RSVNS": {
+    "p_min": 0.00014651492903539065,
+    "p_max": 0.005032745406190832,
+    "mean_dloss_min": -0.08400194104392757,
+    "mean_dloss_max": -0.04643080305619035,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "LXBV-RSVNS": {
+    "p_min": 0.31046798724077007,
+    "p_max": 1.0,
+    "mean_dloss_min": -0.02660920760483796,
+    "mean_dloss_max": 0.013042791756146355,
+    "full_verdict": "ns",
+    "verdicts": [
+     "ns",
+     "ns",
+     "ns",
+     "ns",
+     "ns",
+     "ns"
+    ],
+    "direction_flips": 2,
+    "wins_losses_flips": 1,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "PSOBV-LXBV": {
+    "p_min": 1.7763568394002505e-15,
+    "p_max": 3.503864964208263e-10,
+    "mean_dloss_min": -0.44616665504059294,
+    "mean_dloss_max": -0.3688863414277426,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "SSABV-LXBV": {
+    "p_min": 1.7496796758109667e-06,
+    "p_max": 0.000177063001451927,
+    "mean_dloss_min": -0.07049455016668542,
+    "mean_dloss_max": -0.05739273343908962,
+    "full_verdict": "A",
+    "verdicts": [
+     "A",
+     "A",
+     "A",
+     "A",
+     "A",
+     "A"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   },
+   "LXSSA-SSA": {
+    "p_min": 8.403119267086367e-08,
+    "p_max": 1.3112848345740091e-06,
+    "mean_dloss_min": 0.1408845673932388,
+    "mean_dloss_max": 0.16562256717766272,
+    "full_verdict": "B",
+    "verdicts": [
+     "B",
+     "B",
+     "B",
+     "B",
+     "B",
+     "B"
+    ],
+    "direction_flips": 0,
+    "wins_losses_flips": 0,
+    "verdict_changes": 0,
+    "changed_when_dropping": []
+   }
+  },
+  "best_ranked_always_PSOBV": true,
+  "posthoc_only_PSOC_always": true
+ },
+ "cluster_min_attainable_p": 0.03125,
+ "multiplicity": {
+  "n_tests": 22,
+  "tests": [
+   {
+    "key": "main:PSOBV-PSOC",
+    "label": "PSO-VNS vs.\\ PSO",
+    "family": "main table (tab:friedman68)",
+    "n": 68,
+    "p": 0.2958623332952982,
+    "wins": 34,
+    "losses": 26,
+    "dl": -0.018043354866491453,
+    "p_holm_all": 1.0,
+    "q_bh_all": 0.34257743855245054,
+    "sig_raw": false,
+    "sig_holm": false,
+    "sig_bh": false
+   },
+   {
+    "key": "main:PSOBV-SSABV",
+    "label": "PSO-VNS vs.\\ SSA-VNS",
+    "family": "main table (tab:friedman68)",
+    "n": 68,
+    "p": 1.8964365613380834e-11,
+    "wins": 59,
+    "losses": 1,
+    "dl": -0.33038319937599553,
+    "p_holm_all": 3.0342984981409334e-10,
+    "q_bh_all": 5.960229192776834e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "main:PSOBV-SSA",
+    "label": "PSO-VNS vs.\\ SSA",
+    "family": "main table (tab:friedman68)",
+    "n": 68,
+    "p": 7.576651760171568e-12,
+    "wins": 62,
+    "losses": 0,
+    "dl": -0.6112577561750174,
+    "p_holm_all": 1.5910968696360293e-10,
+    "q_bh_all": 4.1671584680943623e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "main:PSOBV-LXSSA",
+    "label": "PSO-VNS vs.\\ LX-SSA",
+    "family": "main table (tab:friedman68)",
+    "n": 68,
+    "p": 7.576651760171568e-12,
+    "wins": 62,
+    "losses": 0,
+    "dl": -0.7645978618057732,
+    "p_holm_all": 1.5910968696360293e-10,
+    "q_bh_all": 4.1671584680943623e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "main:PSOBV-DE",
+    "label": "PSO-VNS vs.\\ DE",
+    "family": "main table (tab:friedman68)",
+    "n": 68,
+    "p": 1.3982864665308031e-11,
+    "wins": 60,
+    "losses": 0,
+    "dl": -0.8865753016721861,
+    "p_holm_all": 2.5169156397554454e-10,
+    "q_bh_all": 5.960229192776834e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "main:PSOBV-BVNS",
+    "label": "PSO-VNS vs.\\ VNS",
+    "family": "main table (tab:friedman68)",
+    "n": 68,
+    "p": 6.295527868771217e-11,
+    "wins": 55,
+    "losses": 4,
+    "dl": -0.4651915315379654,
+    "p_holm_all": 8.184186229402582e-10,
+    "q_bh_all": 1.3850161311296677e-10,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "main:PSOBV-SLSQP",
+    "label": "PSO-VNS vs.\\ MS-SLSQP",
+    "family": "main table (tab:friedman68)",
+    "n": 68,
+    "p": 5.974424383134514e-12,
+    "wins": 66,
+    "losses": 2,
+    "dl": -0.4354035666654407,
+    "p_holm_all": 1.314373364289593e-10,
+    "q_bh_all": 4.1671584680943623e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "abl:SSABV-SSA",
+    "label": "SSA-VNS vs.\\ SSA",
+    "family": "component analysis (tab:ablation)",
+    "n": 68,
+    "p": 5.68217838734419e-11,
+    "wins": 60,
+    "losses": 2,
+    "dl": -0.2937283450962897,
+    "p_holm_all": 7.955049742281866e-10,
+    "q_bh_all": 1.3850161311296677e-10,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "abl:LXBV-LXSSA",
+    "label": "LX-SSA-VNS vs.\\ LX-SSA",
+    "family": "component analysis (tab:ablation)",
+    "n": 68,
+    "p": 7.576651760171568e-12,
+    "wins": 62,
+    "losses": 0,
+    "dl": -0.39423367083213484,
+    "p_holm_all": 1.5910968696360293e-10,
+    "q_bh_all": 4.1671584680943623e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "abl:PSOBV-RSVNS",
+    "label": "PSO-VNS vs.\\ RS-VNS",
+    "family": "component analysis (tab:ablation)",
+    "n": 68,
+    "p": 2.6491274058951022e-11,
+    "wins": 58,
+    "losses": 1,
+    "dl": -0.39876420141526936,
+    "p_holm_all": 3.9736911088426534e-10,
+    "q_bh_all": 7.285100366211532e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "abl:SSABV-RSVNS",
+    "label": "SSA-VNS vs.\\ RS-VNS",
+    "family": "component analysis (tab:ablation)",
+    "n": 68,
+    "p": 0.00044561122684435374,
+    "wins": 42,
+    "losses": 18,
+    "dl": -0.06838100203927398,
+    "p_holm_all": 0.004456112268443537,
+    "q_bh_all": 0.0007541113069673678,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "abl:LXBV-RSVNS",
+    "label": "LX-SSA-VNS vs.\\ RS-VNS",
+    "family": "component analysis (tab:ablation)",
+    "n": 68,
+    "p": 0.7183098583564869,
+    "wins": 27,
+    "losses": 33,
+    "dl": -0.005318954168216957,
+    "p_holm_all": 1.0,
+    "q_bh_all": 0.7183098583564869,
+    "sig_raw": false,
+    "sig_holm": false,
+    "sig_bh": false
+   },
+   {
+    "key": "abl:PSOBV-LXBV",
+    "label": "PSO-VNS vs.\\ LX-SSA-VNS",
+    "family": "component analysis (tab:ablation)",
+    "n": 68,
+    "p": 1.6295557943119345e-11,
+    "wins": 60,
+    "losses": 0,
+    "dl": -0.39344524724705243,
+    "p_holm_all": 2.7702448503302887e-10,
+    "q_bh_all": 5.960229192776834e-11,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "abl:SSABV-LXBV",
+    "label": "SSA-VNS vs.\\ LX-SSA-VNS",
+    "family": "component analysis (tab:ablation)",
+    "n": 68,
+    "p": 5.378103296945853e-06,
+    "wins": 47,
+    "losses": 13,
+    "dl": -0.06306204787105701,
+    "p_holm_all": 5.9159136266404384e-05,
+    "q_bh_all": 9.85985604440073e-06,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "abl:LXSSA-SSA",
+    "label": "LX-SSA vs.\\ SSA",
+    "family": "component analysis (tab:ablation)",
+    "n": 66,
+    "p": 1.868005162193947e-07,
+    "wins": 9,
+    "losses": 51,
+    "dl": 0.1533401056307556,
+    "p_holm_all": 2.2416061946327367e-06,
+    "q_bh_all": 3.736010324387894e-07,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "sub:Large",
+    "label": "PSO-VNS vs.\\ PSO, $N\\ge10$, both data sets",
+    "family": "post hoc subgroup (Sec. results)",
+    "n": 20,
+    "p": 0.04844093322753906,
+    "wins": 14,
+    "losses": 6,
+    "dl": -0.07881970226292205,
+    "p_holm_all": 0.2422046661376953,
+    "q_bh_all": 0.059205585055881076,
+    "sig_raw": true,
+    "sig_holm": false,
+    "sig_bh": false
+   },
+   {
+    "key": "sub:dsILarge",
+    "label": "PSO-VNS vs.\\ PSO, $N\\ge10$, Data Set I",
+    "family": "post hoc subgroup (Sec. results)",
+    "n": 10,
+    "p": 0.322265625,
+    "wins": 4,
+    "losses": 6,
+    "dl": 0.05242862058113511,
+    "p_holm_all": 1.0,
+    "q_bh_all": 0.3544921875,
+    "sig_raw": false,
+    "sig_holm": false,
+    "sig_bh": false
+   },
+   {
+    "key": "sub:dsIILarge",
+    "label": "PSO-VNS vs.\\ PSO, $N\\ge10$, Data Set II",
+    "family": "post hoc subgroup (Sec. results)",
+    "n": 10,
+    "p": 0.001953125,
+    "wins": 10,
+    "losses": 0,
+    "dl": -0.21006802510697922,
+    "p_holm_all": 0.01171875,
+    "q_bh_all": 0.002527573529411765,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "split:PSOBV-PSOBV25",
+    "label": "PSO-VNS ($\\omega=0.5$) vs.\\ PSO-VNS ($\\omega=0.25$)",
+    "family": "budget split (tab:split, 12 cases)",
+    "n": 12,
+    "p": 0.00146484375,
+    "wins": 11,
+    "losses": 1,
+    "dl": -0.15337973963429222,
+    "p_holm_all": 0.01171875,
+    "q_bh_all": 0.00201416015625,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "split:PSOBV-PSOBV75",
+    "label": "PSO-VNS ($\\omega=0.5$) vs.\\ PSO-VNS ($\\omega=0.75$)",
+    "family": "budget split (tab:split, 12 cases)",
+    "n": 12,
+    "p": 0.00146484375,
+    "wins": 1,
+    "losses": 11,
+    "dl": 0.10003471325526314,
+    "p_holm_all": 0.01171875,
+    "q_bh_all": 0.00201416015625,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   },
+   {
+    "key": "split:PSOBV-PSOC",
+    "label": "PSO-VNS ($\\omega=0.5$) vs.\\ PSO",
+    "family": "budget split (tab:split, 12 cases)",
+    "n": 12,
+    "p": 0.423828125,
+    "wins": 7,
+    "losses": 5,
+    "dl": -0.04969547068186208,
+    "p_holm_all": 1.0,
+    "q_bh_all": 0.4440104166666667,
+    "sig_raw": false,
+    "sig_holm": false,
+    "sig_bh": false
+   },
+   {
+    "key": "split:PSOBV75-PSOC",
+    "label": "PSO-VNS ($\\omega=0.75$) vs.\\ PSO",
+    "family": "budget split (tab:split, 12 cases)",
+    "n": 12,
+    "p": 0.00048828125,
+    "wins": 12,
+    "losses": 0,
+    "dl": -0.14973018393712523,
+    "p_holm_all": 0.004456112268443537,
+    "q_bh_all": 0.0007672991071428571,
+    "sig_raw": true,
+    "sig_holm": true,
+    "sig_bh": true
+   }
+  ],
+  "n_sig_raw": 18,
+  "n_sig_holm": 17,
+  "n_sig_bh": 17,
+  "lost_under_holm": [
+   "sub:Large"
+  ],
+  "lost_under_bh": [
+   "sub:Large"
+  ],
+  "max_sig_p_holm": 0.01171875,
+  "note": "one family = every case-mean Wilcoxon test quoted in the main text (main-table pairs, component-analysis contrasts not already in the main table, the three N >= 10 subgroups, the four budget-split tests); Holm (FWER) and Benjamini-Hochberg (FDR) over this family"
+ },
+ "subgroup": {
+  "n_cases": 68,
+  "mean_large": -0.07881970226292205,
+  "mean_small": 0.007280123215354629,
+  "interaction_all": {
+   "diff_pp": -0.08609982547827669,
+   "p_unrestricted": 0.00279986000699965,
+   "p_stratified": 0.0022498875056247186
+  },
+  "interaction_dsI": {
+   "diff_pp": 0.03499951701525161,
+   "p_unrestricted": 0.23513824308784562,
+   "p_stratified": 0.2893355332233388,
+   "mean_large": 0.05242862058113511,
+   "mean_small": 0.01742910356588349,
+   "n_large": 10,
+   "n_small": 24
+  },
+  "interaction_dsII": {
+   "diff_pp": -0.207199167971805,
+   "p_unrestricted": 4.999750012499375e-05,
+   "p_stratified": 9.99950002499875e-05,
+   "mean_large": -0.21006802510697922,
+   "mean_small": -0.0028688571351742367,
+   "n_large": 10,
+   "n_small": 24
+  },
+  "spearman_all": {
+   "rho": -0.25230513753457307,
+   "p": 0.037921800447188514,
+   "n": 68,
+   "stratified_mean_rho": -0.15747585142400336,
+   "stratified_p": 0.22848857557122143,
+   "rho_by_cluster": {
+    "1-500": 0.6666666666666667,
+    "1-750": 0.7181818181818183,
+    "1-1000": -0.3608363019580573,
+    "2-500": -0.6,
+    "2-750": -0.7000000000000001,
+    "2-1000": -0.6688672914344478
+   }
+  },
+  "spearman_dsI": {
+   "rho": 0.08664335257013504,
+   "p": 0.6260924568188667,
+   "n": 34,
+   "stratified_mean_rho": 0.3413373942968092,
+   "stratified_p": 0.06464676766161692,
+   "rho_by_cluster": {
+    "1-500": 0.6666666666666667,
+    "1-750": 0.7181818181818183,
+    "1-1000": -0.3608363019580573
+   }
+  },
+  "spearman_dsII": {
+   "rho": -0.6161645851801816,
+   "p": 0.00010458050083318951,
+   "n": 34,
+   "stratified_mean_rho": -0.656289097144816,
+   "stratified_p": 0.0002999850007499625,
+   "rho_by_cluster": {
+    "2-500": -0.6,
+    "2-750": -0.7000000000000001,
+    "2-1000": -0.6688672914344478
+   }
+  },
+  "dsII_vs_dsI_all": {
+   "n_pairs": 34,
+   "mean_pp": -0.091532868050192,
+   "p": 0.10039735585451126,
+   "rb": -0.34623655913978496,
+   "dsII_larger_gain": 17,
+   "dsI_larger_gain": 13
+  },
+  "dsII_vs_dsI_large": {
+   "n_pairs": 10,
+   "mean_pp": -0.2624966456881143,
+   "p": 0.00390625,
+   "rb": -0.9636363636363636,
+   "dsII_larger_gain": 9,
+   "dsI_larger_gain": 1
+  },
+  "dsII_vs_dsI_small": {
+   "n_pairs": 24,
+   "mean_pp": -0.020297960701057733,
+   "p": 0.2942523956298828,
+   "rb": 0.2761904761904762,
+   "dsII_larger_gain": 8,
+   "dsI_larger_gain": 12
+  },
+  "pattern_survives": true,
+  "overall_interaction_significant": true,
+  "overall_trend_significant": false,
+  "dsI_trend_negative_significant": false,
+  "permutations": 20000
+ },
+ "energy": {
+  "PSOBV-PSOC": {
+   "a": "PSOBV",
+   "b": "PSOC",
+   "group": "all",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.018043354866491453,
+   "mean_gain_pct_aep": 0.01953395851708048,
+   "ci95_gain_pct_aep": [
+    -0.0075107035958004165,
+    0.04726352062641643
+   ],
+   "max_gain_pct_aep": 0.44663489931568295,
+   "min_gain_pct_aep": -0.2803756263920219,
+   "mean_gain_mwh_yr": 5.628239518016505,
+   "ci95_gain_mwh_yr": [
+    -10.54300366099042,
+    21.686635715334706
+   ],
+   "mean_gain_mwh_yr_per_turbine": 0.22601285328774093,
+   "largest_N": 15,
+   "mean_gain_mwh_yr_largest_N": 135.32969983699445,
+   "mean_gain_pct_aep_largest_N": 0.21149078910169952,
+   "mean_aep_second_mwh_yr": 45157.37266766603,
+   "mean_wakefree_aep_mwh_yr": 45863.572082430095,
+   "note": "benchmark (model) energy: gross AEP = objective / 15 x 8.76 MWh/yr (Kusiak-Song benchmark, capacity factor far above real sites); positive gain = first method yields more"
+  },
+  "SSABV-RSVNS": {
+   "a": "SSABV",
+   "b": "RSVNS",
+   "group": "all",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.06838100203927398,
+   "mean_gain_pct_aep": 0.07086208148359385,
+   "ci95_gain_pct_aep": [
+    0.035355007947095285,
+    0.11255973379931321
+   ],
+   "max_gain_pct_aep": 0.7269435497815634,
+   "min_gain_pct_aep": -0.18853183772700818,
+   "mean_gain_mwh_yr": 38.3304635350112,
+   "ci95_gain_mwh_yr": [
+    15.115200228531947,
+    66.27040876134033
+   ],
+   "mean_gain_mwh_yr_per_turbine": 4.515989085241143,
+   "largest_N": 15,
+   "mean_gain_mwh_yr_largest_N": 161.88247276353184,
+   "mean_gain_pct_aep_largest_N": 0.13934333310165012,
+   "mean_aep_second_mwh_yr": 44938.4194496521,
+   "mean_wakefree_aep_mwh_yr": 45863.572082430095,
+   "note": "benchmark (model) energy: gross AEP = objective / 15 x 8.76 MWh/yr (Kusiak-Song benchmark, capacity factor far above real sites); positive gain = first method yields more"
+  },
+  "PSOBV-RSVNS": {
+   "a": "PSOBV",
+   "b": "RSVNS",
+   "group": "all",
+   "n_cases": 68,
+   "mean_dloss_pp": -0.39876420141526936,
+   "mean_gain_pct_aep": 0.4125870057254607,
+   "ci95_gain_pct_aep": [
+    0.31778600806865,
+    0.5131690360984673
+   ],
+   "max_gain_pct_aep": 1.6913230029685706,
+   "min_gain_pct_aep": -0.005080759600463692,
+   "mean_gain_mwh_yr": 224.58145753195672,
+   "ci95_gain_mwh_yr": [
+    167.77707343033256,
+    287.3476420224964
+   ],
+   "mean_gain_mwh_yr_per_turbine": 23.909265288893923,
+   "largest_N": 15,
+   "mean_gain_mwh_yr_largest_N": 438.8017010281218,
+   "mean_gain_pct_aep_largest_N": 0.55014831230361,
+   "mean_aep_second_mwh_yr": 44938.4194496521,
+   "mean_wakefree_aep_mwh_yr": 45863.572082430095,
+   "note": "benchmark (model) energy: gross AEP = objective / 15 x 8.76 MWh/yr (Kusiak-Song benchmark, capacity factor far above real sites); positive gain = first method yields more"
+  },
+  "PSOBV-PSOC_dsIILarge": {
+   "a": "PSOBV",
+   "b": "PSOC",
+   "group": "dsIILarge",
+   "n_cases": 10,
+   "mean_dloss_pp": -0.21006802510697922,
+   "mean_gain_pct_aep": 0.22066214256271,
+   "ci95_gain_pct_aep": [
+    0.1410485309574424,
+    0.3042072419483221
+   ],
+   "max_gain_pct_aep": 0.44663489931568295,
+   "min_gain_pct_aep": 0.005976890172585607,
+   "mean_gain_mwh_yr": 110.53393183936551,
+   "ci95_gain_mwh_yr": [
+    67.81901050297333,
+    155.8935888627621
+   ],
+   "mean_gain_mwh_yr_per_turbine": 8.974486218925106,
+   "largest_N": 15,
+   "mean_gain_mwh_yr_largest_N": 244.8147693514776,
+   "mean_gain_pct_aep_largest_N": 0.4016298105904291,
+   "mean_aep_second_mwh_yr": 48304.944545451566,
+   "mean_wakefree_aep_mwh_yr": 50411.73559345096,
+   "note": "benchmark (model) energy: gross AEP = objective / 15 x 8.76 MWh/yr (Kusiak-Song benchmark, capacity factor far above real sites); positive gain = first method yields more"
+  }
+ },
+ "seconds": 5.2
+}
