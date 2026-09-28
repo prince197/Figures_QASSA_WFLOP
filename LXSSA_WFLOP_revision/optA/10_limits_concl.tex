@@ -8,16 +8,16 @@ In the WFLOP, which method appears best can depend on the protocol as strongly a
 % CHECK-FINAL [C44]: PSO phase gain over RS-VNS clearly larger than the SSA phase's; [C50]: LX-SSA-VNS equivalent to RS-VNS; [C51]: SSA-VNS vs RS-VNS not equivalent (never "exceeds the margin"); [C15]: case-mean p < 0.05, DL < 0
 % CHECK-DIAG [D17]: NDRsRunsNoFeasSample = 68-case RS-VNS runs without a feasible sample; [D08]: one descent; [D10]: accepted cycles only k = 1
 
-\emph{PSO and PSO-VNS:} a well-configured PSO and PSO-VNS are practically equivalent on the case means (90\% interval \NEqPSOVNSvsPSOCI~pp; mean gain \NXEnPSOVNSvsPSOPct\% of benchmark AEP), with no difference in spread (Section~\ref{sec:overall}); the rank flip under the Gaussian model is consistent with this. PSO-VNS adds feasibility reliability (Horns Rev~1: \NHRFeasPSOVNS{} vs.\ \NHRFeasPSO{} feasible runs) and a gain in the larger Data Set~II layouts ($N\ge10$: lower loss in \NCmPSOVNSvsPSOdsIILargeWins{} of \NCmPSOVNSvsPSOdsIILargeN{} cases, all-test Holm $p=\NXHolmPSOVNSvsPSOdsIILargeP$).
+\emph{PSO and PSO-VNS:} a well-configured PSO and PSO-VNS are practically equivalent on the case means (90\% interval \NEqPSOVNSvsPSOCI~pp; mean gain \NXEnPSOVNSvsPSOPct\% of benchmark AEP), with no difference in spread; the rank flip under the Gaussian model is consistent with this. PSO-VNS adds feasibility reliability (Horns Rev~1: \NHRFeasPSOVNS{} vs.\ \NHRFeasPSO{} feasible runs) and a gain in the larger Data Set~II layouts ($N\ge10$: lower loss in \NCmPSOVNSvsPSOdsIILargeWins{} of \NCmPSOVNSvsPSOdsIILargeN{} cases, all-test Holm $p=\NXHolmPSOVNSvsPSOdsIILargeP$).
 % CHECK-FINAL [C49]: PSO-VNS vs PSO equivalent at NEqMargin; [C52]: spread SD p and worst-run p >= 0.05 (values in 06); [C22]: Gaussian PSOC first, PSOBV second; [C08]/[C20]: PSO-VNS 30/30, PSO < 30/30 on Horns Rev 16; [C32]: DS II N >= 10 wins > losses
 % CHECK-EXTRA [X25]: 68-case energy gain < 0.05 % AEP; [X19]: DS II N >= 10 survives the all-family Holm (NXMultN tests)
 
 For benchmark-type problems with random starts, a constriction PSO is a sound first choice and PSO-VNS a more reliable one; from feasible starts, VNS alone is competitive. For WFLOP comparisons, we recommend~\cite{BartzBeielstein2020,LaTorre2021}:
 \begin{enumerate}
 \item use baseline settings with documented convergence or standard defaults (for PSO, \eqref{eq:poli} or \eqref{eq:constriction}), report them, and verify their behavior with instrumented runs;
-\item give all methods the same evaluation budget, counting the initial population and gradient calls, and pair runs by seed;
-\item use feasibility-aware ranking and report the share of feasible runs;
-\item test case means and runs with a multiplicity correction~\cite{Derrac2011}, and report robustness to the qualification threshold and, for nested cases, at the cluster level;
+\item give all methods the same budget, counting the initial population and gradient calls, and pair runs by seed;
+\item use feasibility-aware ranking and report feasible runs;
+\item test case means and runs with a multiplicity correction~\cite{Derrac2011}, and report threshold and, for nested cases, cluster-level robustness;
 \item test practical equivalence with a stated margin~\cite{Lakens2017,Benavoli2017}; non-significance is not equivalence;
 \item in ablations of hybrids, include the local method alone and a strong random-sampling control of equal cost;
 \item report feasible-start and model-robustness checks; publish code and data.

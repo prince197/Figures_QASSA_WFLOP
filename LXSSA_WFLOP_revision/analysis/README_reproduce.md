@@ -23,6 +23,8 @@ Convergence checkpoints: every (B-30)//200 evaluations (201 values at 6,030, 200
 | `mpce_psobv_s<i>of2.csv` | `python3 mpce_experiments.py psobv <i> 2` | 68 cases + Horns Rev 16 (HR rows superseded by `hrfix`), PSO-VNS |
 | `mpce_slsqp_s0of1.csv` | `python3 mpce_experiments.py slsqp` | 68 cases, MS-SLSQP (rerun on the current platform) |
 | `mpce_psosplit_s0of1.csv` | `python3 mpce_experiments.py psosplit` | 12 split cases, PSO-VNS with omega = 0.25 / 0.75 (omega = 1 is `mpce_psoc`) |
+| `mpce_omega90_s0of1.csv` | `python3 mpce_experiments.py omega90 0 1` | Phase 6: 12 split cases, PSO-VNS with omega = 0.9 (label `PSOBV90`; 5,430 PSO evaluations, then VNS), 30 seeds |
+| `mpce_rsdisc_s0of1.csv` | `python3 mpce_experiments.py rsdisc 0 1` | Phase 6: 68 cases, RSD-VNS (label `RSDVNS`): RS-VNS whose 2,985 Phase-1 samples after the common initial population are uniform in the farm disc (3,015 Phase-1 evaluations), 30 seeds |
 | `mpce_hr16new_s0of1.csv` | `python3 mpce_experiments.py hr16new` | Horns Rev 16, PSO and RS-VNS (superseded by `hrfix`) |
 | `mpce_feas_s0of1.csv` | `python3 mpce_experiments.py feasx <i> 8` for i = 0..7, then the 8 shards `mpce_feasx_s<i>of8.csv` concatenated into `mpce_feas_s0of1.csv` (1,680 rows, identical objectives / coordinates) | feasible initialization, six largest cases + Horns Rev 16, the 8 methods of M9 without RS-VNS. The documented `feas` experiment (9 methods incl. RS-VNS) was **not** run as such: RS-VNS would need one packing solve per random sample. `mpce_results.py` reads only `mpce_feas_s*`, never the `feasx` shards |
 | `mpce_feasp_s0of1.csv` | `python3 mpce_experiments.py feasp` | PSO-VNS arm of the feasible-initialization study |
@@ -43,7 +45,10 @@ runs and reference come from the same model.
 ## 2. Tables, figures and numbers: which script produces what
 
 `sh build_mpce_paper.sh [--partial]` runs `python3 mpce_results.py` (which calls `mpce_numbers.py` and
-`mpce_check_final.py`) and then pdflatex of the supplement and the main text.
+`mpce_check_final.py`), then `python3 mpce_inference_extra.py`, `python3 mpce_check_extra.py` and
+`python3 mpce_check_diag.py` (logs `check_extra.log`, `check_diag.log`, `check_final.log`; a FAIL is reported at the end
+but does not stop the build), and then pdflatex of the supplement and the main text. The diagnostics and the theory
+checks are separate steps (Section 3).
 
 | Output | Produced by |
 |---|---|
@@ -53,7 +58,10 @@ runs and reference come from the same model.
 | `../figures_mpce/*.pdf` (average ranks, wake loss / feasibility vs N, convergence, box plots, layouts, ablation convergence, budget scaling, Horns Rev, IEA37) | `mpce_results.py` |
 | robustness re-evaluation (cubic power curve, Gaussian wake) | `mpce_robustness.py` (called by `mpce_results.py`; cached in `mpce_reevaluation_cache.csv` -- delete the cache to recompute) |
 | `mpce_numbers.tex` (`\N...` macros) | `mpce_numbers.py` from `mpce_summary.json` |
-| CHECK-FINAL PASS / FAIL list | `mpce_check_final.py` (reads `mpce_summary.json` and the `% CHECK-FINAL [Cnn]` comments of `../MPCE_PSO_VNS.tex` and `../optA/*.tex`) |
+| CHECK-FINAL PASS / FAIL list | `mpce_check_final.py` (reads `mpce_summary.json` and the `% CHECK-FINAL [Cnn]` comments of `../MPCE_PSO_VNS.tex`, `../MPCE_PSO_VNS_supplement.tex` and `../optA/*.tex`; it also lists the ids referenced by `% CHECK-EXTRA [Xnn]`, `% CHECK-DIAG [Dnn]`, `% CHECK-THEORY [Tnn]` and flags ids their script does not define, without evaluating them) |
+| `mpce_numbers_extra.tex` (`\NX...`), `mpce_supp_inference.tex`, `mpce_summary_extra.json` | `mpce_inference_extra.py` (reads the per-run CSVs and `mpce_summary.json`; check X01 = it reproduces `mpce_summary.json`) |
+| CHECK-EXTRA PASS / FAIL list (X01...) | `mpce_check_extra.py` (reads `mpce_summary_extra.json`) |
+| CHECK-DIAG PASS / FAIL list (D01...) | `mpce_check_diag.py` (reads the stored `mpce_summary_diag.json`; the diagnostics are not rerun by the build) |
 
 Statistics conventions (see the docstrings of `mpce_results.py`): run-level Wilcoxon signed-rank tests on 30
 seed-paired runs, Holm-adjusted within each case over the comparisons of that case (the family differs between
@@ -74,3 +82,5 @@ rank-biserial correlation.
 | Horns Rev 1 validation against PyWake (80 turbines; `\NHRPyWakeDiff`) | the model side is recomputed by `mpce_results.py`; the PyWake reference (662.5 GWh/yr) is a constant (PyWake is not installed here) |
 | Literature comparison table | `literature_values.csv` / `literature_values.md` (collected by hand) |
 | Per-run data (Section 1) | the experiment scripts above (hours of CPU time) |
+| Diagnostics (instrumented runs; `mpce_numbers_diag.tex` (`\ND...`), `mpce_supp_diag.tex`, `mpce_summary_diag.json`, `../figures_mpce/diag_*.pdf`) | `python3 mpce_diagnostics.py [--procs=2] [--cache=DIR]` (~18 min on 2 cores; with `--cache` the raw instrumented runs are stored and reused), then `python3 mpce_check_diag.py` (also run by the build on the stored summary) |
+| Theory figures and checks T01... (`../figures_mpce/theory_*.pdf`) | `python3 make_theory_figures.py --check` (~3 min) |

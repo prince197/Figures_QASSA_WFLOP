@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 FIG = os.path.join(ROOT, "figures_mpce")
-TEX = [os.path.join(ROOT, "optA", "supp_theory.tex"), os.path.join(ROOT, "optA", "drafts", "theory_main.tex")]
+TEX = [os.path.join(ROOT, "optA", "supp_theory.tex"), os.path.join(ROOT, "optA", "04_methods.tex")]
 FAST = "--fast" in sys.argv
 SEED = 20260928
 
