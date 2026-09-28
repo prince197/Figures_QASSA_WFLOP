@@ -63,6 +63,8 @@ KEY = ["Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init"]
 SPLITCASES = [(ds, r, n) for ds in ("1", "2") for r, n in ((500, 6), (750, 8), (1000, 10), (500, 10), (750, 12), (1000, 15))]
 LARGE = [(ds, r, n) for ds in ("1", "2") for r, n in RADII.items()]
 HR16 = ("HR", 0, 16)
+IEA_NAME = {16: "IEA37 CS1, 16 turbines", 36: "IEA37 CS1, 36 turbines"}   # text names (both are Case Study 1 scenarios)
+BASELINE_IEA = {16: 366941.57116, 36: 737883.09851}    # official example-layout AEP (MWh), used if the published file is absent
 BUDGETS = [6030, 30030, 120030]
 INSTALLED_HR16 = 139.51          # GWh/yr, recomputed with hornsrev_model below when available
 RANK_RULE = ("Within each case a method is ranked by the mean objective of its feasible runs only if at "
@@ -120,7 +122,9 @@ def wil(d):
 
 def rank_rule(fmean, nfeas, nruns):
     """Ranks (1 = best) of one case under the survivorship-bias rule (see module docstring)."""
-    fmean = np.asarray(fmean, float); nfeas = np.asarray(nfeas, float); nruns = np.asarray(nruns, float)
+    # means are rounded to 1e-6 (objective units) so that exact ties (e.g. every method at the wake-free
+    # optimum for N = 2) are not broken by floating-point noise of a re-evaluation
+    fmean = np.round(np.asarray(fmean, float), 6); nfeas = np.asarray(nfeas, float); nruns = np.asarray(nruns, float)
     q = (nfeas >= np.ceil(nruns / 2)) & np.isfinite(fmean)
     r = np.empty(len(fmean))
     if q.any():
@@ -1008,7 +1012,7 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
             Sb["Budget"] = b
             rows_c.append(Sb)
             Rb = rank_matrix(Sb, ms)
-            avg = Rb.mean(0).to_dict()
+            avg = Rb.mean(axis=0).to_dict()
             grid = Sb[Sb.Dataset != "HR"]
             bsum[b] = dict(n_cases=len(Rb), avg_rank=avg, best=min(avg, key=avg.get),
                            ssabv_rank_position=int(1 + sorted(avg.values()).index(avg[FOCUS])) if FOCUS in avg else None,
@@ -1097,54 +1101,124 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         summary["budget"] = None
 
     # =========================================================== 7. IEA37
-    log("\n[7] IEA37 case studies")
+    log("\n[7] IEA37 Case Study 1 (16- and 36-turbine scenarios)")
     IE = ALL[ALL.Dataset.str.startswith("IEA37")]
     if len(IE):
         pub = load_published(args.data_dir)
-        isum, lines, plines = {}, [], []
-        for (ds, n), x in IE.groupby(["Dataset", "Turbines"]):
+        isum, lines, plines, lay = {}, [], [], []
+        for n, x in IE.groupby("Turbines"):
+            ds = x.Dataset.iloc[0]
+            cname = IEA_NAME.get(n, f"IEA37 CS1, {n} turbines")
+            ideal = float(x.Ideal.iloc[0]) if x.Ideal.notna().any() else np.nan
+            isum[cname] = dict(dataset_id=ds, turbines=int(n), ideal_aep=ideal, budgets={})
             for b, y in x.groupby("Budget"):
                 ms = [a for a in M9 if a in set(y.Algorithm)]
                 Sy = case_stats(y, ms).set_index("Algorithm")
                 tt = {t["Baseline"]: t for t in paired_vs(y, FOCUS, [a for a in ms if a != FOCUS])} if FOCUS in ms else {}
-                key = f"{ds}-{n}-{b}"
-                isum[key] = {a: dict(mean=float(Sy.Mean[a]), best=float(Sy.Best[a]), sd=float(Sy.SD[a]),
-                                     feasible=int(Sy.NFeas[a]), runs=int(Sy.N[a]), rank=float(Sy.Rank[a]),
-                                     p_holm=tt.get(a, {}).get("PHolm"), rb=tt.get(a, {}).get("RB")) for a in ms}
+                isum[cname]["budgets"][int(b)] = {
+                    a: dict(mean=float(Sy.Mean[a]), best=float(Sy.Best[a]), sd=float(Sy.SD[a]), loss_pct=float(Sy.Loss[a]),
+                            feasible=int(Sy.NFeas[a]), runs=int(Sy.N[a]), rank=float(Sy.Rank[a]),
+                            p_holm=tt.get(a, {}).get("PHolm"), rb=tt.get(a, {}).get("RB")) for a in ms}
                 bs = f"{b:,}".replace(",", "{,}")
-                lines.append(f"\\multicolumn{{7}}{{l}}{{\\emph{{{ds}, {n} turbines, {bs} calls}}}} \\\\")
+                lines.append(f"\\multicolumn{{8}}{{l}}{{\\emph{{{cname}, {bs} calls}}}} \\\\")
                 for a in sorted(ms, key=lambda a: Sy.Rank[a]):
                     s = Sy.loc[a]
-                    lines.append(f"{LAB[a]} & {s.Mean:.1f} & {s.Best:.1f} & {0 if not np.isfinite(s.SD) else s.SD:.1f} & "
-                                 f"{s.NFeas}/{s.N} & {s.Rank:.0f} & {'--' if a == FOCUS or a not in tt else fmt_p(tt[a]['PHolm'])} \\\\")
-            # published comparison
+                    if s.NFeas:
+                        v = f"{s.Mean:,.0f} & {s.Best:,.0f} & {0 if not np.isfinite(s.SD) else s.SD:,.0f} & {s.Loss:.2f}".replace(",", "{,}")
+                    else:
+                        v = "-- & -- & -- & --"
+                    lines.append(f"{LAB[a]} & {v} & {s.NFeas}/{s.N} & {s.Rank:g} & "
+                                 f"{'--' if a == FOCUS or a not in tt else fmt_p(tt[a]['PHolm'])} \\\\")
+            # comparison with the published Case Study 1 results
             ours = x[x.Feasible]
-            pb = match_published(pub, ds, n) if pub is not None else None
-            if len(ours):
-                tb_ = ours.sort_values("Objective").iloc[-1]
-                fo = ours[ours.Algorithm == FOCUS]
-                fb = fo.Objective.max() if len(fo) else np.nan
-                fmn = fo.groupby("Budget").Objective.mean().to_dict() if len(fo) else {}
-                pubbest, pubwho = (pb.AEP.max(), pb.sort_values("AEP").Participant.iloc[-1]) if pb is not None and len(pb) else (np.nan, "--")
-                isum[f"{ds}-{n}-published"] = dict(published_best=float(pubbest), published_best_by=str(pubwho),
-                                                    our_best=float(tb_.Objective), our_best_method=tb_.Algorithm,
-                                                    our_best_budget=int(tb_.Budget), ssabv_best=float(fb),
-                                                    ssabv_mean_by_budget={int(k): float(v) for k, v in fmn.items()},
-                                                    ssabv_best_vs_published_pct=float(100 * (fb / pubbest - 1)) if np.isfinite(pubbest) else None)
-                plines.append(f"{ds} & {n} & {'--' if not np.isfinite(pubbest) else f'{pubbest:.1f}'} & {pubwho} & "
-                              f"{tb_.Objective:.1f} ({LAB[tb_.Algorithm]}) & {fb:.1f} & "
-                              + " / ".join(f"{fmn[k]:.1f}" for k in sorted(fmn)) +
-                              f" & {'--' if not np.isfinite(pubbest) else f'{100 * (fb / pubbest - 1):+.2f}'} \\\\")
-        tabs["iea37"] = table("table", "IEA Wind Task~37 case studies: AEP (MWh) mean, best and SD over the runs, feasible runs, rank (ranking rule of Table~\\ref{tab:friedman68}) and Holm-adjusted Wilcoxon signed-rank $p$ of SSA-VNS vs.\\ each method, per case and budget.",
-                              "tab:iea37", "lcccccc", "Method & Mean & Best & SD & Feas. & Rank & $p_{\\rm Holm}$", lines)
-        tabs["iea37_published"] = table("table*", "IEA Wind Task~37 case studies: best published AEP (MWh) of the case-study participants%s, our best layout (all methods and budgets), best SSA-VNS layout, mean SSA-VNS AEP per budget, and difference of the best SSA-VNS layout from the best published one." % ("" if pub is not None else " (published results file not yet available)"),
-                                        "tab:iea37-pub", "lccccccc", "Case & $N$ & Published best & Participant & Our best & SSA-VNS best & SSA-VNS mean & $\\Delta$ (\\%)", plines, sep="3pt")
+            if not len(ours):
+                continue
+            top = ours.sort_values("Objective").iloc[-1]
+            fo = ours[ours.Algorithm == FOCUS]
+            fbest = fo.sort_values("Objective").iloc[-1] if len(fo) else None
+            fmean = x[(x.Algorithm == FOCUS) & x.Feasible].groupby("Budget").Objective.mean().to_dict()
+            P = pub[pub.Turbines == n] if pub is not None else None
+            base = P[P.Baseline] if P is not None else None
+            parts = P[~P.Baseline] if P is not None else None
+            bl_aep = float(base.AEP.iloc[0]) if base is not None and len(base) else BASELINE_IEA.get(n, np.nan)
+            pf = parts[parts.Feasible].sort_values("AEP") if parts is not None else None
+            pa = parts.sort_values("AEP") if parts is not None else None
+            pf_aep, pf_who = (float(pf.AEP.iloc[-1]), pf.Participant.iloc[-1]) if pf is not None and len(pf) else (np.nan, "--")
+            pa_aep, pa_who, pa_feas = (float(pa.AEP.iloc[-1]), pa.Participant.iloc[-1], bool(pa.Feasible.iloc[-1])) \
+                if pa is not None and len(pa) else (np.nan, "--", None)
+            fb = float(fbest.Objective) if fbest is not None else np.nan
+            rank_among = int(1 + (pf.AEP > fb).sum()) if pf is not None and len(pf) else None
+            isum[cname]["published"] = dict(
+                baseline_aep=bl_aep, best_feasible_published=pf_aep, best_feasible_by=pf_who,
+                best_overall_published=pa_aep, best_overall_by=pa_who, best_overall_feasible=pa_feas,
+                n_published=int(len(parts)) if parts is not None else 0,
+                n_published_feasible=int(len(pf)) if pf is not None else 0,
+                our_best=float(top.Objective), our_best_method=top.Algorithm, our_best_budget=int(top.Budget), our_best_seed=int(top.Seed),
+                ssabv_best=fb, ssabv_best_budget=int(fbest.Budget) if fbest is not None else None,
+                ssabv_mean_by_budget={int(k): float(v) for k, v in fmean.items()},
+                ssabv_best_vs_best_feasible_pct=float(100 * (fb / pf_aep - 1)) if np.isfinite(pf_aep) else None,
+                ssabv_best_vs_baseline_pct=float(100 * (fb / bl_aep - 1)) if np.isfinite(bl_aep) else None,
+                ssabv_mean_vs_baseline_pct={int(k): float(100 * (v / bl_aep - 1)) for k, v in fmean.items()},
+                our_best_vs_best_feasible_pct=float(100 * (top.Objective / pf_aep - 1)) if np.isfinite(pf_aep) else None,
+                ssabv_best_rank_among_feasible_published=rank_among)
+            num = lambda v: "--" if not np.isfinite(v) else f"{v:,.1f}".replace(",", "{,}")
+            plines.append(f"{cname} & {num(bl_aep)} & {num(pf_aep)} ({pf_who}) & {num(pa_aep)} ({pa_who}{'' if pa_feas in (None, True) else ', infeas.'}) & "
+                          f"{num(top.Objective)} ({LAB[top.Algorithm]}) & {num(fb)} & "
+                          + " / ".join(num(fmean[k]) for k in sorted(fmean)) +
+                          f" & {'--' if not np.isfinite(pf_aep) else f'{100 * (fb / pf_aep - 1):+.2f}'} & "
+                          f"{'--' if not np.isfinite(bl_aep) else f'{100 * (fb / bl_aep - 1):+.2f}'} \\\\")
+            lay.append((n, cname, top, fbest, pf_who, x.Radius.iloc[0]))
+        bl_txt = " / ".join(f"{b:,}".replace(",", "{,}") for b in sorted(IE.Budget.unique()))
+        tabs["iea37"] = table("table", "IEA Wind Task~37 Case Study~1 (16- and 36-turbine scenarios; official AEP model): AEP (MWh) mean, best and SD over the feasible runs, mean wake loss relative to the wake-free AEP (\\%), feasible runs, rank (ranking rule of Table~\\ref{tab:friedman68}) and Holm-adjusted Wilcoxon signed-rank $p$ of SSA-VNS vs.\\ each method, per scenario and budget.",
+                              "tab:iea37", "lccccccc", "Method & Mean & Best & SD & Loss (\\%) & Feas. & Rank & $p_{\\rm Holm}$", lines, sep="2.5pt")
+        tabs["iea37_published"] = table("table*", "IEA Wind Task~37 Case Study~1: AEP (MWh, official calculator) of the baseline (example) layout, of the best feasible and the best overall participant layout%s, our best feasible layout over all methods and budgets, the best SSA-VNS layout, mean SSA-VNS AEP (budgets %s calls), and difference (\\%%) of the best SSA-VNS layout from the best feasible participant layout and from the baseline. ``infeas.'': violates the boundary or spacing constraint by more than 1~mm." % ("" if pub is not None else " (published results file not available)", bl_txt),
+                                        "tab:iea37-pub", "lcccccccc", "Scenario & Baseline & Best feasible publ. & Best publ. & Our best & SSA-VNS best & SSA-VNS mean & $\\Delta_{\\rm publ}$ & $\\Delta_{\\rm base}$", plines, sep="2.5pt", resize=True)
         summary["iea37"] = isum
         summary["iea37_published_file"] = pub is not None
+        for k, v in isum.items():
+            p = v.get("published", {})
+            log(f"  {k}: SSA-VNS best {p.get('ssabv_best', float('nan')):.1f}, best feasible published {p.get('best_feasible_published', float('nan')):.1f} "
+                f"({p.get('best_feasible_by')}), baseline {p.get('baseline_aep', float('nan')):.1f}")
+        # layouts: best SSA-VNS vs best feasible participant layout (and our best if another method)
+        if lay:
+            fig, axes = plt.subplots(1, len(lay), figsize=(3.55 * len(lay), 3.3), squeeze=False)
+            for ax, (n, cname, top, fbest, pwho, rad) in zip(axes[0], lay):
+                t = np.linspace(0, 2 * np.pi, 200)
+                ax.plot(rad * np.cos(t), rad * np.sin(t), color=MUTED, lw=0.8)
+                try:
+                    import iea37_model as iem
+                    if pwho not in ("--", None):
+                        xy, _ = iem.load_submission(str(pwho).replace("par", ""), n)
+                        ax.scatter(xy[:, 0], xy[:, 1], marker="s", s=22, facecolor="none", edgecolor=INK, lw=1,
+                                   label=f"best feasible participant ({pwho})", zorder=3)
+                except Exception as e:                                  # pragma: no cover
+                    log(f"  participant layout not drawn: {e}")
+                if fbest is not None:
+                    xy = coords(fbest.Coordinates)
+                    ax.scatter(xy[:, 0], xy[:, 1], marker="o", s=12, color=COL[FOCUS], label="best SSA-VNS", zorder=4)
+                if top.Algorithm != FOCUS:
+                    xy = coords(top.Coordinates)
+                    ax.scatter(xy[:, 0], xy[:, 1], marker=MRK[top.Algorithm], s=16, facecolor="none", edgecolor=COL[top.Algorithm],
+                               lw=1, label=f"our best ({LAB[top.Algorithm]})", zorder=3)
+                ax.set_aspect("equal"); ax.tick_params(labelsize=6)
+                ax.set_title(f"{cname} (m)", fontsize=8, color=INK)
+                ax.legend(fontsize=6, loc="upper left", bbox_to_anchor=(0, -0.08), ncol=1)
+            fig.tight_layout()
+            FG.save(fig, "iea37_layouts")
+        # convergence per scenario (largest budget)
+        fig, axes = plt.subplots(1, IE.Turbines.nunique(), figsize=(7.1, 2.6), squeeze=False)
+        for ax, (n, x) in zip(axes[0], IE.groupby("Turbines")):
+            y = x[x.Budget == x.Budget.max()]
+            ms = [a for a in M9 if a in set(y.Algorithm)]
+            conv_panel(ax, y, ms, loss=True, band=False)
+            ax.set_title(f"{IEA_NAME.get(n, n)}, {int(y.Budget.iloc[0]):,} calls", fontsize=8, color=INK)
+            ax.set_xlabel("Objective-function calls"); ax.set_ylabel("Median best wake loss (%)")
+        legend_row(fig, [a for a in M9 if a in set(IE.Algorithm)], ncol=5)
+        fig.tight_layout()
+        FG.save(fig, "iea37_convergence")
     else:
         log("  SKIPPED: mpce_iea16 / mpce_iea36 not available")
         summary["iea37"] = None
-
     # =========================================================== 8. robustness
     if args.skip_robust:
         log("\n[8] Robustness SKIPPED (--skip-robust)")
@@ -1189,31 +1263,37 @@ def case_name(c):
 
 
 def load_published(data_dir):
-    """iea37_published_results.csv: flexible columns (case, participant/algorithm, AEP)."""
+    """iea37_published_results.csv -> DataFrame(Turbines, Participant, AEP, Feasible, Baseline).
+
+    Expected columns (written by the IEA37 agent): Case, Turbines, Participant, AEP_MWh_official_calc,
+    Feasible_tol1e-3m (baseline row: Participant starting with "baseline"). Falls back to any
+    case/turbines, participant/algorithm and AEP columns if the names differ."""
     for d in (data_dir, HERE, os.path.join(HERE, "iea37_data")):
         fn = os.path.join(d, "iea37_published_results.csv")
-        if os.path.exists(fn):
-            P = pd.read_csv(fn)
-            cols = {c.lower(): c for c in P.columns}
-            pick = lambda *names: next((cols[c] for c in cols if any(nm in c for nm in names)), None)
-            cc, pc, ac = pick("case", "farm", "turbines"), pick("participant", "algorithm", "method", "name"), pick("aep")
-            if cc is None or ac is None:
-                log(f"  WARNING: {fn} lacks case/AEP columns: {list(P.columns)}")
-                return None
-            out = pd.DataFrame({"Case": P[cc].astype(str), "Participant": P[pc].astype(str) if pc else "?",
-                                "AEP": pd.to_numeric(P[ac], errors="coerce")})
-            log(f"  published IEA37 results: {fn} ({len(out)} rows; columns {cc}/{pc}/{ac})")
-            return out.dropna(subset=["AEP"])
-    log("  published IEA37 results file not found (table written with placeholders)")
+        if not os.path.exists(fn):
+            continue
+        P = pd.read_csv(fn)
+        low = {c.lower(): c for c in P.columns}
+        pick = lambda *names: next((low[c] for nm in names for c in low if nm in c), None)
+        tc = pick("turbines"); cc = pick("case")
+        pc = pick("participant", "algorithm", "method", "name")
+        ac = pick("aep_mwh_official", "aep_mwh_reported", "aep")
+        fc = pick("feasible")
+        if ac is None or (tc is None and cc is None):
+            log(f"  WARNING: {fn} lacks turbines/AEP columns: {list(P.columns)}")
+            return None
+        turb = pd.to_numeric(P[tc], errors="coerce") if tc else \
+            P[cc].astype(str).str.extract(r"(\d+)", expand=False).astype(float)
+        part = P[pc].astype(str) if pc else pd.Series("?", index=P.index)
+        feas = P[fc].astype(str).str.lower().isin(["true", "1", "1.0", "yes"]) if fc else pd.Series(True, index=P.index)
+        out = pd.DataFrame({"Turbines": turb, "Participant": part, "AEP": pd.to_numeric(P[ac], errors="coerce"),
+                            "Feasible": feas, "Baseline": part.str.lower().str.startswith("baseline")})
+        out = out.dropna(subset=["AEP", "Turbines"])
+        out["Turbines"] = out.Turbines.astype(int)
+        log(f"  published IEA37 results: {fn} ({len(out)} rows; AEP column {ac}; feasibility column {fc})")
+        return out
+    log("  published IEA37 results file not found (comparison table written with placeholders)")
     return None
-
-
-def match_published(P, ds, n):
-    """Rows of the published table for our case: match the dataset name or the turbine count."""
-    c = P.Case.str.lower()
-    m = (c == ds.lower()) | (c == ds.lower().replace("iea37", "")) | c.str.contains(rf"(?<!\d){n}(?!\d)", regex=True)
-    return P[m]
-
 
 def clean(o):
     if isinstance(o, dict):

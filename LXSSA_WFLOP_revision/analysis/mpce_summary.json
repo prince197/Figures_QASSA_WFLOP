@@ -1,0 +1,839 @@
+{
+ "generated": "2026-09-28 06:23:55",
+ "data_availability": {
+  "fresh_grid.csv": {
+   "status": "present",
+   "rows": 10200,
+   "methods": [
+    "DE",
+    "LXSSA",
+    "PSO",
+    "SLSQP",
+    "SSA"
+   ]
+  },
+  "fresh_vgrid.csv": {
+   "status": "present",
+   "rows": 2040,
+   "methods": [
+    "BVNS"
+   ]
+  },
+  "fresh_bgrid.csv": {
+   "status": "present",
+   "rows": 4080,
+   "methods": [
+    "LXBV",
+    "SSABV"
+   ]
+  },
+  "fresh_hr16.csv": {
+   "status": "present",
+   "rows": 150,
+   "methods": [
+    "DE",
+    "LXSSA",
+    "PSO",
+    "SLSQP",
+    "SSA"
+   ]
+  },
+  "fresh_vhr16.csv": {
+   "status": "present",
+   "rows": 30,
+   "methods": [
+    "BVNS"
+   ]
+  },
+  "fresh_bhr16.csv": {
+   "status": "present",
+   "rows": 60,
+   "methods": [
+    "LXBV",
+    "SSABV"
+   ]
+  },
+  "mpce_rsvns": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_psoc": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_slsqp": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_ssasplit": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_hr16new": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_feas": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_b30k": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_b120k": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_iea16": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  },
+  "mpce_iea36": {
+   "status": "missing",
+   "shards": "0",
+   "rows": 0
+  }
+ },
+ "fallbacks": [
+  "SLSQP (68 cases): mpce_slsqp missing -> using the old-platform SLSQP runs of fresh_grid.csv",
+  "SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (no rerun planned)",
+  "PSOC (68 cases): constriction-PSO runs missing -> using the old-settings PSO runs relabelled as PSOC (DEVELOPMENT ONLY)",
+  "PSOC (Horns Rev 16): constriction-PSO runs missing -> using the old-settings PSO runs relabelled as PSOC (DEVELOPMENT ONLY)"
+ ],
+ "ranking_rule": "Within each case a method is ranked by the mean objective of its feasible runs only if at least half of its runs (15 of 30; 5 of 10) are feasible; methods with fewer feasible runs receive the worst ranks, below all qualifying methods, ordered by their number of feasible runs (more = better, ties averaged). This removes the survivorship bias of ranking by the mean feasible objective.",
+ "labels": {
+  "SSABV": "SSA-VNS",
+  "SSABV25": "SSA-VNS (25%)",
+  "SSABV75": "SSA-VNS (75%)",
+  "LXBV": "LX-SSA-VNS",
+  "RSVNS": "RS-VNS",
+  "BVNS": "VNS",
+  "SSA": "SSA",
+  "LXSSA": "LX-SSA",
+  "PSOC": "PSO",
+  "PSO": "PSO (old)",
+  "DE": "DE",
+  "SLSQP": "MS-SLSQP"
+ },
+ "main_methods": [
+  "SSABV",
+  "SSA",
+  "LXSSA",
+  "PSOC",
+  "DE",
+  "BVNS",
+  "SLSQP"
+ ],
+ "main": {
+  "friedman": {
+   "n_cases": 68,
+   "chi2": 174.38180295841488,
+   "p": 5.28866451975245e-35,
+   "iman_davenport": 50.0114329541464,
+   "iman_davenport_p": 8.061338180335641e-46,
+   "avg_rank": {
+    "SSABV": 1.7352941176470589,
+    "SSA": 3.8823529411764706,
+    "LXSSA": 4.6911764705882355,
+    "PSOC": 4.169117647058823,
+    "DE": 6.080882352941177,
+    "BVNS": 2.9705882352941178,
+    "SLSQP": 4.470588235294118
+   },
+   "best_ranked": "SSABV",
+   "z_vs_focus": {
+    "SSA": 5.795354558073346,
+    "LXSSA": 7.97853606967632,
+    "PSOC": 6.569391639459854,
+    "DE": 11.729638848703246,
+    "BVNS": 3.334313581357268,
+    "SLSQP": 7.383122930148236
+   },
+   "p_holm_vs_focus": {
+    "SSA": 1.3635398078222391e-08,
+    "LXSSA": 7.403950893833095e-15,
+    "PSOC": 1.515637334586412e-10,
+    "DE": 5.390470463002344e-31,
+    "BVNS": 0.0008551019694724816,
+    "SLSQP": 6.184765631176406e-13
+   },
+   "p_holm_vs_best": {
+    "SSA": 1.3635398078222391e-08,
+    "LXSSA": 7.403950893833095e-15,
+    "PSOC": 1.515637334586412e-10,
+    "DE": 5.390470463002344e-31,
+    "BVNS": 0.0008551019694724816,
+    "SLSQP": 6.184765631176406e-13
+   },
+   "sole_best_count": {
+    "SSABV": 37,
+    "SSA": 0,
+    "LXSSA": 0,
+    "PSOC": 3,
+    "DE": 0,
+    "BVNS": 8,
+    "SLSQP": 11
+   }
+  },
+  "friedman_old_rule": {
+   "avg_rank": {
+    "SSABV": 1.7352941176470589,
+    "SSA": 3.8676470588235294,
+    "LXSSA": 4.75,
+    "PSOC": 4.139705882352941,
+    "DE": 6.0661764705882355,
+    "BVNS": 2.9705882352941178,
+    "SLSQP": 4.470588235294118
+   },
+   "chi2": 174.6664806028469
+  },
+  "case_mean_wilcoxon": {
+   "SSA": {
+    "p": 5.68217838734419e-11,
+    "rb": 0.956989247311828,
+    "n_cases": 68,
+    "only_focus_qualified": 2,
+    "only_other_qualified": 0,
+    "neither_qualified": 0,
+    "mean_dloss_pp": -0.2937283450962897,
+    "median_dloss_pp": -0.15496192042672896,
+    "focus_lower_loss_cases": 58,
+    "other_lower_loss_cases": 2,
+    "p_both_qualified": 1.3042146411829483e-10,
+    "rb_both_qualified": 0.9540983606557377,
+    "n_both_qualified": 66,
+    "p_holm": 2.272871354937676e-10,
+    "p_both_qualified_holm": 5.216858564731793e-10
+   },
+   "LXSSA": {
+    "p": 9.213082384255669e-12,
+    "rb": 0.9959037378392217,
+    "n_cases": 68,
+    "only_focus_qualified": 2,
+    "only_other_qualified": 0,
+    "neither_qualified": 0,
+    "mean_dloss_pp": -0.4470684507270453,
+    "median_dloss_pp": -0.21479311069055312,
+    "focus_lower_loss_cases": 59,
+    "other_lower_loss_cases": 1,
+    "p_both_qualified": 1.994566564292453e-11,
+    "rb_both_qualified": 0.9956284153005465,
+    "n_both_qualified": 66,
+    "p_holm": 5.5278494305534015e-11,
+    "p_both_qualified_holm": 9.972832821462265e-11
+   },
+   "PSOC": {
+    "p": 4.798340808259519e-10,
+    "rb": 0.9164463246959281,
+    "n_cases": 68,
+    "only_focus_qualified": 8,
+    "only_other_qualified": 0,
+    "neither_qualified": 0,
+    "mean_dloss_pp": -0.3367020733834472,
+    "median_dloss_pp": -0.0750159752703294,
+    "focus_lower_loss_cases": 48,
+    "other_lower_loss_cases": 5,
+    "p_both_qualified": 1.7527719359495056e-08,
+    "rb_both_qualified": 0.8895877009084556,
+    "n_both_qualified": 60,
+    "p_holm": 1.4395022424778558e-09,
+    "p_both_qualified_holm": 5.2583158078485165e-08
+   },
+   "DE": {
+    "p": 1.5481621886679465e-11,
+    "rb": 0.9978142076502732,
+    "n_cases": 68,
+    "only_focus_qualified": 18,
+    "only_other_qualified": 0,
+    "neither_qualified": 0,
+    "mean_dloss_pp": -0.6797168458265292,
+    "median_dloss_pp": -0.3253411302017427,
+    "focus_lower_loss_cases": 41,
+    "other_lower_loss_cases": 1,
+    "p_both_qualified": 1.3642420526593924e-12,
+    "rb_both_qualified": 0.9955703211517165,
+    "n_both_qualified": 50,
+    "p_holm": 7.740810943339732e-11,
+    "p_both_qualified_holm": 8.185452315956354e-12
+   },
+   "BVNS": {
+    "p": 2.744876146555576e-07,
+    "rb": 0.7694915254237288,
+    "n_cases": 68,
+    "only_focus_qualified": 0,
+    "only_other_qualified": 0,
+    "neither_qualified": 0,
+    "mean_dloss_pp": -0.13480833216197,
+    "median_dloss_pp": -0.11403830225347794,
+    "focus_lower_loss_cases": 47,
+    "other_lower_loss_cases": 12,
+    "p_both_qualified": 2.744876146555576e-07,
+    "rb_both_qualified": 0.7694915254237288,
+    "n_both_qualified": 68,
+    "p_holm": 5.489752293111152e-07,
+    "p_both_qualified_holm": 5.489752293111152e-07
+   },
+   "SLSQP": {
+    "p": 3.340328931856777e-05,
+    "rb": 0.5788576300085252,
+    "n_cases": 68,
+    "only_focus_qualified": 0,
+    "only_other_qualified": 0,
+    "neither_qualified": 0,
+    "mean_dloss_pp": -0.11219321233606075,
+    "median_dloss_pp": -0.10634448852717235,
+    "focus_lower_loss_cases": 57,
+    "other_lower_loss_cases": 11,
+    "p_both_qualified": 3.340328931856777e-05,
+    "rb_both_qualified": 0.5788576300085252,
+    "n_both_qualified": 68,
+    "p_holm": 3.340328931856777e-05,
+    "p_both_qualified_holm": 3.340328931856777e-05
+   }
+  },
+  "feasible_pct": {
+   "SSABV": 99.55882352941177,
+   "SSA": 97.6470588235294,
+   "LXSSA": 96.86274509803921,
+   "PSOC": 85.98039215686275,
+   "DE": 71.37254901960785,
+   "BVNS": 100.0,
+   "SLSQP": 99.8529411764706
+  },
+  "mean_loss_pct_qualified_cases": {
+   "SSABV": 1.652845726510679,
+   "SSA": 1.8052204904083626,
+   "LXSSA": 1.9585605960391184,
+   "PSOC": 1.5708637019715455,
+   "DE": 1.4926725259887579,
+   "BVNS": 1.787654058672649,
+   "SLSQP": 1.7650389388467396
+  },
+  "cases_below_half_feasible": {
+   "SSABV": 0,
+   "SSA": 2,
+   "LXSSA": 2,
+   "PSOC": 8,
+   "DE": 18,
+   "BVNS": 0,
+   "SLSQP": 0
+  },
+  "wtl": {
+   "SSA": {
+    "W": 44,
+    "T": 24
+   },
+   "LXSSA": {
+    "W": 48,
+    "T": 20
+   },
+   "PSOC": {
+    "W": 42,
+    "T": 26
+   },
+   "DE": {
+    "W": 53,
+    "T": 15
+   },
+   "BVNS": {
+    "T": 49,
+    "W": 18,
+    "L": 1
+   },
+   "SLSQP": {
+    "W": 41,
+    "T": 23,
+    "L": 4
+   }
+  },
+  "rank_biserial_median": {
+   "SSA": 0.6301075268817204,
+   "LXSSA": 0.7290322580645161,
+   "PSOC": 0.7526881720430108,
+   "DE": 0.9935483870967743,
+   "BVNS": 0.18494623655913978,
+   "SLSQP": 0.7483870967741936
+  },
+  "best_layout_maxN": [
+   {
+    "case": "1-500-10",
+    "best_method": "SLSQP",
+    "focus_gap_pp": 1.3997097950641337
+   },
+   {
+    "case": "1-750-12",
+    "best_method": "SSABV",
+    "focus_gap_pp": 0.0
+   },
+   {
+    "case": "1-1000-15",
+    "best_method": "SSABV",
+    "focus_gap_pp": 0.0
+   },
+   {
+    "case": "2-500-10",
+    "best_method": "SSABV",
+    "focus_gap_pp": 0.0
+   },
+   {
+    "case": "2-750-12",
+    "best_method": "SSABV",
+    "focus_gap_pp": 0.0
+   },
+   {
+    "case": "2-1000-15",
+    "best_method": "SLSQP",
+    "focus_gap_pp": 0.289273651838803
+   }
+  ]
+ },
+ "cost": {
+  "ms_per_call": {
+   "SSABV": 0.3879,
+   "SSA": 0.3986,
+   "LXSSA": 0.3956,
+   "PSOC": 0.4123,
+   "DE": 0.4668,
+   "BVNS": 0.3711,
+   "SLSQP": 0.4881
+  },
+  "sec_per_run_range": {
+   "SSABV": [
+    1.6775375168055715,
+    3.4423054417500834
+   ],
+   "SSA": [
+    1.692963962688902,
+    3.6096524864833555
+   ],
+   "LXSSA": [
+    1.6833689806500152,
+    3.5973249923333546
+   ],
+   "PSOC": [
+    1.7754143525777908,
+    3.7620638149167616
+   ],
+   "DE": [
+    2.003077603177782,
+    4.254982660266705
+   ],
+   "BVNS": [
+    1.6260725896277708,
+    3.3508245362333224
+   ],
+   "SLSQP": [
+    2.3601025701666836,
+    4.032467733166686
+   ]
+  },
+  "source": {
+   "BVNS": "fresh_vgrid.csv",
+   "DE": "fresh_grid.csv",
+   "LXSSA": "fresh_grid.csv",
+   "PSOC": "FALLBACK old PSO",
+   "SLSQP": "FALLBACK fresh_grid SLSQP",
+   "SSA": "fresh_grid.csv",
+   "SSABV": "fresh_bgrid.csv"
+  },
+  "note": "wall-clock times come from the machine that produced each file; runs from different files may not be directly comparable"
+ },
+ "ablation": {
+  "variants": [
+   "SSABV",
+   "LXBV",
+   "BVNS",
+   "SSA",
+   "LXSSA"
+  ],
+  "friedman": {
+   "n_cases": 68,
+   "chi2": 155.25913891145407,
+   "p": 1.5187708410251599e-32,
+   "iman_davenport": 89.1064380549447,
+   "iman_davenport_p": 4.6224120251134427e-48,
+   "avg_rank": {
+    "SSABV": 1.625,
+    "LXBV": 2.25,
+    "BVNS": 2.9044117647058822,
+    "SSA": 3.764705882352941,
+    "LXSSA": 4.455882352941177
+   },
+   "best_ranked": "SSABV",
+   "z_vs_focus": {
+    "LXBV": 2.3048861143232218,
+    "BVNS": 4.718237457555771,
+    "SSA": 7.890845403153619,
+    "LXSSA": 10.439778282522829
+   },
+   "p_holm_vs_focus": {
+    "LXBV": 0.021172952486147797,
+    "BVNS": 4.757934445615001e-06,
+    "SSA": 9.004388431727305e-15,
+    "LXSSA": 6.527656307543726e-25
+   },
+   "p_holm_vs_best": {
+    "LXBV": 0.021172952486147797,
+    "BVNS": 4.757934445615001e-06,
+    "SSA": 9.004388431727305e-15,
+    "LXSSA": 6.527656307543726e-25
+   },
+   "sole_best_count": {
+    "SSABV": 39,
+    "LXBV": 8,
+    "BVNS": 12,
+    "SSA": 0,
+    "LXSSA": 0
+   }
+  },
+  "feasible_pct": {
+   "SSABV": 99.55882352941177,
+   "LXBV": 99.90196078431373,
+   "BVNS": 100.0,
+   "SSA": 97.6470588235294,
+   "LXSSA": 96.86274509803921
+  },
+  "contrasts": {
+   "SSABV-SSA": {
+    "W": 41,
+    "T": 27,
+    "dloss_pp": -0.32758444455304647,
+    "isolates": "VNS phase (after SSA)"
+   },
+   "SSABV-BVNS": {
+    "T": 53,
+    "W": 14,
+    "L": 1,
+    "dloss_pp": -0.13480833216197,
+    "isolates": "SSA start vs. best initial point"
+   },
+   "SSABV-LXBV": {
+    "T": 65,
+    "W": 3,
+    "dloss_pp": -0.06306204787105701,
+    "isolates": "Laplace step inside the hybrid"
+   },
+   "LXSSA-SSA": {
+    "T": 60,
+    "L": 8,
+    "dloss_pp": 0.16633563370444476,
+    "isolates": "Laplace step alone (no VNS)"
+   }
+  },
+  "phase2_loss_reduction_pct": {
+   "SSABV": {
+    "mean": 36.66372550902314,
+    "median": 29.194081556313783,
+    "n_runs_with_loss_at_switch": 1770,
+    "infeasible_at_switch_made_feasible": 79,
+    "final_infeasible": 9,
+    "switch_call": 3030,
+    "pct_runs_improved": 100.0
+   },
+   "LXBV": {
+    "mean": 38.95928131054939,
+    "median": 31.865080274316306,
+    "n_runs_with_loss_at_switch": 1738,
+    "infeasible_at_switch_made_feasible": 118,
+    "final_infeasible": 2,
+    "switch_call": 3030,
+    "pct_runs_improved": 100.0
+   }
+  }
+ },
+ "reproduction_check_a9779a3_parent": {
+  "ssabv_avg_rank": 1.625,
+  "expected_ssabv_avg_rank": 1.625,
+  "lxbv_vs_ssabv_wtl": "0/66/2",
+  "expected_lxbv_vs_ssabv_wtl": "0/66/2",
+  "lxbv_minus_ssabv_dloss": 0.06306204787105701,
+  "expected_dloss": 0.06306204787105701,
+  "phase2_ssabv": {
+   "mean": 36.66372550902314,
+   "median": 29.194081556313783,
+   "n_runs_with_loss_at_switch": 1770,
+   "infeasible_at_switch_made_feasible": 79,
+   "final_infeasible": 9,
+   "switch_call": 3030,
+   "pct_runs_improved": 100.0
+  },
+  "expected_phase2_ssabv": {
+   "mean": 36.66372550902314,
+   "median": 29.194081556313783,
+   "infeasible_at_switch": 79
+  },
+  "old_avg_rank": {
+   "SSABV": 1.625,
+   "LXBV": 2.25,
+   "BVNS": 2.9044117647058822,
+   "LXSSA": 4.485294117647059,
+   "SSA": 3.735294117647059
+  },
+  "pass": true
+ },
+ "split": null,
+ "hr16": {
+  "installed_aep": 139.51300511740232,
+  "ideal_aep": 149.2632720953485,
+  "installed_loss_pct": 6.532261313230336,
+  "friedman_p": 1.5627310687186063e-27,
+  "methods": {
+   "SSABV": {
+    "mean": 137.9842323651079,
+    "sd": 0.7123546920945473,
+    "best": 139.48458827621874,
+    "loss_pct": 7.556473586506667,
+    "feasible": 30,
+    "runs": 30,
+    "rank": 1.0,
+    "gain_vs_installed_pct": -1.095792289047115,
+    "p_holm": null,
+    "rb": null
+   },
+   "SSA": {
+    "mean": 136.66046554825363,
+    "sd": 0.9952547896923442,
+    "best": 138.69644654656196,
+    "loss_pct": 8.443340662560498,
+    "feasible": 30,
+    "runs": 30,
+    "rank": 4.0,
+    "gain_vs_installed_pct": -2.044640617373439,
+    "p_holm": 3.203749656677246e-07,
+    "rb": 0.956989247311828
+   },
+   "LXSSA": {
+    "mean": 136.46104304597682,
+    "sd": 0.9025495168698614,
+    "best": 138.16411945682987,
+    "loss_pct": 8.576945198678004,
+    "feasible": 28,
+    "runs": 30,
+    "rank": 5.0,
+    "gain_vs_installed_pct": -2.1875824901465113,
+    "p_holm": 4.917383193969727e-07,
+    "rb": 0.9440860215053763
+   },
+   "PSOC": {
+    "mean": null,
+    "sd": null,
+    "best": null,
+    "loss_pct": null,
+    "feasible": 0,
+    "runs": 30,
+    "rank": 6.5,
+    "gain_vs_installed_pct": null,
+    "p_holm": 1.1175870895385742e-08,
+    "rb": 1.0
+   },
+   "DE": {
+    "mean": null,
+    "sd": null,
+    "best": null,
+    "loss_pct": null,
+    "feasible": 0,
+    "runs": 30,
+    "rank": 6.5,
+    "gain_vs_installed_pct": null,
+    "p_holm": 1.1175870895385742e-08,
+    "rb": 1.0
+   },
+   "BVNS": {
+    "mean": 137.67077703490713,
+    "sd": 1.01595691860848,
+    "best": 139.21080480132224,
+    "loss_pct": 7.766475233797744,
+    "feasible": 30,
+    "runs": 30,
+    "rank": 2.0,
+    "gain_vs_installed_pct": -1.32047050448445,
+    "p_holm": 0.17059839516878128,
+    "rb": 0.2903225806451613
+   },
+   "SLSQP": {
+    "mean": 136.80013558013675,
+    "sd": 0.774073748602078,
+    "best": 138.33100916890444,
+    "loss_pct": 8.349767722665463,
+    "feasible": 30,
+    "runs": 30,
+    "rank": 3.0,
+    "gain_vs_installed_pct": -1.9445280638766493,
+    "p_holm": 5.5246055126190186e-06,
+    "rb": 0.8795698924731182
+   }
+  },
+  "sources": {
+   "BVNS": "fresh_vhr16.csv",
+   "DE": "fresh_hr16.csv",
+   "LXSSA": "fresh_hr16.csv",
+   "PSOC": "FALLBACK old PSO",
+   "SLSQP": "fresh_hr16.csv",
+   "SSA": "fresh_hr16.csv",
+   "SSABV": "fresh_bhr16.csv"
+  },
+  "best_overall": {
+   "method": "SSABV",
+   "aep": 139.48458827621874,
+   "seed": 1
+  }
+ },
+ "feasinit": null,
+ "budget": null,
+ "iea37": null,
+ "robustness": {
+  "Linear": {
+   "avg_rank": {
+    "SSABV": 1.7426470588235294,
+    "SSA": 4.25,
+    "LXSSA": 4.661764705882353,
+    "PSOC": 4.095588235294118,
+    "DE": 5.977941176470588,
+    "BVNS": 2.9044117647058822,
+    "SLSQP": 4.367647058823529
+   },
+   "tau": 1.0,
+   "same_best_pct": 100.0,
+   "rel_change_pct": {
+    "1": 0.0,
+    "2": 0.0
+   }
+  },
+  "Cubic": {
+   "avg_rank": {
+    "SSABV": 1.8161764705882353,
+    "SSA": 4.205882352941177,
+    "LXSSA": 4.632352941176471,
+    "PSOC": 4.007352941176471,
+    "DE": 5.948529411764706,
+    "BVNS": 2.963235294117647,
+    "SLSQP": 4.426470588235294
+   },
+   "tau": 0.9663865546218489,
+   "same_best_pct": 100.0,
+   "rel_change_pct": {
+    "1": -17.716887282591916,
+    "2": -36.9161974606388
+   }
+  },
+  "CubicCutout": {
+   "avg_rank": {
+    "SSABV": 1.8161764705882353,
+    "SSA": 4.220588235294118,
+    "LXSSA": 4.632352941176471,
+    "PSOC": 4.007352941176471,
+    "DE": 5.963235294117647,
+    "BVNS": 2.963235294117647,
+    "SLSQP": 4.397058823529412
+   },
+   "tau": 0.9553354731980335,
+   "same_best_pct": 97.05882352941177,
+   "rel_change_pct": {
+    "1": -21.488281651649476,
+    "2": -37.0689867234993
+   }
+  },
+  "Gauss": {
+   "avg_rank": {
+    "SSABV": 2.3823529411764706,
+    "SSA": 4.132352941176471,
+    "LXSSA": 4.867647058823529,
+    "PSOC": 3.3823529411764706,
+    "DE": 5.9411764705882355,
+    "BVNS": 3.823529411764706,
+    "SLSQP": 3.4705882352941178
+   },
+   "tau": 0.5760456725515541,
+   "same_best_pct": 44.11764705882353,
+   "rel_change_pct": {
+    "1": -0.24115056815006602,
+    "2": -0.37249296431686896
+   }
+  }
+ },
+ "tables": [
+  "mpce_tab_wtl.tex",
+  "mpce_tab_friedman68.tex",
+  "mpce_tab_cost.tex",
+  "mpce_tab_ablation.tex",
+  "mpce_tab_hr16.tex",
+  "mpce_tab_robust.tex",
+  "mpce_supplementary.tex"
+ ],
+ "figures": [
+  "figures_mpce/avg_ranks.pdf",
+  "figures_mpce/wakeloss_vs_n.pdf",
+  "figures_mpce/feasibility_vs_n.pdf",
+  "figures_mpce/convergence_mid.pdf",
+  "figures_mpce/convergence_max.pdf",
+  "figures_mpce/boxplots_mid.pdf",
+  "figures_mpce/boxplots_max.pdf",
+  "figures_mpce/layouts_max.pdf",
+  "figures_mpce/ablation_convergence.pdf",
+  "figures_mpce/hr16.pdf"
+ ],
+ "log": [
+  "==============================================================================",
+  "DATA AVAILABILITY",
+  "  fresh_grid.csv       present                                       shards=     - rows= 10200  methods=DE,LXSSA,PSO,SLSQP,SSA",
+  "  fresh_vgrid.csv      present                                       shards=     - rows=  2040  methods=BVNS",
+  "  fresh_bgrid.csv      present                                       shards=     - rows=  4080  methods=LXBV,SSABV",
+  "  fresh_hr16.csv       present                                       shards=     - rows=   150  methods=DE,LXSSA,PSO,SLSQP,SSA",
+  "  fresh_vhr16.csv      present                                       shards=     - rows=    30  methods=BVNS",
+  "  fresh_bhr16.csv      present                                       shards=     - rows=    60  methods=LXBV,SSABV",
+  "  mpce_rsvns           missing                                       shards=     0 rows=     0",
+  "  mpce_psoc            missing                                       shards=     0 rows=     0",
+  "  mpce_slsqp           missing                                       shards=     0 rows=     0",
+  "  mpce_ssasplit        missing                                       shards=     0 rows=     0",
+  "  mpce_hr16new         missing                                       shards=     0 rows=     0",
+  "  mpce_feas            missing                                       shards=     0 rows=     0",
+  "  mpce_b30k            missing                                       shards=     0 rows=     0",
+  "  mpce_b120k           missing                                       shards=     0 rows=     0",
+  "  mpce_iea16           missing                                       shards=     0 rows=     0",
+  "  mpce_iea36           missing                                       shards=     0 rows=     0",
+  "  FALLBACK: SLSQP (68 cases): mpce_slsqp missing -> using the old-platform SLSQP runs of fresh_grid.csv",
+  "  FALLBACK: SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (no rerun planned)",
+  "  FALLBACK: PSOC (68 cases): constriction-PSO runs missing -> using the old-settings PSO runs relabelled as PSOC (DEVELOPMENT ONLY)",
+  "  FALLBACK: PSOC (Horns Rev 16): constriction-PSO runs missing -> using the old-settings PSO runs relabelled as PSOC (DEVELOPMENT ONLY)",
+  "==============================================================================",
+  "\n[1] Main comparison (68 cases)",
+  "  Friedman chi2=174.4 p=5.29e-35  ID F=50.0",
+  "  avg ranks: SSA-VNS 1.74, VNS 2.97, SSA 3.88, PSO 4.17, MS-SLSQP 4.47, LX-SSA 4.69, DE 6.08",
+  "  W/T/L vs SSA-VNS: SSA 44/24/0, LX-SSA 48/20/0, PSO 42/26/0, DE 53/15/0, VNS 18/49/1, MS-SLSQP 41/23/4",
+  "\n[2] Ablation",
+  "  RS-VNS runs missing: ablation without the RS-VNS variant/contrast",
+  "  avg ranks: SSA-VNS 1.625, LX-SSA-VNS 2.250, VNS 2.904, SSA 3.765, LX-SSA 4.456",
+  "  SSABV-SSA: 41/27/0  dL=-0.328",
+  "  SSABV-BVNS: 14/53/1  dL=-0.135",
+  "  SSABV-LXBV: 3/65/0  dL=-0.063",
+  "  LXSSA-SSA: 0/60/8  dL=+0.166",
+  "  phase 2 of SSA-VNS removes 36.66% (median 29.19%) of the loss left at the switch; 79 runs infeasible at the switch made feasible",
+  "  REPRODUCTION CHECK (old rule, 5 variants, Holm over 6 contrasts): SSABV avg rank 1.6250 (expected 1.625), LXBV vs SSABV 0/66/2 (expected 0/66/2), dL +0.0631 (expected +0.0631), phase-2 mean 36.664 (expected 36.664) -> PASS",
+  "\n[3] Budget split",
+  "  SKIPPED: mpce_ssasplit (SSABV25/SSABV75) not available",
+  "\n[4] Horns Rev 1, 16 turbines",
+  "  mean AEP: SSA-VNS 137.98(30), SSA 136.66(30), LX-SSA 136.46(28), PSO nan(0), DE nan(0), VNS 137.67(30), MS-SLSQP 136.80(30); installed 139.51",
+  "\n[5] Feasible initialization",
+  "  SKIPPED: mpce_feas not available",
+  "\n[6] Budget scaling",
+  "  SKIPPED: mpce_b30k / mpce_b120k not available",
+  "\n[7] IEA37 Case Study 1 (16- and 36-turbine scenarios)",
+  "  SKIPPED: mpce_iea16 / mpce_iea36 not available",
+  "\n[8] Robustness re-evaluation",
+  "  robustness: 13286 layouts (0 newly evaluated, cache 14653)",
+  "  Linear       tau=1.00 same best=100%  SSA-VNS rank 1.74",
+  "  Cubic        tau=0.97 same best=100%  SSA-VNS rank 1.82",
+  "  CubicCutout  tau=0.96 same best=97%  SSA-VNS rank 1.82",
+  "  Gauss        tau=0.58 same best=44%  SSA-VNS rank 2.38"
+ ]
+}
