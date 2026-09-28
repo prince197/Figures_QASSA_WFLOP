@@ -1,5 +1,12 @@
 #!/bin/sh
-# One command to regenerate everything for MPCE_PSO_VNS.tex once new shards have arrived:
+# Regenerates the results part of MPCE_PSO_VNS.tex (all mpce_tab_*.tex, mpce_supplementary.tex, figures_mpce/,
+# mpce_summary.json, mpce_numbers.tex, CHECK-FINAL list) from the per-run CSVs, then compiles both PDFs.
+# NOT regenerated here (separate scripts, see README_reproduce.md section 3): model schematics
+# (make_model_figures.py), spacing re-optimization table (analyze_authors_runs.py -> authors_tables.tex),
+# packing bounds (packing_capacity.py), evaluator checks (validate_evaluator.py, calibrate_authors_code.py),
+# literature table (literature_values.csv), and the per-run data themselves (mpce_experiments.py etc.).
+# Python stages only (no LaTeX):  cd analysis && python3 mpce_results.py
+# Usage once new shards have arrived:
 #   sh analysis/build_mpce_paper.sh            (all experiments complete)
 #   sh analysis/build_mpce_paper.sh --partial  (preview with incomplete shards)
 # Steps: mpce_results.py (tables, figures, mpce_summary.json; it also runs mpce_numbers.py -> mpce_numbers.tex

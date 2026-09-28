@@ -14,10 +14,18 @@ Experiments
   psoc     constriction PSO on the 68 cases, 30 seeds, 6,030 calls
   ssasplit SSA-VNS with 25% / 75% budget split on the 12 split cases
   hr16new  PSOC and RSVNS on the Horns Rev 1 16-turbine block, 30 seeds
-  feas     feasibility-preserving initialization, 6,030 calls, 9 methods, 6 largest cases + HR16
+  feas     design of the feasibility-preserving-initialization study (6,030 calls, 6 largest cases + HR16): the
+           9 methods of M9. NOT run as such: RS-VNS would need one packing solve per random sample. The data
+           were produced by `feasx` (the same design without RS-VNS, 8 methods, 8 shards), whose shards were
+           merged into mpce_feas_s0of1.csv (the file mpce_results.py reads); PSO-VNS comes from `feasp`.
+  feasx    feas without RS-VNS (8 methods) -- the experiment actually run
   b30k     random initialization, 30,030 calls, 9 methods, 6 largest cases + HR16 (30 seeds)
   b120k    random initialization, 120,030 calls, 9 methods, 6 largest cases (30 seeds) + HR16 (10 seeds)
-Convergence curves have 201 checkpoints (every (B-30)/200 calls).
+  feasp / b30kp / b120kp   the PSO-VNS arm of feas / b30k / b120k;  psosplit  PSO-VNS with 25 % / 75 % split
+  hrfix    all Horns Rev 1 16-turbine runs again after the direction-binning fix of hornsrev_model (2026-09-28):
+           10 methods; 6,030 random / 6,030 feasible (no RS-VNS) / 30,030 random (30 seeds), 120,030 (10 seeds)
+Convergence curves: one checkpoint every (B-30)//200 calls, i.e. 201 checkpoints at 6,030 calls and 200 at
+30,030 / 120,030 calls (the first checkpoint is at call 30 only for B = 6,030).
 """
 import sys, time
 import numpy as np, pandas as pd

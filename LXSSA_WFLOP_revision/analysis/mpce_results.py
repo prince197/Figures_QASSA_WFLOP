@@ -27,6 +27,8 @@ Inputs (all runs at 6,030 calls with random initialization unless stated)
   12 split cases), ssasplit (dropped; used if present), hr16new (PSOC, RSVNS on HR16), feas, b30k,
   b120k, iea16, iea36 (nine methods M9) and the PSO-VNS-only arms feasp, b30kp, b120kp, iea16p, iea36p,
   which are merged with the nine-method experiments so that PSO-VNS is a tenth method (M10).
+  hrfix (24 shards): ALL Horns Rev 1 runs again after the direction-binning fix (commit 7676da9); once any hrfix
+  shard exists, every Horns Rev row of every other source is dropped (see load()).
   iea37_published_results.csv (optional; columns case, participant/algorithm, AEP).
 
 Outputs (in --out-dir, default: this folder)
@@ -485,17 +487,17 @@ def split_section(R6, base, tabs, key, label, primary=True, supp=None):
                               n_cases=x["n_cases"])
     wcol = {ids[0]: w25, ids[2]: w75, p1c: w100}
     shares = dict(zip(ids4, (0.25, 0.5, 0.75, 1.0)))
-    cl = [f"{int(100 * shares[a])}\\%{' (' + p1 + ')' if a == p1c else ''} & {mloss[a]:.3f} & {avg_sp[a]:.2f} & "
+    cl = [f"${shares[a]:g}${' (' + p1 + ' alone)' if a == p1c else ''} & {mloss[a]:.3f} & {avg_sp[a]:.2f} & "
           + ("--" if a == base else wtl_str(wcol[a])) + " \\\\" for a in ids4]
     nsh = {3: "Three", 4: "Four"}[len(ids4)]
     if primary:
-        foot = (["\\multicolumn{4}{l}{75\\%% vs.\\ 100\\%% (%s): %s (W/T/L from the 75\\%% side)}" % (p1, wtl_str(w75v100))]
+        foot = (["\\multicolumn{4}{l}{$\\omega=0.75$ vs.\\ $\\omega=1$ (%s alone): %s (W/T/L from the $\\omega=0.75$ side)}" % (p1, wtl_str(w75v100))]
                 if has100 else None)
-        tabs[key] = table("table", f"Budget Split of {LAB[base]} (25\\%, 50\\% and 75\\% of the 6,030 Calls for {p1}{'; 100' + chr(92) + '% = ' + p1 + ' Alone' if has100 else ''}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the {nsh} Settings, and Cases in Which the Default 50\\% Split Is Significantly Better / Not Different / Worse (Wilcoxon, Holm-Adjusted over the {len(comps)} Comparisons of Each Case)",
-                          label, "cccc", f"{p1} share $\\omega$ & Mean loss (\\%) & Avg.\\ rank & 50\\% vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt", foot=foot)
+        tabs[key] = table("table", f"Budget Split of {LAB[base]}: Share $\\omega$ of the 6,030 Evaluations for {p1} ($\\omega=0.25$, $0.5$, $0.75${'; $' + chr(92) + 'omega=1$: ' + p1 + ' Alone, Same Seeds' if has100 else ''}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the {nsh} Settings, and Cases in Which the Default $\\omega=0.5$ Is Significantly Better / Not Different / Worse (Run-Level Wilcoxon, Holm-Adjusted over the {len(comps)} Comparisons of Each Case)",
+                          label, "cccc", f"$\\omega$ & Mean loss (\\%) & Avg.\\ rank & $0.5$ vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt", foot=foot)
         label = label + "-cases"
-    heads = ["25\\%", "50\\%", "75\\%"] + (["100\\%"] if has100 else [])
-    pheads = ["$p$ (50/25)", "$p$ (50/75)"] + (["$p$ (50/100)", "$p$ (75/100)"] if has100 else [])
+    heads = ["$\\omega=0.25$", "$0.5$", "$0.75$"] + (["$1$"] if has100 else [])
+    pheads = ["$p$ (0.5/0.25)", "$p$ (0.5/0.75)"] + (["$p$ (0.5/1)", "$p$ (0.75/1)"] if has100 else [])
     (supp.append if supp is not None else (lambda t: tabs.__setitem__(key, t)))(table("table*" if has100 else "table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases (25\\%, 50\\% and 75\\% of the 6,030 calls for {p1}{'; 100' + chr(92) + '%: ' + p1 + ' alone, same seeds' if has100 else ''}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the {len(comps)} comparisons of each case.",
                       label, "ccc" + "c" * (len(heads) + len(pheads)), "DS & $r$ & $N$ & " + " & ".join(heads + pheads), lines, sep="2.5pt", pos="!htb"))
     out = dict(method=base, primary=primary, cases=srows, best_count=SR.best.value_counts().to_dict(),
@@ -832,7 +834,7 @@ def main(argv=None):
                 lines.append(f"{n} & {ideal:.1f} & " + " & ".join(cells) + " \\\\")
             supp.append(table("table*", f"{DSN[ds]}, {r}-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean among the methods with at least 15 feasible runs. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.",
                               f"tab:res-{ds}-{r}", "c" * (2 + len(MAINP)),
-                              "$N$ & Ideal & " + " & ".join(LAB[a] for a in MAINP), lines, resize=True, sep="2pt"))
+                              "$N$ & Wake-free & " + " & ".join(LAB[a] for a in MAINP), lines, resize=True, sep="2pt"))
 
     # --- minimum-spacing re-optimization (earlier runs with the original SSA / LX-SSA code; analyze_authors_runs.py)
     #     and constructible turbine counts (packing_capacity.py), copied into the supplement after the per-case tables
@@ -952,8 +954,11 @@ def main(argv=None):
             dl = f"${CW[a]['mean_dloss_pp']:+.3f}$"
         lines.append(f"{LAB[a]} & {FR['avg_rank'][a]:.2f} & {FR['sole_best_count'][a]} & {feas_pct[a]:.1f} & {pz} & {pw} & {dl} \\\\")
     tabs["friedman68"] = table(
-        "table", "Case-Level Analysis over the %d Benchmark Cases. Avg.\\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\\%%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against %s. Because Mean-Rank Tests Depend on the Pool of Methods~\\cite{Benavoli2016}, $p_W$ and $\\overline{\\Delta L}$ Give the Two-Sided Wilcoxon Signed-Rank Test on the %d Per-Case Mean Wake Losses (Holm-Adjusted over the %d Methods) and the Mean Wake-Loss Difference over the Cases in Which Both Methods Have at Least 15 Feasible Runs (Percentage Points, %s Minus Method; Negative = %s Better)"
-        % (FR["n_cases"], fl, FR["n_cases"], len(others), fl, fl),
+        "table", "Case-Level Analysis over the %d Benchmark Cases. Avg.\\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\\%%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against %s. Because Mean-Rank Tests Depend on the Pool of Methods~\\cite{Benavoli2016}, $p_W$ and $\\overline{\\Delta L}$ Give the Two-Sided Wilcoxon Signed-Rank Test on the %d Per-Case Mean Wake Losses (Holm-Adjusted over the %d Methods) and the Mean Wake-Loss Difference over the Cases in Which Both Methods Have at Least 15 Feasible Runs (%s; Percentage Points, %s Minus Method; Negative = %s Better)"
+        % (FR["n_cases"], fl, FR["n_cases"], len(others),
+           (lambda l_: (", ".join(l_) if l_ else "All %d Cases" % FR["n_cases"]))(
+               [f"{CW[b]['n_both_qualified']} for {LAB[b]}" for b in others if CW[b]["n_both_qualified"] < FR["n_cases"]])
+           + (", Otherwise %d" % FR["n_cases"] if any(CW[b]["n_both_qualified"] < FR["n_cases"] for b in others) else ""), fl, fl),
         "tab:friedman68", "lcccccc",
         "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines,
         foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$ (%d, %d d.f.), $p=%s$}"
@@ -1034,6 +1039,15 @@ def main(argv=None):
     else:
         summary["pso_setting"] = None
     summary["baseline"] = baseline_setting(R6, PO, tabs)
+    if summary["baseline"]:
+        bo, bc = summary["baseline"]["old"]["case_ranks"], summary["baseline"]["constriction"]["case_ranks"]
+        bl_ = [f"{'I' if k.split('-')[0] == '1' else 'II'} & {k.split('-')[1]} & {k.split('-')[2]} & "
+               + " & ".join(f"{t[k][a]:g}" for t in (bo, bc) for a in ("PSO", "SSABV", "LXBV")) + " \\\\"
+               for k in sorted(bo, key=lambda k: (k.split("-")[0], int(k.split("-")[1]), int(k.split("-")[2])))]
+        supp.append(table("table", "Per-case ranks (1 = best of 8; feasibility-aware rule) of PSO, SSA-VNS and LX-SSA-VNS in the method pool of Table~\\ref{tab:baseline} with the old PSO setting ($w=0.7$, $c_1=c_2=2$) and with the constriction setting (68 cases, 6,030 evaluations).",
+                          "tab:baseline-cases", "ccccccccc",
+                          "& & & \\multicolumn{3}{c}{Old setting} & \\multicolumn{3}{c}{Constriction} \\\\\n\\cmidrule(lr){4-6}\\cmidrule(lr){7-9}\nDS & $r$ & $N$ & PSO & SSA-VNS & LX-SSA-VNS & PSO & SSA-VNS & LX-SSA-VNS",
+                          bl_, size="\\tiny", sep="2.5pt", pos="p"))
 
     # --- figures: average ranks
     fig, ax = plt.subplots(figsize=(3.4, 2.1))
@@ -1078,7 +1092,7 @@ def main(argv=None):
                 conv_panel(ax, G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n)], MAINP)
                 log_axis(ax)
                 ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
-                if i == 1: ax.set_xlabel("Objective-function calls")
+                if i == 1: ax.set_xlabel("Evaluations")
                 if j == 0: ax.set_ylabel("Best wake loss (% of ideal)")
         legend_row(fig, MAINP)
         fig.tight_layout()
@@ -1306,6 +1320,16 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     summary["ablation"]["n_runs"] = int(len(GB))
     summary["ablation"]["n_runs_benchmark_total"] = int(len(GA[GA.Algorithm.isin(set(MAINP) | set(ablp))]))
     summary["ablation"]["phase2_loss_reduction_pct"] = ph2
+    swl = []
+    for alg, v in ph2.items():
+        if v is None:
+            continue
+        nm_ = f"{LAB[P1]} continued (no VNS)" if alg.endswith("_continued") else LAB[alg]
+        f1 = lambda x, d=1: "--" if x is None or not np.isfinite(x) else f"{x:.{d}f}"
+        swl.append(f"{nm_} & {v['switch_call']:,} & {f1(v['feasible_at_switch_pct'])} & {f1(v['mean_loss_at_switch_pct'], 2)} & "
+                   f"{f1(v['mean'])} & {f1(v['median'])} & {v['infeasible_at_switch_made_feasible']} \\\\".replace(",", "{,}", 1))
+    supp.append(table("table", "Switch point of the two-phase variants (68 cases, 30 runs, 6,030 evaluations): first evaluation of the VNS phase, runs whose best layout is feasible at the switch (\\%%), mean wake loss at the switch (\\%%, feasible runs), mean and median share (\\%%) of the wake loss left at the switch that the second phase removes, and runs infeasible at the switch that end feasible. ``%s continued'': %s alone over the same evaluations." % (LAB[P1], LAB[P1]),
+                      "tab:switch", "lcccccc", "Variant & Switch & Feas. (\\%) & Loss (\\%) & Mean share & Median share & Made feasible", swl, pos="!htb"))
     for alg, v in ph2.items():
         if v is None:
             continue
@@ -1358,7 +1382,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             ax.axvline(switch_call(H0, 6030), color=MUTED, lw=0.7, ls=(0, (1, 2)))
             log_axis(ax)
             ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
-            if i == 1: ax.set_xlabel("Objective-function calls")
+            if i == 1: ax.set_xlabel("Evaluations")
             if j == 0: ax.set_ylabel("Median best wake loss (%)")
     legend_row(fig, ablp)
     fig.tight_layout()
@@ -1436,7 +1460,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         ax.axhline(inst, color=INK, lw=0.9, ls=(0, (1, 1)))
         ax.text(1000, inst, "installed layout", va="bottom", fontsize=6.5, color=INK)
         ax.set_title("Horns Rev 1, 16 turbines: median best feasible AEP", fontsize=8, color=INK)
-        ax.set_xlabel("Objective-function calls"); ax.set_ylabel("AEP (GWh/yr)")
+        ax.set_xlabel("Evaluations"); ax.set_ylabel("AEP (GWh/yr)")
         lo = np.nanmin([SH.Mean[a] for a in hm if SH.NFeas[a]] + [inst])
         ax.set_ylim(bottom=lo - 2.0)
         ax = axes[1]
@@ -1503,7 +1527,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             if not len(x):
                 continue
             fb = "$^\\dagger$" if x.RandomSource.str.startswith("FALLBACK").any() else ""
-            lines.append(f"{LAB[a]}{fb} & {x.LossR.mean():.3f} & {x.LossF.mean():.3f} & {100 * x.FeasR.sum() / x.NR.sum():.1f} & "
+            lines.append(f"{LAB[a]}{fb} & {x.LossR.mean():.3f} & " + ("--" if not np.isfinite(x.LossF.mean()) else f"{x.LossF.mean():.3f}") + f" & {100 * x.FeasR.sum() / x.NR.sum():.1f} & "
                          f"{100 * x.FeasF.sum() / x.NF.sum():.1f} & {wtl_str(x.Outcome.value_counts())} \\\\")
         supp.append(table("table", "Feasibility-preserving versus uniform random initialization at 6,030 calls on the six largest benchmark cases and the Horns Rev 16-turbine block (%d cases, 30 seed-paired runs each): mean wake loss (\\%%) of the feasible runs averaged over the cases, percentage of feasible runs, and number of cases in which feasible initialization is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the methods of each case). Per-case values: Supplementary Table~\\ref{tab:feasinit-cases}.%s" % (Dt.case.nunique(), " $^\\dagger$: random-initialization runs are a development fallback." if "dagger" in "".join(lines) else ""),
                                  "tab:feasinit", "lccccc",
@@ -1513,7 +1537,8 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             dl.append(f"\\multicolumn{{7}}{{l}}{{\\emph{{{case_name(case)}}}}} \\\\")
             for _, y in x.iterrows():
                 isHR = case.startswith("HR")
-                vr = f"{y.AEPR:.2f}" if isHR else f"{y.LossR:.3f}"; vf = f"{y.AEPF:.2f}" if isHR else f"{y.LossF:.3f}"
+                fmt_ = lambda v, d: "--" if v is None or not np.isfinite(v) else f"{v:.{d}f}"
+                vr = fmt_(y.AEPR, 2) if isHR else fmt_(y.LossR, 3); vf = fmt_(y.AEPF, 2) if isHR else fmt_(y.LossF, 3)
                 dl.append(f"{LAB[y.Algorithm]} & {vr} & {vf} & {y.FeasR}/{y.NR} & {y.FeasF}/{y.NF} & {fmt_p(y.PHolm)} & {y.RB:+.2f} \\\\")
         supp.append(table("table", "Feasible versus random initialization per case (6,030 calls): mean wake loss (\\%; Horns Rev: mean AEP in GWh/yr) of the feasible runs, feasible runs, Holm-adjusted Wilcoxon signed-rank $p$ (over the methods of the case) and rank-biserial $r_{\\rm rb}$ (positive = feasible initialization better).",
                           "tab:feasinit-cases", "lcccccc", "Method & Random & Feasible & Feas. (R) & Feas. (F) & $p_{\\rm Holm}$ & $r_{\\rm rb}$", dl, pos="p"))
@@ -1646,12 +1671,12 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             ax.set_xscale("log")
             ax.set_xticks(bl); ax.set_xticklabels([f"{b // 1000}k" if b % 1000 == 30 else str(b) for b in bl], fontsize=6)
             ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-            ax.set_title(case_name("-".join(map(str, c))).replace("Data Set ", "DS "), fontsize=7.5, color=INK)
+            ax.set_title(case_name("-".join(map(str, c))), fontsize=6.5, color=INK)
             ax.set_ylabel("Mean AEP loss (%)" if isHR else "Mean wake loss (%)", fontsize=7)
         axes.flat[-1].axis("off")
         h = [plt.Line2D([], [], color=COL[a], ls=ls(a), lw=lw(a), marker=mk(a), ms=ms(a, 4), label=LAB[a]) for a in ms_all]
         axes.flat[-1].legend(handles=h, loc="center", fontsize=7)
-        fig.supxlabel("Objective-function calls (log scale)", fontsize=8)
+        fig.supxlabel("Evaluations (log scale)", fontsize=8)
         fig.tight_layout()
         FG.save(fig, "budget_scaling")
     else:
@@ -1769,8 +1794,8 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             y = x[x.Budget == x.Budget.max()]
             mets = [a for a in M10 if a in set(y.Algorithm)]
             conv_panel(ax, y, mets, loss=True, band=False)
-            ax.set_title(f"{IEA_NAME.get(n, n)}, {int(y.Budget.iloc[0]):,} calls", fontsize=8, color=INK)
-            ax.set_xlabel("Objective-function calls"); ax.set_ylabel("Median best wake loss (%)")
+            ax.set_title(f"{IEA_NAME.get(n, n)}, {int(y.Budget.iloc[0]):,} evaluations", fontsize=8, color=INK)
+            ax.set_xlabel("Evaluations"); ax.set_ylabel("Median best wake loss (%)")
         legend_row(fig, [a for a in M10 if a in set(IE.Algorithm)], ncol=5)
         fig.tight_layout()
         FG.save(fig, "iea37_convergence")
@@ -1791,6 +1816,18 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     summary["boundary_rule"] = boundary_rule()
     summary["provenance"] = {f"{a}|{ds}|{b}|{i}": sorted(set(x.Source))
                              for (a, ds, b, i), x in ALL.groupby(["Algorithm", "Dataset", "Budget", "Init"])}
+    po_ = new.get("pso_old")
+    pv = pd.concat([ALL] + ([po_.assign(Algorithm="PSO")] if po_ is not None and len(po_) else []), ignore_index=True)
+    pv = pv.assign(Study=np.where(pv.Dataset.isin(["1", "2"]), "Benchmark",
+                                  np.where(pv.Dataset == "HR", "Horns Rev 1", "IEA37")))
+    pvl = []
+    for (st_, b, i), x in pv.groupby(["Study", "Budget", "Init"]):
+        for src, y in x.groupby("Source"):
+            pvl.append(f"{st_} & {b:,} & {i} & {', '.join(LAB.get(a, a).replace(chr(92) + '%', '%') for a in sorted(y.Algorithm.unique()))} & "
+                       f"\\texttt{{{src.replace('_', chr(92) + '_')}}} & {len(y)} \\\\".replace(",", "{,}", 1))
+    supp.append(table("table*", "Provenance of the per-run results used in this paper: study, budget (evaluations), initialization, methods, source file (\\texttt{mpce\\_<exp>}: all shards \\texttt{mpce\\_<exp>\\_s<i>of<k>.csv} of experiment \\texttt{<exp>} of \\texttt{mpce\\_experiments.py} / \\texttt{iea37\\_experiments.py}; \\texttt{fresh\\_*.csv}: earlier grid runs, see the repository README) and number of runs.",
+                      "tab:provenance", "lccp{7.2cm}ll", "Study & Budget & Init. & Methods & Source & Runs",
+                      [l_.replace("PSOBV25", "PSO-VNS (0.25)").replace("PSOBV75", "PSO-VNS (0.75)") for l_ in pvl], size="\\scriptsize", pos="p"))
 
     # =========================================================== 8b. main-text tables and figures in the manuscript layout
     log("\n[8b] Main-text tables (manuscript layout)")
@@ -1812,6 +1849,8 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     xref = lambda txt, lbls, pre: re.sub(r"\\ref\{([^}]*)\}", lambda m_: "\\ref{%s%s}" % (pre if m_.group(1) in lbls else "", m_.group(1)), txt)
     tabs = {k: xref(v, supp_lbl, "S-") for k, v in tabs.items()}
     supp = [xref(v, main_lbl, "M-") for v in supp]
+    tabs = {k: evals(v) for k, v in tabs.items()}
+    supp = [evals(v) for v in supp]
     for k, v in tabs.items():
         open(OUT(f"mpce_tab_{k}.tex"), "w").write(hdr + v)
     open(OUT("mpce_supplementary.tex"), "w").write(
@@ -2117,7 +2156,7 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
             y = y[y.Budget == y.Budget.max()]
             bst = y.sort_values("Objective").iloc[-1]; xy = coords(bst.Coordinates)
             ax.scatter(xy[:, 0], xy[:, 1], marker="o", s=12, color=COL[FOCUS],
-                       label=f"best {LAB[FOCUS]}, {int(bst.Budget):,} calls ({bst.Objective:,.1f})", zorder=4)
+                       label=f"best {LAB[FOCUS]}, {int(bst.Budget):,} evaluations ({bst.Objective:,.1f})", zorder=4)
         else:
             ax.text(0, 0, f"{LAB[FOCUS]} runs pending", ha="center", va="center", fontsize=7, color="#c00000")
         ax.set_aspect("equal"); ax.tick_params(labelsize=6)
@@ -2133,7 +2172,7 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
     y = H6[H6.Algorithm == FOCUS]
     if len(y):
         bst = y.sort_values("Objective").iloc[-1]; xy = coords(bst.Coordinates)
-        ax.scatter(xy[:, 0], xy[:, 1], marker="o", s=12, color=COL[FOCUS], label=f"best {LAB[FOCUS]}, 6,030 calls ({bst.Objective:.2f})", zorder=4)
+        ax.scatter(xy[:, 0], xy[:, 1], marker="o", s=12, color=COL[FOCUS], label=f"best {LAB[FOCUS]}, 6,030 evaluations ({bst.Objective:.2f})", zorder=4)
     ax.set_aspect("equal"); ax.tick_params(labelsize=6)
     ax.set_title("Horns Rev 1, 16 turbines (AEP in GWh/yr)", fontsize=7.5, color=INK)
     ax.legend(fontsize=5.8, loc="upper left", bbox_to_anchor=(0, -0.08), ncol=1)
@@ -2171,6 +2210,8 @@ def baseline_setting(R6, PO, tabs):
         S = case_stats(D, pool)
         R = rank_matrix(S, pool)
         FB = friedman_block(R, pool, focus="LXBV")
+        case_ranks = {f"{d}-{r}-{n}": {("PSO" if a == pso else a): float(R.loc[(d, r, n), a]) for a in (pso, "SSABV", "LXBV")}
+                      for (d, r, n) in R.index}
         ar = {("PSO" if a == pso else a): v for a, v in FB["avg_rank"].items()}
         wt = {}
         for h in BASE_HYB:
@@ -2187,7 +2228,7 @@ def baseline_setting(R6, PO, tabs):
                         pso_feasible_pct=float(100 * D[D.Algorithm == pso].Feasible.mean()),
                         wtl_vs_pso={h: dict(W=int(wt[h].get("W", 0)), T=int(wt[h].get("T", 0)), L=int(wt[h].get("L", 0)))
                                     for h in BASE_HYB},
-                        friedman_chi2=float(FB["chi2"]), friedman_p=float(FB["p"]))
+                        friedman_chi2=float(FB["chi2"]), friedman_p=float(FB["p"]), case_ranks=case_ranks)
         log(f"  baseline pool ({tag} PSO): " + ", ".join(f"{out['labels'][a]} {v:.2f}" for a, v in sorted(ar.items(), key=lambda t: t[1]))
             + f"; PSO position {out[tag]['pso_position']}; " + ", ".join(f"{LAB[h]} vs PSO {wtl_str(out[tag]['wtl_vs_pso'][h])}" for h in BASE_HYB))
     o, c = out["old"], out["constriction"]
@@ -2203,7 +2244,7 @@ def baseline_setting(R6, PO, tabs):
     for h in BASE_HYB:
         lines.append(f"{LAB[h]} vs.\\ PSO (W/T/L) & {wtl_str(o['wtl_vs_pso'][h])} & {wtl_str(c['wtl_vs_pso'][h])} \\\\")
     tabs["baseline"] = table(
-        "table", "Effect of the PSO Setting on the Comparison of the Previous Study's Methods (%d Cases, 6,030 Evaluations): "
+        "table", "Effect of the PSO Setting on the Method Pool of the Old-Setting Comparison (the Pool of Table~\\ref{tab:friedman68} with LX-SSA-VNS Instead of PSO-VNS; %d Cases, 6,030 Evaluations): "
         "Average Rank (1 = Best) with the Old ($w=0.7$, $c_1=c_2=2$) and the Constriction Setting, and Run-Level W/T/L of "
         "the Salp-Swarm Hybrids against PSO" % o["n_cases"],
         "tab:baseline", "lcc",
@@ -2397,6 +2438,14 @@ def load_published(data_dir):
         return out
     log("  published IEA37 results file not found (comparison table written with placeholders)")
     return None
+
+def evals(t):
+    """Terminology of the paper in generated tables: "evaluations" for objective calls (R6-12, R6-32)."""
+    t = re.sub(r"\b[Oo]bjective(?:-function)? calls\b", "evaluations", t)
+    t = re.sub(r"\bper (?:objective )?call\b", "per evaluation", t)
+    t = re.sub(r"\bCalls\b", "Evaluations", t)
+    return re.sub(r"\bcalls\b", "evaluations", t)
+
 
 def clean(o):
     if isinstance(o, dict):
