@@ -1522,6 +1522,15 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                     feas_random_pct=float(100 * x.FeasR.sum() / x.NR.sum()), feas_feasible_pct=float(100 * x.FeasF.sum() / x.NF.sum()),
                     wtl=x.Outcome.value_counts().to_dict(), random_source=sorted(set(x.RandomSource)))
             for a, x in Dt.groupby("Algorithm")})
+        # runs whose final objective differs from the best initial layout (first convergence checkpoint = best of
+        # the 30 initial layouts at 6,030 evaluations; curves are stored with 3-4 decimals -> tolerance 2e-3)
+        c0 = pd.to_numeric(FE.Curve.str.split(";").str[0], errors="coerce")
+        moved = (FE.Objective - c0).abs() > 2e-3
+        summary["feasinit"]["runs_moved_from_best_initial"] = {
+            a: dict(moved=int((moved & (FE.Algorithm == a)).sum()), runs=int((FE.Algorithm == a).sum()),
+                    moved_grid6=int((moved & (FE.Algorithm == a) & (FE.Dataset != "HR")).sum()),
+                    runs_grid6=int(((FE.Algorithm == a) & (FE.Dataset != "HR")).sum()))
+            for a in fm_}
         # ranks under feasible init
         SF = case_stats(FE, fm_)
         summary["feasinit"]["avg_rank_feasible_init"] = SF.groupby("Algorithm").Rank.mean().to_dict()
@@ -1561,6 +1570,14 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                            hr16_aep={a: float(Sb[(Sb.Dataset == "HR") & (Sb.Algorithm == a)].Mean.iloc[0])
                                      for a in mets if ((Sb.Dataset == "HR") & (Sb.Algorithm == a)).any()},
                            sources={a: sorted(set(x[x.Algorithm == a].Source)) for a in mets})
+            # run-level W/T/L of the focus vs each method over the 7 cases (Holm over the comparisons of each case)
+            if FOCUS in mets:
+                oc_ = []
+                for _, sub in x.groupby(CASE):
+                    oc_ += paired_vs(sub, FOCUS, [a for a in mets if a != FOCUS])
+                O_ = pd.DataFrame(oc_)
+                bsum[b]["wtl_vs_focus"] = {a: {k: int(v) for k, v in O_[O_.Baseline == a].Outcome.value_counts().items()}
+                                           for a in mets if a != FOCUS}
             # focus vs MS-SLSQP per case
             if FOCUS in mets and "SLSQP" in mets:
                 vs = {}
@@ -1579,8 +1596,8 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                                  focus_best_grid6_at_all_budgets=all(bsum[b]["best_grid6"] == FOCUS for b in bl),
                                  note="HR16 at 120,030 calls uses 10 seeds (qualification: at least 5 feasible runs)")
         ms_all = [a for a in M10 if a in set(BD.Algorithm)]
-        hdr = "Method & " + " & ".join(f"\\multicolumn{{3}}{{c}}{{{b:,} calls}}".replace(",", "{,}") for b in bl) + " \\\\\n & " + \
-              " & ".join("Rank & Loss & Feas." for _ in bl)
+        hdr = "Method & " + " & ".join(f"\\multicolumn{{4}}{{c}}{{{b:,} evaluations}}".replace(",", "{,}") for b in bl) + " \\\\\n & " + \
+              " & ".join("Rank & Loss & Feas. & W/T/L" for _ in bl)
         lines = []
         for a in ms_all:
             c = []
@@ -1588,10 +1605,11 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                 v = bsum[b]
                 c += [f"{v['avg_rank'][a]:.2f}" if a in v["avg_rank"] else "--",
                       f"{v['mean_loss_grid'][a]:.3f}" if np.isfinite(v["mean_loss_grid"].get(a, np.nan)) else "--",
-                      f"{v['feas_pct'][a]:.0f}" if a in v["feas_pct"] else "--"]
+                      f"{v['feas_pct'][a]:.0f}" if a in v["feas_pct"] else "--",
+                      "--" if a == FOCUS or a not in v.get("wtl_vs_focus", {}) else wtl_str(v["wtl_vs_focus"][a])]
             lines.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
-        supp.append(table("table*", "Budget scaling (random initialization) on the six largest benchmark cases and the Horns Rev 16-turbine block: average rank over the %d cases (ranking rule of Table~\\ref{tab:friedman68}), mean wake loss (\\%%) of the feasible runs averaged over the six benchmark cases in which the method has at least half of its runs feasible, and percentage of feasible runs. Per-case values: Table~\\ref{tab:budget-cases}." % len(cases7),
-                               "tab:budget", "l" + "ccc" * len(bl), hdr, lines, sep="3pt", pos="!htb"))
+        supp.append(table("table*", "Budget scaling (random initialization) on the six largest benchmark cases and the Horns Rev 16-turbine block: average rank over the %d cases (ranking rule of Table~\\ref{tab:friedman68}), mean wake loss (\\%%) of the feasible runs averaged over the six benchmark cases in which the method has at least half of its runs feasible, percentage of feasible runs, and cases in which %s is significantly better / not different / worse than the method (run-level Wilcoxon signed-rank, Holm-adjusted over the comparisons of %s in each case; exploratory). Per-case values: Table~\\ref{tab:budget-cases}." % (len(cases7), fl, fl),
+                               "tab:budget", "l" + "cccc" * len(bl), hdr, lines, sep="2.2pt", pos="!htb"))
         # per-case table
         dl = []
         for c in cases7:
@@ -1855,6 +1873,16 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
             fb["rank"][b] = ranks[b]
             fb.setdefault("mean_loss", {})[b] = {a: float(Sb[(Sb.Algorithm == a) & Sb.Qualified].Loss.mean()) for a in meth}
             fb.setdefault("feas_pct", {})[b] = {a: float(100 * Xb[Xb.Algorithm == a].Feasible.mean()) for a in meth}
+            # cases (of the six) in which each method has the best (lowest) rank; ties for first counted for all
+            # tied methods (first_count) or not at all (sole_first_count)
+            Rb_ = rank_matrix(Sb, meth)
+            top = Rb_.eq(Rb_.min(axis=1), axis=0)
+            fb.setdefault("first_count", {})[b] = {a: int(top[a].sum()) for a in meth}
+            fb.setdefault("sole_first_count", {})[b] = {a: int((top[a] & (top.sum(axis=1) == 1)).sum()) for a in meth}
+            ml = fb["mean_loss"][b]
+            close = [a for a in ("BVNS", "SSABV", "RSVNS", "LXBV", "DE") if a in ml and np.isfinite(ml[a])]
+            fb.setdefault("close_gap_pp", {})[b] = dict(methods=close, gap={a: float(ml[a] - ml[FOCUS]) for a in close},
+                                                       max_gap=float(max(ml[a] - ml[FOCUS] for a in close)) if close else None)
     f3 = lambda v: "--" if v is None or not np.isfinite(v) else f"{v:.3f}"      # data present, no qualified case
     for a in meth:
         r_ = loss_feas(X6, a) if cr[a] else None
