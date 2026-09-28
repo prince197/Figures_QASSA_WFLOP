@@ -1,0 +1,56 @@
+\section{Results on the Benchmark}
+\label{sec:results}
+This section reports the 68 benchmark cases (\NRunsBenchmark{} runs) and the ablation. Per-case means and standard deviations are given in Tables~\ref{S-tab:res-1-500}--\ref{S-tab:res-2-1000} of the supplementary material.
+
+\subsection{Overall Comparison}
+\label{sec:overall}
+\input{analysis/mpce_tab_friedman68.tex}
+\input{analysis/mpce_tab_wtl.tex}
+\begin{figure}[!t]
+\centering
+\pipefig{0.85\columnwidth}{figures_mpce/avg_ranks.pdf}{4cm}
+\caption{Average rank of the eight methods over the 68 benchmark cases (1 = best; ranking rule of Table~\ref{tab:friedman68}).}
+\label{fig:ranks}
+\end{figure}
+
+Table~\ref{tab:friedman68} and Fig.~\ref{fig:ranks} summarize the comparison over all cases. The Friedman test \NFriedVerb{} the hypothesis that the eight methods perform equally ($\chi^2_F=\NFriedChi$, $p=\NFriedP$). PSO-VNS has the best average rank (\NRankPSOVNS) and alone ranks first in \NSoleBestPSOVNS{} cases, followed by \NRankOrderOthers. In the Holm-adjusted post hoc tests, PSO-VNS ranks significantly better than \NPostHocSigList{} ($p_{\rm Holm}\le\NPostHocSigMaxP$), but not than \NPostHocNonSigList{} ($p_{\rm Holm}=\NPostHocNonSigP$).
+% CHECK-FINAL [C01]: main.friedman.best_ranked == PSOBV
+% CHECK-FINAL [C02]: main.friedman.p < 0.05 (verb is generated: \NFriedVerb)
+% CHECK-FINAL [C03]: main.friedman.p_holm_vs_focus: only PSOC >= 0.05
+
+The run-level tests in Table~\ref{tab:wtl} show where these differences come from. PSO, which forms the first phase of PSO-VNS, is the closest competitor: PSO-VNS is significantly better in \NWtlPSOW{} cases, worse in \NWtlPSOL{} and tied in \NWtlPSOT, and its mean wake loss over the 68 cases is \NLossPSOVNS\% against \NLossPSO\%. Over all cases this difference is not significant (two-sided Wilcoxon signed-rank test on the 68 per-case mean wake losses, $p=\NPWrawPSO$), but it concentrates in the larger cases: for $N\ge10$, PSO-VNS wins \NWtlPSOLargeW{} of the \NNLarge{} cases and loses \NWtlPSOLargeL, with a mean gain of \NGainPSOLarge{} percentage points, whereas for $N<10$ both methods reach nearly the same wake loss (mean absolute difference \NAbsDiffPSOSmall{} percentage points). PSO-VNS is thus at least as good as a correctly configured PSO and better for larger numbers of turbines. Against SSA-VNS, the same design with a salp swarm first phase, PSO-VNS is significantly better in \NWtlSSAVNSW{} cases and never worse (\NLossPSOVNS\% vs.\ \NLossSSAVNS\%, $p=\NPWrawSSAVNS$). Against SSA, LX-SSA and DE, it is significantly better in \NWtlSSAW, \NWtlLXSSAW{} and \NWtlDEW{} cases, respectively, and against VNS and MS-SLSQP in \NWtlVNSW{} and \NWtlSLSQPW{} cases; \NLossesPhrase.
+% CHECK-FINAL [C04]: PSOC: W >= L, mean loss PSOBV < PSOC, case_mean_wilcoxon.PSOC.p >= 0.05
+% CHECK-FINAL [C05]: by_n.PSOC: W > L and mean gain > 0 for N >= 10; mean |dL| < 0.05 pp for N < 10
+% CHECK-FINAL [C06]: wtl.SSABV.L == 0 ("never worse")
+
+\subsection{Solution Quality, Feasibility and Convergence}
+\begin{figure*}[!t]
+\centering
+\pipefig{0.7\textwidth}{figures_mpce/wakeloss_vs_n.pdf}{6.6cm}
+\caption{Mean wake loss (percentage of the wake-free objective) of the feasible runs versus the prescribed number of turbines; a point is omitted when a method has fewer than 15 feasible runs.}
+\label{fig:wakeloss}
+\end{figure*}
+\begin{figure*}[!t]
+\centering
+\pipefig{0.7\textwidth}{figures_mpce/ablation_convergence.pdf}{6.6cm}
+\caption{Convergence of the eight ablation variants (Table~\ref{tab:ablation}) for the largest turbine count of each farm: median best feasible wake loss over 30 runs versus objective calls. PSO-VNS and PSO coincide up to 3,030 calls (dotted line), where PSO-VNS switches to VNS. The curves of the eight methods of the main comparison are given in Fig.~\ref{S-fig:S-conv-max} of the supplementary material.}
+\label{fig:conv-max}
+\label{fig:ablation}
+\end{figure*}
+
+Fig.~\ref{fig:wakeloss} shows how the wake loss depends on the case. It grows with $N$, falls as the farm becomes larger, and is higher for the broader wind rose of Data Set~II. For $N\le3$, all methods stay within \NLossMaxSmallN\% of the wake-free objective, whereas for 15 turbines in the 1000-m farm (Data Set~I), the mean wake loss is \NLossBigIPSOVNS\% for PSO-VNS, \NLossBigIPSO\% for PSO, \NLossBigISSAVNS\% for SSA-VNS and \NLossBigISSA\% for SSA. Over the six largest cases, the mean wake loss of PSO minus that of PSO-VNS ranges from \NBigGainMin{} to \NBigGainMax{} percentage points, with PSO-VNS lower in \NBigGainPos{} of them.
+
+PSO-VNS ends with a feasible layout in all runs; the other methods do so in \NFeasPSO{} (PSO), \NFeasSSAVNS{} (SSA-VNS), \NFeasSSA{} (SSA), \NFeasLXSSA{} (LX-SSA), \NFeasDE{} (DE), \NFeasVNS{} (VNS) and \NFeasSLSQP\% (MS-SLSQP) of the runs. The feasibility counts of PSO, SSA, LX-SSA and DE are the same for both wind data sets, because as long as every candidate is infeasible, the penalty dominates $F_p$. In the densest cases (500~m, $N=10$), the global best of the PSO phase is feasible at the switch in only \NDenseSwitchFeas\% of the runs, but all runs are feasible after the VNS phase.
+% CHECK-FINAL [C08]: main.feasible_pct.PSOBV == 100
+% CHECK-FINAL [C09]: feasible_runs_by_dataset equal for PSOC, SSA, LXSSA, DE
+% CHECK-FINAL [C24]: dense_500_10: feasible at switch < final (= 100)
+
+Fig.~\ref{fig:conv-max} shows the effect of the second phase directly: PSO-VNS and PSO both keep improving after the switch. Over all feasible runs, the VNS phase removes on average \NPhTwoMean\% (median \NPhTwoMedian\%) of the wake loss left at the end of the PSO phase and turns \NPhTwoMadeFeas{} runs that were still infeasible at the switch into feasible ones, whereas continuing PSO for the same 3,000 calls removes \NPsoContMean\% (median \NPsoContMedian\%). On average the two uses of the second half therefore differ little, in line with Table~\ref{tab:wtl}; the advantage of VNS appears in the larger layouts. The VNS phases of SSA-VNS and RS-VNS remove larger shares (\NPhTwoMeanSSAVNS\% and \NPhTwoMeanRSVNS\%) but start from worse or more often infeasible layouts: at the switch, the best layout is feasible in \NSwitchFeasPSOVNS\% of the PSO-VNS runs, \NSwitchFeasSSAVNS\% of the SSA-VNS runs and \NSwitchFeasRSVNS\% of the RS-VNS runs. VNS alone ranks below all hybrids (Table~\ref{tab:ablation}).
+% CHECK-FINAL [C10]: phase2 PSOBV.mean >= PSOC_continued.mean > 0 ("both keep improving")
+% CHECK-FINAL [C11]: phase2 SSABV/RSVNS mean > PSOBV; feasible at switch PSOBV > SSABV > RSVNS; VNS ranks below every hybrid and RS-VNS
+
+\subsection{Effect of the PSO Coefficients}
+\label{sec:psosetting}
+The earlier version of this study ran PSO with $w=0.7$ and $c_1=c_2=2$, which violates \eqref{eq:poli}, on the same 68 cases with the same budget and seeds. With this setting in place of the constriction PSO, PSO had an average rank of \NOldPSORank{} (\NOldPSOPos{} of the eight methods), returned a feasible layout in \NOldPSOFeas\% of the runs (fewer than 15 feasible runs in \NOldPSOBelowHalf{} cases), and was significantly worse than the constriction PSO in \NOldPSOWorse{} of the 68 cases and never better (Wilcoxon, 30 seed-paired runs), with a mean wake loss \NOldPSODL{} percentage points higher over the \NOldPSOCases{} cases in which both have at least 15 feasible runs. The constriction setting thus moves PSO from the \NOldPSOPos{} to the \NPSOPos{} rank, ahead of SSA, LX-SSA and SSA-VNS. We draw two conclusions. First, a PSO baseline outside the convergence region understates what PSO achieves on the WFLOP, and comparisons that rely on it can overstate the advantage of a new method; we recommend checking \eqref{eq:poli}, or using the constriction coefficients \eqref{eq:constriction}, whenever PSO serves as a baseline. Second, the salp swarm methods, including our own LX-SSA, do not outperform a correctly configured PSO on this benchmark, which is why PSO rather than SSA forms the first phase of the proposed method.
+% CHECK-FINAL [C12]: pso_setting: constriction_vs_old L == 0, W >= 34; positions old > constriction == 2; PSOC ahead of SSA, LXSSA, SSABV
+

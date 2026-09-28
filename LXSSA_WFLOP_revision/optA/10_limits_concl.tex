@@ -1,0 +1,22 @@
+\section{Limitations}
+\label{sec:limits}
+The components of PSO-VNS are standard, and most of its advantage over the other methods comes from the convergent PSO phase: its gain over PSO alone is small and not significant over all 68 cases ($p=\NPWrawPSO$), with significant differences in \NWtlPSOSig{} cases that mostly favor PSO-VNS and are more frequent for $N\ge10$. The budget study covers up to 120,030 calls but only the six largest benchmark cases and the Horns Rev~1 block, and the largest layouts have 36 turbines; much larger farms are outside our scope. The PSO coefficients are the standard constriction values, and the VNS settings and $\omega=0.5$ are untuned defaults; the split study indicates that a longer PSO phase would improve PSO-VNS. Our statement on the setting $w=0.7$, $c_1=c_2=2$ rests on the convergence theory and our own benchmark; we did not re-run the comparisons of other studies. The absolute energy depends strongly on the Jensen model, the linear power curve, the $4D$ spacing and the boundary rule, the order of PSO-VNS and PSO is reversed under the Gaussian model, and we did not re-optimize with the alternative models. Finally, $N$ is prescribed, and terrain, mixed turbine types, cables, grid connection, noise, environmental constraints and economic objectives are outside the scope of this study.
+% CHECK-FINAL [C04]: case-mean p >= 0.05 and W >= L ("mostly favor PSO-VNS")
+% CHECK-FINAL [C05]: more significant differences at N >= 10 (relative to 20 of 68 cases)
+% CHECK-FINAL [C18]: split favors 75%
+% CHECK-FINAL [C22]: Gaussian: PSOC first, PSOBV second ("reversed")
+
+\section{Conclusion}
+\label{sec:conclusion}
+This work presents PSO-VNS, a two-phase algorithm for the continuous wind farm layout problem in which PSO with constriction coefficients explores the layout space for the first half of the budget and the basic VNS then refines the global best layout. We evaluated it on 68 benchmark cases at equal budgets, in an ablation, with feasibility-preserving initialization and larger budgets, on a Horns Rev~1 block and on IEA37 Case Study~1.
+
+PSO-VNS returned a feasible layout in every run, obtained the best average rank (\NRankPSOVNS), and was at least as good as a correctly configured PSO, with its gain concentrated in the larger cases (\NWtlPSOLargeW{} wins and \NWtlPSOLargeL{} losses for $N\ge10$). It clearly outperformed SSA-VNS (\NWtlSSAVNSW{} wins, no loss), SSA, LX-SSA, DE, VNS and MS-SLSQP. The ablation showed that PSO is a better first phase than SSA or LX-SSA; that the PSO phase gives VNS a better start than the best initial layout and than the best of an equal number of random layouts, whereas the SSA phase is statistically tied with random sampling in nearly all cases; and that the Laplace step of our earlier LX-SSA did not improve the results, either alone or inside the hybrid. PSO configured inside its convergence region outperformed the salp swarm methods, whereas the common setting $w=0.7$, $c_1=c_2=2$ violates the convergence condition and understates PSO; PSO baselines in WFLOP comparisons should be checked against this condition. On the Horns Rev~1 block, the best PSO-VNS layout exceeded the energy production of the installed layout. With feasibility-preserving initialization, \NFeasInitPhrase; with up to 20 times the budget, \NBudgetPhrase; and on IEA37 Case Study~1, the best PSO-VNS layouts \NIEAPhrase. The ranking of the methods was stable under a cubic power curve, whereas under a Gaussian wake model PSO ranked slightly ahead of PSO-VNS. Finally, giving PSO 75\% instead of 50\% of the budget improved PSO-VNS on most cases of the split study.
+% CHECK-FINAL [C01]: best average rank
+% CHECK-FINAL [C06]: SSA-VNS no loss; [C07]: clearly outperformed the rest
+% CHECK-FINAL [C14]: PSO start beats VNS and RS-VNS; [C15]: SSA start tied with random sampling
+% CHECK-FINAL [C17]: Laplace step no gain; [C12]: old PSO setting understates PSO
+% CHECK-FINAL [C21]: cubic stable; [C22]: Gaussian PSO first, PSO-VNS second
+% CHECK-FINAL [C18]: 75% split better in most split cases
+
+In future work, we will study a switch between the two phases that is triggered by the stagnation of the swarm, investigate which properties of the swarm phase make it a good starting point for VNS, and extend the approach to larger farms and higher-fidelity wake and power models.
+

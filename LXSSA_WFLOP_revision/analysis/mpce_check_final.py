@@ -139,7 +139,9 @@ def main(argv=None):
         print(f"  [{cid}] {r:7s} {text}\n            keys: {keys}")
     used = set()
     if os.path.exists(a.tex):
-        used = set(re.findall(r"CHECK-FINAL \[(C\d+)\]", open(a.tex).read()))
+        import glob as _g
+        txt = open(a.tex).read() + "".join(open(f).read() for f in sorted(_g.glob(os.path.join(os.path.dirname(a.tex), "optA", "*.tex"))))
+        used = set(re.findall(r"CHECK-FINAL \[(C\d+)\]", txt))
         for cid in sorted(used - set(res)):
             print(f"  [{cid}] UNDEFINED: used in the manuscript but not defined in mpce_check_final.py")
         for cid in sorted(set(res) - used):

@@ -1,0 +1,66 @@
+
+\title{A Two-Phase Particle Swarm and Variable Neighborhood Search Algorithm for Continuous Wind Farm Layout Optimization}
+\author{Prince~Solanki, Pulkit~Dwivedi, Vanita~Garg, and Vinay~Shukla
+\thanks{Manuscript received: \TBD{date}; revised: \TBD{date}; accepted: \TBD{date}.}
+\thanks{\TBD{funding statement, e.g., ``This work did not receive any specific grant from funding agencies.''}}
+\thanks{P. Solanki \TBD{mark corresponding author} is with the Department of Mathematics, School of Sciences, IILM University, Greater Noida, Uttar Pradesh, India; he was previously with the Department of Mathematics, Indian Institute of Technology Roorkee, Roorkee, India (e-mail: prince@ma.iitr.ac.in; prince@iilm.edu).}
+\thanks{P. Dwivedi is with the Department of Computer Science and Engineering, Bennett University, Greater Noida, Uttar Pradesh, India (e-mail: pdwivedi19900@gmail.com; pulkit.dwivedi@bennett.edu.in).}
+\thanks{V. Garg is with Amity University, Noida, Uttar Pradesh, India (e-mail: vanitagarg16@gmail.com).}
+\thanks{V. Shukla is with the School of Mathematical Sciences, Shanghai Jiao Tong University, Shanghai 200240, China, and also with the Department of Mathematics, School of Computer Science Engineering and Technology, Bennett University, Greater Noida, India (e-mail: vinayshukla4321@gmail.com; vnshukla01@sjtu.edu.cn).}}
+
+\maketitle
+
+\begin{abstract}
+The wind farm layout optimization problem (WFLOP) places a prescribed number of turbines to minimize wake losses subject to boundary and minimum-spacing constraints. This paper proposes PSO-VNS, a two-phase algorithm for the continuous WFLOP: particle swarm optimization (PSO) with the constriction coefficients of Clerc and Kennedy explores the layout space for the first half of the evaluation budget, and the basic variable neighborhood search (VNS) then refines the global best layout. Both phases minimize one penalized objective based on the Jensen wake model and Weibull wind data. On 68 benchmark cases with 30 seed-paired runs of 6,030 evaluations, PSO-VNS returns a feasible layout in every run and obtains the best average rank. It is at least as good as a correctly configured PSO and better for larger numbers of turbines (\NWtlPSOW{} significant wins and \NWtlPSOL{} losses; \NWtlPSOLargeW{} wins and \NWtlPSOLargeL{} losses for 10 or more turbines), and it clearly outperforms a salp swarm variant of the same design (SSA-VNS; \NWtlSSAVNSW{} wins, no loss), the salp swarm algorithm (SSA), the Laplacian SSA, differential evolution, VNS and multistart SLSQP. The ablation shows that salp swarms are weaker first phases than a convergent PSO and in most cases tied with random sampling, and that the Laplace step gives no gain. We also find that the common PSO setting $w=0.7$, $c_1=c_2=2$ lies outside the convergence region of PSO and makes PSO an overly weak baseline. On a 16-turbine block of Horns Rev~1, the best PSO-VNS layout exceeds the energy production of the installed layout. With up to 20 times the budget, \NBudgetPhrase; on IEA Wind Task~37 Case Study~1, the best PSO-VNS layouts at 30,030 evaluations \NIEAPhrase.
+% CHECK-FINAL [C01]: main.friedman.best_ranked == PSOBV
+% CHECK-FINAL [C04]: PSO-VNS vs PSO W >= L, lower mean loss, case-mean p >= 0.05 ("at least as good")
+% CHECK-FINAL [C05]: by_n.PSOC: W > L for N >= 10 ("better on larger farms")
+% CHECK-FINAL [C06]: wtl.SSABV.L == 0 ("no loss")
+% CHECK-FINAL [C07]: SSA, LX-SSA, DE, VNS, MS-SLSQP: W >= 40, L <= 2, case-mean p_holm < 0.05 ("clearly outperforms")
+% CHECK-FINAL [C08]: feasible_pct.PSOBV == 100
+% CHECK-FINAL [C16]: ablation PSOBV-SSABV / PSOBV-LXBV never worse ("salp swarms are weaker first phases")
+% CHECK-FINAL [C15]: ablation.contrasts.SSABV-RSVNS: T >= 60, W and L <= 5 ("tied with random sampling")
+% CHECK-FINAL [C17]: LXSSA-SSA W == 0 and SSABV-LXBV L == 0 ("Laplace step gives no gain")
+% CHECK-FINAL [C12]: constriction PSO never worse than w=0.7, c1=c2=2 ("understates it")
+% CHECK-FINAL [C19]: hr16 best PSO-VNS run > installed AEP
+\end{abstract}
+
+\begin{IEEEkeywords}
+Wind farm layout optimization, particle swarm optimization, constriction coefficient, variable neighborhood search, hybrid metaheuristic, wake effect.
+\end{IEEEkeywords}
+
+\section*{Nomenclature}
+\addcontentsline{toc}{section}{Nomenclature}
+\begin{IEEEdescription}[\IEEEusemathlabelsep\IEEEsetlabelwidth{$\Delta_{ij}$, $\Delta_i$}]
+\item[$B$] Budget (number of objective calls).
+\item[$c_1$, $c_2$] Acceleration coefficients of PSO.
+\item[$C_T$] Thrust coefficient.
+\item[$D$, $R$] Rotor diameter and rotor radius ($D=2R$).
+\item[$d_{ij}$] Distance of turbine $i$ behind turbine $j$.
+\item[$\Delta_{ij}$, $\Delta_i$] Deficit at $i$ due to $j$; total deficit at $i$.
+\item[$E(P_i)$] Expected power of turbine $i$ (benchmark units).
+\item[$E_{\rm ideal}$] Wake-free expected power of one turbine.
+\item[$F_p$] Penalized wake loss (minimized).
+\item[$g^{\rm b}_i$, $g^{\rm s}_{ij}$] Boundary and spacing violations.
+\item[$\mathbf G$, $\mathbf P^i$] Global best; personal best of particle $i$.
+\item[$\mathbf H$] Food source (best layout of SSA).
+\item[$K$] Jensen wake-spreading constant.
+\item[$k$, $k_{\max}$] Index and number of VNS neighborhoods.
+\item[$\ell_{ij}$, $\ell_{\min}$] Distance of $i$ and $j$; minimum spacing.
+\item[$N$, $N_p$] Number of turbines; population size.
+\item[$N_\theta$, $N_s$] Numbers of wind-direction and wind-speed bins.
+\item[$p_l$] Probability of the $l$th wind-direction bin.
+\item[$r$] Farm radius.
+\item[$s$] Wind speed.
+\item[$t$, $T$, $T_1$] Iteration; total and Phase-1 iterations.
+\item[$\mathbf V^i$] Velocity of particle $i$.
+\item[$w$] Inertia weight of PSO.
+\item[$\mathbf X$] Layout vector $(x_1,y_1,\ldots,x_N,y_N)$.
+\item[$\alpha$, $\beta_{ij}$] Half-cone angle; wake angle of $i$ behind $j$.
+\item[$\zeta$, $\psi$] Weibull shape and scale parameters.
+\item[$\theta$] Wind direction (blowing towards, CCW from east).
+\item[$\kappa$, $\varphi_{1,2}$] Constriction factor and coefficients.
+\item[$\mu$] Penalty factor.
+\item[$\omega$] Fraction of the budget given to Phase~1.
+\end{IEEEdescription}
+

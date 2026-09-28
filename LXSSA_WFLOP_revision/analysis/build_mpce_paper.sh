@@ -19,4 +19,4 @@ for f in MPCE_PSO_VNS MPCE_PSO_VNS_supplement; do
        "undefined refs: $(grep -c 'undefined' $f.log || true), overfull boxes: $(grep -c 'Overfull' $f.log || true)"
 done
 echo "pending: $(grep -c 'TBD{pending' analysis/mpce_numbers.tex) macros in analysis/mpce_numbers.tex (listed in its 2nd line)," \
-     "$(cat analysis/mpce_tab_*.tex | grep -o 'TBD{}' | wc -l) empty table cells; author placeholders in MPCE_PSO_VNS.tex: $(grep -o 'TBD{[^p}]' MPCE_PSO_VNS.tex | wc -l)"
+     "$(cat analysis/mpce_tab_*.tex | grep -o 'TBD{}' | wc -l) empty table cells; author placeholders in MPCE_PSO_VNS.tex: $(cat MPCE_PSO_VNS.tex optA/*.tex | grep -o 'TBD{[^p}]' | wc -l)"
