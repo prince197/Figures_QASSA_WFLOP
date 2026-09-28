@@ -24,6 +24,8 @@ Experiments
   feasp / b30kp / b120kp   the PSO-VNS arm of feas / b30k / b120k;  psosplit  PSO-VNS with 25 % / 75 % split
   hrfix    all Horns Rev 1 16-turbine runs again after the direction-binning fix of hornsrev_model (2026-09-28):
            10 methods; 6,030 random / 6,030 feasible (no RS-VNS) / 30,030 random (30 seeds), 120,030 (10 seeds)
+  omega90  (Phase 6) PSO-VNS with split 0.9 (PSOBV90) on the 12 split cases, 30 seeds, 6,030 calls
+  rsdisc   (Phase 6) RS-VNS with Phase-1 samples uniform in the farm disc (RSDVNS), 68 cases, 30 seeds, 6,030 calls
 Convergence curves: one checkpoint every (B-30)//200 calls, i.e. 201 checkpoints at 6,030 calls and 200 at
 30,030 / 120,030 calls (the first checkpoint is at call 30 only for B = 6,030).
 """
@@ -199,7 +201,86 @@ def tasks(exp):
         tl = [(run_hr, (a, 16, s, budget, init)) for a in methods for s in hseeds]
         tl += [(run_grid, (a, *c, s, budget, init)) for c in LARGE[::-1] for a in methods for s in S30]
         return tl
+    # ---- Phase 6 (W3) controls: new labels only, run through run_grid_x (see below) ----
+    if exp == "omega90":
+        # PSO-VNS with split omega = 0.9 (label PSOBV90) on the 12 split cases, 30 seeds, 6,030 calls: completes
+        # the split curve 0.25 / 0.5 / 0.75 / 0.9 / 1 (= PSO) of the psosplit design
+        return [(run_grid_x, ("PSOBV90", *c, s, 6030, "random")) for c in SPLITCASES for s in S30]
+    if exp == "rsdisc":
+        # RS-VNS with Phase-1 samples uniform in the farm disc instead of the bounding square (label RSDVNS),
+        # 68 cases, 30 seeds, 6,030 calls; heaviest cases first
+        return [(run_grid_x, ("RSDVNS", *c, s, 6030, "random")) for c in GRID[::-1] for s in S30]
     raise ValueError(exp)
+
+
+# ---------------------------------------------------------------------------------------------------------
+_RUN_METHOD = run_method          # the original function (run_grid_x swaps the module-level name)
+# Phase 6 (W3) additions. Nothing above is changed: the existing labels keep their code path (run_method /
+# run_grid); the two new labels are handled by run_method_x, and run_grid_x runs the unchanged run_grid with
+# run_method_x in place of run_method (every other label falls through to run_method unchanged).
+class RSDVNS(RSVNS):
+    """RS-VNS whose Phase-1 samples are uniform in the farm disc (polar sampling: angle U(0, 2 pi), radius
+    r sqrt(U(0, 1)) per turbine) instead of the bounding square, a stronger random-sampling control (R2 #8).
+    The seeded initial population of 30 is the common one drawn by init_pop (so runs stay seed-paired with
+    all other methods); the remaining round(split B) - 30 Phase-1 samples are disc samples. Every turbine of
+    a disc sample lies inside the site, so only the spacing constraint can be violated. Phase 2 is the
+    unchanged basic VNS (original_vns.BVNS) from the best sample (lowest F_p)."""
+
+    def __init__(self, pop_size=30, budget=6030, split=0.5, radius=500.0, disc_r=None, seed=None):
+        super().__init__(pop_size, budget, split, radius, seed=seed)
+        self.disc_r = radius if disc_r is None else disc_r
+
+    def optimize(self, obj_fun, dim, lb, ub):
+        from original_vns import BVNS as _BVNS, BudgetExhausted as _BE
+        from init_hook import init_pop as _init_pop
+        calls = [0]
+
+        def f(x):
+            if calls[0] >= self.budget:
+                raise _BE
+            calls[0] += 1
+            return obj_fun(x)
+
+        pop = _init_pop(self.pop_size, dim, lb, ub)
+        fit = np.array([f(p) for p in pop])
+        best, fbest = pop[np.argmin(fit)].copy(), fit.min()
+        n = dim // 2
+        while calls[0] < self.n1:
+            ang = np.random.uniform(0.0, 2 * np.pi, n)
+            rad = self.disc_r * np.sqrt(np.random.uniform(0.0, 1.0, n))
+            x = np.c_[rad * np.cos(ang), rad * np.sin(ang)].ravel()
+            fx = f(x)
+            if fx < fbest:
+                best, fbest = x.copy(), fx
+        self.phase1_calls = calls[0]
+        return _BVNS(self.pop_size, self.budget, self.radius).search(f, best, fbest, dim, lb, ub)
+
+
+def run_method_x(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, bcons=None):
+    """run_method for the Phase-6 labels PSOBV90 (PSO-VNS, omega = 0.9) and RSDVNS (disc-sampling RS-VNS);
+    any other label is passed to run_method unchanged."""
+    if alg not in ("PSOBV90", "RSDVNS"):
+        return _RUN_METHOD(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, bcons)
+    tr = Tracker(feasible, max(1, (budget - NP) // 200))
+
+    def fp(x):
+        v = f(x); tr.see(x, v); return v
+    if alg == "PSOBV90":
+        pos, _, _ = HybridBVNS(NP, budget, 0.9, 0.0, 1.0, radius, "PSOC", seed=seed).optimize(fp, dim, lb, ub)
+    else:
+        pos, _, _ = RSDVNS(NP, budget, 0.5, radius, seed=seed).optimize(fp, dim, lb, ub)
+    return pos, tr
+
+
+def run_grid_x(task):
+    """run_grid (unchanged) with run_method_x in place of run_method (one task at a time per process)."""
+    g = globals()
+    orig = g["run_method"]
+    g["run_method"] = run_method_x
+    try:
+        return run_grid(task)
+    finally:
+        g["run_method"] = orig
 
 
 def _call(pair):

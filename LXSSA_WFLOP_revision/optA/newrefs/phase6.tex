@@ -1,0 +1,61 @@
+% Phase 6 (W5, literature & positioning): verified references, IEEE style, keys AuthorYear.
+% Verification: web search on 2026-09-28 (publisher pages, JMLR, arXiv, IDEAS/RePEc, Copernicus, OSTI, institutional
+% repositories as indexed by the search engine; publisher sites and Crossref could not be fetched directly from this
+% container). Only fields confirmed by at least one such source are given; unconfirmed months/issues are omitted.
+% The verification note of each entry is the first comment line AFTER its \bibitem line (the convention of
+% % VERIFY-REF in 11_back.tex), because optA/merge_newrefs.py attaches any text before a \bibitem to the previous entry.
+% None of these keys exists in 11_back.tex or in optA/newrefs/{02_intro,04_methods,10_limits_concl}.tex.
+%
+% Groups (no comment lines between entries, so that merge_newrefs.py keeps each entry clean):
+%  (a) benchmarking methodology/statistics: Benavoli2017, LaTorre2021, Derrac2011, Hooker1995, Campelo2019, Lakens2017
+%  (b) critique of metaphor-based metaheuristics: CamachoVillalon2023 (Sorensen2015, Castelli2022 already exist)
+%  (c) PSO theory: Bonyadi2017 (Poli2009, Cleghorn2018, Clerc2002 already exist)
+%  (d) WFLOP comparisons/benchmarks/reviews: Thomas2023, Wilson2018, Azlan2021, Feng2015 (Baker2019 already exists)
+
+\bibitem{Benavoli2017}
+% VERIFY-REF (2026-09-28): JMLR abstract page jmlr.org/papers/v18/16-305.html, arXiv:1606.04316, ACM DL 10.5555/3122009.3176821 -- authors, title, vol. 18, paper no. 77, pp. 1-36, 2017 confirmed (JMLR has no DOI)
+A. Benavoli, G. Corani, J. Dem\v{s}ar, and M. Zaffalon, ``Time for a change: A tutorial for comparing multiple classifiers through Bayesian analysis,'' \textit{J. Mach. Learn. Res.}, vol. 18, no. 77, pp. 1--36, 2017.
+
+\bibitem{LaTorre2021}
+% VERIFY-REF (2026-09-28): ScienceDirect record S2210650221001358, arXiv:2004.09969, UPM and EHU repositories -- authors, title, Swarm Evol. Comput. vol. 67, art. 100973, Dec. 2021, DOI confirmed
+A. LaTorre, D. Molina, E. Osaba, J. Poyatos, J. Del Ser, and F. Herrera, ``A prescription of methodological guidelines for comparing bio-inspired optimization algorithms,'' \textit{Swarm Evol. Comput.}, vol. 67, Art. no. 100973, Dec. 2021, doi: 10.1016/j.swevo.2021.100973.
+
+\bibitem{Derrac2011}
+% VERIFY-REF (2026-09-28): ScienceDirect record S2210650211000034, author PDF on sci2s.ugr.es ("Swarm and Evolutionary Computation 1 (2011) 3-18"), dblp -- authors, title, vol. 1, no. 1, pp. 3-18, 2011, DOI confirmed
+J. Derrac, S. Garc\'{\i}a, D. Molina, and F. Herrera, ``A practical tutorial on the use of nonparametric statistical tests as a methodology for comparing evolutionary and swarm intelligence algorithms,'' \textit{Swarm Evol. Comput.}, vol. 1, no. 1, pp. 3--18, 2011, doi: 10.1016/j.swevo.2011.02.002.
+
+\bibitem{Hooker1995}
+% VERIFY-REF (2026-09-28): Springer record 10.1007/BF02430364, CMU KiltHub, ResearchGate ("Journal of Heuristics 1(1): 33-42") -- author, title, vol. 1, no. 1, pp. 33-42, 1995, DOI confirmed
+J. N. Hooker, ``Testing heuristics: We have it all wrong,'' \textit{J. Heuristics}, vol. 1, no. 1, pp. 33--42, 1995, doi: 10.1007/BF02430364.
+
+\bibitem{Campelo2019}
+% VERIFY-REF (2026-09-28): Springer record 10.1007/s10732-018-9396-7, arXiv:1808.02997, Aston and Bristol research portals -- authors, title, J. Heuristics vol. 25, no. 2, pp. 305-338, issue date Apr. 2019 (online Oct. 2018), DOI confirmed
+F. Campelo and F. Takahashi, ``Sample size estimation for power and accuracy in the experimental comparison of algorithms,'' \textit{J. Heuristics}, vol. 25, no. 2, pp. 305--338, Apr. 2019, doi: 10.1007/s10732-018-9396-7.
+
+\bibitem{Lakens2017}
+% VERIFY-REF (2026-09-28): SAGE record journals.sagepub.com/doi/10.1177/1948550617697177, TU Eindhoven research portal, CRAN TOSTER citation -- author, title, vol. 8, no. 4, pp. 355-362, 2017, DOI confirmed (source of the TOST procedure used for tab:equivalence)
+D. Lakens, ``Equivalence tests: A practical primer for $t$ tests, correlations, and meta-analyses,'' \textit{Soc. Psychol. Personal. Sci.}, vol. 8, no. 4, pp. 355--362, 2017, doi: 10.1177/1948550617697177.
+
+\bibitem{CamachoVillalon2023}
+% VERIFY-REF (2026-09-28): Wiley Online Library record 10.1111/itor.13176, author page iridia.ulb.ac.be/~ccamacho -- authors, title, Int. Trans. Oper. Res. vol. 30, no. 6, pp. 2945-2971, 2023, DOI confirmed
+C. L. Camacho-Villal\'on, M. Dorigo, and T. St\"utzle, ``Exposing the grey wolf, moth-flame, whale, firefly, bat, and antlion algorithms: Six misleading optimization techniques inspired by bestial metaphors,'' \textit{Int. Trans. Oper. Res.}, vol. 30, no. 6, pp. 2945--2971, 2023, doi: 10.1111/itor.13176.
+
+\bibitem{Bonyadi2017}
+% VERIFY-REF (2026-09-28): MIT Press record direct.mit.edu/evco/article/25/1/1/1040, PubMed 26953883, author PDF cs.adelaide.edu.au -- authors, title, Evol. Comput. vol. 25, no. 1, pp. 1-54, 2017, DOI 10.1162/EVCO_r_00180 confirmed
+M. R. Bonyadi and Z. Michalewicz, ``Particle swarm optimization for single objective continuous space problems: A review,'' \textit{Evol. Comput.}, vol. 25, no. 1, pp. 1--54, 2017, doi: 10.1162/EVCO\_r\_00180.
+
+\bibitem{Thomas2023}
+% VERIFY-REF (2026-09-28): Copernicus article page and PDF header ("Wind Energ. Sci., 8, 865-891, 2023"), OSTI 1975992, NASA ADS 2023WiEnS...8..865T -- 13 authors (J. J. Thomas, N. F. Baker, P. Malisani, E. Quaeghebeur, S. Sanchez Perez-Moreno, J. Jasa, C. Bay, F. Tilli, D. Bieniek, N. Robinson, A. P. J. Stanley, W. Holt, A. Ning), title, vol. 8, pp. 865-891, 2023, DOI confirmed; issue number not confirmed, omitted
+J. J. Thomas \textit{et al.}, ``A comparison of eight optimization methods applied to a wind farm layout optimization problem,'' \textit{Wind Energy Sci.}, vol. 8, pp. 865--891, 2023, doi: 10.5194/wes-8-865-2023.
+
+\bibitem{Wilson2018}
+% VERIFY-REF (2026-09-28): ScienceDirect record S096014811830363X, OATAO Toulouse 22624, Nottingham and Lancaster repositories -- first author Dennis Wilson, co-authors incl. S. Rodrigues, C. Segura, I. Loshchilov, F. Hutter (more than six authors, hence et al.; full list not retrieved), title, Renew. Energy vol. 126, pp. 681-691, 2018, DOI confirmed (results of the GECCO 2015 WFLO competition)
+D. Wilson \textit{et al.}, ``Evolutionary computation for wind farm layout optimization,'' \textit{Renew. Energy}, vol. 126, pp. 681--691, 2018, doi: 10.1016/j.renene.2018.03.052.
+
+\bibitem{Azlan2021}
+% VERIFY-REF (2026-09-28): ScienceDirect record S1364032120303385, Monash research portal, IDEAS/RePEc v135y2021 -- authors, title, Renew. Sustain. Energy Rev. vol. 135, art. 110047, Jan. 2021, DOI confirmed
+F. Azlan, J. C. Kurnia, B. T. Tan, and M.-Z. Ismadi, ``Review on optimisation methods of wind farm array under three classical wind condition problems,'' \textit{Renew. Sustain. Energy Rev.}, vol. 135, Art. no. 110047, Jan. 2021, doi: 10.1016/j.rser.2020.110047.
+
+\bibitem{Feng2015}
+% VERIFY-REF (2026-09-28): DTU Orbit record, IDEAS/RePEc v78y2015icp182-192 -- authors (Ju Feng, Wen Zhong Shen), title, Renew. Energy vol. 78, pp. 182-192, 2015, DOI confirmed
+J. Feng and W. Z. Shen, ``Solving the wind farm layout optimization problem using random search algorithm,'' \textit{Renew. Energy}, vol. 78, pp. 182--192, 2015, doi: 10.1016/j.renene.2015.01.005.
