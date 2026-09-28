@@ -102,3 +102,20 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
 - LX-SSA-VNS vs RSD-VNS: worse (case means, bootstrap, LOCO) but CR p 0.087 → write "worse", not "clearly worse at farm level".
 - NOW FALSE, fix everywhere: "leaving out any cluster changes no verdict" (now: changes only \NXLocoChanged…); "every significant pair unanimous in 6/6 clusters"; "Holm loses only the pooled N ≥ 10 subgroup" (use \NXMultLostHolm); "ω = 0.9 better than 0.5" is unadjusted only.
 - Margin justification (05, supplement): "the Jensen and Gaussian wake losses of the same final layouts differ by \NXModelShiftMean pp on average (\NXModelShiftRatio times the margin), whereas the PSO-VNS − PSO difference changes by only \NXModelShiftPairMean pp" (X29, X30). Never "ten times".
+
+## Review round 2 — LEAD DECISION D13 (M3 restated after R2 statistics review)
+- Equivalence is NOT robust at cluster level (CR 90% CI [−0.067, 0.030]); it holds at case level (±0.041) and the
+  fixed-benchmark (seed-level) interval [−0.027, −0.010] shows a small but significant average advantage of PSO-VNS
+  that lies inside the margin. Per-case differences are heterogeneous: 19 of 68 cases differ by more than ±0.05 pp
+  (11 favour PSO-VNS up to 0.41, 8 favour PSO up to 0.27); N < 10 identical; N ≥ 10 PSO-VNS better in Data Set II,
+  PSO better in the densest Data Set I layouts.
+- NEW M3: "On average over the benchmark, a well-configured PSO and PSO-VNS differ by less than 0.05 pp of wake loss
+  (seed-level 90% CI …; case-level equivalence at ±0.05 pp), but this average hides case-specific differences of up to
+  ±0.3–0.4 pp in both directions, and equivalence cannot be shown at the level of farm clusters. Neither method
+  dominates; PSO-VNS adds feasibility reliability (one site, random starts) and gains in the larger Data Set II layouts,
+  PSO in the densest Data Set I layouts." Report the equivalence curve (minimal margin at seed, case and cluster level).
+- Margin: drop the model-shift justification (level shift cancels in paired comparisons). State ±0.05 pp as a post hoc
+  convention and report the minimal margins, so readers can apply their own threshold.
+- Bayesian wording: "posterior probability that practical equivalence is the most probable outcome", plus posterior means.
+- Add Hodges–Lehmann estimates next to Wilcoxon p for key pairs; "LX-SSA as published is worse" (not "Laplace step
+  harmful"); Holm family = "all case-mean tests"; feasibility reliability with McNemar p (one site, random starts).
