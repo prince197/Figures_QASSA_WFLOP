@@ -2,7 +2,7 @@
 \TBD{acknowledgment, or delete this section}
 
 \section*{Data Availability}
-The following are openly available at \TBD{Zenodo DOI}: 1) the source code of all methods and of the benchmark evaluator; 2) the per-run results of all studies, i.e., for every run the method, case, seed, budget, initialization, number of evaluations, final objective, feasibility, final turbine coordinates and convergence curve, including the runs with the earlier PSO setting; and 3) the scripts that implement the evaluation protocol (seed-paired runs, feasibility-aware ranking, case-mean and run-level tests with Holm correction, and the re-evaluation with the alternative power curve and wake model). One command (\texttt{sh analysis/build\_mpce\_paper.sh}) regenerates every table, figure and number of this paper and of its supplementary material from the per-run results. The supplementary material contains the model details, the pseudocode of SSA and LX-SSA, the wind data, the per-case results of all studies, the coordinates of the best layouts and further figures.
+The source code of all methods and of the benchmark evaluator, the per-run results of all studies (including the runs with the old PSO setting) and the analysis scripts are openly available at \TBD{Zenodo DOI}. Each run record gives the method, case, seed, final objective (AEP for Horns Rev~1), feasibility, final turbine coordinates and convergence curve, and the budget and initialization where these vary. The file \texttt{analysis/README\_reproduce.md} lists the script that produces each table, figure and number of this paper and of its supplementary material, and \texttt{analysis/requirements.txt} pins the software versions. The Horns Rev~1 and IEA37 input data are taken from~\cite{PyWake,IEA37repo}. The supplementary material gives the model details, the pseudocode of SSA and LX-SSA, the wind data, the per-case results, the coordinates of the best layouts and further figures.
 
 \begin{thebibliography}{99}
 
@@ -94,8 +94,8 @@ P. Hansen and N. Mladenovi\'c, ``Variable neighborhood search: Principles and ap
 S. Mirjalili, A. H. Gandomi, S. Z. Mirjalili, S. Saremi, H. Faris, and S. M. Mirjalili, ``Salp swarm algorithm: A bio-inspired optimizer for engineering design problems,'' \textit{Adv. Eng. Softw.}, vol. 114, pp. 163--191, Dec. 2017, doi: 10.1016/j.advengsoft.2017.07.002.
 
 \bibitem{Solanki2023}
-% VERIFY-REF: title, journal, year and DOI confirmed; volume, issue and pages could not be retrieved (publisher site blocked) -- add them if the article has been assigned to an issue
-P. Solanki and K. Deep, ``Laplacian salp swarm algorithm for continuous optimization,'' \textit{Int. J. Syst. Assur. Eng. Manage.}, 2023, doi: 10.1007/s13198-023-01935-y.
+% VERIFY-REF: authors, title, journal, year and DOI confirmed (web search, 2026-09-28); volume, issue and pages could not be retrieved (publisher site and Crossref blocked) -- first author to supply them
+P. Solanki and K. Deep, ``Laplacian salp swarm algorithm for continuous optimization,'' \textit{Int. J. Syst. Assur. Eng. Manage.}, \TBD{vol., no., pp.}, 2023, doi: 10.1007/s13198-023-01935-y.
 
 \bibitem{Jensen1983}
 N. O. Jensen, ``A note on wind generator interaction,'' Ris\o\ Nat. Lab., Roskilde, Denmark, Tech. Rep. Ris\o-M-2411, 1983.
@@ -122,16 +122,18 @@ R. Storn and K. Price, ``Differential evolution---A simple and efficient heurist
 D. Kraft, ``A software package for sequential quadratic programming,'' DFVLR, Inst. f\"ur Dynamik der Flugsysteme, Oberpfaffenhofen, Germany, Tech. Rep. DFVLR-FB 88-28, 1988.
 
 \bibitem{Holm1979}
-S. Holm, ``A simple sequentially rejective multiple test procedure,'' \textit{Scand. J. Statist.}, vol. 6, no. 2, pp. 65--70, 1979.
+S. Holm, ``A simple sequentially rejective multiple test procedure,'' \textit{Scand. J. Stat.}, vol. 6, no. 2, pp. 65--70, 1979.
 
 \bibitem{PyWake}
-DTU Wind Energy, ``PyWake: Open-source static wake modeling framework,'' Python package \texttt{py\_wake}, ver. 2.6.20 (Horns Rev~1 site data in \texttt{py\_wake/examples/data/hornsrev1.py}), MIT License. [Online]. Available: \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}
+% VERIFY-REF: release date of ver. 2.6.20 (30 Mar. 2026) and licence confirmed on PyPI (py-wake), 2026-09-28; access date = first use in analysis/hornsrev_model.py (git, 2026-09-25)
+DTU Wind Energy, ``PyWake: Open-source static wake modeling framework,'' Python package \texttt{py\_wake}, ver. 2.6.20 (Horns Rev~1 site data in \texttt{py\_wake/examples/data/hornsrev1.py}), MIT License, 2026. Accessed: Sep. 25, 2026. [Online]. Available: \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}
 
 \bibitem{IEA37repo}
-N. F. Baker \textit{et al.}, ``IEA Wind Task 37 wind farm layout optimization case studies: Case files and submitted results.'' [Online]. Available: \url{https://github.com/IEAWindTask37/iea37-wflo-casestudies}
+% VERIFY-REF: commit 267f6e5 of 13 Nov. 2020 (latest commit) as used in analysis/iea37_model.py; the repository now redirects to the IEAWindSystems organization (checked 2026-09-28)
+N. F. Baker \textit{et al.}, ``IEA Wind Task 37 wind farm layout optimization case studies: Case files and submitted results,'' GitHub repository, commit 267f6e5, 2020. Accessed: Sep. 28, 2026. [Online]. Available: \url{https://github.com/IEAWindSystems/iea37-wflo-casestudies}
 
 \bibitem{Carrillo2013}
-C. Carrillo, A. F. Obando Monta\~no, J. Cidr\'as, and E. D\'iaz-Dorado, ``Review of power curve modelling for wind turbines,'' \textit{Renew. Sustain. Energy Rev.}, vol. 21, pp. 572--581, May 2013, doi: 10.1016/j.rser.2013.01.012.
+C. Carrillo, A. F. Obando Monta\~no, J. Cidr\'as, and E. D\'{\i}az-Dorado, ``Review of power curve modelling for wind turbines,'' \textit{Renew. Sustain. Energy Rev.}, vol. 21, pp. 572--581, May 2013, doi: 10.1016/j.rser.2013.01.012.
 
 \bibitem{Bastankhah2014}
 M. Bastankhah and F. Port\'e-Agel, ``A new analytical model for wind-turbine wakes,'' \textit{Renew. Energy}, vol. 70, pp. 116--123, Oct. 2014, doi: 10.1016/j.renene.2014.01.029.

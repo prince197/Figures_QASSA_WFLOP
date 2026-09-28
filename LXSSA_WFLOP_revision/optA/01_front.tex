@@ -1,6 +1,6 @@
-\title{Revisiting Metaheuristic Comparisons for Continuous Wind Farm Layout Optimization: Baseline Configuration, Component Analysis and a Two-Phase PSO-VNS Design}
+\title{Revisiting Metaheuristic Comparisons for Continuous Wind Farm Layout Optimization: Baseline Configuration, Component Analysis and a Two-Phase PSO--VNS Design}
 \author{Prince~Solanki, Pulkit~Dwivedi, Vanita~Garg, and Vinay~Shukla
-\thanks{Manuscript received: \TBD{date}; revised: \TBD{date}; accepted: \TBD{date}.}
+\thanks{Manuscript received: XXXX; revised: XXXX; accepted: XXXX.}
 \thanks{\TBD{funding statement, e.g., ``This work did not receive any specific grant from funding agencies.''}}
 \thanks{P. Solanki \TBD{mark corresponding author} is with the Department of Mathematics, School of Sciences, IILM University, Greater Noida, Uttar Pradesh, India; he was previously with the Department of Mathematics, Indian Institute of Technology Roorkee, Roorkee, India (e-mail: prince@ma.iitr.ac.in; prince@iilm.edu).}
 \thanks{P. Dwivedi is with the Department of Computer Science and Engineering, Bennett University, Greater Noida, Uttar Pradesh, India (e-mail: pdwivedi19900@gmail.com; pulkit.dwivedi@bennett.edu.in).}
@@ -10,54 +10,38 @@
 \maketitle
 
 \begin{abstract}
-The wind farm layout optimization problem (WFLOP) places a prescribed number of turbines to minimize wake loss under boundary and spacing constraints. This paper shows that conclusions of metaheuristic comparisons for the continuous WFLOP depend strongly on baseline configuration and comparison control. Eight methods are compared on 68 benchmark cases under a controlled protocol: equal budgets including gradient calls, 30 seed-paired runs, feasibility-aware ranking and Holm-corrected tests. First, the particle swarm optimization (PSO) setting $w=0.7$, $c_1=c_2=2$, common in WFLOP comparisons, violates the particle convergence condition; with it, PSO ranks \NOldPSOPos{} and is feasible in \NOldPSOFeas\% of runs, and salp swarm hybrids appear stronger, whereas with the constriction setting PSO ranks \NPSOPos{} and outperforms all salp swarm methods. Second, a component analysis with a random-sampling control shows that a variable neighborhood search (VNS) phase helps every swarm, but only a convergent PSO phase gives VNS a better start than random sampling; salp swarm phases and the Laplace step add nothing. Third, the two-phase design, PSO followed by basic VNS (PSO-VNS), obtains the best average rank (\NRankPSOVNS), is feasible in every run and exceeds the energy yield of the installed Horns Rev~1 block; however, it is not significantly better than PSO over all cases ($p=\NPWPSO$), VNS alone ranks first from feasible starts, \NBestGauss{} ranks first under a Gaussian wake model, and a gap to the published IEA Wind Task~37 optima remains.
-% CHECK-FINAL [C12]: old PSO setting: position \NOldPSOPos, constriction PSO position \NPSOPos, ahead of SSA, LX-SSA, SSA-VNS
-% CHECK-FINAL [C27]: old setting: a salp-swarm hybrid ahead of PSO ("salp swarm hybrids appear stronger"); corrected: PSO ahead of every salp-swarm method
-% CHECK-FINAL [C14]: PSO start beats random sampling (RS-VNS)
-% CHECK-FINAL [C15]: ablation.contrasts.SSABV-RSVNS: T >= 60, W and L <= 5 ("salp swarm phases add nothing" beyond random sampling)
-% CHECK-FINAL [C17]: LXSSA-SSA W == 0 and SSABV-LXBV L == 0 ("Laplace step adds nothing")
+Wind farm layouts fix the energy yield of a plant for its lifetime, yet comparisons of layout optimizers are hard to trust. This paper shows that, in continuous wind farm layout optimization, the conclusions of metaheuristic comparisons depend strongly on baseline configuration and comparison control. Under a controlled protocol (68 benchmark cases, equal budgets of 6,030 evaluations that count gradient evaluations, 30 seed-paired runs, feasibility-aware ranking, Holm-corrected tests), a convergent particle swarm optimization (PSO) followed by basic variable neighborhood search (PSO-VNS) is the most consistent of eight methods, while salp-swarm phases add little beyond random sampling and the Laplace step makes the hybrid worse. First, the PSO setting $w=0.7$, $c_1=c_2=2$ violates the order-2 (variance) stability condition; with it, PSO is feasible in \NOldPSOFeas\% of the runs and ranks behind salp-swarm hybrids, whereas with the constriction setting it ranks first in the same comparison. Second, a component analysis with a random-sampling control shows that a PSO phase gives VNS a clearly better start than salp-swarm phases, and that the VNS phase significantly improves the salp-swarm methods but gives PSO only a small, non-significant gain. Third, PSO-VNS has the best average rank (\NRankPSOVNS) and is feasible in every run, and \NHRAbovePSOVNS{} of its 30 runs exceed the modeled energy yield of the installed Horns Rev~1 block; however, it is not significantly different from PSO over all cases ($p=\NPWPSO$), \NFbFeasBestRank{} ranks first from feasible starts and \NBestGauss{} when the final layouts are re-evaluated with a Gaussian wake model, and a gap to the best published IEA Wind Task~37 layouts remains.
+% CHECK-FINAL [C15, restated per D1]: "salp-swarm phases add little beyond random sampling": case-mean SSA-VNS vs RS-VNS DL < 0 but |\NCmSSAVNSvsRSVNSDL| far below |\NCmPSOVNSvsRSVNSDL|, run level \NAblSSAVNSvsRSVNS mostly ties; LX-SSA-VNS vs RS-VNS case-mean p = \NCmLXSSAVNSvsRSVNSP >= 0.05
+% CHECK-FINAL [C17, restated per D1]: "the Laplace step makes the hybrid worse": case-mean SSA-VNS vs LX-SSA-VNS p = \NCmSSAVNSvsLXSSAVNSP < 0.05 and \NCmSSAVNSvsLXSSAVNSWins > \NCmSSAVNSvsLXSSAVNSLosses (plus LXSSA-SSA W == 0, SSABV-LXBV L == 0)
+% CHECK-FINAL [C27]: Table baseline pool (6,030 evaluations): old setting: SSA-VNS (\NBaseOldSSAVNSRank) and LX-SSA-VNS (\NBaseOldLXBVRank) both ahead of PSO (\NBaseOldPSORank) ("behind salp-swarm hybrids", plural); constriction: \NBaseNewBest == PSO, \NBaseNewPSOPos == 1, ahead of every salp-swarm method
+% CHECK-FINAL [C14]: PSO start beats random sampling (RS-VNS); [C16]: PSOBV-SSABV, PSOBV-LXBV: L == 0, W >= 34 ("clearly better start than salp-swarm phases")
+% CHECK-FINAL [C13, restated per D1]: VNS phase vs swarm alone: SSA-VNS vs SSA and LX-SSA-VNS vs LX-SSA significant (\NAblSSAVNSvsSSA, \NAblLXSSAVNSvsLXSSA; case-mean \NCmSSAVNSvsSSAP, \NCmLXSSAVNSvsLXSSAP < 0.05); PSO-VNS vs PSO W > L but case-mean p >= 0.05 ("small, non-significant gain")
 % CHECK-FINAL [C01]: main.friedman.best_ranked == PSOBV
 % CHECK-FINAL [C08]: feasible_pct.PSOBV == 100
-% CHECK-FINAL [C19]: hr16 best PSO-VNS run > installed AEP
-% CHECK-FINAL [C04]: PSO-VNS vs PSO case-mean p >= 0.05 ("not significantly better")
-% CHECK-FINAL [C22]: Gaussian: PSOC first, PSOBV second
-% CHECK (manual): \NFbFeasBestRank == VNS ("VNS alone ranks first from feasible starts"); IEA37 gaps \NIEAGapSixteenThirtyK, \NIEAGapThirtySixThirtyK < 0
+% CHECK-FINAL [C19]: hr16 (6,030 evaluations, after the direction-binning rerun) runs_above_installed = \NHRAbovePSOVNS >= 1 (else the lead rewrites this clause, D5)
+% CHECK-FINAL [C04]: PSO-VNS vs PSO case-mean p >= 0.05 ("not significantly different")
+% CHECK-FINAL [C28]: feasible starts: \NFbFeasBestRank first; [C22]: Gaussian re-evaluation: \NBestGauss (PSOC) first, PSOBV second
+% CHECK (manual): IEA37 gaps \NIEAGapSixteenThirtyK, \NIEAGapThirtySixThirtyK < 0 (reference = best feasible published layout)
 \end{abstract}
 
 \begin{IEEEkeywords}
-Wind farm layout optimization, particle swarm optimization, variable neighborhood search, benchmarking, metaheuristics, wake effect.
+Benchmarking, metaheuristics, particle swarm optimization, variable neighborhood search, wake effect, wind farm layout optimization.
 \end{IEEEkeywords}
 
 \section*{Nomenclature}
 \addcontentsline{toc}{section}{Nomenclature}
-\begin{IEEEdescription}[\IEEEusemathlabelsep\IEEEsetlabelwidth{$\Delta_{ij}$, $\Delta_i$}]
+\begin{IEEEdescription}[\IEEEusemathlabelsep\IEEEsetlabelwidth{$w$, $c_1$, $c_2$}]
 \item[$B$] Budget (number of evaluations).
-\item[$c_1$, $c_2$] Acceleration coefficients of PSO.
-\item[$C_T$] Thrust coefficient.
+\item[$C_T$, $K$] Thrust coefficient; Jensen wake-spreading constant.
 \item[$D$, $R$] Rotor diameter and rotor radius ($D=2R$).
-\item[$d_{ij}$] Distance of turbine $i$ behind turbine $j$.
-\item[$\Delta_{ij}$, $\Delta_i$] Deficit at $i$ due to $j$; total deficit at $i$.
-\item[$E(P_i)$] Expected power of turbine $i$ (benchmark units).
 \item[$E_{\rm ideal}$] Wake-free benchmark objective of one turbine.
 \item[$F_p$] Penalized wake loss (minimized).
-\item[$g^{\rm b}_i$, $g^{\rm s}_{ij}$] Boundary and spacing violations.
-\item[$\mathbf G$, $\mathbf P^i$] Global best; personal best of particle $i$.
-\item[$K$] Jensen wake-spreading constant.
-\item[$k$, $k_{\max}$] Index and number of VNS neighborhoods.
-\item[$\ell_{ij}$, $\ell_{\min}$] Distance of $i$ and $j$; minimum spacing.
+\item[$\ell_{\min}$] Minimum spacing between turbines.
 \item[$N$, $N_p$] Number of turbines; population size.
 \item[$N_\theta$, $N_s$] Numbers of wind-direction and wind-speed bins.
-\item[$p_l$] Probability of the $l$th wind-direction bin.
 \item[$r$] Farm radius.
-\item[$s$] Wind speed.
-\item[$t$, $T_1$] Iteration; number of Phase-1 iterations.
-\item[$\mathbf V^i$] Velocity of particle $i$.
-\item[$w$] Inertia weight of PSO.
+\item[$w$, $c_1$, $c_2$] Inertia weight and acceleration coefficients of PSO.
 \item[$\mathbf X$] Layout vector $(x_1,y_1,\ldots,x_N,y_N)$.
-\item[$\alpha$, $\beta_{ij}$] Half-cone angle; wake angle of $i$ behind $j$.
-\item[$\zeta$, $\psi$] Weibull shape and scale parameters.
 \item[$\theta$] Wind direction (blowing towards, CCW from east).
-\item[$\kappa$, $\varphi_{1,2}$] Constriction factor and coefficients.
-\item[$\mu$] Penalty factor.
 \item[$\omega$] Fraction of the budget given to Phase~1.
 \end{IEEEdescription}

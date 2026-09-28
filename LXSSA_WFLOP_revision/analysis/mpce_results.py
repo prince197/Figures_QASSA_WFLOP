@@ -146,7 +146,22 @@ HR16 = ("HR", 0, 16)
 IEA_NAME = {16: "IEA37 CS1, 16 turbines", 36: "IEA37 CS1, 36 turbines"}   # text names (both are Case Study 1 scenarios)
 BASELINE_IEA = {16: 366941.57116, 36: 737883.09851}    # official example-layout AEP (MWh), used if the published file is absent
 BUDGETS = [6030, 30030, 120030]
-INSTALLED_HR16 = 139.51          # GWh/yr, recomputed with hornsrev_model below when available
+# Horns Rev 1. The direction binning of hornsrev_model.py was fixed in commit 7676da9 (np.round gave the 12
+# sectors 7 and 5 five-degree bins alternately, total frequency 1.003); every Horns Rev run is repeated as
+# experiment `hrfix` (mpce_hrfix_s<i>of24.csv). The installed and wake-free AEPs are recomputed with
+# hornsrev_model; INSTALLED_HR16 is only the fallback if the module cannot be imported (fixed binning).
+INSTALLED_HR16 = 139.821         # GWh/yr, installed 16-turbine block, fixed binning (hornsrev_model.aep_gwh)
+# The old runs (fresh_hr16/vhr16/bhr16, hr16new, psobv, feas/feasp, b30k(p), b120k(p)) were evaluated with the
+# old binning; while they are still loaded (no hrfix file yet), the installed AEP of the same (old) model is
+# used so that the comparison stays within one model. Recognized by the wake-free AEP stored with the runs.
+LEGACY_HR16 = dict(ideal=149.2632720953485, installed=139.51300511740232)
+# PyWake reference for the complete 80-turbine farm: 662.5 GWh/yr (wake loss 10.96 %) from PyWake's Jensen
+# (NOJ) model with the same settings, as quoted in hornsrev_site_text.tex / final_prose.py (PyWake is not
+# installed in this container, so the value is a constant). \NHRPyWakeDiff = relative difference of the
+# installed 80-turbine AEP of hornsrev_model.py from it.
+PYWAKE_HR80_AEP = 662.5
+PYWAKE_HR80_LOSS_PCT = 10.96
+BOOT_N, BOOT_SEED = 10000, 20260928   # bootstrap over cases (percentile 95 % CI), fixed seed
 RANK_RULE = ("Within each case a method is ranked by the mean objective of its feasible runs only if at "
              "least half of its runs (15 of 30; 5 of 10) are feasible; methods with fewer feasible runs "
              "receive the worst ranks, below all qualifying methods, ordered by their number of feasible "
@@ -191,7 +206,13 @@ def goodness(df):
 
 
 def wil(d):
-    """Two-sided Wilcoxon signed-rank on paired differences d (zeros dropped) + rank-biserial r."""
+    """Two-sided Wilcoxon signed-rank on paired differences d (zeros dropped) + rank-biserial r.
+
+    Zero handling (R3 item 17), exposed as is: differences with |d| <= 1e-9 are dropped before both the test
+    and the matched-pairs rank-biserial correlation (Wilcoxon's "wilcox" zero method), so r_rb describes only
+    the non-tied pairs; if every difference is zero the test is not run and p = 1, r_rb = 0 (this happens
+    for the small-N cases in which all methods reach the same layout). The median r_rb over cases therefore
+    mixes such degenerate cases (r_rb = 0) with informative ones; captions say so."""
     d = np.asarray(d, float); d = d[np.isfinite(d)]
     nz = d[np.abs(d) > 1e-9]
     if len(nz) == 0:
@@ -281,6 +302,17 @@ def paired_vs(sub, focus, others):
     return rows
 
 
+def boot_ci(x, n=BOOT_N, seed=BOOT_SEED, level=0.95):
+    """Percentile bootstrap CI of the mean of x (resampling the cases with replacement, fixed seed)."""
+    x = np.asarray(x, float); x = x[np.isfinite(x)]
+    if len(x) < 2:
+        return [None, None]
+    rng = np.random.default_rng(seed)
+    m = x[rng.integers(0, len(x), (n, len(x)))].mean(1)
+    a = (1 - level) / 2
+    return [float(np.quantile(m, a)), float(np.quantile(m, 1 - a))]
+
+
 def case_mean_wilcoxon(S, focus, others, val="Loss"):
     """Wilcoxon signed-rank on per-case mean wake losses (%), focus vs each method, Holm over methods.
 
@@ -288,6 +320,10 @@ def case_mean_wilcoxon(S, focus, others, val="Loss"):
     qualifies (>= half of its runs feasible) are counted for the qualifying method with a difference
     larger than every observed one (consistent with the ranking rule); cases in which neither
     qualifies are dropped. The plain version (only cases where both qualify) is reported too.
+    Also returned: wins / losses = cases entering the test in which the focus has the lower / higher
+    mean loss (imputed cases included, exact ties |d| <= 1e-9 excluded), and the 95 % percentile bootstrap
+    CI (BOOT_N resamples of the both-qualified cases, fixed seed BOOT_SEED) of mean_dloss_pp =
+    mean of L(focus) - L(other) over the both-qualified cases (pp; negative = focus better).
     """
     P = S.pivot_table(index=CASE, columns="Algorithm", values=val)
     Q = S.pivot_table(index=CASE, columns="Algorithm", values="Qualified").astype(float)
@@ -307,6 +343,8 @@ def case_mean_wilcoxon(S, focus, others, val="Loss"):
                       mean_dloss_pp=float(np.mean(-d)) if len(d) else np.nan,
                       median_dloss_pp=float(np.median(-d)) if len(d) else np.nan,
                       focus_lower_loss_cases=int((d > 1e-9).sum()), other_lower_loss_cases=int((d < -1e-9).sum()),
+                      wins=int((dfull > 1e-9).sum()), losses=int((dfull < -1e-9).sum()),
+                      ci95_mean_dloss_pp=boot_ci(-d),
                       p_both_qualified=p2, rb_both_qualified=rb2, n_both_qualified=int(both.sum()))
     for key in ("p", "p_both_qualified"):
         bs = list(out)
