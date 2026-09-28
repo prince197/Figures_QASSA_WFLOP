@@ -14,17 +14,17 @@ Wind farm layouts fix a plant's lifetime energy yield, yet comparisons of layout
 % CHECK-FINAL [C27]: Table baseline pool (6,030 evaluations): old setting: SSA-VNS (\NBaseOldSSAVNSRank) and LX-SSA-VNS (\NBaseOldLXBVRank) both ahead of PSO (\NBaseOldPSORank) ("behind salp-swarm hybrids", plural); constriction: \NBaseNewBest == PSO, \NBaseNewPSOPos == 1 ("ranks first")
 % CHECK-THEORY [T01]: old setting violates the order-2 condition (c1+c2 = 4 > 3.50)
 % CHECK-DIAG [D03]/[D05]/[D07]: old setting: median swarm spread \NDSpreadRatio x constriction ("does not contract"); feasible particle evaluations \NDFeasPartOld% vs \NDFeasPartNew% (iterations 101-200; "most of its evaluations are infeasible")
-% CHECK-FINAL [C53]/[C54]: SSA-VNS vs RSD-VNS (random sampling in the farm disc): run level \NAblSSAVNSvsRSDVNS (W = 0), case mean \NCmSSAVNSvsRSDVNSDL, p_Holm \NCmSSAVNSvsRSDVNSPHolm against SSA-VNS, 95% CI contains 0 ("adds nothing beyond random sampling in the farm"; never "a gain")
-% CHECK-FINAL [C55]: LX-SSA-VNS vs RSD-VNS: L > W, case mean \NCmLXSSAVNSvsRSDVNSDL, p_Holm < 0.05, 95% CI above 0 ("is worse"); [C57]: RSD-VNS beats RS-VNS (the stronger control, so "random sampling in the farm")
+% CHECK-FINAL [C53]/[C54]: SSA-VNS vs RSD-VNS: run level \NAblSSAVNSvsRSDVNS (W = 0), case mean \NCmSSAVNSvsRSDVNSDL, p_Holm \NCmSSAVNSvsRSDVNSPHolm against SSA-VNS, 95% CI contains 0 ("adds nothing beyond random sampling in the farm"; never "a gain"); CHECK-EXTRA [X33]: not at cluster level, so no "worse" claim
+% CHECK-FINAL [C55]: LX-SSA-VNS vs RSD-VNS: L > W, case mean \NCmLXSSAVNSvsRSDVNSDL, p_Holm < 0.05, 95% CI above 0; [C57]: RSD-VNS beats RS-VNS (so "random sampling in the farm"); CHECK-EXTRA [X34] ("is worse", not "clearly")
 % CHECK-FINAL [C17]: SSA-VNS vs LX-SSA-VNS case-mean p = \NCmSSAVNSvsLXSSAVNSP < 0.05, SSA-VNS lower in more cases ("the Laplace step is harmful")
 % CHECK-FINAL [C56]: PSO-VNS vs RSD-VNS W >= 40, L == 0, DL \NCmPSOVNSvsRSDVNSDL, whole 90% CI below -m; [C14]: PSOBV-RSVNS W >= 40, L == 0 ("a clear gain" over both controls)
 % CHECK-DIAG [D08]/[D09]: VNS phase = one compass-search descent (shaking \NDShakeEvalsPctPSOVNS% of Phase-2 evaluations, descent share \NDDescentSharePSOVNS%)
-% CHECK-FINAL [C49]: PSO-VNS vs PSO equivalent at +-\NEqMargin (90% CI \NEqPSOVNSvsPSOCI); Bayes P(rope) = 0.997 in mpce_summary.json (printed \NBayPSOVNSvsPSORope; C49 itself only tests > 0.5 -- the ">0.99" wording needs p_rope > 0.99)
-% CHECK-FINAL [C08]/[C20]: hr16: PSOBV feasible \NHRFeasPSOVNS, PSOC \NHRFeasPSO (< 30 of 30)
-% CHECK-FINAL [NEW, D2]/CHECK-EXTRA [X19]: DS II N >= 10: PSO-VNS lower in \NCmPSOVNSvsPSOdsIILargeWins of \NCmPSOVNSvsPSOdsIILargeN, all-family Holm p <= \NXHolmPSOVNSvsPSOdsIILargeP ("gains in the larger layouts of Data Set II"; never "grows with N")
-% CHECK-EXTRA [X02]-[X09] (thresholds 1-30), [X11]/[X14] (clusters, LOCO), [X18]-[X20] (one Holm family; only the pooled N >= 10 subgroup, not used here, is lost)
+% CHECK-FINAL [C49]: PSO-VNS vs PSO equivalent at +-\NEqMargin (90% CI \NEqPSOVNSvsPSOCI); Bayes P(rope) = 0.997 in mpce_summary.json (C49 tests only > 0.5)
+% CHECK-FINAL [C08]/[C20]: hr16 feasible: PSOBV \NHRFeasPSOVNS, PSOC \NHRFeasPSO < 30
+% CHECK-FINAL [NEW, D2]/CHECK-EXTRA [X19]: DS II N >= 10: PSO-VNS lower in \NCmPSOVNSvsPSOdsIILargeWins of \NCmPSOVNSvsPSOdsIILargeN, all-family Holm p <= \NXHolmPSOVNSvsPSOdsIILargeP ("gains in larger Data Set II layouts")
+% CHECK-EXTRA [X02]-[X09], [X31] (thresholds 1-30), [X11]/[X14] (clusters, LOCO; exceptions only SSA-/LX-SSA-VNS vs RSD-VNS, worded per [X33]/[X34]), [X18]/[X35] (one Holm family; lost: \NXMultLostHolm, neither used here)
 % CHECK-FINAL [C01]: main.friedman.best_ranked == PSOBV; [C28]: feasible starts: \NFbFeasBestRank first
-% CHECK (manual): IEA37 gaps \NIEAGapSixteenThirtyK, \NIEAGapThirtySixThirtyK < 0 (best feasible published layouts)
+% CHECK (manual): IEA37 gaps \NIEAGapSixteenThirtyK, \NIEAGapThirtySixThirtyK < 0 (best published layouts)
 \end{abstract}
 
 \begin{IEEEkeywords}
