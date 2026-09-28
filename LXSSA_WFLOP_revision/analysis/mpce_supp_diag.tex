@@ -10,7 +10,7 @@
 
 \begin{table*}[!t]
 \centering
-\caption{PSO dynamics per case, old setting / constriction setting (10 seeds each, 6,030 evaluations). Spread: median over the runs of the swarm spread at the last iteration (m); $|V|$: median mean absolute velocity per coordinate at the last iteration (m); clipped: share of coordinates clipped per iteration (iterations 1--200); feasible, outside, spacing: share of particle evaluations in iterations 101--200 with a feasible layout, with a turbine outside the circle, with two turbines closer than $8R$; $\mathbf G$ feas.: runs whose final global best is feasible; $L$: median wake loss of the feasible final global bests (\%). Bottom: constraint violations of the final layouts of all stored runs of both settings (68 cases $\times$ 30 seeds).}
+\caption{PSO dynamics per case, old setting / constriction setting (10 seeds each, 6,030 evaluations). Spread: median over the runs of the swarm spread at the last iteration (m); $|V|$: median mean absolute velocity per coordinate at the last iteration (m); clipped: share of coordinates clipped per iteration (iterations 1--200); feasible, outside, spacing: share of particle evaluations in iterations 101--200 with a feasible layout, with a turbine outside the circle, with two turbines closer than $8R$; $\mathbf G$ feas.: runs whose final global best is feasible; $L$: median wake loss of the feasible final global bests (\%). Note below the table: violations of the infeasible evaluations and of the final layouts of all stored runs of both settings (68 cases $\times$ 30 seeds).}
 \label{tab:D-psodyn}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{lcccccccc}
@@ -25,11 +25,10 @@ II, 500, 10 & 197.8 / 14.5 & 125.4 / 4.8 & 8.4 / 1.5 & 0.0 / 27.2 & 89.9 / 36.2 
 II, 1000, 15 & 488.5 / 53.8 & 283.8 / 19.3 & 8.7 / 1.6 & 0.5 / 44.1 & 95.5 / 27.6 & 99.3 / 48.9 & 3 / 10 & 7.13 / 4.94 \\
 \midrule
 All 6 cases & 319.3 / 40.7 & 187.3 / 15.2 & 8.7 / 1.6 & 2.6 / 48.4 & 88.9 / 32.3 & 90.2 / 35.2 & 37 / 60 & \\
-\midrule
-\multicolumn{9}{l}{Final layouts of all stored runs (old / constriction): infeasible 282 / 0 of 2{,}040; of these, outside the circle only 6 / 0, spacing only 246 / 0, both 30 / 0;} \\
-\multicolumn{9}{l}{final layouts with a coordinate on the box bound: 68 / 2 (infeasible ones: 56 / 0).} \\
 \bottomrule
 \end{tabular}
+\\[3pt]
+\parbox{\textwidth}{\scriptsize Infeasible particle evaluations (iterations 1--200; old / constriction): 98.3 / 68.4\% of all; of these, outside the circle only 5.8 / 18.4\%, spacing only 7.9 / 34.3\%, both 86.3 / 47.3\%. Final layouts of all stored runs (old / constriction): infeasible 282 / 0 of 2{,}040; of these, outside the circle only 6 / 0, spacing only 246 / 0, both 30 / 0; final layouts with a coordinate on the box bound: 68 / 2 (infeasible ones: 56 / 0).}
 \end{table*}
 
 \begin{table}[!t]
@@ -37,6 +36,7 @@ All 6 cases & 319.3 / 40.7 & 187.3 / 15.2 & 8.7 / 1.6 & 2.6 / 48.4 & 88.9 / 32.3
 \caption{Inside the VNS phase (Phase~2) of the hybrids at 6,030 evaluations: 12 split cases (both data sets; $r=500, 750, 1000$~m with $N=6, 8, 10$ and $N=10, 12, 15$) $\times$ 10 seeds. A cycle is one shaking step followed by the complete local search (compass search); the first descent is the local search from the switch point, before any shaking. Improvement shares refer to the reduction of the wake loss in Phase~2 in the runs whose switch point is feasible; the remainder is found in a cycle cut off by the budget.}
 \label{tab:D-vns}
 \scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lccc}
 \toprule
  & PSO-VNS & SSA-VNS & RS-VNS \\
@@ -52,7 +52,7 @@ Shaking steps per run (median) & 1.0 & 1.0 & 0.0 \\
 \quad median for $N=10$ & 1.0 & 1.0 & 0.0 \\
 \quad median for $N=12$ & 0.0 & 0.0 & 0.0 \\
 \quad median for $N=15$ & 0.0 & 0.0 & 0.0 \\
-Local-search share of Phase-2 evaluations (\%) & 100.0 & 100.0 & 100.0 \\
+Shaking evaluations (\% of Phase~2; rest: local search) & 0.02 & 0.03 & 0.02 \\
 Accepted cycles per run (mean) & 0.1 & 0.1 & 0.1 \\
 \quad acceptance rate of cycles (\%) & 22.2 & 25.8 & 80.0 \\
 \quad share accepted with $k=1$ (\%) & 100.0 & 100.0 & 100.0 \\
@@ -66,37 +66,79 @@ Infeasible at switch, feasible after a cycle & 0 & 0 & 0 \\
 Feasible incumbent made infeasible & 0 & 0 & 0 \\
 Start is not the best feasible Phase-1 layout$^a$ & 0 & 0 & 0 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \\[2pt]\parbox{\columnwidth}{\scriptsize $^a$ runs in which Phase~1 evaluated at least one feasible layout but handed an infeasible or worse layout to VNS (the penalized comparison picks the best feasible layout whenever one exists).}
 \end{table}
 
 \begin{table}[!t]
 \centering
-\caption{Why PSO (constriction) and DE do not move from feasible starts: 3 cases (DS~I, 500~m, $N=10$; DS~II, 750~m, $N=12$; DS~I, 1000~m, $N=15$) $\times$ 3 seeds with feasibility-preserving initialization, 6,030 evaluations; every candidate is logged. Mixture test: first-update PSO candidates $\mathbf P^i+c_2\,\mathbf r\odot(\mathbf G-\mathbf P^i)$ between a particle's feasible start and the global best (200 draws per particle, separate random stream; $c_2=1.496$, independent $\mathbf r\sim U(0,1)$ per coordinate), with the original turbine labels and after relabelling the turbines of $\mathbf P^i$ to their nearest turbines of $\mathbf G$ (assignment problem); then, relabelled, without overshoot (weights in $[0,1]$) and with one common weight (a convex combination of the two layouts).}
+\caption{Why PSO (constriction) and DE do not move from feasible starts: the six largest cases and the Horns Rev~1 16-turbine block $\times$ 3 seeds with feasibility-preserving initialization, 6,030 evaluations; every candidate (trial) is logged; feasibility with the 1e-6~m tolerance of the paper. Mixture test: first-update PSO candidates $\mathbf P^i+c_2\,\mathbf r\odot(\mathbf G-\mathbf P^i)$ between a particle's feasible start and the global best (200 draws per particle, separate random stream; $c_2=1.496$, independent $\mathbf r\sim U(0,1)$ per coordinate, clipped to the box), with the original turbine labels and after relabelling the turbines of $\mathbf P^i$ to their nearest turbines of $\mathbf G$ (assignment problem); then, relabelled, without overshoot (weights in $[0,1]$) and with one common weight (a convex combination of the two layouts).}
 \label{tab:D-feasstart}
 \scriptsize\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcc}
 \toprule
  & PSO & DE \\
 \midrule
-Runs with an improved global best & 0 of 9 & 0 of 9 \\
-Feasible candidates (\% of 6,000) & 3.33 & 0.00 \\
-Feasible candidates at the first update (\%) & 3.3 & 0.0 \\
-Median minimum spacing at the first update (m; $8R=308$) & 92 & 84 \\
-Feasible candidates better than own $\mathbf P^i$ / than $\mathbf G$ & 0 / 0 & -- \\
-Accepted DE trials & -- & 0 \\
-Runs in which the $\mathbf G$-particle keeps $\mathbf V=\mathbf 0$ & 9 of 9 & -- \\
-Iterations with exactly one feasible candidate ($\mathbf G$ re-evaluated) & 1800 of 1800 & \\
-Candidates with a turbine outside the circle / spacing violation (\%) & 93.0 / 96.7 & \\
+Runs with an improved global best & 0 of 21 & 0 of 21 \\
+Candidates evaluated after the initial population & 126{,}000 & 126{,}000 \\
+\quad feasible (\%) & 3.33 & 0.00 \\
+\quad feasible, other than re-evaluations of $\mathbf G$ & 0 & 0 \\
+Infeasible candidates: outside the site only / spacing only / both (\%) & 0.0 / 3.6 / 96.4 & 0.0 / 0.6 / 99.4 \\
+Feasible at the first update (\%) & 3.3 & 0.0 \\
+Median min.\ spacing at the first update (m; limit 308, Horns Rev 320) & 95 & 84 \\
+Personal-best updates / accepted DE trials & 0 & 0 \\
+Feasible candidates better than $\mathbf G$ & 0 & 0 \\
+Runs in which the $\mathbf G$-particle keeps $\mathbf V=\mathbf 0$ & 21 of 21 & -- \\
+Iterations with exactly one feasible candidate ($\mathbf G$ re-evaluated) & 4{,}200 of 4{,}200 & -- \\
 \midrule
-\multicolumn{3}{l}{Mixture test (feasible \% / turbine outside the circle \% / median min.\ spacing, m):} \\
-\quad first PSO move, original labels & \multicolumn{2}{l}{0.0 / 92.7 / 92} \\
-\quad first PSO move, relabelled & \multicolumn{2}{l}{0.1 / 81.7 / 192} \\
-\quad relabelled, weights in $[0,1]$ & \multicolumn{2}{l}{0.8 / 43.3 / 224} \\
-\quad relabelled, one weight (convex comb.) & \multicolumn{2}{l}{15.2 / 0.0 / 283} \\
+\multicolumn{3}{l}{Mixture test (feasible \% / turbine outside the site \% / median min.\ spacing, m):} \\
+\quad first PSO move, original labels & \multicolumn{2}{l}{0.0 / 93.1 / 91} \\
+\quad first PSO move, relabelled & \multicolumn{2}{l}{0.1 / 80.3 / 189} \\
+\quad relabelled, weights in $[0,1]$ & \multicolumn{2}{l}{0.8 / 39.4 / 222} \\
+\quad relabelled, one weight (convex comb.) & \multicolumn{2}{l}{16.6 / 0.0 / 286} \\
+Initial layouts: RMS turbine distance to $\mathbf G$ after relabelling (m, median / min) & 291 / 111 & \\
 \midrule
-Initial layouts: RMS turbine distance to $\mathbf G$ after relabelling (m, median / min) & 273 / 111 & \\
-Stored runs (6 largest cases and Horns Rev~1, 30 seeds): final $\ne$ best initial & 0 of 210 & 0 of 210 \\
+All stored runs of the paper (30 seeds): final $\ne$ best initial layout & 0 of 210 & 0 of 210 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[!t]
+\centering
+\caption{Phase~1 of RS-VNS replayed (geometry only, the seeded random stream of the runs): feasible samples among the 3,015 uniform samples in the bounding square, over 30 seeds (90,450 samples per row; the geometry is the same for both data sets). Inside: all $N$ turbines inside the circle, observed rate and $(\pi/4)^N$. Disc: Monte Carlo feasibility rate of the same number of samples uniform in the disc (the Phase-1 distribution of the planned control RSDVNS). Rows with $N\le 5$ at 750 and 1000~m omitted (all 30 seeds have feasible samples).}
+\label{tab:D-rsreplay}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{rrrrrrr}
+\toprule
+$r$ (m) & $N$ & feasible & seeds with one & inside (\%) & $(\pi/4)^N$ (\%) & disc feasible (\%) \\
+\midrule
+500 & 2 & 39{,}952 & 30 & 61.45 & 61.69 & 71.9 \\
+500 & 3 & 15{,}525 & 30 & 48.32 & 48.45 & 35.4 \\
+500 & 4 & 3{,}740 & 30 & 37.94 & 38.05 & 11.1 \\
+500 & 5 & 546 & 30 & 29.76 & 29.88 & 2.11 \\
+500 & 6 & 53 & 23 & 23.12 & 23.47 & 0.186 \\
+500 & 7 & 1 & 1 & 18.19 & 18.43 & 0.0166 \\
+500 & 8 & 0 & 0 & 14.22 & 14.48 & 0 \\
+500 & 9 & 0 & 0 & 11.19 & 11.37 & 0 \\
+500 & 10 & 0 & 0 & 8.70 & 8.93 & 0 \\
+750 & 6 & 1{,}698 & 30 & 23.12 & 23.47 & 8.28 \\
+750 & 7 & 458 & 30 & 18.19 & 18.43 & 2.71 \\
+750 & 8 & 75 & 25 & 14.22 & 14.48 & 0.711 \\
+750 & 9 & 15 & 13 & 11.19 & 11.37 & 0.129 \\
+750 & 10 & 2 & 2 & 8.70 & 8.93 & 0.0155 \\
+750 & 11 & 0 & 0 & 6.89 & 7.01 & 0.00221 \\
+750 & 12 & 0 & 0 & 5.44 & 5.51 & 0 \\
+1000 & 6 & 5{,}275 & 30 & 23.12 & 23.47 & 25.1 \\
+1000 & 7 & 2{,}264 & 30 & 18.19 & 18.43 & 14.1 \\
+1000 & 8 & 906 & 30 & 14.22 & 14.48 & 7.03 \\
+1000 & 9 & 280 & 30 & 11.19 & 11.37 & 3.11 \\
+1000 & 10 & 101 & 27 & 8.70 & 8.93 & 1.25 \\
+1000 & 11 & 23 & 15 & 6.89 & 7.01 & 0.385 \\
+1000 & 12 & 8 & 8 & 5.44 & 5.51 & 0.138 \\
+1000 & 13 & 1 & 1 & 4.21 & 4.33 & 0.0376 \\
+1000 & 14 & 0 & 0 & 3.26 & 3.40 & 0.00663 \\
+1000 & 15 & 0 & 0 & 2.64 & 2.67 & 0.00111 \\
 \bottomrule
 \end{tabular}
 \end{table}

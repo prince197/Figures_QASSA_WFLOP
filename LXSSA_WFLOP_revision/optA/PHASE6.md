@@ -55,3 +55,10 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
 - optA/supp_theory.tex → \input in supplement (sec:S-theory); replace its two \TBD with W3 section refs; cite Benavoli2017 in sec:S-th-equiv.
 - prop:S-prefix: PSO-VNS final value never worse than PSO's value at B1 (exact prefix property) — useful for the equivalence discussion.
 - checks T01–T13: python analysis/make_theory_figures.py --check (3 min) → add to reproducibility map (not to every build).
+
+## W3 results (diagnostics) — notes for Phase B (CONTRADICTIONS to fix in text)
+- At 6,030 evaluations the "VNS phase" is essentially ONE compass-search descent (shaking 0.02 % of evals, 0.5 % of gain; no shaking for N ≥ 12; k ≥ 3 never tried). Text must say so honestly: the component analysis measures the value of a local-search (compass-search) phase; the VNS neighbourhood structure matters only for small N. (D08–D10)
+- Old PSO setting: swarm spread 8.9×, |V| 13× the constriction setting; clipped 8.7 % vs 1.6 %; feasible particle evals 2.6 % vs 48.4 %. BUT stored infeasible final layouts are mostly SPACING-only (246/282): boundary penalty is in m² vs spacing in m → the best infeasible layout lies inside the circle with turbines too close. Replace "corners explain" in 04/06. (D03–D07)
+- Feasible starts: label symmetry does NOT explain the stall (relabelling: 0.1 % feasible). Cause: independent per-coordinate weights with overshoot + spacing violations between distinct dense layouts; G-holder frozen (V = 0); no pbest ever updates; DE 0 of 126,000 trials feasible. Replace 08 wording. (D13–D16)
+- RS-VNS: 730 of 2,040 runs have no feasible sample at all; replay agrees with (π/4)^N. (D17)
+- Cloud experiments: omega90 (4 shards), rsdisc (8 shards). Pipeline must learn PSOBV90 and RSDVNS.
