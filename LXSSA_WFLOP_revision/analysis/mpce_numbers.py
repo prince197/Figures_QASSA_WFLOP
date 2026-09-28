@@ -69,6 +69,30 @@ def pval(p):
     return f"{p:.2g}" if p < 0.1 else f"{p:.2f}"
 
 
+def pval_up(p):
+    """like pval, but rounded UP (for bounds such as "p_Holm <= x", R3 item 9): the printed value is never
+    smaller than p."""
+    if p is None or not math.isfinite(p):
+        raise ValueError("missing p")
+    if p >= 0.995:
+        return "1.0"
+    e = math.floor(math.log10(p))
+    if p < 1e-3:
+        m = math.ceil(p / 10 ** e * 10 - 1e-9) / 10
+        if m >= 10:
+            m, e = 1.0, e + 1
+        return f"\\ensuremath{{{m:.1f}\\times10^{{{e}}}}}"
+    step = 10 ** (e - 1) if p < 0.1 else 0.01            # two significant digits (0.1 <= p: two decimals)
+    v = math.ceil(p / step - 1e-9) * step
+    d = max(0, -(e - 1)) if p < 0.1 else 2
+    return f"{v:.{d}f}"
+
+
+def ceil_num(v, d=2):
+    """number rounded UP to d decimals (for bounds such as "within x")."""
+    return num(math.ceil(v * 10 ** d - 1e-9) / 10 ** d, d)
+
+
 def listing(items):
     items = list(items)
     if len(items) <= 1:
@@ -119,6 +143,11 @@ class Macros:
 def build(s, allow_partial=False):
     M = Macros(s, allow_partial)
     P = M.put
+    # Horns Rev: once any mpce_hrfix shard exists, every Horns Rev number comes from it (mpce_results.py drops
+    # the old-model runs) and the Horns Rev macros are pending until all hrfix shards are present
+    hrfix = M.status.get("hrfix", "missing") != "missing"
+    REQ_HRX = ("hrfix",) if hrfix else REQ_HR
+    hr_req = lambda req: REQ_HRX if hrfix else req + REQ_HR
     main = s.get("main") or {}
     fr = main.get("friedman") or {}
     cw = main.get("case_mean_wilcoxon") or {}
@@ -146,7 +175,7 @@ def build(s, allow_partial=False):
     sig = [a for a in order if a in ph and ph[a] < 0.05]
     ns = [a for a in order if a in ph and ph[a] >= 0.05]
     P("NPostHocSigList", lambda: listing(LAB[a] for a in sig) if sig else "none of the other methods", REQ_MAIN)
-    P("NPostHocSigMaxP", lambda: pval(max(ph[a] for a in sig)), REQ_MAIN)
+    P("NPostHocSigMaxP", lambda: pval_up(max(ph[a] for a in sig)), REQ_MAIN)       # used as "p_Holm <= x"
     P("NPostHocNonSigList", lambda: listing(LAB[a] for a in ns) if ns else "any method", REQ_MAIN)
     P("NPostHocNonSigP", lambda: pval(min(ph[a] for a in ns)) if ns else "--", REQ_MAIN)
     for b in others:
@@ -240,7 +269,8 @@ def build(s, allow_partial=False):
     P("NAblNVar", lambda: WORD[len(fa["avg_rank"])], REQ_ABL)
     P("NAblOrder", lambda: listing(f"{LAB[a]} ({num(v, 2)})" for a, v in sorted(fa["avg_rank"].items(), key=lambda t: t[1])), REQ_ABL)
     ct = ab.get("contrasts") or {}
-    for key in ("PSOBV-PSOC", "PSOBV-BVNS", "PSOBV-RSVNS", "PSOBV-SSABV", "PSOBV-LXBV", "SSABV-RSVNS", "SSABV-LXBV", "LXSSA-SSA"):
+    for key in ("PSOBV-PSOC", "PSOBV-BVNS", "PSOBV-RSVNS", "PSOBV-SSABV", "PSOBV-LXBV", "SSABV-RSVNS", "SSABV-LXBV", "LXSSA-SSA",
+                "SSABV-SSA", "LXBV-LXSSA", "LXBV-RSVNS"):
         a, b = key.split("-")
         nm = f"NAbl{CODE[a]}vs{CODE[b]}"
         P(nm, lambda key=key: "%d/%d/%d" % wtl(ct[key]), REQ_ABL)
@@ -267,17 +297,17 @@ def build(s, allow_partial=False):
     # ---------------- Horns Rev 16
     hr = s.get("hr16") or {}
     hm = hr.get("methods") or {}
-    P("NHRInstalled", lambda: num(hr["installed_aep"], 2), REQ_HR)
-    P("NHRInstalledLoss", lambda: num(hr["installed_loss_pct"], 2), REQ_HR)
-    P("NHRIdeal", lambda: num(hr["ideal_aep"], 2), REQ_HR)
+    P("NHRInstalled", lambda: num(hr["installed_aep"], 2), REQ_HRX)
+    P("NHRInstalledLoss", lambda: num(hr["installed_loss_pct"], 2), REQ_HRX)
+    P("NHRIdeal", lambda: num(hr["ideal_aep"], 2), REQ_HRX)
     for a in M10:
         c = CODE[a]
-        P(f"NHRMean{c}", lambda a=a: numd(hm[a]["mean"], 2), REQ_HR)
-        P(f"NHRBest{c}", lambda a=a: numd(hm[a]["best"], 2), REQ_HR)
-        P(f"NHRFeas{c}", lambda a=a: f"{hm[a]['feasible']}/{hm[a]['runs']}", REQ_HR)
-        P(f"NHRAbove{c}", lambda a=a: str(hm[a]["runs_above_installed"]), REQ_HR)
-    P("NHRSDPSOVNS", lambda: num(hm["PSOBV"]["sd"], 2), REQ_HR)
-    P("NHRLossSixKPSOVNS", lambda: num(hm["PSOBV"]["loss_pct"], 2), REQ_HR)
+        P(f"NHRMean{c}", lambda a=a: numd(hm[a]["mean"], 2), REQ_HRX)
+        P(f"NHRBest{c}", lambda a=a: numd(hm[a]["best"], 2), REQ_HRX)
+        P(f"NHRFeas{c}", lambda a=a: f"{hm[a]['feasible']}/{hm[a]['runs']}", REQ_HRX)
+        P(f"NHRAbove{c}", lambda a=a: str(hm[a]["runs_above_installed"]), REQ_HRX)
+    P("NHRSDPSOVNS", lambda: num(hm["PSOBV"]["sd"], 2), REQ_HRX)
+    P("NHRLossSixKPSOVNS", lambda: num(hm["PSOBV"]["loss_pct"], 2), REQ_HRX)
 
     def above_phrase():
         o = [a for a in M10 if a != focus and a in hm and hm[a]["runs_above_installed"] > 0]
@@ -286,19 +316,19 @@ def build(s, allow_partial=False):
         runs = lambda k: f"{WORD.get(k, k)} run{'s' if k != 1 else ''}"
         return ("of the other methods, only " + listing(f"{LAB[a]} ({runs(hm[a]['runs_above_installed'])})" for a in o)
                 + (" does so" if len(o) == 1 else " do so"))
-    P("NHRAboveOthersPhrase", above_phrase, REQ_HR)
-    P("NHRMaxP", lambda: pval(max(v["p_holm"] for a, v in hm.items() if a != focus and v.get("p_holm") is not None)), REQ_HR)
+    P("NHRAboveOthersPhrase", above_phrase, REQ_HRX)
+    P("NHRMaxP", lambda: pval_up(max(v["p_holm"] for a, v in hm.items() if a != focus and v.get("p_holm") is not None)), REQ_HRX)   # "p_Holm <= x"
     P("NHRAboveOthers", lambda: (lambda o: "no other method" if not o else listing(f"{LAB[a]} ({hm[a]['runs_above_installed']})" for a in o))(
-        [a for a in M10 if a != focus and a in hm and hm[a]["runs_above_installed"] > 0]), REQ_HR)
+        [a for a in M10 if a != focus and a in hm and hm[a]["runs_above_installed"] > 0]), REQ_HRX)
     lb = hr.get("loss_by_setting") or {}
     for tag, nm, req in (("6030F", "FeasInit", REQ_FEAS), ("30030R", "ThirtyK", REQ_B30), ("120030R", "OneTwentyK", REQ_B120)):
-        P(f"NHRLoss{nm}PSOVNS", lambda tag=tag: num(lb["PSOBV"][tag]["loss"], 2), req + REQ_HR)
-        P(f"NHRMean{nm}PSOVNS", lambda tag=tag: num(lb["PSOBV"][tag]["mean_aep"], 2), req + REQ_HR)
-        P(f"NHRAbove{nm}PSOVNS", lambda tag=tag: str(lb["PSOBV"][tag]["runs_above_installed"]), req + REQ_HR)
-        P(f"NHRFeas{nm}PSO", lambda tag=tag: f"{lb['PSOC'][tag]['feasible']}/{lb['PSOC'][tag]['runs']}", req + REQ_HR)
+        P(f"NHRLoss{nm}PSOVNS", lambda tag=tag: num(lb["PSOBV"][tag]["loss"], 2), hr_req(req))
+        P(f"NHRMean{nm}PSOVNS", lambda tag=tag: num(lb["PSOBV"][tag]["mean_aep"], 2), hr_req(req))
+        P(f"NHRAbove{nm}PSOVNS", lambda tag=tag: str(lb["PSOBV"][tag]["runs_above_installed"]), hr_req(req))
+        P(f"NHRFeas{nm}PSO", lambda tag=tag: f"{lb['PSOC'][tag]['feasible']}/{lb['PSOC'][tag]['runs']}", hr_req(req))
     # Horns Rev 1 block at 30,030 evaluations (PSO-VNS): mean AEP and runs above the installed layout ('x of y')
-    P("NHRThirtyKMean", lambda: num(lb["PSOBV"]["30030R"]["mean_aep"], 2), REQ_B30 + REQ_HR)
-    P("NHRThirtyKAbove", lambda: f"{lb['PSOBV']['30030R']['runs_above_installed']} of {lb['PSOBV']['30030R']['runs']}", REQ_B30 + REQ_HR)
+    P("NHRThirtyKMean", lambda: num(lb["PSOBV"]["30030R"]["mean_aep"], 2), hr_req(REQ_B30))
+    P("NHRThirtyKAbove", lambda: f"{lb['PSOBV']['30030R']['runs_above_installed']} of {lb['PSOBV']['30030R']['runs']}", hr_req(REQ_B30))
 
     # ---------------- feasible initialization and budget (six largest benchmark cases)
     fb = s.get("feasbudget") or {}
@@ -307,8 +337,8 @@ def build(s, allow_partial=False):
         c = CODE[a]
         P(f"NFbRandFeas{c}", lambda a=a: num(ran[a]["feas"], 1), REQ_MAIN)
         P(f"NFbRandLoss{c}", lambda a=a: numd(ran[a]["loss"], 2), REQ_MAIN)
-        P(f"NFbFeasFeas{c}", lambda a=a: num(fea[a]["feas"], 1), REQ_FEAS)
-        P(f"NFbFeasLoss{c}", lambda a=a: numd(fea[a]["loss"], 2), REQ_FEAS)
+        P(f"NFbFeasFeas{c}", lambda a=a: "n/r" if a == "RSVNS" and not fea.get(a) else num(fea[a]["feas"], 1), REQ_FEAS)
+        P(f"NFbFeasLoss{c}", lambda a=a: "n/r" if a == "RSVNS" and not fea.get(a) else numd(fea[a]["loss"], 2), REQ_FEAS)
     P("NFbFeasBestLoss", lambda: LAB[min((a for a in fea if fea[a] and fea[a]["loss"] is not None), key=lambda a: fea[a]["loss"])], REQ_FEAS)
     P("NFbFeasBestRank", lambda: LAB[min(fb["rank_feasible_init"], key=fb["rank_feasible_init"].get)], REQ_FEAS)
     P("NFbFeasRankPSOVNS", lambda: num(fb["rank_feasible_init"]["PSOBV"], 2), REQ_FEAS)
