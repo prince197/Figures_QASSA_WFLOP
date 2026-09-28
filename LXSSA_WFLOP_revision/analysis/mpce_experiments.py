@@ -166,6 +166,16 @@ def tasks(exp):
         return [(run_grid, (a, *c, s, 6030, "random")) for c in SPLITCASES for a in ("SSABV25", "SSABV75") for s in S30]
     if exp == "hr16new":
         return [(run_hr, (a, 16, s, 6030, "random")) for a in ("PSOC", "RSVNS") for s in S30]
+    if exp == "hrfix":
+        # all Horns Rev 1 16-turbine runs again with the corrected direction binning of hornsrev_model
+        # (2026-09-28): 10 methods (M9 + PSO-VNS); 6,030 random / 6,030 feasible (no RS-VNS) /
+        # 30,030 random (30 seeds each) and 120,030 random (10 seeds); heaviest first
+        m10 = M9 + ["PSOBV"]
+        tl = [(run_hr, (a, 16, s, 120030, "random")) for a in m10 for s in range(1, 11)]
+        tl += [(run_hr, (a, 16, s, 30030, "random")) for a in m10 for s in S30]
+        tl += [(run_hr, (a, 16, s, 6030, "random")) for a in m10 for s in S30]
+        tl += [(run_hr, (a, 16, s, 6030, "feasible")) for a in m10 if a != "RSVNS" for s in S30]
+        return tl
     if exp == "feasx":
         # feasible initialization without RS-VNS: with feasible initialization RS-VNS must build
         # ~3,000 feasible random layouts per run (one packing solve each), about 100x the cost of

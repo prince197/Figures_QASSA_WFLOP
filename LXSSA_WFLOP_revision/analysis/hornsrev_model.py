@@ -3,8 +3,11 @@
 Data (DTU PyWake 2.6.20, py_wake/examples/data/hornsrev1.py, MIT licence): installed layout of
 80 Vestas V80 turbines, the V80 power and thrust-coefficient curves, and the 12-sector Weibull
 wind climate. Model: Jensen top-hat wake with k = 0.04, hub-centre in-wake test, root-sum-square
-superposition, thrust coefficient at the free-stream speed, 5-degree direction bins (sector
-parameters of the nearest 30-degree sector) and 1 m/s speed bins from 3 to 25 m/s.
+superposition, thrust coefficient at the free-stream speed, 5-degree direction bins centred at
+2.5, 7.5, ..., 357.5 deg (each 30-degree sector split into exactly six bins that carry its Weibull
+parameters and one sixth of its frequency) and 1 m/s speed bins from 3 to 25 m/s.
+(Earlier versions centred the bins at 0, 5, ..., 355 deg and assigned them with np.round, which rounds
+halves to even and gave the sectors 7 and 5 bins alternately -- total frequency 1.003; fixed 2026-09-28.)
 """
 import numpy as np
 
@@ -27,8 +30,8 @@ SEC_A = np.array([9.176929, 9.782334, 9.531809, 9.909545, 10.04269, 9.593921,
 SEC_K = np.array([2.392578, 2.447266, 2.412109, 2.591797, 2.755859, 2.595703,
                   2.583984, 2.548828, 2.470703, 2.607422, 2.626953, 2.326172])
 
-WD = np.arange(0.0, 360.0, 5.0)                        # meteorological "from" direction
-_SEC = (np.round(WD / 30.0).astype(int)) % 12          # nearest sector
+WD = np.arange(2.5, 360.0, 5.0)                        # meteorological "from" direction (bin centres)
+_SEC = (np.floor((WD + 15.0) / 30.0).astype(int)) % 12  # sector containing the bin (exactly 6 bins each)
 F_WD = SEC_F[_SEC] / 6.0
 A_WD, K_WD = SEC_A[_SEC], SEC_K[_SEC]
 TOWARD = np.deg2rad(270.0 - WD)                         # direction the wind blows towards
