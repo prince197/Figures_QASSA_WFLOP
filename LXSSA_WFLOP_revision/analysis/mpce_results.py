@@ -485,12 +485,13 @@ def equivalence_block(S, SA, G, summary, supp):
     f3 = lambda v: f"{v:.3f}".replace("-", "$-$")
     ci = lambda c: f"[{f3(c[0])}, {f3(c[1])}]"
     up3 = lambda v: f"{np.ceil(v * 1000 - 1e-9) / 1000:.3f}"
+    pr2 = lambda v: "$>$0.99" if v > 0.99 else "$<$0.01" if v < 0.01 else f"{v:.2f}"     # never 1.00 / 0.00
     def row(key):
         a, b = key.split("-"); r = pairs[key]; y = r["bayes"]
         pt = ("$\\le" + fmt_p(r["p_tost"], 2).strip("$") + "$") if r["p_tost_at_floor"] else fmt_p(r["p_tost"])
         return (f"{LAB[a]} vs.\\ {LAB[b]} & {r['n_cases']} & ${r['mean_dloss_pp']:+.3f}$ & {ci(r['ci95_mean_dloss_pp'])} & "
                 f"{ci(r['ci90_mean_dloss_pp'])} & {pt} & {up3(r['min_margin_pp'])} & {'yes' if r['equivalent'] else 'no'} & "
-                f"{y['p_a_better']:.2f} & {y['p_rope']:.2f} & {y['p_b_better']:.2f} \\\\")
+                f"{pr2(y['p_a_better'])} & {pr2(y['p_rope'])} & {pr2(y['p_b_better'])} \\\\")
     ab_ = [k for k in EQ_PAIRS_ABL if k in pairs]
     mn_ = [k for k in main_pairs if k in pairs and k not in ab_]
     dup = [k for k in main_pairs if k in ab_]

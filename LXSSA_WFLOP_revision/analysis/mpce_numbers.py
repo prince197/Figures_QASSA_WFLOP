@@ -12,29 +12,31 @@ The main comparison uses the old-platform MS-SLSQP runs until mpce_slsqp exists 
 these macros are NOT marked pending, because the SLSQP rerun only replaces one baseline.
 
 Macro names contain letters only. Method codes: PSOVNS (PSOBV), PSO (PSOC, constriction coefficients),
-SSAVNS (SSABV), SSA, LXSSA, DE, VNS (BVNS), SLSQP (MS-SLSQP), LXSSAVNS (LXBV), RSVNS.
+SSAVNS (SSABV), SSA, LXSSA, DE, VNS (BVNS), SLSQP (MS-SLSQP), LXSSAVNS (LXBV), RSVNS, RSDVNS (RSD-VNS, the Phase-6
+disc-sampling control, experiment rsdisc). Split settings: TwentyFive / Fifty / SeventyFive / Ninety (PSOBV90, Phase-6
+experiment omega90) / Hundred (PSO alone).
 """
 import os, json, argparse, math
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CODE = {"PSOBV": "PSOVNS", "PSOC": "PSO", "SSABV": "SSAVNS", "SSA": "SSA", "LXSSA": "LXSSA", "DE": "DE",
-        "BVNS": "VNS", "SLSQP": "SLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS"}
+        "BVNS": "VNS", "SLSQP": "SLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS", "RSDVNS": "RSDVNS"}
 LAB = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "DE": "DE",
-       "BVNS": "VNS", "SLSQP": "MS-SLSQP", "LXBV": "LX-SSA-VNS", "RSVNS": "RS-VNS"}
+       "BVNS": "VNS", "SLSQP": "MS-SLSQP", "LXBV": "LX-SSA-VNS", "RSVNS": "RS-VNS", "RSDVNS": "RSD-VNS"}
 MAIN8 = ["PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP"]
 M10 = ["PSOBV", "SSABV", "LXBV", "RSVNS", "BVNS", "PSOC", "SSA", "LXSSA", "DE", "SLSQP"]
 ORD = {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth", 7: "seventh", 8: "eighth",
        9: "ninth", 10: "tenth"}
 WORD = {0: "no", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight",
-        9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
+        9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", 15: "fifteen", 16: "sixteen"}
 BUDGETS = (6030, 30030, 120030)
 BNAME = {6030: "SixK", 30030: "ThirtyK", 120030: "OneTwentyK"}
 BTXT = {6030: "6{,}030", 30030: "30{,}030", 120030: "120{,}030"}
 
 # experiments each group of macros needs (see the module docstring)
 REQ_MAIN = ("psobv", "psoc")
-REQ_ABL = ("psobv", "psoc", "rsvns")
-REQ_SPLIT = ("psosplit",)
+REQ_ABL = ("psobv", "psoc", "rsvns", "rsdisc")    # Phase 6: RSD-VNS is a variant of the component analysis (ranks, Holm family)
+REQ_SPLIT = ("psosplit", "omega90")                # Phase 6: omega = 0.9 is a setting of the split table (ranks, Holm family)
 REQ_HR = ("psobv", "hr16new")
 REQ_FEAS = ("feas", "feasp")
 REQ_B30 = ("b30k", "b30kp")
@@ -86,6 +88,18 @@ def pval_up(p):
     v = math.ceil(p / step - 1e-9) * step
     d = max(0, -(e - 1)) if p < 0.1 else 2
     return f"{v:.{d}f}"
+
+
+def prob(v):
+    """posterior probability for print (the \\NBay... macros): two decimals, but ">0.99" above 0.99 and "<0.01" below
+    0.01 (never 1.00 / 0.00); \\ensuremath, so the macro works in text and in math."""
+    if v is None or not math.isfinite(v):
+        raise ValueError("missing probability")
+    if v > 0.99:
+        return "\\ensuremath{>0.99}"
+    if v < 0.01:
+        return "\\ensuremath{<0.01}"
+    return num(v, 2)
 
 
 def ceil_num(v, d=2):
@@ -233,7 +247,7 @@ def build(s, allow_partial=False):
     P("NPhTwoMadeFeas", lambda: str(p2["PSOBV"]["infeasible_at_switch_made_feasible"]), REQ_ABL)
     P("NPsoContMean", lambda: num(p2["PSOC_continued"]["mean"], 1), REQ_ABL)
     P("NPsoContMedian", lambda: num(p2["PSOC_continued"]["median"], 1), REQ_ABL)
-    for a in ("PSOBV", "SSABV", "LXBV", "RSVNS"):
+    for a in ("PSOBV", "SSABV", "LXBV", "RSVNS", "RSDVNS"):
         P(f"NPhTwoMean{CODE[a]}", lambda a=a: num(p2[a]["mean"], 1), REQ_ABL)
         P(f"NSwitchFeas{CODE[a]}", lambda a=a: num(p2[a]["feasible_at_switch_pct"], 1), REQ_ABL)
         P(f"NSwitchLoss{CODE[a]}", lambda a=a: num(p2[a]["mean_loss_at_switch_pct"], 2), REQ_ABL)
@@ -270,7 +284,7 @@ def build(s, allow_partial=False):
     P("NAblOrder", lambda: listing(f"{LAB[a]} ({num(v, 2)})" for a, v in sorted(fa["avg_rank"].items(), key=lambda t: t[1])), REQ_ABL)
     ct = ab.get("contrasts") or {}
     for key in ("PSOBV-PSOC", "PSOBV-BVNS", "PSOBV-RSVNS", "PSOBV-SSABV", "PSOBV-LXBV", "SSABV-RSVNS", "SSABV-LXBV", "LXSSA-SSA",
-                "SSABV-SSA", "LXBV-LXSSA", "LXBV-RSVNS"):
+                "SSABV-SSA", "LXBV-LXSSA", "LXBV-RSVNS", "PSOBV-RSDVNS", "SSABV-RSDVNS", "LXBV-RSDVNS", "RSDVNS-RSVNS"):
         a, b = key.split("-")
         nm = f"NAbl{CODE[a]}vs{CODE[b]}"
         P(nm, lambda key=key: "%d/%d/%d" % wtl(ct[key]), REQ_ABL)
@@ -424,7 +438,9 @@ def build(s, allow_partial=False):
     cm = ab.get("case_mean") or {}
     CMP = {"SSAVNSvsRSVNS": "SSABV-RSVNS", "LXSSAVNSvsRSVNS": "LXBV-RSVNS", "PSOVNSvsRSVNS": "PSOBV-RSVNS",
            "SSAVNSvsLXSSAVNS": "SSABV-LXBV", "LXSSAvsSSA": "LXSSA-SSA", "SSAVNSvsSSA": "SSABV-SSA",
-           "LXSSAVNSvsLXSSA": "LXBV-LXSSA", "PSOVNSvsPSO": "PSOBV-PSOC", "PSOVNSvsVNS": "PSOBV-BVNS"}
+           "LXSSAVNSvsLXSSA": "LXBV-LXSSA", "PSOVNSvsPSO": "PSOBV-PSOC", "PSOVNSvsVNS": "PSOBV-BVNS",
+           "SSAVNSvsRSDVNS": "SSABV-RSDVNS", "LXSSAVNSvsRSDVNS": "LXBV-RSDVNS", "PSOVNSvsRSDVNS": "PSOBV-RSDVNS",
+           "RSDVNSvsRSVNS": "RSDVNS-RSVNS"}
     for nm, key in CMP.items():
         P(f"NCm{nm}P", lambda key=key: pval(cm[key]["p"]), REQ_ABL)
         P(f"NCm{nm}PHolm", lambda key=key: pval(cm[key]["p_holm"]), REQ_ABL)
@@ -439,19 +455,22 @@ def build(s, allow_partial=False):
     # fixed seed) as "[a, b]"; P = bootstrap TOST p (add-one; at its floor 1/10001 it is a bound, see
     # p_tost_at_floor); Min = smallest margin at which equivalence holds, rounded UP to 3 decimals; Holds =
     # "yes" iff the 90 % CI lies inside (-m, m). Bay...: Bayesian signed-rank test (Benavoli et al. 2017) with
-    # ROPE (-m, m): Better = P(A better), Rope = P(practically equivalent), Worse = P(B better), 2 decimals.
+    # ROPE (-m, m): Better = P(A better), Rope = P(practically equivalent), Worse = P(B better), 2 decimals (prob():
+    # "\\ensuremath{>0.99}" above 0.99, "\\ensuremath{<0.01}" below 0.01).
     eq = s.get("equivalence") or {}
     eqp = eq.get("pairs") or {}
     P("NEqMargin", lambda: num(eq["margin_pp"], 2), REQ_ABL)
     for nm, key in (("PSOVNSvsPSO", "PSOBV-PSOC"), ("SSAVNSvsRSVNS", "SSABV-RSVNS"), ("LXSSAVNSvsRSVNS", "LXBV-RSVNS"),
-                    ("PSOVNSvsRSVNS", "PSOBV-RSVNS"), ("SSAVNSvsLXSSAVNS", "SSABV-LXBV")):
+                    ("PSOVNSvsRSVNS", "PSOBV-RSVNS"), ("SSAVNSvsLXSSAVNS", "SSABV-LXBV"),
+                    ("SSAVNSvsRSDVNS", "SSABV-RSDVNS"), ("LXSSAVNSvsRSDVNS", "LXBV-RSDVNS"), ("PSOVNSvsRSDVNS", "PSOBV-RSDVNS"),
+                    ("RSDVNSvsRSVNS", "RSDVNS-RSVNS")):
         P(f"NEq{nm}CI", lambda key=key: "[%s, %s]" % tuple(num(v, 3) for v in eqp[key]["ci90_mean_dloss_pp"]), REQ_ABL)
         P(f"NEq{nm}P", lambda key=key: pval(eqp[key]["p_tost"]), REQ_ABL)
         P(f"NEq{nm}Min", lambda key=key: ceil_num(eqp[key]["min_margin_pp"], 3), REQ_ABL)
         P(f"NEq{nm}Holds", lambda key=key: "yes" if eqp[key]["equivalent"] else "no", REQ_ABL)
-        P(f"NBay{nm}Better", lambda key=key: num(eqp[key]["bayes"]["p_a_better"], 2), REQ_ABL)
-        P(f"NBay{nm}Rope", lambda key=key: num(eqp[key]["bayes"]["p_rope"], 2), REQ_ABL)
-        P(f"NBay{nm}Worse", lambda key=key: num(eqp[key]["bayes"]["p_b_better"], 2), REQ_ABL)
+        P(f"NBay{nm}Better", lambda key=key: prob(eqp[key]["bayes"]["p_a_better"]), REQ_ABL)
+        P(f"NBay{nm}Rope", lambda key=key: prob(eqp[key]["bayes"]["p_rope"]), REQ_ABL)
+        P(f"NBay{nm}Worse", lambda key=key: prob(eqp[key]["bayes"]["p_b_better"]), REQ_ABL)
     # spread and worst run, PSO-VNS vs PSO (summary spread): mean over the cases of the per-case SD of the
     # feasible-run wake loss (pp, 3 decimals); cases in which PSO-VNS has the smaller / larger SD and the better /
     # worse worst feasible run (ties excluded); Wilcoxon p on the per-case SDs / worst runs (unadjusted)
@@ -522,6 +541,41 @@ def build(s, allow_partial=False):
     P("NBoundMaxP", lambda: pval_up(br["max_p"]), ())
     P("NBoundDiffMin", lambda: num(br["min_diff"], 0), ())
     P("NBoundDiffMax", lambda: num(br["max_diff"], 0), ())
+
+    # ---------------- Phase-6 macro contract (optA/phase6_macros_stub.tex): omega = 0.9 and the disc-sampling control
+    # budget split with omega = 0.9 (PSOBV90, 5,430 PSO evaluations): mean loss (%), average rank among the settings of
+    # Table split, and the run-level W/T/L of omega = 0.9 against omega = 0.75 FROM THE omega = 0.9 SIDE (W = 0.9
+    # significantly better; same Holm family as the table, over the comparisons of each case). SeventyFiveVsNinety:
+    # the same tally from the 0.75 side; FiftyVsNinety: 0.5 against 0.9 (0.5 side, the table column).
+    P("NSplitLossNinety", lambda: num(sp["mean_loss"]["PSOBV90"], 3), REQ_SPLIT)
+    P("NSplitRankNinety", lambda: num(sp["avg_rank"]["PSOBV90"], 2), REQ_SPLIT)
+    P("NSplitBestNinety", lambda: WORD.get(sp["best_count"].get("PSOBV90", 0), str(sp["best_count"].get("PSOBV90", 0))), REQ_SPLIT)
+    P("NSplitNinetyVsSeventyFive", lambda: "%d/%d/%d" % wtl(sp["wtl_90_vs_75"]), REQ_SPLIT)
+    P("NSplitSeventyFiveVsNinety", lambda: "%d/%d/%d" % wtl(sp["wtl_90_vs_75"])[::-1], REQ_SPLIT)
+    P("NSplitFiftyVsNinety", lambda: "%d/%d/%d" % wtl(sp["wtl_50_vs_90"]), REQ_SPLIT)
+    P("NSplitNinetyLowerThanSeventyFive", lambda: WORD.get(sp["n_lower_loss_90_than_75"], str(sp["n_lower_loss_90_than_75"])), REQ_SPLIT)
+    P("NSplitCmNinetyP", lambda: pval(sp["case_mean_omega90"]["PSOBV90-PSOBV75"]["p"]), REQ_SPLIT)     # case-mean 0.9 vs 0.75, unadjusted
+    P("NSplitBestSetting", lambda: "\\ensuremath{\\omega=%g}" % {"PSOBV25": 0.25, "PSOBV": 0.5, "PSOBV75": 0.75, "PSOBV90": 0.9, "PSOC": 1}[sp["best_mean_loss"]], REQ_SPLIT)
+    P("NSplitNSettings", lambda: WORD[sp["n_settings"]], REQ_SPLIT)                    # "five"
+    P("NSplitNComparisons", lambda: WORD[sp["n_comparisons"]], REQ_SPLIT)             # Holm family per case ("six")
+    # component analysis with RSD-VNS: family size, average rank in the pool of Table ablation, feasibility, switch
+    P("NAblNContrasts", lambda: WORD[ab["n_contrasts"]], REQ_ABL)                     # "fifteen" (Holm family per case)
+    for a in (ab.get("variants") or []):
+        P(f"NAblRank{CODE[a]}", lambda a=a: num(fa["avg_rank"][a], 2), REQ_ABL)
+    P("NRankRSDVNS", lambda: num(fa["avg_rank"]["RSDVNS"], 2), REQ_ABL)
+    P("NFeasRSDVNS", lambda: num(ab["feasible_pct"]["RSDVNS"], 1), REQ_ABL)
+    P("NFeasRSVNS", lambda: num(ab["feasible_pct"]["RSVNS"], 1), REQ_ABL)
+    # runs (of 2,040) whose 3,015 Phase-1 samples (30 common initial layouts + 2,985 samples) contain no feasible layout;
+    # geometry-only replay of the seeded streams, verified against the stored curves (mpce_results.phase1_replay)
+    rp = ab.get("phase1_replay") or {}
+    def replay_runs(a):
+        if not rp[a]["verification_ok"]:
+            raise ValueError(f"Phase-1 replay of {a} does not reproduce the stored curves")
+        return num(rp[a]["runs_no_feasible_sample"], 0)
+    P("NRSDRunsNoFeasSample", lambda: replay_runs("RSDVNS"), REQ_ABL)
+    P("NRSRunsNoFeasSample", lambda: replay_runs("RSVNS"), REQ_ABL)
+    P("NRSDPctFeasSamples", lambda: num(rp["RSDVNS"]["pct_feasible_samples"], 1), REQ_ABL)
+    P("NRSPctFeasSamples", lambda: num(rp["RSVNS"]["pct_feasible_samples"], 1), REQ_ABL)
     return M
 
 

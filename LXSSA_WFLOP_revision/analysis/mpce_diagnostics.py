@@ -1095,7 +1095,7 @@ def supp_tex(Sm, path):
           "wake loss in Phase~2 in the runs whose switch point is feasible; the remainder is found in a cycle cut off by "
           "the budget.}",
           "\\label{tab:D-vns}", "\\scriptsize\\setlength{\\tabcolsep}{3pt}",
-          "\\resizebox{\\columnwidth}{!}{%", "\\begin{tabular}{lccc}", "\\toprule", f" & {heads} \\\\", "\\midrule"]
+          "\\resizebox{\\ifdim\\width>\\columnwidth\\columnwidth\\else\\width\\fi}{!}{%", "\\begin{tabular}{lccc}", "\\toprule", f" & {heads} \\\\", "\\midrule"]
 
     def row(name, key, d=1, f=None):
         vals = [S2[a][key] if f is None else f(S2[a]) for a in T2_ALGS]
@@ -1140,7 +1140,7 @@ def supp_tex(Sm, path):
           "$\\mathbf P^i$ to their nearest turbines of $\\mathbf G$ (assignment problem); then, relabelled, without overshoot "
           "(weights in $[0,1]$) and with one common weight (a convex combination of the two layouts).}",
           "\\label{tab:D-feasstart}", "\\scriptsize\\setlength{\\tabcolsep}{3pt}",
-          "\\resizebox{\\columnwidth}{!}{%", "\\begin{tabular}{lcc}", "\\toprule", " & PSO & DE \\\\", "\\midrule",
+          "\\resizebox{\\ifdim\\width>\\columnwidth\\columnwidth\\else\\width\\fi}{!}{%", "\\begin{tabular}{lcc}", "\\toprule", " & PSO & DE \\\\", "\\midrule",
           f"Runs with an improved global best & {P['improved_runs']} of {P['runs']} & {D['improved_runs']} of {D['runs']} \\\\",
           f"Candidates evaluated after the initial population & {fmt(P['candidates'])} & {fmt(D['candidates'])} \\\\",
           f"\\quad feasible (\\%) & {fmt(P['feasible_candidates_pct'],2)} & {fmt(D['feasible_candidates_pct'],2)} \\\\",

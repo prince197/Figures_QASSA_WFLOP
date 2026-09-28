@@ -36,7 +36,7 @@ All 6 cases & 319.3 / 40.7 & 187.3 / 15.2 & 8.7 / 1.6 & 2.6 / 48.4 & 88.9 / 32.3
 \caption{Inside the VNS phase (Phase~2) of the hybrids at 6,030 evaluations: 12 split cases (both data sets; $r=500, 750, 1000$~m with $N=6, 8, 10$ and $N=10, 12, 15$) $\times$ 10 seeds. A cycle is one shaking step followed by the complete local search (compass search); the first descent is the local search from the switch point, before any shaking. Improvement shares refer to the reduction of the wake loss in Phase~2 in the runs whose switch point is feasible; the remainder is found in a cycle cut off by the budget.}
 \label{tab:D-vns}
 \scriptsize\setlength{\tabcolsep}{3pt}
-\resizebox{\columnwidth}{!}{%
+\resizebox{\ifdim\width>\columnwidth\columnwidth\else\width\fi}{!}{%
 \begin{tabular}{lccc}
 \toprule
  & PSO-VNS & SSA-VNS & RS-VNS \\
@@ -75,7 +75,7 @@ Start is not the best feasible Phase-1 layout$^a$ & 0 & 0 & 0 \\
 \caption{Why PSO (constriction) and DE do not move from feasible starts: the six largest cases and the Horns Rev~1 16-turbine block $\times$ 3 seeds with feasibility-preserving initialization, 6,030 evaluations; every candidate (trial) is logged; feasibility with the 1e-6~m tolerance of the paper. Mixture test: first-update PSO candidates $\mathbf P^i+c_2\,\mathbf r\odot(\mathbf G-\mathbf P^i)$ between a particle's feasible start and the global best (200 draws per particle, separate random stream; $c_2=1.496$, independent $\mathbf r\sim U(0,1)$ per coordinate, clipped to the box), with the original turbine labels and after relabelling the turbines of $\mathbf P^i$ to their nearest turbines of $\mathbf G$ (assignment problem); then, relabelled, without overshoot (weights in $[0,1]$) and with one common weight (a convex combination of the two layouts).}
 \label{tab:D-feasstart}
 \scriptsize\setlength{\tabcolsep}{3pt}
-\resizebox{\columnwidth}{!}{%
+\resizebox{\ifdim\width>\columnwidth\columnwidth\else\width\fi}{!}{%
 \begin{tabular}{lcc}
 \toprule
  & PSO & DE \\

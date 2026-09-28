@@ -8,6 +8,13 @@ This script evaluates the same conditions (CONDITIONS below) and prints PASS / F
 for each; it also reports IDs used in the manuscript but not defined here, and vice versa. A FAIL means the
 sentence next to the comment must be rewritten. Numbers themselves come from mpce_numbers.tex and need no check.
 mpce_results.py runs this script at the end of every run. Exit code 1 if any condition fails.
+
+Reference scan (not evaluated here): the comments % CHECK-EXTRA [Xnn] (mpce_check_extra.py), % CHECK-DIAG [Dnn]
+(mpce_check_diag.py) and % CHECK-THEORY [Tnn] (make_theory_figures.py --check) of the manuscript and optA/*.tex are
+listed with the ids they reference, and ids that their script does not define are flagged (the ids a script
+defines are read from its source text; the scripts themselves evaluate the conditions). A tag covers every
+bracketed id of its letter up to the next CHECK- keyword of the comment, incl. lists ([C19]/[C30]) and ranges
+([X02]-[X09]).
 """
 import os, re, sys, json, argparse
 
@@ -237,7 +244,7 @@ CONDITIONS += [
      "cost_per_eval", lambda s: (lambda c: c["meta_max_ms"] / c["meta_min_ms"] < 2.5 and c["slsqp_ms"] > c["meta_max_ms"]
                                  and c["slsqp_over_pso"] > 1)(g(s, "cost_per_eval"))),
     ("C47", "budget split (D7): omega = 0.75 is the best of the tested settings (lowest mean loss and average rank of 0.25, 0.5, "
-            "0.75 and omega = 1 = PSO alone), and omega = 1 has a higher mean loss than omega = 0.75",
+            "0.75, 0.9 [Phase 6, if present] and omega = 1 = PSO alone), and omega = 1 has a higher mean loss than omega = 0.75",
      "split.mean_loss, split.avg_rank",
      lambda s: (lambda p: p["mean_loss"]["PSOC"] > p["mean_loss"]["PSOBV75"] and min(p["mean_loss"], key=p["mean_loss"].get) == "PSOBV75"
                 and min(p["avg_rank"], key=p["avg_rank"].get) == "PSOBV75")(g(s, "split"))),
@@ -248,10 +255,10 @@ CONDITIONS += [
     # practical equivalence at the single margin equivalence.margin_pp (= EQ_MARGIN of mpce_results.py, set after the
     # primary analysis; never tune it to make these pass)
     ("C49", "equivalence (PSO-VNS vs PSO): the case means are practically equivalent at the margin (90 % bootstrap CI inside "
-            "(-m, m)) and the Bayesian signed-rank test gives P(rope) > 0.5",
+            "(-m, m)) and the Bayesian signed-rank test gives P(rope) > 0.99 (printed as \\NBayPSOVNSvsPSORope = '>0.99')",
      "equivalence.pairs.PSOBV-PSOC.{equivalent, ci90_mean_dloss_pp, bayes.p_rope}, equivalence.margin_pp",
      lambda s: (lambda r, m: r["equivalent"] and -m < r["ci90_mean_dloss_pp"][0] and r["ci90_mean_dloss_pp"][1] < m
-                and r["bayes"]["p_rope"] > 0.5)(g(s, "equivalence", "pairs", "PSOBV-PSOC"), g(s, "equivalence", "margin_pp"))),
+                and r["bayes"]["p_rope"] > 0.99)(g(s, "equivalence", "pairs", "PSOBV-PSOC"), g(s, "equivalence", "margin_pp"))),
     ("C50", "equivalence (LX-SSA-VNS vs RS-VNS): practically equivalent at the margin (90 % bootstrap CI inside (-m, m))",
      "equivalence.pairs.LXBV-RSVNS.{equivalent, ci90_mean_dloss_pp}, equivalence.margin_pp",
      lambda s: (lambda r, m: r["equivalent"] and -m < r["ci90_mean_dloss_pp"][0] and r["ci90_mean_dloss_pp"][1] < m)(
@@ -266,6 +273,39 @@ CONDITIONS += [
      "spread.sd_p, spread.worst_p",
      lambda s: g(s, "spread", "sd_p") >= 0.05 and g(s, "spread", "worst_p") >= 0.05),
 ]
+
+
+# ------------------------------------------------------------------ reference scan of the CHECK- comments
+KIND_LETTER = {"FINAL": "C", "EXTRA": "X", "DIAG": "D", "THEORY": "T"}
+KIND_SOURCE = {"EXTRA": ("mpce_check_extra.py", r"\(\s*\"(X\d+)\""), "DIAG": ("mpce_check_diag.py", r"\(\s*\"(D\d+)\""),
+               "THEORY": ("make_theory_figures.py", r"(?:has|append)\(\s*\(?\s*\"(T\d+)\"")}
+
+
+def scan_refs(files):
+    """{kind: {id: set(files)}} of the ids referenced by the % CHECK-<kind> comments of the given .tex files."""
+    refs = {k: {} for k in KIND_LETTER}
+    for fn in files:
+        for line in open(fn, encoding="utf-8", errors="replace"):
+            if "CHECK-" not in line or "%" not in line:
+                continue
+            com = line[line.index("%"):]
+            parts = re.split(r"CHECK-(FINAL|EXTRA|DIAG|THEORY)", com)
+            for kind, scope in zip(parts[1::2], parts[2::2]):
+                L = KIND_LETTER[kind]
+                ids = set()
+                for m in re.finditer(r"\[(%s)(\d{2,3})[^\]]*\]\s*(?:--|-|\u2013|\u2014)\s*\[%s(\d{2,3})" % (L, L), scope):
+                    ids |= {f"{L}{i:02d}" for i in range(int(m.group(2)), int(m.group(3)) + 1)}
+                for br in re.findall(r"\[([^\]]*)\]", scope):
+                    ids |= set(re.findall(r"\b(%s\d{2,3})\b" % L, br))
+                for i in ids:
+                    refs[kind].setdefault(i, set()).add(os.path.basename(fn))
+    return refs
+
+
+def defined_ids(kind):
+    fn, pat = KIND_SOURCE[kind]
+    p = os.path.join(HERE, fn)
+    return set(re.findall(pat, open(p).read())) if os.path.exists(p) else None
 
 
 def main(argv=None):
@@ -284,16 +324,29 @@ def main(argv=None):
         res[cid] = r
         print(f"  [{cid}] {r:7s} {text}\n            keys: {keys}")
     used = set()
+    refs = None
     if os.path.exists(a.tex):
         import glob as _g
-        txt = open(a.tex).read() + "".join(open(f).read() for f in sorted(_g.glob(os.path.join(os.path.dirname(a.tex), "optA", "*.tex"))))
-        used = set(re.findall(r"CHECK-FINAL \[(C\d+)\]", txt))
+        texs = [a.tex] + sorted(_g.glob(os.path.join(os.path.dirname(a.tex), "optA", "*.tex")))
+        sup = os.path.join(os.path.dirname(a.tex), "MPCE_PSO_VNS_supplement.tex")
+        texs += [sup] if os.path.exists(sup) else []
+        refs = scan_refs(texs)
+        used = set(refs["FINAL"])
         for cid in sorted(used - set(res)):
             print(f"  [{cid}] UNDEFINED: used in the manuscript but not defined in mpce_check_final.py")
         for cid in sorted(set(res) - used):
             print(f"  [{cid}] (not referenced in the manuscript)")
     n = {k: sum(v == k for v in res.values()) for k in ("PASS", "FAIL", "PENDING")}
     print(f"  summary: {n['PASS']} PASS, {n['FAIL']} FAIL, {n['PENDING']} PENDING")
+    if refs is not None:
+        print("  referenced checks of the other scripts (not evaluated here; run the script named):")
+        for kind in ("EXTRA", "DIAG", "THEORY"):
+            ids = sorted(refs[kind])
+            dfn = defined_ids(kind)
+            und = [i for i in ids if dfn is not None and i not in dfn]
+            print(f"    CHECK-{kind:6s} ({KIND_SOURCE[kind][0]}): {len(ids)} ids referenced: {', '.join(ids) if ids else 'none'}"
+                  + (f"; UNDEFINED in {KIND_SOURCE[kind][0]}: {', '.join(und)}" if und else "")
+                  + (f"; defined but not referenced: {', '.join(sorted(dfn - set(ids)))}" if dfn else ""))
     fb = [f for f in s.get("fallbacks", []) if "->" in f]
     for f in fb:
         print(f"  NOTE (data): {f}")
