@@ -275,6 +275,64 @@ CONDITIONS += [
 ]
 
 
+# Phase-6 conditions: the disc-sampling control RSD-VNS (experiment rsdisc; component analysis, Holm over the grown
+# family of contrasts) and the split omega = 0.9 (experiment omega90). DATA conditions; the sentences follow them.
+def _eq(s, k):
+    return g(s, "equivalence", "pairs", k)
+
+
+CONDITIONS += [
+    ("C53", "SSA phase vs disc sampling: SSA-VNS is NOT better than RSD-VNS -- never significantly better at run level (W = 0), "
+            "higher case mean in more cases than lower (losses > wins), case-mean Wilcoxon p_Holm < 0.05 AGAINST SSA-VNS "
+            "(r_rb < 0) and mean dL > 0 (\\NCmSSAVNSvsRSDVNSDL)",
+     "ablation.contrasts.SSABV-RSDVNS, ablation.case_mean.SSABV-RSDVNS",
+     lambda s: (lambda w, c: w[0] == 0 and c["losses"] > c["wins"] and c["p_holm"] < 0.05 and c["rb"] < 0 and c["mean_dloss_pp"] > 0)(
+         _wtl_abl(s, "SSABV-RSDVNS"), _cm(s, "SSABV-RSDVNS"))),
+    ("C54", "SSA-VNS vs RSD-VNS, size of the difference: the 95 % bootstrap CI of the mean case-mean difference contains 0, "
+            "practical equivalence at +-m is NOT shown (90 % CI not inside (-m, m)), and the Bayesian test gives P(SSA-VNS "
+            "better) < 0.01 and P(rope) > 0.5 (\\NBaySSAVNSvsRSDVNSRope)",
+     "ablation.case_mean.SSABV-RSDVNS.ci95_mean_dloss_pp, equivalence.pairs.SSABV-RSDVNS",
+     lambda s: (lambda c, r, m: c["ci95_mean_dloss_pp"][0] < 0 < c["ci95_mean_dloss_pp"][1] and not r["equivalent"]
+                and not (-m < r["ci90_mean_dloss_pp"][0] and r["ci90_mean_dloss_pp"][1] < m)
+                and r["bayes"]["p_a_better"] < 0.01 and r["bayes"]["p_rope"] > 0.5)(
+         _cm(s, "SSABV-RSDVNS"), _eq(s, "SSABV-RSDVNS"), g(s, "equivalence", "margin_pp"))),
+    ("C55", "LX-SSA phase vs disc sampling: LX-SSA-VNS is worse than RSD-VNS -- run level L > W, case-mean p_Holm < 0.05 with "
+            "dL > 0 and its 95 % CI above 0, not equivalent at +-m",
+     "ablation.contrasts/case_mean LXBV-RSDVNS, equivalence.pairs.LXBV-RSDVNS",
+     lambda s: (lambda w, c, r: w[2] > w[0] and c["p_holm"] < 0.05 and c["mean_dloss_pp"] > 0 and c["ci95_mean_dloss_pp"][0] > 0
+                and not r["equivalent"])(_wtl_abl(s, "LXBV-RSDVNS"), _cm(s, "LXBV-RSDVNS"), _eq(s, "LXBV-RSDVNS"))),
+    ("C56", "PSO phase vs disc sampling: PSO-VNS is better than RSD-VNS -- run level W >= 40 and L = 0, case-mean p_Holm < 0.05 "
+            "with dL < 0, and the whole 90 % CI below -m (the gain exceeds the equivalence margin)",
+     "ablation.contrasts/case_mean PSOBV-RSDVNS, equivalence.pairs.PSOBV-RSDVNS",
+     lambda s: (lambda w, c, r, m: w[0] >= 40 and w[2] == 0 and c["p_holm"] < 0.05 and c["mean_dloss_pp"] < 0
+                and r["ci90_mean_dloss_pp"][1] < -m)(
+         _wtl_abl(s, "PSOBV-RSDVNS"), _cm(s, "PSOBV-RSDVNS"), _eq(s, "PSOBV-RSDVNS"), g(s, "equivalence", "margin_pp"))),
+    ("C57", "disc sampling is the stronger control: RSD-VNS vs RS-VNS never significantly worse at run level (L = 0, W > 0), "
+            "case-mean p_Holm < 0.05 with dL < 0; its Phase 1 is feasible at the switch more often and fewer of its runs have "
+            "no feasible Phase-1 sample (geometry replay, verified against the stored curves)",
+     "ablation.contrasts/case_mean RSDVNS-RSVNS, ablation.phase2_loss_reduction_pct, ablation.phase1_replay",
+     lambda s: (lambda w, c, p, rp: w[2] == 0 and w[0] > 0 and c["p_holm"] < 0.05 and c["mean_dloss_pp"] < 0
+                and p["RSDVNS"]["feasible_at_switch_pct"] > p["RSVNS"]["feasible_at_switch_pct"]
+                and rp["RSDVNS"]["verification_ok"] and rp["RSVNS"]["verification_ok"]
+                and rp["RSDVNS"]["runs_no_feasible_sample"] < rp["RSVNS"]["runs_no_feasible_sample"])(
+         _wtl_abl(s, "RSDVNS-RSVNS"), _cm(s, "RSDVNS-RSVNS"), g(s, "ablation", "phase2_loss_reduction_pct"),
+         g(s, "ablation", "phase1_replay"))),
+    ("C58", "component-analysis ranks with RSD-VNS: PSO-VNS first, PSO second, RSD-VNS third, i.e. the disc-sampling control "
+            "ranks ahead of SSA-VNS, LX-SSA-VNS and RS-VNS (\\NRankRSDVNS, \\NAblOrder)",
+     "ablation.friedman.avg_rank",
+     lambda s: (lambda ar: rankpos(ar, "PSOBV") == 1 and rankpos(ar, "PSOC") == 2 and rankpos(ar, "RSDVNS") == 3
+                and all(ar["RSDVNS"] < ar[a] for a in ("SSABV", "LXBV", "RSVNS")))(g(s, "ablation", "friedman", "avg_rank"))),
+    ("C59", "budget split, omega = 0.9: no significant run-level difference from omega = 0.75 in any case (W = L = 0 from either "
+            "side), case-mean p >= 0.05; omega = 0.9 has a higher mean loss and a worse average rank than 0.75 (so 0.75 stays "
+            "the best tested setting, see C47) but a lower mean loss than omega = 1 (PSO alone) and than omega = 0.5",
+     "split.wtl_90_vs_75, split.case_mean_omega90.PSOBV90-PSOBV75, split.mean_loss, split.avg_rank",
+     lambda s: (lambda p: wtl(p["wtl_90_vs_75"])[0] == 0 and wtl(p["wtl_90_vs_75"])[2] == 0
+                and p["case_mean_omega90"]["PSOBV90-PSOBV75"]["p"] >= 0.05
+                and p["mean_loss"]["PSOBV90"] > p["mean_loss"]["PSOBV75"] and p["avg_rank"]["PSOBV90"] > p["avg_rank"]["PSOBV75"]
+                and p["mean_loss"]["PSOBV90"] < p["mean_loss"]["PSOC"] and p["mean_loss"]["PSOBV90"] < p["mean_loss"]["PSOBV"])(g(s, "split"))),
+]
+
+
 # ------------------------------------------------------------------ reference scan of the CHECK- comments
 KIND_LETTER = {"FINAL": "C", "EXTRA": "X", "DIAG": "D", "THEORY": "T"}
 KIND_SOURCE = {"EXTRA": ("mpce_check_extra.py", r"\(\s*\"(X\d+)\""), "DIAG": ("mpce_check_diag.py", r"\(\s*\"(D\d+)\""),

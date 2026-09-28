@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 16:49:04",
+ "generated": "2026-09-28 18:00:57",
  "script": "mpce_inference_extra.py",
  "n_cases": 68,
  "clusters": [
@@ -42,7 +42,7 @@
   "max_abs_diff_log10p_ablation": 0.0,
   "max_abs_diff_log10p_subgroups": 0.0,
   "max_abs_diff_log10p_split": 0.0,
-  "summary_generated": "2026-09-28 16:38:39",
+  "summary_generated": "2026-09-28 18:00:05",
   "ok": true
  },
  "threshold": {
@@ -4279,5 +4279,5 @@
    "note": "benchmark (model) energy: gross AEP = objective / 15 x 8.76 MWh/yr (Kusiak-Song benchmark, capacity factor far above real sites); positive gain = first method yields more"
   }
  },
- "seconds": 5.2
+ "seconds": 5.4
 }

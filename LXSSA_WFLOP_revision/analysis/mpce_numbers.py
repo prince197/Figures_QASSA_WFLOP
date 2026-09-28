@@ -560,6 +560,7 @@ def build(s, allow_partial=False):
     P("NSplitNComparisons", lambda: WORD[sp["n_comparisons"]], REQ_SPLIT)             # Holm family per case ("six")
     # component analysis with RSD-VNS: family size, average rank in the pool of Table ablation, feasibility, switch
     P("NAblNContrasts", lambda: WORD[ab["n_contrasts"]], REQ_ABL)                     # "fifteen" (Holm family per case)
+    P("NAblDf", lambda: str(len(fa["avg_rank"]) - 1), REQ_ABL)                          # Friedman d.f. of Table ablation ("8")
     for a in (ab.get("variants") or []):
         P(f"NAblRank{CODE[a]}", lambda a=a: num(fa["avg_rank"][a], 2), REQ_ABL)
     P("NRankRSDVNS", lambda: num(fa["avg_rank"]["RSDVNS"], 2), REQ_ABL)

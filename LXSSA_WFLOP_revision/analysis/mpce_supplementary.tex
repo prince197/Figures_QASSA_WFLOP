@@ -336,81 +336,81 @@ MS-SLSQP & 1.820 & 2.6--21.7 \\
 
 \begin{table*}[p]
 \centering
-\caption{Component analysis per case (68 cases, 6,030 evaluations, 30 seed-paired runs): mean wake loss (\%) of the feasible runs of LX-SSA-VNS and RS-VNS (``--'': fewer than 15 feasible runs), and run-level outcome of each planned contrast ($+$: first variant significantly better, $-$: significantly worse, $\cdot$: no significant difference; Wilcoxon signed-rank, Holm-adjusted over the 11 contrasts of the case). C1: PSO-VNS vs.\ PSO; C2: SSA-VNS vs.\ SSA; C3: LX-SSA-VNS vs.\ LX-SSA; C4: PSO-VNS vs.\ VNS; C5: PSO-VNS vs.\ RS-VNS; C6: SSA-VNS vs.\ RS-VNS; C7: LX-SSA-VNS vs.\ RS-VNS; C8: PSO-VNS vs.\ SSA-VNS; C9: PSO-VNS vs.\ LX-SSA-VNS; C10: SSA-VNS vs.\ LX-SSA-VNS; C11: LX-SSA vs.\ SSA.}
+\caption{Component analysis per case (68 cases, 6,030 evaluations, 30 seed-paired runs): mean wake loss (\%) of the feasible runs of LX-SSA-VNS, RS-VNS and RSD-VNS (``--'': fewer than 15 feasible runs), and run-level outcome of each planned contrast ($+$: first variant significantly better, $-$: significantly worse, $\cdot$: no significant difference; Wilcoxon signed-rank, Holm-adjusted over the 15 contrasts of the case). C1: PSO-VNS vs.\ PSO; C2: SSA-VNS vs.\ SSA; C3: LX-SSA-VNS vs.\ LX-SSA; C4: PSO-VNS vs.\ VNS; C5: PSO-VNS vs.\ RS-VNS; C6: SSA-VNS vs.\ RS-VNS; C7: LX-SSA-VNS vs.\ RS-VNS; C8: PSO-VNS vs.\ RSD-VNS; C9: SSA-VNS vs.\ RSD-VNS; C10: LX-SSA-VNS vs.\ RSD-VNS; C11: RSD-VNS vs.\ RS-VNS; C12: PSO-VNS vs.\ SSA-VNS; C13: PSO-VNS vs.\ LX-SSA-VNS; C14: SSA-VNS vs.\ LX-SSA-VNS; C15: LX-SSA vs.\ SSA.}
 \label{tab:ablation-cases}
 \tiny\setlength{\tabcolsep}{2.2pt}
-\begin{tabular}{cccccccccccccccc}
+\begin{tabular}{ccccccccccccccccccccc}
 \toprule
-DS & $r$ & $N$ & LX-SSA-VNS & RS-VNS & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & C11 \\
+DS & $r$ & $N$ & LX-SSA-VNS & RS-VNS & RSD-VNS & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9 & C10 & C11 & C12 & C13 & C14 & C15 \\
 \midrule
-I & 500 & 2 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 500 & 3 & 0.033 & 0.027 & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 500 & 4 & 0.151 & 0.143 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 500 & 5 & 0.320 & 0.362 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 500 & 6 & 0.770 & 1.168 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 500 & 7 & 1.692 & 1.955 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 500 & 8 & 2.867 & 2.707 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 500 & 9 & 3.586 & 4.198 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 500 & 10 & 4.888 & 4.879 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 750 & 2 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 750 & 3 & 0.000 & -0.000 & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 750 & 4 & 0.031 & 0.032 & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 750 & 5 & 0.114 & 0.103 & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 750 & 6 & 0.241 & 0.218 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 750 & 7 & 0.446 & 0.462 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 750 & 8 & 0.767 & 0.924 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ \\
-I & 750 & 9 & 0.989 & 1.215 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 750 & 10 & 1.706 & 1.661 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 750 & 11 & 2.032 & 2.067 & $-$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 750 & 12 & 2.431 & 2.404 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
-I & 1000 & 2 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 3 & -0.000 & -0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 4 & 0.006 & 0.008 & $\cdot$ & $+$ & $+$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 5 & 0.044 & 0.047 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 6 & 0.118 & 0.104 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 7 & 0.212 & 0.202 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 8 & 0.334 & 0.344 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 9 & 0.498 & 0.502 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 10 & 0.742 & 0.641 & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 11 & 1.004 & 0.983 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 12 & 1.220 & 1.011 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 13 & 1.546 & 1.448 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 14 & 1.640 & 1.671 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-I & 1000 & 15 & 1.777 & 1.946 & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $-$ \\
-II & 500 & 2 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 500 & 3 & 0.169 & 0.163 & $\cdot$ & $\cdot$ & $\cdot$ & $-$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 500 & 4 & 0.705 & 0.762 & $-$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 500 & 5 & 1.660 & 1.742 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 500 & 6 & 2.861 & 3.024 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 500 & 7 & 4.399 & 4.335 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
-II & 500 & 8 & 5.619 & 5.572 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 500 & 9 & 6.909 & 7.092 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 500 & 10 & 8.548 & 8.652 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 750 & 2 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 750 & 3 & 0.005 & 0.005 & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 750 & 4 & 0.133 & 0.178 & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 750 & 5 & 0.479 & 0.448 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 750 & 6 & 0.909 & 0.960 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 750 & 7 & 1.735 & 1.816 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
-II & 750 & 8 & 2.561 & 2.667 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 750 & 9 & 3.587 & 3.676 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 750 & 10 & 4.603 & 4.380 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 750 & 11 & 5.599 & 5.281 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 750 & 12 & 5.946 & 5.888 & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
-II & 1000 & 2 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 3 & -0.000 & -0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 4 & 0.054 & 0.037 & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 5 & 0.180 & 0.182 & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 6 & 0.446 & 0.409 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 7 & 0.775 & 0.683 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 8 & 1.197 & 1.161 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 9 & 1.836 & 1.641 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 10 & 2.295 & 2.289 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 11 & 3.202 & 2.963 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ \\
-II & 1000 & 12 & 3.764 & 3.469 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 13 & 4.276 & 4.281 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
-II & 1000 & 14 & 4.803 & 4.647 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
-II & 1000 & 15 & 5.220 & 5.210 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 500 & 2 & 0.000 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 500 & 3 & 0.033 & 0.027 & 0.027 & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 500 & 4 & 0.151 & 0.143 & 0.126 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 500 & 5 & 0.320 & 0.362 & 0.310 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 500 & 6 & 0.770 & 1.168 & 0.758 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 500 & 7 & 1.692 & 1.955 & 1.647 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 500 & 8 & 2.867 & 2.707 & 2.664 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 500 & 9 & 3.586 & 4.198 & 3.679 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 500 & 10 & 4.888 & 4.879 & 5.696 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 750 & 2 & 0.000 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 750 & 3 & 0.000 & -0.000 & -0.000 & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 750 & 4 & 0.031 & 0.032 & 0.026 & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 750 & 5 & 0.114 & 0.103 & 0.093 & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 750 & 6 & 0.241 & 0.218 & 0.207 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 750 & 7 & 0.446 & 0.462 & 0.382 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 750 & 8 & 0.767 & 0.924 & 0.629 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ \\
+I & 750 & 9 & 0.989 & 1.215 & 1.079 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 750 & 10 & 1.706 & 1.661 & 1.615 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 750 & 11 & 2.032 & 2.067 & 1.952 & $-$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 750 & 12 & 2.431 & 2.404 & 2.327 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
+I & 1000 & 2 & 0.000 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 3 & -0.000 & -0.000 & -0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 4 & 0.006 & 0.008 & 0.007 & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 5 & 0.044 & 0.047 & 0.042 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 6 & 0.118 & 0.104 & 0.092 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 7 & 0.212 & 0.202 & 0.175 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 8 & 0.334 & 0.344 & 0.241 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $-$ & $-$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 9 & 0.498 & 0.502 & 0.447 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 10 & 0.742 & 0.641 & 0.613 & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 11 & 1.004 & 0.983 & 0.818 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 12 & 1.220 & 1.011 & 1.039 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 13 & 1.546 & 1.448 & 1.431 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 14 & 1.640 & 1.671 & 1.555 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+I & 1000 & 15 & 1.777 & 1.946 & 1.854 & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 500 & 2 & 0.000 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 500 & 3 & 0.169 & 0.163 & 0.158 & $\cdot$ & $\cdot$ & $\cdot$ & $-$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 500 & 4 & 0.705 & 0.762 & 0.648 & $-$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 500 & 5 & 1.660 & 1.742 & 1.587 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 500 & 6 & 2.861 & 3.024 & 2.785 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 500 & 7 & 4.399 & 4.335 & 4.229 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
+II & 500 & 8 & 5.619 & 5.572 & 5.607 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 500 & 9 & 6.909 & 7.092 & 7.089 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 500 & 10 & 8.548 & 8.652 & 8.288 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 750 & 2 & 0.000 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 750 & 3 & 0.005 & 0.005 & -0.000 & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 750 & 4 & 0.133 & 0.178 & 0.146 & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 750 & 5 & 0.479 & 0.448 & 0.486 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 750 & 6 & 0.909 & 0.960 & 0.959 & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 750 & 7 & 1.735 & 1.816 & 1.605 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
+II & 750 & 8 & 2.561 & 2.667 & 2.220 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 750 & 9 & 3.587 & 3.676 & 3.274 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 750 & 10 & 4.603 & 4.380 & 4.298 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 750 & 11 & 5.599 & 5.281 & 4.956 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $-$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 750 & 12 & 5.946 & 5.888 & 5.942 & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $-$ \\
+II & 1000 & 2 & 0.000 & 0.000 & 0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 3 & -0.000 & -0.000 & -0.000 & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 4 & 0.054 & 0.037 & 0.030 & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 5 & 0.180 & 0.182 & 0.198 & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 6 & 0.446 & 0.409 & 0.383 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 7 & 0.775 & 0.683 & 0.658 & $\cdot$ & $\cdot$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 8 & 1.197 & 1.161 & 1.105 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 9 & 1.836 & 1.641 & 1.534 & $\cdot$ & $+$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 10 & 2.295 & 2.289 & 1.999 & $\cdot$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $-$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 11 & 3.202 & 2.963 & 2.527 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $-$ & $-$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ \\
+II & 1000 & 12 & 3.764 & 3.469 & 3.129 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $-$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 13 & 4.276 & 4.281 & 3.954 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 14 & 4.803 & 4.647 & 4.479 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
+II & 1000 & 15 & 5.220 & 5.210 & 4.950 & $+$ & $+$ & $+$ & $+$ & $+$ & $\cdot$ & $\cdot$ & $+$ & $\cdot$ & $\cdot$ & $\cdot$ & $+$ & $+$ & $\cdot$ & $\cdot$ \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -428,6 +428,7 @@ PSO-VNS & 3{,}030 & 98.7 & 1.63 & 30.3 & 22.6 & 26 \\
 SSA-VNS & 3{,}030 & 95.7 & 2.01 & 36.7 & 29.2 & 79 \\
 LX-SSA-VNS & 3{,}030 & 94.1 & 2.11 & 39.0 & 31.9 & 118 \\
 RS-VNS & 3{,}030 & 66.7 & 1.30 & 57.1 & 54.3 & 668 \\
+RSD-VNS & 3{,}030 & 79.2 & 1.59 & 51.4 & 46.3 & 420 \\
 PSO continued (no VNS) & 3{,}030 & 98.7 & 1.63 & 29.2 & 20.6 & 26 \\
 \bottomrule
 \end{tabular}
@@ -443,47 +444,51 @@ PSO continued (no VNS) & 3{,}030 & 98.7 & 1.63 & 29.2 & 20.6 & 26 \\
 Pair (first vs.\ second) & $n$ & $\overline{\Delta L}$ (pp) & 95\% CI & 90\% CI & $p_{\rm TOST}$ & $m_{\min}$ & Eq. & $P_{\rm A}$ & $P_{\rm rope}$ & $P_{\rm B}$ \\
 \midrule
 \multicolumn{11}{l}{\emph{Component-analysis contrasts}} \\
-SSA-VNS vs.\ RS-VNS & 68 & $-0.068$ & [$-$0.108, $-$0.034] & [$-$0.101, $-$0.039] & 0.839 & 0.102 & no & 0.30 & 0.70 & 0.00 \\
-LX-SSA-VNS vs.\ RS-VNS & 68 & $-0.005$ & [$-$0.041, 0.026] & [$-$0.034, 0.021] & 0.008 & 0.035 & yes & 0.00 & 0.99 & 0.00 \\
-PSO-VNS vs.\ RS-VNS & 68 & $-0.399$ & [$-$0.495, $-$0.308] & [$-$0.479, $-$0.324] & 1.000 & 0.479 & no & 1.00 & 0.00 & 0.00 \\
-SSA-VNS vs.\ LX-SSA-VNS & 68 & $-0.063$ & [$-$0.091, $-$0.038] & [$-$0.086, $-$0.042] & 0.841 & 0.087 & no & 0.53 & 0.47 & 0.00 \\
-LX-SSA vs.\ SSA & 66 & $+0.153$ & [0.096, 0.217] & [0.104, 0.206] & 1.000 & 0.207 & no & 0.00 & 0.12 & 0.88 \\
-SSA-VNS vs.\ SSA & 66 & $-0.294$ & [$-$0.383, $-$0.214] & [$-$0.368, $-$0.226] & 1.000 & 0.368 & no & 1.00 & 0.00 & 0.00 \\
-LX-SSA-VNS vs.\ LX-SSA & 66 & $-0.394$ & [$-$0.528, $-$0.276] & [$-$0.505, $-$0.293] & 1.000 & 0.506 & no & 1.00 & 0.00 & 0.00 \\
-PSO-VNS vs.\ PSO & 68 & $-0.018$ & [$-$0.045, 0.008] & [$-$0.041, 0.004] & 0.011 & 0.041 & yes & 0.00 & 1.00 & 0.00 \\
-PSO-VNS vs.\ VNS & 68 & $-0.465$ & [$-$0.559, $-$0.371] & [$-$0.545, $-$0.386] & 1.000 & 0.546 & no & 1.00 & 0.00 & 0.00 \\
+SSA-VNS vs.\ RS-VNS & 68 & $-0.068$ & [$-$0.108, $-$0.034] & [$-$0.101, $-$0.039] & 0.839 & 0.102 & no & 0.30 & 0.70 & $<$0.01 \\
+LX-SSA-VNS vs.\ RS-VNS & 68 & $-0.005$ & [$-$0.041, 0.026] & [$-$0.034, 0.021] & 0.008 & 0.035 & yes & $<$0.01 & $>$0.99 & $<$0.01 \\
+PSO-VNS vs.\ RS-VNS & 68 & $-0.399$ & [$-$0.495, $-$0.308] & [$-$0.479, $-$0.324] & 1.000 & 0.479 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+SSA-VNS vs.\ LX-SSA-VNS & 68 & $-0.063$ & [$-$0.091, $-$0.038] & [$-$0.086, $-$0.042] & 0.841 & 0.087 & no & 0.53 & 0.47 & $<$0.01 \\
+LX-SSA vs.\ SSA & 66 & $+0.153$ & [0.096, 0.217] & [0.104, 0.206] & 1.000 & 0.207 & no & $<$0.01 & 0.12 & 0.88 \\
+SSA-VNS vs.\ SSA & 66 & $-0.294$ & [$-$0.383, $-$0.214] & [$-$0.368, $-$0.226] & 1.000 & 0.368 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+LX-SSA-VNS vs.\ LX-SSA & 66 & $-0.394$ & [$-$0.528, $-$0.276] & [$-$0.505, $-$0.293] & 1.000 & 0.506 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+PSO-VNS vs.\ PSO & 68 & $-0.018$ & [$-$0.045, 0.008] & [$-$0.041, 0.004] & 0.011 & 0.041 & yes & $<$0.01 & $>$0.99 & $<$0.01 \\
+PSO-VNS vs.\ VNS & 68 & $-0.465$ & [$-$0.559, $-$0.371] & [$-$0.545, $-$0.386] & 1.000 & 0.546 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+SSA-VNS vs.\ RSD-VNS & 68 & $+0.024$ & [$-$0.033, 0.068] & [$-$0.022, 0.062] & 0.141 & 0.062 & no & $<$0.01 & 0.77 & 0.23 \\
+LX-SSA-VNS vs.\ RSD-VNS & 68 & $+0.087$ & [0.039, 0.133] & [0.047, 0.126] & 0.936 & 0.126 & no & $<$0.01 & 0.10 & 0.90 \\
+PSO-VNS vs.\ RSD-VNS & 68 & $-0.306$ & [$-$0.396, $-$0.227] & [$-$0.380, $-$0.239] & 1.000 & 0.381 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+RSD-VNS vs.\ RS-VNS & 68 & $-0.093$ & [$-$0.134, $-$0.049] & [$-$0.127, $-$0.055] & 0.971 & 0.128 & no & 0.95 & 0.05 & $<$0.01 \\
 \midrule
 \multicolumn{11}{l}{\emph{Main comparison, PSO-VNS vs.\ each method (PSO and VNS: see above)}} \\
-PSO-VNS vs.\ SSA-VNS & 68 & $-0.330$ & [$-$0.409, $-$0.255] & [$-$0.397, $-$0.266] & 1.000 & 0.397 & no & 1.00 & 0.00 & 0.00 \\
-PSO-VNS vs.\ SSA & 66 & $-0.611$ & [$-$0.762, $-$0.471] & [$-$0.735, $-$0.493] & 1.000 & 0.735 & no & 1.00 & 0.00 & 0.00 \\
-PSO-VNS vs.\ LX-SSA & 66 & $-0.765$ & [$-$0.964, $-$0.580] & [$-$0.930, $-$0.606] & 1.000 & 0.930 & no & 1.00 & 0.00 & 0.00 \\
-PSO-VNS vs.\ DE & 50 & $-0.887$ & [$-$1.191, $-$0.604] & [$-$1.137, $-$0.648] & 1.000 & 1.137 & no & 1.00 & 0.00 & 0.00 \\
-PSO-VNS vs.\ MS-SLSQP & 68 & $-0.435$ & [$-$0.519, $-$0.353] & [$-$0.505, $-$0.366] & 1.000 & 0.505 & no & 1.00 & 0.00 & 0.00 \\
+PSO-VNS vs.\ SSA-VNS & 68 & $-0.330$ & [$-$0.409, $-$0.255] & [$-$0.397, $-$0.266] & 1.000 & 0.397 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+PSO-VNS vs.\ SSA & 66 & $-0.611$ & [$-$0.762, $-$0.471] & [$-$0.735, $-$0.493] & 1.000 & 0.735 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+PSO-VNS vs.\ LX-SSA & 66 & $-0.765$ & [$-$0.964, $-$0.580] & [$-$0.930, $-$0.606] & 1.000 & 0.930 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+PSO-VNS vs.\ DE & 50 & $-0.887$ & [$-$1.191, $-$0.604] & [$-$1.137, $-$0.648] & 1.000 & 1.137 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
+PSO-VNS vs.\ MS-SLSQP & 68 & $-0.435$ & [$-$0.519, $-$0.353] & [$-$0.505, $-$0.366] & 1.000 & 0.505 & no & $>$0.99 & $<$0.01 & $<$0.01 \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 \begin{table*}[!htb]
 \centering
-\caption{Sensitivity of PSO-VNS to the budget split between the PSO and VNS phases (25\%, 50\% and 75\% of the 6,030 evaluations for PSO; 100\%: PSO alone, same seeds): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the 4 comparisons of each case.}
+\caption{Sensitivity of PSO-VNS to the budget split between the PSO and VNS phases (25\%, 50\%, 75\%, 90\% of the 6,030 evaluations for PSO; 100\%: PSO alone, same seeds): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the 6 comparisons of each case.}
 \label{tab:split-cases}
-\scriptsize\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{ccccccccccc}
+\scriptsize\setlength{\tabcolsep}{1.5pt}
+\begin{tabular}{cccccccccccccc}
 \toprule
-DS & $r$ & $N$ & $\omega=0.25$ & $0.5$ & $0.75$ & $1$ & $p$ (0.5/0.25) & $p$ (0.5/0.75) & $p$ (0.5/1) & $p$ (0.75/1) \\
+DS & $r$ & $N$ & $\omega=0.25$ & $0.5$ & $0.75$ & $0.9$ & $1$ & $p$ (0.5/0.25) & $p$ (0.5/0.75) & $p$ (0.5/0.9) & $p$ (0.5/1) & $p$ (0.75/1) & $p$ (0.9/0.75) \\
 \midrule
-I & 500 & 6 & 83851.3 & 83918.5 & 83929.5 & 83925.6 & 0.045 & 0.929 & 0.929 & 0.093 \\
-I & 500 & 10 & 135131.6 & 135160.5 & 135421.8 & 135396.0 & 0.809 & 0.138 & 0.421 & 0.809 \\
-I & 750 & 8 & 111835.7 & 111921.0 & 111944.0 & 111924.1 & 0.021 & 0.090 & 0.477 & 0.008 \\
-I & 750 & 12 & 164894.0 & 165526.4 & 165991.2 & 165826.3 & 0.008 & 0.012 & 0.042 & 0.042 \\
-I & 1000 & 10 & 139700.6 & 139874.2 & 139883.7 & 139834.3 & 0.002 & 0.529 & 0.001 & $1.49\times10^{-8}$ \\
-I & 1000 & 15 & 207367.9 & 207308.1 & 207724.0 & 207263.9 & 0.741 & $6.39\times10^{-5}$ & 0.741 & $6.39\times10^{-5}$ \\
-II & 500 & 6 & 42809.4 & 42851.5 & 42883.5 & 42857.9 & 0.165 & 0.192 & 0.984 & $2.24\times10^{-4}$ \\
-II & 500 & 10 & 67624.1 & 67773.5 & 67799.8 & 67472.2 & 0.115 & 0.903 & $1.49\times10^{-4}$ & $1.77\times10^{-5}$ \\
-II & 750 & 8 & 57358.0 & 57411.1 & 57448.4 & 57404.8 & 0.182 & 0.228 & 0.626 & 0.002 \\
-II & 750 & 12 & 82784.6 & 82968.9 & 83182.0 & 82874.2 & 0.140 & 0.010 & 0.140 & $5.59\times10^{-5}$ \\
-II & 1000 & 10 & 71769.3 & 71906.7 & 71976.0 & 71902.4 & 0.031 & 0.020 & 0.516 & 0.005 \\
-II & 1000 & 15 & 104349.6 & 104794.8 & 104784.9 & 104375.6 & $4.63\times10^{-4}$ & 0.968 & $9.72\times10^{-6}$ & $2.46\times10^{-7}$ \\
+I & 500 & 6 & 83851.3 & 83918.5 & 83929.5 & 83932.0 & 83925.6 & 0.068 & 1.000 & 0.980 & 1.000 & 0.155 & 1.000 \\
+I & 500 & 10 & 135131.6 & 135160.5 & 135421.8 & 135697.8 & 135396.0 & 0.868 & 0.173 & 0.010 & 0.561 & 0.868 & 0.868 \\
+I & 750 & 8 & 111835.7 & 111921.0 & 111944.0 & 111948.6 & 111924.1 & 0.036 & 0.180 & 0.288 & 0.954 & 0.012 & 0.954 \\
+I & 750 & 12 & 164894.0 & 165526.4 & 165991.2 & 165975.5 & 165826.3 & 0.010 & 0.016 & 0.003 & 0.063 & 0.063 & 0.984 \\
+I & 1000 & 10 & 139700.6 & 139874.2 & 139883.7 & 139875.2 & 139834.3 & 0.003 & 1.000 & 1.000 & 0.002 & $2.24\times10^{-8}$ & 0.104 \\
+I & 1000 & 15 & 207367.9 & 207308.1 & 207724.0 & 207620.2 & 207263.9 & 0.741 & $9.59\times10^{-5}$ & $3.96\times10^{-4}$ & 0.741 & $1.04\times10^{-4}$ & 0.252 \\
+II & 500 & 6 & 42809.4 & 42851.5 & 42883.5 & 42879.3 & 42857.9 & 0.275 & 0.321 & 0.321 & 1.000 & $3.36\times10^{-4}$ & 1.000 \\
+II & 500 & 10 & 67624.1 & 67773.5 & 67799.8 & 67755.1 & 67472.2 & 0.209 & 1.000 & 1.000 & $2.48\times10^{-4}$ & $2.65\times10^{-5}$ & 0.209 \\
+II & 750 & 8 & 57358.0 & 57411.1 & 57448.4 & 57444.6 & 57404.8 & 0.303 & 0.457 & 0.616 & 0.764 & 0.004 & 0.764 \\
+II & 750 & 12 & 82784.6 & 82968.9 & 83182.0 & 83086.9 & 82874.2 & 0.280 & 0.016 & 0.280 & 0.280 & $8.38\times10^{-5}$ & 0.280 \\
+II & 1000 & 10 & 71769.3 & 71906.7 & 71976.0 & 71981.0 & 71902.4 & 0.046 & 0.027 & 0.007 & 1.000 & 0.007 & 1.000 \\
+II & 1000 & 15 & 104349.6 & 104794.8 & 104784.9 & 104689.9 & 104375.6 & $9.27\times10^{-4}$ & 0.968 & 0.168 & $1.62\times10^{-5}$ & $3.69\times10^{-7}$ & 0.063 \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -839,9 +844,11 @@ Benchmark & 6{,}030 & feasible & PSO-VNS & \texttt{mpce\_feasp} & 180 \\
 Benchmark & 6{,}030 & random & LX-SSA-VNS, SSA-VNS & \texttt{fresh\_bgrid.csv} & 4080 \\
 Benchmark & 6{,}030 & random & DE, LX-SSA, PSO (old), SSA & \texttt{fresh\_grid.csv} & 8160 \\
 Benchmark & 6{,}030 & random & VNS & \texttt{fresh\_vgrid.csv} & 2040 \\
+Benchmark & 6{,}030 & random & PSO-VNS ($\omega=0.9$) & \texttt{mpce\_omega90} & 360 \\
 Benchmark & 6{,}030 & random & PSO-VNS & \texttt{mpce\_psobv} & 2040 \\
 Benchmark & 6{,}030 & random & PSO & \texttt{mpce\_psoc} & 2040 \\
 Benchmark & 6{,}030 & random & PSO-VNS ($\omega=0.25$), PSO-VNS ($\omega=0.75$) & \texttt{mpce\_psosplit} & 720 \\
+Benchmark & 6{,}030 & random & RSD-VNS & \texttt{mpce\_rsdisc} & 2040 \\
 Benchmark & 6{,}030 & random & RS-VNS & \texttt{mpce\_rsvns} & 2040 \\
 Benchmark & 6{,}030 & random & MS-SLSQP & \texttt{mpce\_slsqp} & 2040 \\
 Benchmark & 30{,}030 & random & VNS, DE, LX-SSA-VNS, LX-SSA, PSO, RS-VNS, MS-SLSQP, SSA, SSA-VNS & \texttt{mpce\_b30k} & 1620 \\

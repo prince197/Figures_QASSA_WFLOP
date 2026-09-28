@@ -83,3 +83,16 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
   larger Data Set II layouts; at 6,030 evaluations its second phase acts as one compass-search descent".
 - LEAD TODO after rsdisc/omega90: if SSA-VNS vs RSD-VNS is tied/reversed, add a sentence in 07 (and abstract/intro/concl) that the SSA gain disappears against the stronger control; if ω=0.9 beats 0.75 revisit 07/10 split wording; restore Holm-family sentence in 07 when \NAblNContrasts exists.
 - LEAD TODO: 05 "margin far below wake-model uncertainty" lacks support → back it with own data (Jensen vs Gaussian re-evaluated wake-loss difference, macro) or cite; 04 line ~24 "corners … plausibly explains" must be gone (B2).
+
+## Control results (omega90, rsdisc) — LEAD DECISION D11 (overrides the SSA wording above)
+- Against the stronger random-sampling control (uniform in the disc, RSD-VNS), the SSA phase gives NO gain:
+  SSA-VNS vs RSD-VNS run level \NAblSSAVNSvsRSDVNS (0/66/2), case means SSA-VNS WORSE (ΔL +0.024 pp,
+  p_Holm 0.014; 18 vs 41 cases), not shown equivalent (min margin 0.062; P(rope) 0.77). LX-SSA-VNS clearly worse
+  than RSD-VNS (+0.087 pp). PSO-VNS clearly better than RSD-VNS (−0.306 pp, whole 90% CI below −m).
+  RSD-VNS beats RS-VNS (−0.093 pp); RSD-VNS ranks 3rd of 9 variants.
+- NEW M2 WORDING: "Salp-swarm phases add nothing beyond random sampling: against a random-sampling control that
+  samples in the farm (disc), the SSA phase gives no gain (SSA-VNS is slightly worse on the case means) and the
+  LX-SSA phase is clearly worse; the small SSA gain over square sampling reflects only the weakness of that
+  control. A PSO phase beats both controls clearly." Laplace step harmful stays.
+- ω = 0.9 does not beat 0.75 (0/12/0; p 0.15); 0.75 best of five settings.
+- Hard-coded counts to replace by macros: \NAblNContrasts (fifteen), \NAblNVar (nine), \NAblDf (8), \NSplitNSettings (five).
