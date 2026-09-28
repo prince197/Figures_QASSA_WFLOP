@@ -54,6 +54,8 @@ def run_iea(task):
 
 def tasks(exp):
     """Heaviest first: larger budget first, then methods in measured cost order, then seeds."""
+    if exp.endswith("p"):                      # iea16p / iea36p: PSO-VNS arm only
+        return [("PSOBV", CASES[exp[:-1]], s, b, "random") for b in BUDGETS for s in SEEDS]
     n = CASES[exp]
     assert sorted(COST_ORDER) == sorted(M9)
     return [(alg, n, s, b, "random") for b in BUDGETS for alg in COST_ORDER for s in SEEDS]

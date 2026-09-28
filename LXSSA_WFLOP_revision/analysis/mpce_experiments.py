@@ -163,12 +163,15 @@ def tasks(exp):
         return [(run_grid, (a, *c, s, 6030, "random")) for c in SPLITCASES for a in ("SSABV25", "SSABV75") for s in S30]
     if exp == "hr16new":
         return [(run_hr, (a, 16, s, 6030, "random")) for a in ("PSOC", "RSVNS") for s in S30]
-    if exp in ("feas", "b30k", "b120k"):
-        budget = {"feas": 6030, "b30k": 30030, "b120k": 120030}[exp]
-        init = "feasible" if exp == "feas" else "random"
-        hseeds = range(1, 11) if exp == "b120k" else S30
-        tl = [(run_hr, (a, 16, s, budget, init)) for a in M9 for s in hseeds]
-        tl += [(run_grid, (a, *c, s, budget, init)) for c in LARGE[::-1] for a in M9 for s in S30]
+    if exp.rstrip("p") in ("feas", "b30k", "b120k"):
+        # feasp / b30kp / b120kp: the same design for the PSO-VNS arm only
+        methods = ["PSOBV"] if exp.endswith("p") else M9
+        base = exp.rstrip("p")
+        budget = {"feas": 6030, "b30k": 30030, "b120k": 120030}[base]
+        init = "feasible" if base == "feas" else "random"
+        hseeds = range(1, 11) if base == "b120k" else S30
+        tl = [(run_hr, (a, 16, s, budget, init)) for a in methods for s in hseeds]
+        tl += [(run_grid, (a, *c, s, budget, init)) for c in LARGE[::-1] for a in methods for s in S30]
         return tl
     raise ValueError(exp)
 
