@@ -1,0 +1,9 @@
+{
+ "pywake_version": "2.6.20",
+ "model": "NOJ(Hornsrev1Site(), V80(), k=0.04): AreaOverlapAvgModel, ct2a_madsen, SquaredSum, PropagateDownwind",
+ "bins": "1 deg centred at 0.5, 1.5, ...; ws 3..25 m/s",
+ "installed_aep_gwh": 139.16266043826747,
+ "n_runs": 970,
+ "seconds": 29.886731147766113,
+ "coordinates": "run coordinates (local) + centre of the installed 16-turbine block"
+}

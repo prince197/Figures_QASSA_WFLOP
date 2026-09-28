@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 18:26:47",
+ "generated": "2026-09-28 18:59:17",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -2469,30 +2469,30 @@
     "feasible_at_switch_pct": 94.11764705882352
    },
    "RSVNS": {
-    "mean": 57.134368660031726,
-    "median": 54.25316066951532,
-    "n_runs_with_loss_at_switch": 1180,
-    "infeasible_at_switch_made_feasible": 668,
+    "mean": 61.857176927977605,
+    "median": 59.540885903347686,
+    "n_runs_with_loss_at_switch": 1130,
+    "infeasible_at_switch_made_feasible": 718,
     "excluded_penalized_value_at_switch": 0,
     "final_infeasible": 12,
     "runs": 2040,
-    "switch_call": 3030,
+    "switch_call": 3015,
     "pct_runs_improved": 100.0,
-    "mean_loss_at_switch_pct": 1.3028258832390236,
-    "feasible_at_switch_pct": 66.66666666666666
+    "mean_loss_at_switch_pct": 1.3168252206967048,
+    "feasible_at_switch_pct": 64.2156862745098
    },
    "RSDVNS": {
-    "mean": 51.37618435082031,
-    "median": 46.33730051190278,
-    "n_runs_with_loss_at_switch": 1436,
-    "infeasible_at_switch_made_feasible": 420,
+    "mean": 56.13804967455823,
+    "median": 51.61872819628117,
+    "n_runs_with_loss_at_switch": 1364,
+    "infeasible_at_switch_made_feasible": 492,
     "excluded_penalized_value_at_switch": 0,
     "final_infeasible": 4,
     "runs": 2040,
-    "switch_call": 3030,
+    "switch_call": 3015,
     "pct_runs_improved": 100.0,
-    "mean_loss_at_switch_pct": 1.587176504767512,
-    "feasible_at_switch_pct": 79.2156862745098
+    "mean_loss_at_switch_pct": 1.5338952285935492,
+    "feasible_at_switch_pct": 75.68627450980392
    },
    "PSOC_continued": {
     "mean": 29.16045976365025,
@@ -2552,6 +2552,10 @@
      "1000-14": 30,
      "1000-15": 30
     },
+    "runs_no_feasible_but_inside_sample": 730,
+    "runs_no_feasible_but_spaced_sample": 458,
+    "runs_no_inside_sample": 0,
+    "runs_no_feasible_first3000": 730,
     "verified_runs": 2040,
     "verified_agree": 2040,
     "verification_ok": true,
@@ -2600,10 +2604,21 @@
      "1000-14": 21,
      "1000-15": 27
     },
+    "runs_no_feasible_but_inside_sample": 494,
+    "runs_no_feasible_but_spaced_sample": 10,
+    "runs_no_inside_sample": 0,
+    "runs_no_feasible_first3000": 496,
     "verified_runs": 2040,
     "verified_agree": 2040,
     "verification_ok": true,
     "note": "Phase-1 samples = 30 common initial layouts (square) + 2,985 samples (square for RS-VNS, disc for RSD-VNS); counts over both data sets (identical geometry and seeds)"
+   },
+   "square_vs_disc": {
+    "runs": 2040,
+    "rs_none_rsd_some": 242,
+    "rs_none_rsd_none": 488,
+    "rs_some_rsd_none": 6,
+    "note": "paired over runs (case, seed, both data sets): rs_none_rsd_some = RS-VNS runs without a feasible Phase-1 sample that disc sampling would rescue (the most the square can explain); rs_none_rsd_none = runs without a feasible sample even when sampling in the disc (spacing / packing density)"
    }
   }
  },
@@ -7972,11 +7987,12 @@
   "  LXSSA-SSA: 0/64/4  dL=+0.166",
   "  Phase-1 replay RS-VNS: 730 of 2040 runs without a feasible sample (730 ignoring the initial population); feasible samples 9.12%; curve check 2040/2040",
   "  Phase-1 replay RSD-VNS: 494 of 2040 runs without a feasible sample (494 ignoring the initial population); feasible samples 19.30%; curve check 2040/2040",
+  "  Phase-1 replay, square vs disc (paired): of 730 RS-VNS runs without a feasible sample, 242 have one with disc sampling and 488 have none either way (6 runs feasible with the square only); 730 of them have a sample with all turbines inside the circle",
   "  phase 2 of PSO-VNS (switch at call 3,030) removes 30.30% (median 22.63%) of the loss left at the switch; 26 runs infeasible at the switch made feasible",
   "  phase 2 of SSA-VNS (switch at call 3,030) removes 36.66% (median 29.19%) of the loss left at the switch; 79 runs infeasible at the switch made feasible",
   "  phase 2 of LX-SSA-VNS (switch at call 3,030) removes 38.96% (median 31.87%) of the loss left at the switch; 118 runs infeasible at the switch made feasible",
-  "  phase 2 of RS-VNS (switch at call 3,030) removes 57.13% (median 54.25%) of the loss left at the switch; 668 runs infeasible at the switch made feasible",
-  "  phase 2 of RSD-VNS (switch at call 3,030) removes 51.38% (median 46.34%) of the loss left at the switch; 420 runs infeasible at the switch made feasible",
+  "  phase 2 of RS-VNS (switch at call 3,015) removes 61.86% (median 59.54%) of the loss left at the switch; 718 runs infeasible at the switch made feasible",
+  "  phase 2 of RSD-VNS (switch at call 3,015) removes 56.14% (median 51.62%) of the loss left at the switch; 492 runs infeasible at the switch made feasible",
   "  phase 2 of PSOC_continued (switch at call 3,030) removes 29.16% (median 20.58%) of the loss left at the switch; 26 runs infeasible at the switch made feasible",
   "\n[2b] Practical equivalence (margin 0.05 pp, set after the primary analysis) and spread",
   "  EQ    SSA-VNS vs RS-VNS     n=68 dL=-0.0684 90%CI=[-0.1011, -0.0390] p_TOST=0.8392 (t 0.83) m_min=0.1011 eq@0.05=no  Bayes P(A)=0.303 P(rope)=0.697 P(B)=0.000",
@@ -8029,6 +8045,6 @@
   "  feasbudget: pending []; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}, 30030: {'PSOBV': 1.1666666666666667, 'SSABV': 4.166666666666667, 'LXBV': 5.666666666666667, 'RSVNS': 6.333333333333333, 'BVNS': 4.833333333333333, 'PSOC': 2.5, 'SSA': 8.666666666666666, 'LXSSA': 9.833333333333334, 'DE': 5.166666666666667, 'SLSQP': 6.666666666666667}, 120030: {'PSOBV': 2.1666666666666665, 'SSABV': 4.166666666666667, 'LXBV': 5.833333333333333, 'RSVNS': 4.666666666666667, 'BVNS': 3.1666666666666665, 'PSOC': 5.833333333333333, 'SSA': 8.833333333333334, 'LXSSA': 10.0, 'DE': 3.3333333333333335, 'SLSQP': 7.0}}",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 9 tables, 14 figures, mpce_summary.json in 53 s"
+  "\nwrote 9 tables, 14 figures, mpce_summary.json in 56 s"
  ]
 }

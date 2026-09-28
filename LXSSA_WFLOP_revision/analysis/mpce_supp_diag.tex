@@ -28,12 +28,12 @@ All 6 cases & 319.3 / 40.7 & 187.3 / 15.2 & 8.7 / 1.6 & 2.6 / 48.4 & 88.9 / 32.3
 \bottomrule
 \end{tabular}
 \\[3pt]
-\parbox{\textwidth}{\scriptsize Infeasible particle evaluations (iterations 1--200; old / constriction): 98.3 / 68.4\% of all; of these, outside the circle only 5.8 / 18.4\%, spacing only 7.9 / 34.3\%, both 86.3 / 47.3\%. Final layouts of all stored runs (old / constriction): infeasible 282 / 0 of 2{,}040; of these, outside the circle only 6 / 0, spacing only 246 / 0, both 30 / 0; final layouts with a coordinate on the box bound: 68 / 2 (infeasible ones: 56 / 0).}
+\parbox{\textwidth}{\scriptsize Infeasible particle evaluations (iterations 1--200; old / constriction): 98.3 / 68.4\% of all; of these, outside the circle only 5.8 / 18.4\%, spacing only 7.9 / 34.3\%, both 86.3 / 47.3\%. Final layouts of all stored runs (old / constriction; feasibility rule of the paper: a turbine more than $10^{-6}$~m outside the circle, a pair more than $10^{-6}$~m closer than $8R$): infeasible 286 / 0 of 2{,}040; of these, outside the circle only 10 / 0, spacing only 224 / 0, both 52 / 0; with a turbine outside the circle that sits on the box bound at a tangent point ($|x|=r$ or $|y|=r$): 60 / 0. (Spacing from the stored minimum spacing; boundary from the coordinates, which are stored to 1~mm; the 46 old-setting finals whose boundary status is not decidable at 1~mm, or that are among the instrumented runs, are classified with the unrounded positions of the reproduced runs. With a 1-mm tolerance instead, 282 finals are infeasible and 246 violate only the spacing.) Final layouts with a coordinate on the box bound: 68 / 2 (infeasible ones: 60 / 0).}
 \end{table*}
 
 \begin{table}[!t]
 \centering
-\caption{Inside the VNS phase (Phase~2) of the hybrids at 6,030 evaluations: 12 split cases (both data sets; $r=500, 750, 1000$~m with $N=6, 8, 10$ and $N=10, 12, 15$) $\times$ 10 seeds. A cycle is one shaking step followed by the complete local search (compass search); the first descent is the local search from the switch point, before any shaking. Improvement shares refer to the reduction of the wake loss in Phase~2 in the runs whose switch point is feasible; the remainder is found in a cycle cut off by the budget.}
+\caption{Inside the VNS phase (Phase~2) of the hybrids at 6,030 evaluations: 12 split cases (both data sets; $r=500, 750, 1000$~m with $N=6, 8, 10$ and $N=10, 12, 15$) $\times$ 10 seeds. A cycle is one shaking step followed by the complete local search (compass search); the first descent is the local search from the switch point, before any shaking; every evaluation after it belongs to a cycle. Evaluation shares are pooled over the runs (sum over runs of the evaluations of a stage divided by the sum of the Phase-2 evaluations); medians of the per-run shares are given separately. Improvement shares refer to the reduction of the wake loss in Phase~2 in the runs whose switch point is feasible (pooled); the gain of the cycles includes the local search of a cycle cut off by the budget.}
 \label{tab:D-vns}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \resizebox{\ifdim\width>\columnwidth\columnwidth\else\width\fi}{!}{%
@@ -44,7 +44,11 @@ All 6 cases & 319.3 / 40.7 & 187.3 / 15.2 & 8.7 / 1.6 & 2.6 / 48.4 & 88.9 / 32.3
 Runs with feasible switch point & 116 of 120 & 100 of 120 & 48 of 120 \\
 Phase-2 evaluations (median) & 3{,}000 & 3{,}000 & 3{,}015 \\
 First descent: evaluations (median) & 2{,}860 & 2{,}920 & 3{,}015 \\
-\quad share of Phase-2 evaluations (\%) & 78.5 & 75.9 & 84.8 \\
+\quad share of Phase-2 evaluations (pooled, \%) & 78.5 & 75.9 & 84.8 \\
+\quad share of Phase-2 evaluations (median over runs, \%) & 95.3 & 97.3 & 100.0 \\
+Shake-plus-search cycles: share of Phase-2 evaluations (pooled, \%) & 21.5 & 24.1 & 15.2 \\
+\quad in the runs with a feasible switch point (pooled, \%) & 22.3 & 25.8 & 28.1 \\
+\quad runs with at least one cycle evaluation & 62 & 62 & 42 \\
 Shaking steps per run (median) & 1.0 & 1.0 & 0.0 \\
 \quad range over runs & 0--3 & 0--3 & 0--3 \\
 \quad median for $N=6$ & 2.0 & 2.0 & 2.0 \\
@@ -59,8 +63,9 @@ Accepted cycles per run (mean) & 0.1 & 0.1 & 0.1 \\
 \quad accepted with $k=1,\dots,5$ & 6/0/0/0/0 & 8/0/0/0/0 & 16/0/0/0/0 \\
 \quad runs without an accepted cycle & 114 & 112 & 104 \\
 \quad shaken point already better (\% of accepted) & 0.0 & 0.0 & 0.0 \\
-Improvement from the first descent (\%) & 97.5 & 90.3 & 88.6 \\
+Improvement from the first descent (pooled, \%) & 97.5 & 90.3 & 88.6 \\
 Improvement from accepted cycles (\%) & 0.5 & 3.4 & 3.5 \\
+Improvement from all cycles, incl.\ the one cut off (\%) & 2.5 & 9.7 & 11.4 \\
 Infeasible at switch, feasible after descent & 1 & 6 & 11 \\
 Infeasible at switch, feasible after a cycle & 0 & 0 & 0 \\
 Feasible incumbent made infeasible & 0 & 0 & 0 \\

@@ -35,6 +35,18 @@ evaluations, random initialization, 30 seed-paired runs):
      feasible final layouts from mpce_reevaluation.csv (written by mpce_results.py, section 8), and the change of the
      PSO-VNS - PSO case-mean difference between the two wake models (\\NXModelShift... macros, tab:X-modelshift).
 
+Review round 2 (R2 statistics review, lead decision D13; sections 7-11 of this file):
+  7. Practical equivalence (margin EQ_MARGIN, read from mpce_summary.json) of the 18 pairs of tab:equivalence at three
+     levels of inference: (a) seed level = fixed benchmark (runs resampled within cases, seed-paired), (b) case level
+     (bootstrap over cases; reproduces mpce_results.equivalence_block exactly, check X38), (c) cluster level (CR2 variance
+     with t(5), Bell-McCaffrey d.f. for reference; restricted wild-cluster bootstrap-t TOST with all 6^6 Webb draws).
+     Bayesian signed-rank posterior means of theta (copy of mpce_results.bayes_signrank). Figure equiv_curve.pdf.
+  8. Heterogeneity of PSO-VNS - PSO: cases beyond +-margin, equivalence for N < 10 / N >= 10 and for trivial /
+     non-trivial wake loss (PSO-VNS case mean < / >= 0.2 pp), cluster means, data set x density interaction
+     (density phi = N (l_min / 2r)^2), the margin in benchmark energy per turbine.
+  9. Hodges-Lehmann estimates with exact Wilcoxon-inversion 95 % CIs.  10. Exact McNemar test of Horns Rev feasibility.
+Tables tab:X-equiv-levels, tab:X-bayes, tab:X-heterogeneity, tab:X-beyond, tab:X-hl, tab:X-mcnemar; checks X38...
+
 The data are loaded and the helpers (Wilcoxon with zero differences dropped, Holm, the ranking rule, the case-
 mean Wilcoxon with imputation) are re-implemented here exactly as in mpce_results.py (that file is owned by
 another workstream and is not imported); check X01 verifies that the baseline threshold reproduces
@@ -116,6 +128,7 @@ BAYES_S, BAYES_Z0, BAYES_N, BAYES_SEED = 0.5, 0.0, 50000, 20260928   # as mpce_r
 WEBB = np.array([-math.sqrt(1.5), -1.0, -math.sqrt(0.5), math.sqrt(0.5), 1.0, math.sqrt(1.5)])  # Webb (2014) 6-point
 SMIN_M = 308.0                       # minimum spacing 4D = 308 m (mpce_results.SMIN_M); density phi = N (SMIN_M / 2r)^2
 CURVE_GRID = np.round(np.arange(0.0, 0.1201, 0.001), 3)               # margins (pp) of the equivalence curve
+TRIVIAL_LOSS_PP = 0.2                # lead request: "trivial" case = case-mean wake loss of PSO-VNS below 0.2 pp
 
 
 def pk(a, b):
@@ -710,12 +723,480 @@ def model_shift_block(S, data_dir):
     return out
 
 
+# ------------------------------------------------------------------ 7. equivalence at three levels (review round 2, D13)
+def boot_summary(bm, est, margin=EQ_MARGIN):
+    """TOST summary of bootstrap means bm, exactly as mpce_results.tost: 90 % / 95 % percentile CIs, equivalence iff
+    the 90 % CI lies strictly inside (-m, m), bootstrap TOST p = max(share <= -m, share >= +m) with add-one correction
+    (an inversion of the percentile interval, not a p value calibrated at the null boundary), minimal margin
+    max(|lo90|, |hi90|)."""
+    B = len(bm)
+    lo90, hi90 = (float(v) for v in np.quantile(bm, [0.05, 0.95]))
+    lo95, hi95 = (float(v) for v in np.quantile(bm, [0.025, 0.975]))
+    k_lo, k_hi = int((bm <= -margin).sum()), int((bm >= margin).sum())
+    return dict(mean_dloss_pp=float(est), ci90=[lo90, hi90], ci95=[lo95, hi95],
+                p_tost=float(max(k_lo + 1, k_hi + 1) / (B + 1)), p_tost_at_floor=bool(k_lo == 0 and k_hi == 0),
+                min_margin_pp=float(max(abs(lo90), abs(hi90))), equivalent=bool(-margin < lo90 and hi90 < margin))
+
+
+def boot_p_curve(bm, grid):
+    """bootstrap TOST p (definition of boot_summary) for every margin of grid."""
+    s = np.sort(bm); B = len(s)
+    k_lo = np.searchsorted(s, -grid, side="right"); k_hi = B - np.searchsorted(s, grid, side="left")
+    return np.maximum(k_lo + 1, k_hi + 1) / (B + 1)
+
+
+def case_boot_means(d, n=BOOT_N, seed=BOOT_SEED):
+    """bootstrap means over the cases -- the same resamples as mpce_results.boot_means / tost (reproduced, X38)."""
+    d = np.asarray(d, float)
+    return d[np.random.default_rng(seed).integers(0, len(d), (n, len(d)))].mean(1)
+
+
+def run_arrays(G, a, b, cases):
+    """per case: (loss %, feasible) of the 30 seed-paired runs of a and b, ordered by seed (identical seeds asserted)."""
+    R = G[G.Algorithm.isin([a, b])].sort_values(CASE + ["Algorithm", "Seed"])
+    out = {}
+    for c, g in R.groupby(CASE):
+        if c not in cases:
+            continue
+        ga, gb = g[g.Algorithm == a], g[g.Algorithm == b]
+        assert (ga.Seed.values == gb.Seed.values).all() and len(ga) == 30, (a, b, c)
+        out[c] = (ga.LossPct.values, ga.Feasible.values.astype(bool), gb.LossPct.values, gb.Feasible.values.astype(bool))
+    assert len(out) == len(cases)
+    return out
+
+
+def seed_level(G, a, b, d, B=BOOT_N, seed=SEED_BOOT_SEED):
+    """(a) Fixed-benchmark (seed-level) inference: the 68 cases are fixed, only the run-to-run (seed) variability is
+    random. Bootstrap: within every case the 30 seed-paired runs are resampled with replacement (the SAME seeds for
+    both methods), the case mean of each method is the mean over the feasible resampled runs (as the pipeline), and
+    the estimate is the mean of the case differences over the cases of d (both methods qualified). Stratified:
+    independent seed resamples per case (runs of different cases independent); joint: one seed resample for all cases
+    (allows for dependence between cases that share a seed number). If a resample has no feasible run of a method in
+    a case (never for >= 15 feasible of 30 in practice) the case mean of the full data is used (counted)."""
+    cases = list(d.index)
+    RA = run_arrays(G, a, b, set(cases))
+    rng_s = np.random.default_rng(seed); Ij = np.random.default_rng(seed + 1).integers(0, 30, (B, 30))
+    tot_s = np.zeros(B); tot_j = np.zeros(B); fb = 0; est = 0.0
+    all_feas = True; per_seed = np.zeros(30)
+
+    def cmean(L, F, I, full):
+        nf = F[I].sum(1); s = np.where(F, L, 0.0)[I].sum(1)
+        m = np.where(nf > 0, s / np.maximum(nf, 1), full)
+        return m, int((nf == 0).sum())
+
+    for c in cases:
+        La, Fa, Lb, Fb = RA[c]
+        ma, mb = La[Fa].mean(), Lb[Fb].mean()
+        assert abs((ma - mb) - d.loc[c]) < 1e-9, ("case mean mismatch", a, b, c)
+        est += ma - mb
+        all_feas &= bool(Fa.all() and Fb.all())
+        per_seed += La - Lb
+        Is = rng_s.integers(0, 30, (B, 30))
+        for I, tot in ((Is, tot_s), (Ij, tot_j)):
+            xa, fa = cmean(La, Fa, I, ma); xb, fb_ = cmean(Lb, Fb, I, mb)
+            tot += xa - xb; fb += fa + fb_
+    n = len(cases); bm_s, bm_j = tot_s / n, tot_j / n
+    r = boot_summary(bm_s, est / n)
+    r.update(n_cases=n, resamples=B, seed=seed, fallback_resamples=fb, all_runs_feasible=all_feas,
+             joint=boot_summary(bm_j, est / n))
+    if all_feas:                                                       # reviewer's version: benchmark average per seed, t(29)
+        ps = per_seed / n; se = ps.std(ddof=1) / math.sqrt(30); q = t_dist.ppf(0.95, 29)
+        r["per_seed_t"] = dict(mean=float(ps.mean()), ci90=[float(ps.mean() - q * se), float(ps.mean() + q * se)],
+                               se=float(se), n_seeds=30,
+                               p_tost=float(max(t_dist.sf((ps.mean() + EQ_MARGIN) / se, 29), t_dist.cdf((ps.mean() - EQ_MARGIN) / se, 29))))
+    return r, bm_s
+
+
+def cr_parts(d, cid, G):
+    n = len(d); ng = np.bincount(cid, minlength=G).astype(float)
+    return n, ng, 1.0 / np.sqrt(1.0 - ng / n)
+
+
+def cr2(d, cid, G):
+    """(c) cluster-robust inference on the case-weighted mean: CR2 variance (Bell-McCaffrey bias-reduced
+    linearization; for the intercept-only model the cluster sums of the residuals are scaled by (1 - n_g/n)^-1/2),
+    t with G - 1 = 5 d.f. (primary, as requested) and the Bell-McCaffrey / Imbens-Kolesar d.f. (homoskedastic working
+    model) for reference; CR1 (G/(G-1) scaling) for comparison with tab:X-loco."""
+    d = np.asarray(d, float); n, ng, adj = cr_parts(d, cid, G)
+    est = d.mean(); U = np.bincount(cid, weights=d - est, minlength=G)
+    V2 = ((U * adj) ** 2).sum() / n ** 2; V1 = G / (G - 1) * (U ** 2).sum() / n ** 2
+    A = np.zeros((n, G))
+    for g in range(G):
+        A[cid == g, g] = adj[g] / n
+    M = np.eye(n) - 1.0 / n
+    K = M @ (A @ A.T) @ M
+    df_bm = float(np.trace(K) ** 2 / np.trace(K @ K))
+    out = dict(mean=float(est), se_cr2=float(math.sqrt(V2)), se_cr1=float(math.sqrt(V1)), df=G - 1, df_bm=df_bm)
+    for nm, se, df in (("cr2", math.sqrt(V2), G - 1), ("cr2_bm", math.sqrt(V2), df_bm), ("cr1", math.sqrt(V1), G - 1)):
+        q = t_dist.ppf(0.95, df)
+        lo, hi = est - q * se, est + q * se
+        out[nm] = dict(ci90=[float(lo), float(hi)], min_margin_pp=float(max(abs(lo), abs(hi))),
+                       p_tost=float(max(t_dist.sf((est + EQ_MARGIN) / se, df), t_dist.cdf((est - EQ_MARGIN) / se, df))),
+                       equivalent=bool(-EQ_MARGIN < lo and hi < EQ_MARGIN),
+                       ci95=[float(est - t_dist.ppf(0.975, df) * se), float(est + t_dist.ppf(0.975, df) * se)])
+    return out
+
+
+def webb_all(G):
+    return np.array(list(itertools.product(WEBB, repeat=G)))              # 6^G draws (46,656 for G = 6), enumerated
+
+
+def wild_p(d, cid, G, mu0, W):
+    """Restricted wild-cluster bootstrap-t for H0: mean = mu0 (x* = mu0 + w_g (x - mu0)), CR2-studentized, all Webb
+    draws W enumerated. Returns (p for H1: mean > mu0, p for H1: mean < mu0)."""
+    d = np.asarray(d, float); n, ng, adj = cr_parts(d, cid, G)
+    U = np.bincount(cid, weights=d - mu0, minlength=G)
+    t_obs = (d.mean() - mu0) / math.sqrt((((U - ng * (d.mean() - mu0)) * adj) ** 2).sum() / n ** 2)
+    WU = W * U; S = WU.sum(1)
+    E = WU - ng * (S / n)[:, None]
+    t = (S / n) / np.sqrt(((E * adj) ** 2).sum(1) / n ** 2)
+    return float(np.mean(t >= t_obs - 1e-10)), float(np.mean(t <= t_obs + 1e-10))
+
+
+def wild_level(d, cid, G, W, grid=None):
+    """wild-cluster TOST at EQ_MARGIN, 90 % CI by test inversion (bisection on mu0: lower = boundary where the
+    one-sided p for H1: mean > mu0 crosses 0.05, upper likewise) and minimal margin max(-lo, hi); optional p curve."""
+    d = np.asarray(d, float); est = d.mean()
+
+    def bound(side):
+        f = (lambda mu: wild_p(d, cid, G, mu, W)[0]) if side == "lo" else (lambda mu: wild_p(d, cid, G, mu, W)[1])
+        inner, outer = est, est - 2.0 if side == "lo" else est + 2.0
+        assert f(inner) > 0.05 and f(outer) <= 0.05, ("bracket", side)
+        for _ in range(40):
+            mid = 0.5 * (inner + outer)
+            if f(mid) > 0.05:
+                inner = mid
+            else:
+                outer = mid
+        return 0.5 * (inner + outer)
+    lo, hi = bound("lo"), bound("hi")
+    pl, ph = wild_p(d, cid, G, -EQ_MARGIN, W)[0], wild_p(d, cid, G, EQ_MARGIN, W)[1]
+    out = dict(ci90=[float(lo), float(hi)], min_margin_pp=float(max(-lo, hi)), p_tost=float(max(pl, ph)),
+               p_low=pl, p_high=ph, equivalent=bool(max(pl, ph) <= 0.05), draws=int(len(W)), weights="Webb 6-point",
+               studentization="CR2")
+    if grid is not None:
+        out["curve"] = [float(max(wild_p(d, cid, G, -m, W)[0], wild_p(d, cid, G, m, W)[1])) for m in grid]
+    return out
+
+
+def bayes_signrank(d, rope=EQ_MARGIN, s=BAYES_S, z0=BAYES_Z0, n=BAYES_N, seed=BAYES_SEED):
+    """Bayesian signed-rank test (Benavoli et al. 2017), a copy of mpce_results.bayes_signrank (same prior, samples and
+    seed; reproduced in check X38) extended by 95 % credible intervals of theta. P_* = share of the posterior samples in
+    which theta_A / theta_rope / theta_B is the LARGEST of the three, i.e. the posterior probability that each region
+    is the most probable one -- NOT the probability that the mean difference lies in the rope. mean_theta = posterior
+    means of (theta_A, theta_rope, theta_B): the expected shares of Walsh averages (d_i + d_j)/2 below -rope, inside,
+    above +rope."""
+    d = np.asarray(d, float); d = d[np.isfinite(d)]
+    z = np.r_[z0, d]; W = np.random.default_rng(seed).dirichlet(np.r_[s, np.ones(len(d))], n)
+    sums = z[:, None] + z[None, :]
+    below = (sums < -2 * rope) + 0.5 * (sums == -2 * rope); above = (sums > 2 * rope) + 0.5 * (sums == 2 * rope)
+    tA = ((W @ below) * W).sum(1); tB = ((W @ above) * W).sum(1)
+    T = np.c_[tA, 1 - tA - tB, tB]
+    win = (T >= T.max(1, keepdims=True) - 1e-15).astype(float)
+    pr = (win / win.sum(1, keepdims=True)).mean(0)
+    return dict(p_a_better=float(pr[0]), p_rope=float(pr[1]), p_b_better=float(pr[2]), n_cases=int(len(d)),
+                mean_theta=[float(v) for v in T.mean(0)],
+                ci95_theta=[[float(v) for v in np.quantile(T[:, k], [0.025, 0.975])] for k in range(3)])
+
+
+def equivalence_levels_block(G, S, clusters, grid=CURVE_GRID):
+    """Equivalence of every tab:equivalence pair at three inference levels: (a) seed level (fixed benchmark),
+    (b) case level (bootstrap over cases, reproduces mpce_results.equivalence_block), (c) cluster level (CR2, 5 d.f.;
+    restricted wild-cluster bootstrap-t TOST with all Webb draws); plus the Bayesian signed-rank posterior means."""
+    Gn = len(clusters); W = webb_all(Gn)
+    res, curve = {}, {}
+    for key in EQ_PAIRS:
+        a, b = key.split("-")
+        d = case_diffs(S, a, b)
+        cid = np.array([clusters.index((c[0], c[1])) for c in d.index])
+        dv = d.values
+        bm_c = case_boot_means(dv)
+        case = boot_summary(bm_c, dv.mean())
+        se = dv.std(ddof=1) / math.sqrt(len(dv))
+        case["p_tost_t"] = float(max(t_dist.sf((dv.mean() + EQ_MARGIN) / se, len(dv) - 1),
+                                     t_dist.cdf((dv.mean() - EQ_MARGIN) / se, len(dv) - 1)))
+        seed, bm_s = seed_level(G, a, b, d)
+        focus = key == "PSOBV-PSOC"
+        cl = cr2(dv, cid, Gn)
+        cl["wild"] = wild_level(dv, cid, Gn, W, grid if focus else None)
+        cl["n_clusters"] = Gn
+        cl["equivalent"] = bool(cl["cr2"]["equivalent"] and cl["wild"]["equivalent"])
+        res[key] = dict(a=a, b=b, n_cases=int(len(dv)), mean_dloss_pp=float(dv.mean()), seed=seed, case=case, cluster=cl,
+                        bayes=bayes_signrank(dv))
+        if focus:
+            curve = dict(pair=key, margins=[float(m) for m in grid], seed=[float(v) for v in boot_p_curve(bm_s, grid)],
+                         case=[float(v) for v in boot_p_curve(bm_c, grid)],
+                         cluster_cr2=[float(max(t_dist.sf((dv.mean() + m) / cl["se_cr2"], Gn - 1),
+                                                t_dist.cdf((dv.mean() - m) / cl["se_cr2"], Gn - 1))) for m in grid],
+                         cluster_wild=cl["wild"].pop("curve"))
+        print(f"EQ3 {key:14s} n={len(dv)} dL={dv.mean():+.4f} | seed 90% [{seed['ci90'][0]:+.4f},{seed['ci90'][1]:+.4f}] "
+              f"m={seed['min_margin_pp']:.4f} | case [{case['ci90'][0]:+.4f},{case['ci90'][1]:+.4f}] m={case['min_margin_pp']:.4f} "
+              f"p={case['p_tost']:.3g} | CR2 [{cl['cr2']['ci90'][0]:+.4f},{cl['cr2']['ci90'][1]:+.4f}] m={cl['cr2']['min_margin_pp']:.4f} "
+              f"(df_BM {cl['df_bm']:.2f}) wild p={cl['wild']['p_tost']:.3g} m={cl['wild']['min_margin_pp']:.4f} | "
+              f"theta {np.round(res[key]['bayes']['mean_theta'], 3)}")
+    return dict(margin_pp=EQ_MARGIN, margin_source=EQ_MARGIN_SRC, pairs=res, curve=curve,
+                levels=dict(seed="fixed benchmark: runs resampled within cases (seed-paired, stratified by case; "
+                                 f"{BOOT_N} resamples, seed {SEED_BOOT_SEED}); joint = one seed resample for all cases",
+                            case="bootstrap over the cases (as mpce_results.tost; resamples/seed of the pipeline)",
+                            cluster="CR2 variance, t with G-1 d.f.; restricted wild-cluster bootstrap-t (Webb 6-point, all "
+                                    "6^G draws enumerated, CR2-studentized) TOST and CI by test inversion"))
+
+
+def reproduce_equivalence(EL):
+    """check X38: case level and Bayesian test reproduce mpce_summary.json["equivalence"]."""
+    try:
+        E = json.load(open(os.path.join(HERE, "mpce_summary.json")))["equivalence"]
+        assert list(E["pairs"]) == EQ_PAIRS, f"tab:equivalence pairs differ: {list(E['pairs'])}"
+        dev = 0.0
+        for k, r in EL["pairs"].items():
+            e = E["pairs"][k]; c = r["case"]; y = r["bayes"]
+            dev = max(dev, abs(c["mean_dloss_pp"] - e["mean_dloss_pp"]), abs(c["p_tost"] - e["p_tost"]),
+                      abs(c["min_margin_pp"] - e["min_margin_pp"]), abs(c["p_tost_t"] - e["p_tost_t"]),
+                      *[abs(u - v) for u, v in zip(c["ci90"], e["ci90_mean_dloss_pp"])],
+                      *[abs(u - v) for u, v in zip(c["ci95"], e["ci95_mean_dloss_pp"])],
+                      abs(y["p_a_better"] - e["bayes"]["p_a_better"]), abs(y["p_rope"] - e["bayes"]["p_rope"]),
+                      abs(y["p_b_better"] - e["bayes"]["p_b_better"]),
+                      *[abs(u - v) for u, v in zip(y["mean_theta"], e["bayes"]["mean_theta"])])
+            assert c["equivalent"] == e["equivalent"] and r["n_cases"] == e["n_cases"], k
+        return dict(ok=bool(dev < 1e-9), max_abs_diff=float(dev), margin_pipeline=E["margin_pp"])
+    except Exception as ex:                                              # pragma: no cover
+        return dict(ok=False, error=repr(ex))
+
+
+# ------------------------------------------------------------------ 8. heterogeneity of PSO-VNS - PSO
+def ols_hc3_parts(X):
+    """for a fixed design X: P = (X'X)^-1 X' and leverages h (HC3 variance of coefficient k: sum_i P_ki^2 r_i^2/(1-h_i)^2)."""
+    P = np.linalg.solve(X.T @ X, X.T)
+    return P, np.einsum("ij,ji->i", X, P)
+
+
+def studentized_slope(Y, X, P, h, k):
+    """coefficient k and its HC3 t statistic for every row of Y (vectorized over permutations)."""
+    beta = Y @ P.T; r = Y - beta @ X.T
+    se = np.sqrt(((r / (1 - h)) ** 2) @ (P[k] ** 2))
+    return beta[:, k], beta[:, k] / se
+
+
+def heterogeneity_block(S, clusters, B, EL):
+    """Per-case heterogeneity of d = L(PSO-VNS) - L(PSO) (pp): cases beyond +-margin, stratified equivalence (N < 10,
+    N >= 10), cluster means, and a data set x density interaction.
+
+    Density (stated before this analysis was run, after review round 2): phi = N (l_min / 2r)^2, the nominal share of
+    the farm disc covered by the N exclusion discs of diameter l_min = 4D = 308 m (the same ordering as N/r^2).
+    Interaction test: the two data sets share the identical 34 (r, N) cases, so e_j = d_II(r,N) - d_I(r,N) is regressed
+    on phi_j; the slope is the data set x density interaction (d ~ (r,N) pair + data set + data set:phi). Test:
+    studentized (HC3) slope, two-sided, signs of e_j flipped at random (B Monte Carlo draws, fixed seed); the
+    studentization keeps the test valid for H0 slope = 0 when the data sets also differ in level (Janssen 1997; Chung
+    and Romano 2013). Direction within each data set: d ~ radius fixed effects + phi (34 cases), HC3-studentized slope,
+    permutation of d within radius (B draws)."""
+    rng = np.random.default_rng(PERM_SEED + 7)
+    d = case_diffs(S, FOCUS, "PSOC")
+    idx = d.index.to_frame(index=False); dv = d.values
+    n = idx.Turbines.values; r = idx.Radius.values.astype(float); ds = idx.Dataset.values
+    phi = n * (SMIN_M / (2 * r)) ** 2
+    m = EQ_MARGIN
+    out = dict(n_cases=int(len(dv)), margin_pp=m,
+               beyond_first=int((dv < -m).sum()), beyond_second=int((dv > m).sum()),
+               max_first=float(-dv.min()), max_second=float(dv.max()),
+               exact_ties=int((np.abs(dv) <= 1e-9).sum()), near_ties=int((np.abs(dv) < 0.005).sum()),
+               density_def="phi = N (l_min / 2r)^2, l_min = 308 m")
+    out["cases_beyond"] = [dict(dataset=str(a), radius=int(b_), N=int(c), phi=float(p), d=float(v))
+                           for a, b_, c, p, v in zip(ds, r, n, phi, dv) if abs(v) > m]
+    # stratified by N, and by the size of the wake loss itself (lead request: cases with a trivial wake loss cannot
+    # differ by the margin): case-mean wake loss of PSO-VNS < TRIVIAL_LOSS_PP ("trivial") vs >= ("nontrivial")
+    lossA = S[S.Algorithm == FOCUS].set_index(CASE).Loss.loc[d.index].values
+    out["trivial_loss_pp"] = TRIVIAL_LOSS_PP
+    for tag, msk in (("small", n < 10), ("large", n >= 10), ("trivial", lossA < TRIVIAL_LOSS_PP),
+                     ("nontrivial", lossA >= TRIVIAL_LOSS_PP)):
+        x = dv[msk]
+        bs = boot_summary(case_boot_means(x), x.mean())
+        bs.update(n_cases=int(msk.sum()), bayes=bayes_signrank(x),
+                  wins_first=int((x < -1e-9).sum()), wins_second=int((x > 1e-9).sum()),
+                  beyond_first=int((x < -m).sum()), beyond_second=int((x > m).sum()),
+                  mean_abs=float(np.abs(x).mean()), loss_range_first=[float(lossA[msk].min()), float(lossA[msk].max())],
+                  N_range=[int(n[msk].min()), int(n[msk].max())])
+        out[tag] = bs
+    # the margin in benchmark energy: margin_pp / 100 x wake-free AEP per turbine (benchmark AEP = objective / 15 x
+    # 8.76 MWh/yr, ENERGY_FACTOR, as the \NXEn macros); Ideal = wake-free objective of the case (same for all methods)
+    ide = S[S.Algorithm == FOCUS].set_index(CASE).Ideal.loc[d.index].values
+    per_t = ide * ENERGY_FACTOR / n
+    out["margin_energy"] = {f"ds{ 'I' * int(v) }": dict(wakefree_mwh_yr_per_turbine=float(per_t[ds == v].mean()),
+                                                         wakefree_per_turbine_spread=float(per_t[ds == v].max() - per_t[ds == v].min()),
+                                                         margin_mwh_yr_per_turbine=float(m / 100 * per_t[ds == v].mean()))
+                            for v in ("1", "2")}
+    # cluster means
+    cm = {}
+    for (dsv, rv) in clusters:
+        mk = (ds == dsv) & (r == rv)
+        cm[f"{dsv}-{rv}"] = float(dv[mk].mean())
+    out["cluster_means"] = cm
+    out["clusters_beyond_first"] = [k for k, v in cm.items() if v < -m]
+    out["clusters_beyond_second"] = [k for k, v in cm.items() if v > m]
+    # data set x density interaction on the matched (r, N) pairs
+    D1 = d.xs("1", level="Dataset"); D2 = d.xs("2", level="Dataset")
+    com = D1.index.intersection(D2.index)
+    assert len(com) == len(D1) == len(D2), "data sets must share the (r, N) cases"
+    e = (D2.loc[com] - D1.loc[com]).values
+    ph = np.array([c[1] * (SMIN_M / (2 * c[0])) ** 2 for c in com])
+    X = np.c_[np.ones(len(e)), ph]; P, h = ols_hc3_parts(X)
+    b_obs, t_obs = studentized_slope(e[None, :], X, P, h, 1)
+    sg = rng.choice([-1.0, 1.0], (B, len(e)))
+    _, tb = studentized_slope(sg * e, X, P, h, 1)
+    p_int = float(((np.abs(tb) >= abs(t_obs[0]) - 1e-12).sum() + 1) / (B + 1))
+    out["interaction"] = dict(n_pairs=int(len(e)), slope_pp_per_unit_phi=float(b_obs[0]), t_hc3=float(t_obs[0]),
+                              p_signflip=p_int, perm=B, df=int(len(e) - 2),
+                              p_t=float(2 * t_dist.sf(abs(t_obs[0]), len(e) - 2)), phi_range=[float(ph.min()), float(ph.max())],
+                              note="slope of d_II - d_I on phi over the 34 identical (r, N) cases; negative = the PSO-VNS "
+                                   "advantage grows with density more in Data Set II than in Data Set I")
+    for tag, dsv in (("dsI", "1"), ("dsII", "2")):
+        mk = ds == dsv; y = dv[mk]; rr = r[mk]; pp = phi[mk]
+        rad = sorted(set(rr))
+        X = np.c_[np.array([[float(v == q) for q in rad] for v in rr]), pp]; k = X.shape[1] - 1
+        P, h = ols_hc3_parts(X)
+        b_obs, t_obs = studentized_slope(y[None, :], X, P, h, k)
+        Y = np.tile(y, (B, 1))
+        for q in rad:
+            ix = np.where(rr == q)[0]
+            Y[:, ix] = rng.permuted(Y[:, ix], axis=1)
+        _, tb = studentized_slope(Y, X, P, h, k)
+        pv = float(((np.abs(tb) >= abs(t_obs[0]) - 1e-12).sum() + 1) / (B + 1))
+        dense = [c for c in out["cases_beyond"] if c["dataset"] == dsv]
+        out[f"slope_{tag}"] = dict(n=int(mk.sum()), slope_pp_per_unit_phi=float(b_obs[0]), t_hc3=float(t_obs[0]),
+                                   p_perm=pv, perm=B, beyond_cases=dense,
+                                   mean_top_density=float(y[pp >= np.quantile(pp, 0.75)].mean()))
+    out["crossover"] = bool(out["slope_dsI"]["slope_pp_per_unit_phi"] > 0 > out["slope_dsII"]["slope_pp_per_unit_phi"])
+    print(f"HET beyond +-{m}: {out['beyond_first']} favour PSO-VNS (max {out['max_first']:.3f}), {out['beyond_second']} favour PSO "
+          f"(max {out['max_second']:.3f}); ties {out['exact_ties']}")
+    print("HET margin energy", out["margin_energy"])
+    for tag in ("small", "large", "trivial", "nontrivial"):
+        v = out[tag]
+        print(f"HET {tag}: n={v['n_cases']} mean {v['mean_dloss_pp']:+.4f} 90% {np.round(v['ci90'], 4)} p {v['p_tost']:.3g} "
+              f"eq {v['equivalent']} bayes {v['bayes']['p_a_better']:.3f}/{v['bayes']['p_rope']:.3f}/{v['bayes']['p_b_better']:.3f}")
+    print("HET clusters", {k: round(v, 3) for k, v in cm.items()})
+    print("HET interaction", out["interaction"], "\n    dsI", {k: v for k, v in out["slope_dsI"].items() if k != "beyond_cases"},
+          "\n    dsII", {k: v for k, v in out["slope_dsII"].items() if k != "beyond_cases"})
+    return out
+
+
+# ------------------------------------------------------------------ 9. Hodges-Lehmann estimates
+def signrank_cdf(n):
+    """exact null CDF of the Wilcoxon signed-rank statistic T+ for n untied non-zero differences."""
+    pmf = np.zeros(n * (n + 1) // 2 + 1); pmf[0] = 1.0
+    for k in range(1, n + 1):
+        new = pmf * 0.5
+        new[k:] += 0.5 * pmf[:-k]
+        pmf = new
+    return np.cumsum(pmf)
+
+
+def hodges_lehmann(d, alpha=0.05):
+    """HL estimate (median of the n(n+1)/2 Walsh averages, i <= j) and the (1 - alpha) CI from the exact inversion of
+    the Wilcoxon signed-rank test (as R wilcox.test(conf.int = TRUE)): [W_(k), W_(M+1-k)] with k = the smallest t such
+    that P(T+ <= t) >= alpha/2 under H0; exact for continuous data (zero differences / ties make it approximate)."""
+    d = np.sort(np.asarray(d, float)); n = len(d); iu = np.triu_indices(n)
+    w = np.sort(((d[:, None] + d[None, :]) / 2)[iu]); M = len(w)
+    cdf = signrank_cdf(n)
+    k = max(int(np.argmax(cdf >= alpha / 2 - 1e-12)), 1)
+    return dict(hl=float(np.median(w)), ci95=[float(w[k - 1]), float(w[M - k])], n=int(n), n_walsh=int(M),
+                achieved_conf=float(1 - 2 * cdf[k - 1]), median=float(np.median(d)))
+
+
+def hl_block(S, case_level):
+    out = {}
+    for a, b in ALL_PAIRS:
+        d = case_diffs(S, a, b)
+        r = hodges_lehmann(d.values)
+        cl = case_level[pk(a, b)]
+        rb = case_boot_means(d.values)
+        r.update(a=a, b=b, mean=float(d.mean()), ci95_mean=[float(np.quantile(rb, 0.025)), float(np.quantile(rb, 0.975))],
+                 wilcoxon_p=cl["p"], wins_first=cl["wins"], wins_second=cl["losses"], n_wilcoxon=cl["n_cases"],
+                 key_pair=(a, b) in HL_KEY, excludes_zero=bool(r["ci95"][0] > 0 or r["ci95"][1] < 0))
+        out[pk(a, b)] = r
+        if (a, b) in HL_KEY:
+            print(f"HL {pk(a, b):14s} HL {r['hl']:+.4f} [{r['ci95'][0]:+.4f}, {r['ci95'][1]:+.4f}] mean {r['mean']:+.4f} "
+                  f"{np.round(r['ci95_mean'], 4)} Wilcoxon p {cl['p']:.3g}")
+    return out
+
+
+# ------------------------------------------------------------------ 10. McNemar, Horns Rev feasibility
+def mcnemar_block(data_dir):
+    """Paired exact McNemar test of feasibility, PSO-VNS vs PSO, Horns Rev 16 turbines, 6,030 evaluations, random
+    initialization (experiment hrfix, current direction binning), runs paired by seed."""
+    H = read_shards("hrfix", data_dir)
+    H = H[(H.Dataset == "HR") & (H.Budget == 6030) & (H.Init == "random") & H.Algorithm.isin([FOCUS, "PSOC"])]
+    P = H.pivot_table(index="Seed", columns="Algorithm", values="Feasible", aggfunc="first").astype(bool)
+    assert len(P) == 30 and P.notna().all().all()
+    a, b = P[FOCUS].values, P["PSOC"].values
+    n10, n01 = int((a & ~b).sum()), int((~a & b).sum())
+    p = float(binomtest(min(n10, n01), n10 + n01, 0.5).pvalue) if n10 + n01 else 1.0
+    out = dict(n_seeds=int(len(P)), both=int((a & b).sum()), neither=int((~a & ~b).sum()), only_first=n10, only_second=n01,
+               feasible_first=int(a.sum()), feasible_second=int(b.sum()), p_exact=p, source="mpce_hrfix (6,030, random)")
+    try:
+        sp = json.load(open(os.path.join(HERE, "mpce_summary.json")))["spread"]["hr16_feasible"]
+        out["matches_summary"] = bool(sp[FOCUS]["feasible"] == out["feasible_first"] and sp["PSOC"]["feasible"] == out["feasible_second"])
+    except Exception as ex:                                              # pragma: no cover
+        out["matches_summary"] = False; out["error"] = repr(ex)
+    print("McNemar HR", out)
+    return out
+
+
+# ------------------------------------------------------------------ 11. figure: equivalence curve
+def equiv_figure(EL, fn):
+    """TOST p vs margin for PSO-VNS - PSO at the seed, case and cluster level (figures_mpce/equiv_curve.pdf)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
+    plt.rcParams.update({"font.family": "serif", "font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
+                         "xtick.color": MUTED, "ytick.color": MUTED, "axes.grid": True, "grid.color": GRID,
+                         "grid.linewidth": 0.5, "axes.spines.top": False, "axes.spines.right": False,
+                         "legend.frameon": False, "lines.linewidth": 1.4, "pdf.fonttype": 42})
+    C = EL["curve"]; x = np.array(C["margins"]); r = EL["pairs"][C["pair"]]
+    lines = [("seed", "#2a78d6", "-", "seed level", r["seed"]["min_margin_pp"]),
+             ("case", "#eb6834", "-", "case level", r["case"]["min_margin_pp"]),
+             ("cluster_cr2", "#1baf7a", "-", "cluster, CR2 $t_5$", r["cluster"]["cr2"]["min_margin_pp"]),
+             ("cluster_wild", "#1baf7a", (0, (3, 1.5)), "cluster, wild bootstrap", r["cluster"]["wild"]["min_margin_pp"])]
+    fig, ax = plt.subplots(figsize=(3.45, 2.35))
+    floor = 1.0 / (BOOT_N + 1)
+    ax.axhline(0.05, color=MUTED, lw=0.8, ls=":", zorder=1)
+    ax.axvline(EQ_MARGIN, color=MUTED, lw=0.8, ls=":", zorder=1)
+    ax.text(0.001, 0.05 * 0.8, r"$\alpha=0.05$", color=MUTED, ha="left", va="top", fontsize=6.5)
+    ax.text(EQ_MARGIN - 0.0008, 2.0e-3, f"margin {EQ_MARGIN:g} pp", color=MUTED, ha="right", va="center", fontsize=6.5, rotation=90)
+    box = dict(boxstyle="square,pad=0.1", fc="white", ec="none")
+    # direct labels in ink next to a swatch of the line; the dot on the alpha line marks each minimal margin
+    pos = {"seed": (0.0405, 1.5e-4), "case": (0.0855, 1.5e-4), "cluster_cr2": (0.0665, 0.50), "cluster_wild": (0.0665, 0.22)}
+    for k, col, ls, lab, mm in lines:
+        y = np.array(C[k], float)
+        if k in ("seed", "case"):                               # bootstrap p has the resolution floor 1/(B+1): stop there
+            hit = np.where(y <= floor + 1e-12)[0]
+            if len(hit):
+                x_, y_ = x[:hit[0] + 1], np.maximum(y[:hit[0] + 1], floor)
+            else:
+                x_, y_ = x, y
+        else:
+            x_, y_ = x, y
+        ax.plot(x_, y_, color=col, ls=ls, lw=1.6 if k != "cluster_wild" else 1.3, zorder=3)
+        ax.plot([mm], [0.05], marker="o", ms=4, color=col, mec="white", mew=0.6, zorder=4)
+        tx, ty = pos[k]
+        ax.text(tx, ty, f"{lab}" + (", " if k.startswith("cluster") else "\n") + f"$m_{{\min}}={mm:.3f}$", fontsize=6.3, color=INK, ha="left", va="center", bbox=box, zorder=5)
+        if k.startswith("cluster"):
+            ax.plot([tx - 0.0065, tx - 0.001], [ty, ty], color=col, ls=ls, lw=1.6, zorder=5)
+    ax.set_yscale("log"); ax.set_ylim(8e-5, 1.3); ax.set_xlim(0, 0.12)
+    ax.set_xlabel("equivalence margin $m$ (pp of wake loss)")
+    ax.set_ylabel(r"TOST $p$ (PSO-VNS $-$ PSO)")
+    fig.tight_layout(pad=0.3)
+    fig.savefig(fn, bbox_inches="tight")
+    plt.close(fig)
+    print("wrote", fn)
+
+
 # ------------------------------------------------------------------ main
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-dir", default=HERE)
     ap.add_argument("--out-dir", default=HERE)
     ap.add_argument("--perm", type=int, default=20000)
+    ap.add_argument("--fig-dir", default=os.path.join(os.path.dirname(HERE), "figures_mpce"))
     args = ap.parse_args(argv)
     t0 = time.time()
     A = load(args.data_dir)
@@ -836,6 +1317,17 @@ def main(argv=None):
     for k, v in EN.items():
         print(f"energy {k}: dL {v['mean_dloss_pp']:+.4f} pp, gain {v['mean_gain_pct_aep']:+.4f} % AEP, "
               f"{v['mean_gain_mwh_yr']:+.1f} MWh/yr (CI {np.round(v['ci95_gain_mwh_yr'], 1)}), largest N {v['mean_gain_mwh_yr_largest_N']:+.1f}")
+    # --- 7-11. review round 2 (D13): equivalence at three levels, heterogeneity, HL, McNemar, equivalence curve
+    EL = equivalence_levels_block(G, S, clusters)
+    EL["reproduction"] = reproduce_equivalence(EL)
+    print("reproduction of mpce_summary.json['equivalence']:", EL["reproduction"])
+    summ["equivalence_levels"] = EL
+    summ["heterogeneity"] = heterogeneity_block(S, clusters, args.perm, EL)
+    summ["hodges_lehmann"] = hl_block(S, full)
+    summ["hr_mcnemar"] = mcnemar_block(args.data_dir)
+    os.makedirs(args.fig_dir, exist_ok=True)
+    equiv_figure(EL, os.path.join(args.fig_dir, "equiv_curve.pdf"))
+    summ["figure_equiv_curve"] = os.path.join(os.path.basename(args.fig_dir), "equiv_curve.pdf")
     summ["seconds"] = round(time.time() - t0, 1)
 
     json.dump(clean(summ), open(os.path.join(args.out_dir, "mpce_summary_extra.json"), "w"), indent=1)
@@ -1010,6 +1502,9 @@ def write_macros(s, fn):
     m("NXModelShiftPairGauss", num(mp["mean_diff_gauss_pp"], 3), "mean PSO-VNS - PSO (pp), Gaussian wake")
     m("NXModelShiftPairSignChanges", str(mp["sign_changes"]), "cases in which the sign of PSO-VNS - PSO differs between the models")
     m("NXModelShiftPairN", str(mp["n_cases"]))
+    write_macros_r2(s, m)
+    names = [x[0] for x in M]
+    assert len(names) == len(set(names)), f"duplicate macros: {sorted({x for x in names if names.count(x) > 1})}"
     hdr = ["% generated by mpce_inference_extra.py from the per-run data (" + s["generated"] + ") -- do not edit by hand",
            "% Phase 6, W2 (inference robustness): qualification threshold, cluster-level / leave-one-cluster-out / cluster",
            "% bootstrap, one Holm (and BH) family over all main-text case-mean tests, the post hoc N >= 10 subgroup, and",
@@ -1021,6 +1516,140 @@ def write_macros(s, fn):
     lines = hdr + [f"\\newcommand{{\\{n}}}{{{v}}}" + (f"   % {c}" if c else "") for n, v, c in M]
     open(fn, "w").write("\n".join(lines) + "\n")
     print(f"wrote {fn} ({len(M)} macros)")
+
+
+def up3(v):
+    """minimal margins: rounded UP to 3 decimals (as the pipeline's m_min column)."""
+    return f"{math.ceil(v * 1000 - 1e-9) / 1000:.3f}"
+
+
+def ptost(r):
+    return ("\\ensuremath{\\le}" + pval(r["p_tost"])) if r.get("p_tost_at_floor") else pval(r["p_tost"])
+
+
+def bprob(v):
+    """Bayesian 'most probable region' probabilities: never 1.00 / 0.00 (as the pipeline)."""
+    return "\\ensuremath{>}0.99" if v > 0.99 else "\\ensuremath{<}0.01" if v < 0.01 else f"{v:.2f}"
+
+
+CL_NAME = {"1-500": "DsIFive", "1-750": "DsISevenFifty", "1-1000": "DsIThousand",
+           "2-500": "DsIIFive", "2-750": "DsIISevenFifty", "2-1000": "DsIIThousand"}
+
+
+def case_list(cases):
+    """'500~m: $N=8$ ($+0.160$), ...' grouped by radius (for the \\NXHet...List macros)."""
+    out = []
+    for rr in sorted({c["radius"] for c in cases}):
+        cc = [c for c in cases if c["radius"] == rr]
+        out.append(f"{rr}~m: " + ", ".join(f"$N={c['N']}$ (${c['d']:+.2f}$)" for c in cc))
+    return "; ".join(out) if out else "none"
+
+
+def write_macros_r2(s, m):
+    """macros of the review-round-2 analyses (sections 7-10): \\NXEq..., \\NXBayMean..., \\NXHet..., \\NXDens...,
+    \\NXHL..., \\NXHRMcNemar..., \\NXMargin.... Signs: first minus second (pp of wake loss, negative = first better).
+    Bayesian 'Left/Rope/Right': theta_A (first better) / theta_rope / theta_B (second better); the \\NX...Bay{Left,Rope,
+    Right} probabilities are the posterior probabilities that each region is the MOST PROBABLE one (not the
+    probability that the mean difference lies in the rope); \\NXBayMean... are the posterior means of theta."""
+    EL = s["equivalence_levels"]; P_ = EL["pairs"]
+    m("NXEqMarginSource", EL["margin_source"].replace("_", "\\_"), "where EQ_MARGIN was read")
+    for key, r in P_.items():
+        a, b = key.split("-"); nm = pmac(a, b); sd, cs, cl = r["seed"], r["case"], r["cluster"]
+        m(f"NXEqMean{nm}", num(r["mean_dloss_pp"], 3), f"{key}: mean case difference (pp), n = {r['n_cases']}")
+        m(f"NXEqSeed{nm}CI", ci_txt(sd["ci90"]), "seed level (fixed benchmark): 90% CI, runs resampled within cases")
+        m(f"NXEqSeed{nm}CINinetyFive", ci_txt(sd["ci95"]))
+        m(f"NXEqSeed{nm}Min", up3(sd["min_margin_pp"]), "minimal equivalence margin (pp, rounded up)")
+        m(f"NXEqSeed{nm}P", ptost(sd), "bootstrap TOST p at the margin")
+        m(f"NXEqSeed{nm}Holds", "yes" if sd["equivalent"] else "no")
+        m(f"NXEqCase{nm}CI", ci_txt(cs["ci90"]), "case level (bootstrap over cases, = pipeline): 90% CI")
+        m(f"NXEqCase{nm}CINinetyFive", ci_txt(cs["ci95"]))
+        m(f"NXEqCase{nm}Min", up3(cs["min_margin_pp"])); m(f"NXEqCase{nm}P", ptost(cs))
+        m(f"NXEqCase{nm}Holds", "yes" if cs["equivalent"] else "no")
+        m(f"NXEqClust{nm}CI", ci_txt(cl["cr2"]["ci90"]), "cluster level: CR2 90% CI, t with 5 d.f.")
+        m(f"NXEqClust{nm}CINinetyFive", ci_txt(cl["cr2"]["ci95"]))
+        m(f"NXEqClust{nm}Min", up3(cl["cr2"]["min_margin_pp"]), "minimal margin, CR2 t(5)")
+        m(f"NXEqClust{nm}PCR", pval(cl["cr2"]["p_tost"]), "CR2 t(5) TOST p")
+        m(f"NXEqClust{nm}P", pval(cl["wild"]["p_tost"]), "wild-cluster bootstrap-t TOST p (Webb, all draws)")
+        m(f"NXEqClust{nm}CIWild", ci_txt(cl["wild"]["ci90"]), "wild-cluster 90% CI (test inversion)")
+        m(f"NXEqClust{nm}MinWild", up3(cl["wild"]["min_margin_pp"]))
+        m(f"NXEqClust{nm}Holds", "yes" if cl["equivalent"] else "no", "CR2 CI inside +-m AND wild TOST p <= 0.05")
+        th = r["bayes"]["mean_theta"]
+        for k, v in zip(("Left", "Rope", "Right"), th):
+            m(f"NXBayMean{nm}{k}", f"{v:.2f}", "posterior mean of theta (Left = first better)")
+    f = P_["PSOBV-PSOC"]
+    if "per_seed_t" in f["seed"]:
+        m("NXEqSeedJointPSOVNSvsPSOCI", ci_txt(f["seed"]["per_seed_t"]["ci90"]),
+          "benchmark-average difference per seed (30 seeds), t(29) 90% CI (the reviewer's version)")
+    m("NXEqSeedStratJointPSOVNSvsPSOCI", ci_txt(f["seed"]["joint"]["ci90"]), "seed bootstrap with one seed resample for all cases")
+    m("NXEqClustCROnePSOVNSvsPSOCI", ci_txt(f["cluster"]["cr1"]["ci90"]), "CR1 t(5) 90% CI")
+    m("NXEqClustDfBM", num(f["cluster"]["df_bm"], 1), "Bell-McCaffrey d.f. of the CR2 variance (PSO-VNS - PSO)")
+    m("NXEqClustBMPSOVNSvsPSOCI", ci_txt(f["cluster"]["cr2_bm"]["ci90"]), "CR2 90% CI with Bell-McCaffrey d.f.")
+    m("NXEqClustDf", str(f["cluster"]["df"]))
+    m("NXEqWildDraws", f"{f['cluster']['wild']['draws']:,}".replace(",", "{,}"), "Webb draws enumerated (6^6)")
+    m("NXBayPSOVNSvsPSOCIRope", ci_txt(f["bayes"]["ci95_theta"][1], 2), "95% credible interval of theta_rope")
+    m("NXBayPSOVNSvsPSOCILeft", ci_txt(f["bayes"]["ci95_theta"][0], 2))
+    nhold = {lv: sum(1 for r in P_.values() if (r[lv]["equivalent"])) for lv in ("seed", "case", "cluster")}
+    for lv, nm in (("seed", "Seed"), ("case", "Case"), ("cluster", "Clust")):
+        m(f"NXEq{nm}NHolds", str(nhold[lv]), f"tab:equivalence pairs equivalent at the {lv} level")
+    # heterogeneity of PSO-VNS - PSO
+    H = s["heterogeneity"]
+    m("NXHetN", str(H["n_cases"]))
+    m("NXHetBeyondPSOVNS", str(H["beyond_first"]), "cases with PSO-VNS - PSO < -margin (PSO-VNS better by more than m)")
+    m("NXHetBeyondPSO", str(H["beyond_second"]), "cases with PSO-VNS - PSO > +margin")
+    m("NXHetBeyond", str(H["beyond_first"] + H["beyond_second"]))
+    m("NXHetMaxPSOVNS", num(H["max_first"], 2), "largest advantage of PSO-VNS in one case (pp)")
+    m("NXHetMaxPSO", num(H["max_second"], 2), "largest advantage of PSO in one case (pp)")
+    m("NXHetTies", str(H["exact_ties"]), "cases with identical case means"); m("NXHetNearTies", str(H["near_ties"]), "|d| < 0.005 pp")
+    for tag, nm in (("small", "Small"), ("large", "Large"), ("trivial", "Trivial"), ("nontrivial", "Nontrivial")):
+        v = H[tag]; y = v["bayes"]
+        m(f"NXEq{nm}N", str(v["n_cases"]), f"PSO-VNS vs PSO, stratum {tag}")
+        m(f"NXEq{nm}Mean", num(v["mean_dloss_pp"], 3)); m(f"NXEq{nm}CI", ci_txt(v["ci90"]), "90% case-bootstrap CI")
+        m(f"NXEq{nm}Min", up3(v["min_margin_pp"])); m(f"NXEq{nm}P", ptost(v)); m(f"NXEq{nm}Holds", "yes" if v["equivalent"] else "no")
+        m(f"NXEq{nm}MeanAbs", num(v["mean_abs"], 3))
+        m(f"NXEq{nm}BeyondPSOVNS", str(v["beyond_first"])); m(f"NXEq{nm}BeyondPSO", str(v["beyond_second"]))
+        for k, pv, th in (("Left", y["p_a_better"], y["mean_theta"][0]), ("Rope", y["p_rope"], y["mean_theta"][1]),
+                          ("Right", y["p_b_better"], y["mean_theta"][2])):
+            m(f"NXEq{nm}Bay{k}", bprob(pv), "P(region most probable); Left = PSO-VNS better")
+            m(f"NXEq{nm}BayMean{k}", f"{th:.2f}", "posterior mean of theta")
+    m("NXTrivialLoss", f"{H['trivial_loss_pp']:g}", "trivial case: case-mean wake loss of PSO-VNS below this (pp)")
+    cm = H["cluster_means"]
+    for k, v in cm.items():
+        m(f"NXHetCl{CL_NAME[k]}", num(v, 3), f"cluster {k}: mean PSO-VNS - PSO (pp)")
+    m("NXHetClBeyond", str(len(H["clusters_beyond_first"]) + len(H["clusters_beyond_second"])), "cluster means beyond +-margin")
+    m("NXHetClBeyondPSOVNS", str(len(H["clusters_beyond_first"]))); m("NXHetClBeyondPSO", str(len(H["clusters_beyond_second"])))
+    for dsv, dn in (("1", "DsI"), ("2", "DsII")):
+        cb = [c for c in H["cases_beyond"] if c["dataset"] == dsv]
+        m(f"NXHet{dn}PSOList", case_list([c for c in cb if c["d"] > 0]), "cases beyond +margin (PSO better)")
+        m(f"NXHet{dn}PSOVNSList", case_list([c for c in cb if c["d"] < 0]), "cases beyond -margin (PSO-VNS better)")
+        m(f"NXHet{dn}NPSO", str(sum(c["d"] > 0 for c in cb))); m(f"NXHet{dn}NPSOVNS", str(sum(c["d"] < 0 for c in cb)))
+    it = H["interaction"]
+    m("NXDensDef", "\\ensuremath{N\\,(\\ell_{\\min}/2r)^2}", "density: nominal share of the farm disc covered by exclusion discs")
+    m("NXDensLmin", f"{SMIN_M:.0f}"); m("NXDensPhiMin", num(it["phi_range"][0], 2)); m("NXDensPhiMax", num(it["phi_range"][1], 2))
+    m("NXDensNPairs", str(it["n_pairs"]))
+    m("NXDensInterSlope", num(it["slope_pp_per_unit_phi"], 2), "slope of d_II - d_I on phi (pp per unit phi)")
+    m("NXDensInterP", pval(it["p_signflip"]), "studentized sign-flip permutation p (two-sided)")
+    m("NXDensPerm", f"{it['perm']:,}".replace(",", "{,}"))
+    for tag, dn in (("dsI", "DsI"), ("dsII", "DsII")):
+        v = H[f"slope_{tag}"]
+        m(f"NXDensSlope{dn}", num(v["slope_pp_per_unit_phi"], 2, sign=True), "slope of PSO-VNS - PSO on phi, radius FE (pp per unit phi)")
+        m(f"NXDensP{dn}", pval(v["p_perm"]), "studentized within-radius permutation p")
+        m(f"NXDensTopMean{dn}", num(v["mean_top_density"], 3, sign=True), "mean d over the densest quarter of the cases")
+    for dsn, dn in (("dsI", "DsI"), ("dsII", "DsII")):
+        v = H["margin_energy"][dsn]
+        m(f"NXMarginMWhTurb{dn}", num(v["margin_mwh_yr_per_turbine"], 1), "margin as MWh/yr per turbine (benchmark energy)")
+        m(f"NXWakeFreeMWhTurb{dn}", num(v["wakefree_mwh_yr_per_turbine"], 0), "wake-free benchmark AEP per turbine, MWh/yr")
+    # Hodges-Lehmann
+    HLr = s["hodges_lehmann"]
+    for a, b in HL_KEY:
+        v = HLr[pk(a, b)]
+        m(f"NXHL{pmac(a, b)}", num(v["hl"], 3, sign=True), "Hodges-Lehmann estimate (median of Walsh averages, pp)")
+        m(f"NXHL{pmac(a, b)}CI", ci_txt(v["ci95"]), "95% CI, exact inversion of the Wilcoxon signed-rank test")
+    # McNemar
+    Mc = s["hr_mcnemar"]
+    m("NXHRMcNemarP", pval(Mc["p_exact"]), "exact McNemar p, Horns Rev feasibility PSO-VNS vs PSO (6,030, random starts)")
+    m("NXHRMcNemarOnlyPSOVNS", str(Mc["only_first"])); m("NXHRMcNemarOnlyPSO", str(Mc["only_second"]))
+    m("NXHRMcNemarBoth", str(Mc["both"])); m("NXHRMcNemarNeither", str(Mc["neither"]))
+    m("NXHRMcNemarN", str(Mc["n_seeds"]))
 
 
 # ------------------------------------------------------------------ tables
@@ -1157,10 +1786,107 @@ def write_tables(s, fn):
                      f"{v['mean_abs_change_pp']:.3f} & {v['sign_changes']} \\\\")
     T.append(table("table", "Wake-model uncertainty from the study's own layouts. Every feasible final layout of the eight main methods (68 cases, 6{,}030 evaluations) is re-evaluated (not re-optimized) with the benchmark Jensen model and with the Gaussian wake of Bastankhah and Port\\'e-Agel ($k^*=0.04$, Table~\\ref{tab:robust}); wake loss in pp of the wake-free power. Top: absolute difference $|L_{\\rm Gauss}-L_{\\rm Jensen}|$ of the same layout (mean, median, 10--90\\%% quantiles) and mean signed difference, to be compared with the equivalence margin of $\\pm%g$~pp. Bottom: mean over the cases (both methods $\\ge15$ feasible runs) of the case-mean difference under each model, the mean absolute change of the per-case difference between the models, and the cases in which its sign differs." % EQ_MARGIN,
                    "tab:X-modelshift", "lccccc", "Layouts & $n$ & mean & median & 10--90\\% & signed", lines, sep="3pt"))
+    write_tables_r2(s, T)
     hdr = ("% generated by mpce_inference_extra.py (" + s["generated"] + ") -- do not edit by hand\n"
            "% Supplementary tables of the inference-robustness analyses (Phase 6, W2); requires booktabs\n\n")
     open(fn, "w").write(hdr + "\n".join(T))
     print(f"wrote {fn} ({len(T)} tables)")
+
+
+def write_tables_r2(s, T):
+    """supplementary tables of the review-round-2 analyses: tab:X-equiv-levels, tab:X-bayes, tab:X-heterogeneity,
+    tab:X-beyond, tab:X-hl, tab:X-mcnemar."""
+    EL = s["equivalence_levels"]; P_ = EL["pairs"]; mg = EL["margin_pp"]
+    f3 = lambda v: f"{v:+.3f}".replace("-", "$-$")
+    yn = lambda v: "yes" if v else "no"
+    tpt = lambda r: ("$\\le$" + tp(r["p_tost"]).strip("$") if r.get("p_tost_at_floor") else tp(r["p_tost"]))
+    abl = [k for k in EQ_PAIRS if k in P_][:13]; mn = [k for k in EQ_PAIRS if k in P_][13:]
+    # --- equivalence at three levels
+    def row(k):
+        r = P_[k]; a, b = k.split("-"); sd, cs, cl = r["seed"], r["case"], r["cluster"]
+        return (f"{plab(a, b)} & {r['n_cases']} & ${r['mean_dloss_pp']:+.3f}$ & {ci_tab(sd['ci90'])} & {up3(sd['min_margin_pp'])} & "
+                f"{yn(sd['equivalent'])} & {ci_tab(cs['ci90'])} & {up3(cs['min_margin_pp'])} & {tpt(cs)} & {yn(cs['equivalent'])} & "
+                f"{ci_tab(cl['cr2']['ci90'])} & {up3(cl['cr2']['min_margin_pp'])} & {tp(cl['wild']['p_tost'])} & "
+                f"{up3(cl['wild']['min_margin_pp'])} & {yn(cl['equivalent'])} \\\\")
+    lines = (["\\multicolumn{15}{l}{\\emph{Component-analysis contrasts}} \\\\"] + [row(k) for k in abl] +
+             ["\\midrule", "\\multicolumn{15}{l}{\\emph{Main comparison, PSO-VNS vs.\\ each method (PSO and VNS: see above)}} \\\\"] +
+             [row(k) for k in mn])
+    f = P_["PSOBV-PSOC"]["cluster"]
+    T.append(table("table*", "Practical equivalence (margin $m=%g$~pp, set after the primary analysis) of the pairs of Table~\\ref{tab:equivalence} at three levels of inference. $\\overline{\\Delta L}$: mean over the $n$ cases of the case-mean wake-loss difference, first minus second method (pp; negative = first better; the same estimate at every level). \\emph{Seed level} (fixed benchmark: the %d cases are fixed and only the run-to-run variability is random): %s bootstrap resamples of the 30 seed-paired runs within every case (same seeds for both methods; case means over the feasible resampled runs), percentile 90\\%% CI. \\emph{Case level} (generalization to exchangeable cases, as Table~\\ref{tab:equivalence}): percentile bootstrap over the cases; $p_{\\rm TOST}$ as there. \\emph{Cluster level} (generalization to new farms; %d (data set, radius) clusters): cluster-robust 90\\%% CI with the CR2 (bias-reduced) variance and a $t$ distribution with %d d.f. (Bell--McCaffrey d.f.\\ %.1f for PSO-VNS vs.\\ PSO), and a restricted wild-cluster bootstrap-$t$ TOST (CR2-studentized, all %s draws of the Webb six-point weights enumerated; $m_{\\min}$ by test inversion). $m_{\\min}$: smallest margin at which equivalence holds (rounded up). Eq.: equivalent at $\\pm m$ (cluster level: CR2 CI inside $\\pm m$ and wild $p_{\\rm TOST}\\le0.05$)."
+                   % (mg, s["n_cases"], f"{BOOT_N:,}".replace(",", "{,}"), f["n_clusters"], f["df"], f["df_bm"],
+                      f"{f['wild']['draws']:,}".replace(",", "{,}")),
+                   "tab:X-equiv-levels", "lcccccccccccccc",
+                   "& & & \\multicolumn{3}{c}{Seed level} & \\multicolumn{4}{c}{Case level} & \\multicolumn{5}{c}{Cluster level} \\\\\n"
+                   "\\cmidrule(lr){4-6}\\cmidrule(lr){7-10}\\cmidrule(lr){11-15}\n"
+                   "Pair (first vs.\\ second) & $n$ & $\\overline{\\Delta L}$ & 90\\% CI & $m_{\\min}$ & Eq. & 90\\% CI & $m_{\\min}$ & "
+                   "$p_{\\rm TOST}$ & Eq. & CR2 90\\% CI & $m_{\\min}$ & wild $p_{\\rm TOST}$ & wild $m_{\\min}$ & Eq.",
+                   lines, sep="2pt", resize=True))
+    # --- Bayesian posterior means
+    pr2 = lambda v: "$>$0.99" if v > 0.99 else "$<$0.01" if v < 0.01 else f"{v:.2f}"
+    def brow(lab, n, y):
+        return (f"{lab} & {n} & {pr2(y['p_a_better'])} & {pr2(y['p_rope'])} & {pr2(y['p_b_better'])} & "
+                + " & ".join(f"{t:.2f} [{c[0]:.2f}, {c[1]:.2f}]" for t, c in zip(y["mean_theta"], y["ci95_theta"])) + " \\\\")
+    H = s["heterogeneity"]
+    lines = [brow(plab(*k.split("-")), P_[k]["n_cases"], P_[k]["bayes"]) for k in EQ_PAIRS if k in P_]
+    lines += ["\\midrule", "\\multicolumn{8}{l}{\\emph{PSO-VNS vs.\\ PSO, subsets of the cases}} \\\\"]
+    for tag, txt in (("small", "$N<10$"), ("large", "$N\\ge10$"), ("trivial", "wake loss of PSO-VNS $<%g$~pp" % H["trivial_loss_pp"]),
+                     ("nontrivial", "wake loss of PSO-VNS $\\ge%g$~pp" % H["trivial_loss_pp"])):
+        lines.append(brow(txt, H[tag]["n_cases"], H[tag]["bayes"]))
+    T.append(table("table*", "Bayesian signed-rank test \\cite{Benavoli2017} on the case-mean differences (first minus second; region of practical equivalence $(-%g, %g)$~pp; prior strength $s=%g$ at $z_0=0$; %s posterior samples, fixed seed; as Table~\\ref{tab:equivalence}). $\\theta_{\\rm A}$, $\\theta_{\\rm rope}$, $\\theta_{\\rm B}$: posterior shares of the Walsh averages $(d_i+d_j)/2$ below $-m$ (first better), inside and above $+m$ (second better) -- the chance that a new pair of cases favours the first method by more than $m$, is within $\\pm m$, or favours the second. $P_{\\rm A}$, $P_{\\rm rope}$, $P_{\\rm B}$: posterior probability that each region is the \\emph{most probable} of the three (the quantity of Table~\\ref{tab:equivalence}); this is not the probability that the mean difference lies within $\\pm m$. Posterior means of $\\theta$ with 95\\%% credible intervals."
+                   % (mg, mg, BAYES_S, f"{BAYES_N:,}".replace(",", "{,}")),
+                   "tab:X-bayes", "lccccccc",
+                   "Pair (first vs.\\ second) & $n$ & $P_{\\rm A}$ & $P_{\\rm rope}$ & $P_{\\rm B}$ & $\\theta_{\\rm A}$ & $\\theta_{\\rm rope}$ & $\\theta_{\\rm B}$",
+                   lines, sep="2.5pt"))
+    # --- heterogeneity of PSO-VNS - PSO
+    cls = s["clusters"]; cname = {c: ("I" if c.split("-")[0] == "1" else "II") + "/" + c.split("-")[1] for c in cls}
+    lines = [f"All cases & {H['n_cases']} & {H['beyond_first']}/{H['beyond_second']} & ${P_['PSOBV-PSOC']['mean_dloss_pp']:+.3f}$ & "
+             f"{ci_tab(P_['PSOBV-PSOC']['case']['ci90'])} & {up3(P_['PSOBV-PSOC']['case']['min_margin_pp'])} & "
+             f"{yn(P_['PSOBV-PSOC']['case']['equivalent'])} & "
+             + " / ".join(pr2(v) for v in (P_['PSOBV-PSOC']['bayes']['p_a_better'], P_['PSOBV-PSOC']['bayes']['p_rope'],
+                                           P_['PSOBV-PSOC']['bayes']['p_b_better'])) + " \\\\"]
+    for tag, txt in (("small", "$N<10$"), ("large", "$N\\ge10$"), ("trivial", "loss $<%g$~pp" % H["trivial_loss_pp"]),
+                     ("nontrivial", "loss $\\ge%g$~pp" % H["trivial_loss_pp"])):
+        v = H[tag]; y = v["bayes"]
+        lines.append(f"{txt} & {v['n_cases']} & {v['beyond_first']}/{v['beyond_second']} & ${v['mean_dloss_pp']:+.3f}$ & {ci_tab(v['ci90'])} & "
+                     f"{up3(v['min_margin_pp'])} & {yn(v['equivalent'])} & "
+                     + " / ".join(pr2(q) for q in (y["p_a_better"], y["p_rope"], y["p_b_better"])) + " \\\\")
+    lines += ["\\midrule", "\\multicolumn{8}{l}{\\emph{Cluster means (data set/radius in m), pp:} " +
+              ", ".join(f"{cname[k]} {f3(H['cluster_means'][k])}" for k in cls) +
+              f"; beyond $\\pm m$: {len(H['clusters_beyond_first'])} favour PSO-VNS, {len(H['clusters_beyond_second'])} favour PSO}} \\\\"]
+    it = H["interaction"]; s1, s2 = H["slope_dsI"], H["slope_dsII"]
+    lines += ["\\midrule",
+              "\\multicolumn{8}{l}{\\emph{Data set $\\times$ density $\\phi=N(\\ell_{\\min}/2r)^2$ (slope, pp per unit $\\phi$; studentized permutation $p$)}} \\\\",
+              f"\\multicolumn{{8}}{{l}}{{Interaction, $\\Delta L_{{\\rm II}}-\\Delta L_{{\\rm I}}$ on $\\phi$ over the {it['n_pairs']} identical $(r,N)$ cases: "
+              f"slope {f3(it['slope_pp_per_unit_phi'])}, $p={tp(it['p_signflip']).strip('$')}$ (sign flips)}} \\\\",
+              f"\\multicolumn{{8}}{{l}}{{Data Set I: slope {f3(s1['slope_pp_per_unit_phi'])} (PSO better at higher density), $p={tp(s1['p_perm']).strip('$')}$; "
+              f"Data Set II: slope {f3(s2['slope_pp_per_unit_phi'])} (PSO-VNS better), $p={tp(s2['p_perm']).strip('$')}$ (within-radius permutation)}} \\\\"]
+    T.append(table("table*", "Heterogeneity of PSO-VNS vs.\\ PSO ($\\Delta L$: case-mean wake loss of PSO-VNS minus that of PSO, pp; negative = PSO-VNS better). Beyond: cases with $\\Delta L<-m$ / $\\Delta L>+m$ ($m=%g$~pp); 90\\%% CI, $m_{\\min}$, Eq.\\ as the case level of Table~\\ref{tab:X-equiv-levels}; Bayes: $P_{\\rm A}/P_{\\rm rope}/P_{\\rm B}$ (region most probable; A = PSO-VNS better) of the Bayesian signed-rank test (Table~\\ref{tab:X-bayes}). Subsets: turbine number $N<10$ / $N\\ge10$, and cases in which the case-mean wake loss of PSO-VNS is below / at least %g~pp (a case with a trivial wake loss cannot differ by $m$). Density: $\\phi=N(\\ell_{\\min}/2r)^2$ with $\\ell_{\\min}=%d$~m, the nominal share of the farm disc covered by the $N$ exclusion discs (range %.2f--%.2f); stated after review, before this test was run. Interaction test: slope of the difference between the data sets over the identical $(r,N)$ cases, HC3-studentized, %s random sign flips of the pairs (valid when the data sets also differ in level); per data set: regression on $\\phi$ with radius fixed effects, HC3-studentized, permutation of $\\Delta L$ within radius. The cases beyond $\\pm m$ are listed in Table~\\ref{tab:X-beyond}."
+                   % (mg, H["trivial_loss_pp"], SMIN_M, it["phi_range"][0], it["phi_range"][1], f"{it['perm']:,}".replace(",", "{,}")),
+                   "tab:X-heterogeneity", "lccccccc",
+                   "Cases & $n$ & Beyond & $\\overline{\\Delta L}$ & 90\\% CI & $m_{\\min}$ & Eq. & Bayes", lines, sep="3pt"))
+    # --- the cases beyond +-m
+    cb = sorted(H["cases_beyond"], key=lambda c: (c["dataset"], c["radius"], c["N"]))
+    lines = [f"{'I' if c['dataset'] == '1' else 'II'} & {c['radius']} & {c['N']} & {c['phi']:.2f} & ${c['d']:+.3f}$ & "
+             f"{'PSO-VNS' if c['d'] < 0 else 'PSO'} \\\\" for c in cb]
+    T.append(table("table", "The %d of %d cases in which PSO-VNS and PSO differ by more than the margin ($|\\Delta L|>%g$~pp; $\\Delta L$ = PSO-VNS minus PSO, pp): %d favour PSO-VNS (up to %.2f~pp) and %d favour PSO (up to %.2f~pp). $\\phi=N(\\ell_{\\min}/2r)^2$."
+                   % (len(cb), H["n_cases"], mg, H["beyond_first"], H["max_first"], H["beyond_second"], H["max_second"]),
+                   "tab:X-beyond", "cccccc", "Data set & $r$ (m) & $N$ & $\\phi$ & $\\Delta L$ & Better", lines, sep="4pt"))
+    # --- Hodges-Lehmann
+    HLr = s["hodges_lehmann"]; lines = []
+    for a, b in ALL_PAIRS:
+        v = HLr[pk(a, b)]
+        lab = ("\\textbf{" + plab(a, b) + "}") if v["key_pair"] else plab(a, b)
+        lines.append(f"{lab} & {v['n']} & ${v['mean']:+.3f}$ & {ci_tab(v['ci95_mean'])} & ${v['hl']:+.3f}$ & {ci_tab(v['ci95'])} & "
+                     f"{v['wins_first']}/{v['wins_second']} & {tp(v['wilcoxon_p'])} \\\\")
+    T.append(table("table*", "Estimates that match the tests. Mean: mean case-mean difference (first minus second, pp) with the 95\\% percentile bootstrap CI over the cases (as in the paper). HL: Hodges--Lehmann estimate (median of the $n(n+1)/2$ Walsh averages of the case-mean differences), the location estimate that belongs to the Wilcoxon signed-rank test, with the 95\\% CI from the exact inversion of that test (exact for untied differences; zero differences are kept). W/L and $p_{\\rm W}$: cases in which the first/second method has the lower case mean and the case-mean Wilcoxon $p$ of the paper (zero differences dropped; imputation when only one method qualifies, so $n$ of the test can exceed the $n$ of the estimates). Bold: the pairs discussed in the text."
+                   , "tab:X-hl", "lccccccc",
+                   "Pair (first vs.\\ second) & $n$ & Mean & 95\\% CI & HL & 95\\% CI & W/L & $p_{\\rm W}$", lines, sep="3pt", resize=True))
+    # --- McNemar
+    Mc = s["hr_mcnemar"]
+    lines = [f"PSO-VNS feasible & {Mc['both']} & {Mc['only_first']} \\\\", f"PSO-VNS infeasible & {Mc['only_second']} & {Mc['neither']} \\\\"]
+    T.append(table("table", "Feasibility of the final layouts on the Horns Rev~1 16-turbine block (6,030 evaluations, random starts), PSO-VNS vs.\\ PSO, %d runs paired by seed. Exact McNemar test on the discordant pairs: $p=%s$ (two-sided). One site and one initialization; on the %d benchmark cases both methods are always feasible."
+                   % (Mc["n_seeds"], tp(Mc["p_exact"]).strip("$"), s["n_cases"]),
+                   "tab:X-mcnemar", "lcc", "& PSO feasible & PSO infeasible", lines, sep="4pt"))
 
 
 if __name__ == "__main__":

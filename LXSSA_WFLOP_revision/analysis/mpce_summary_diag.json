@@ -7,6 +7,9 @@
   "stored_missing": [],
   "bitident_runs": 62,
   "bitident_match": 62,
+  "t1b_runs": 23,
+  "t1b_match": 23,
+  "t1b_expected": 23,
   "note": "stored_match: WakeLoss (relative difference <= 1e-13, the precision of the CSV), coordinate string, curve string and call count equal to the stored run of the paper; bitident: seed 1 of every case and method rerun uninstrumented in the same process, final position array, tracker curve, calls and WakeLoss bit-identical",
   "rs_replay_checked": 120,
   "rs_replay_agree": 120,
@@ -1900,27 +1903,55 @@
  "T1_stored": {
   "PSO": {
    "runs": 2040,
-   "infeasible": 282,
-   "boundary_only": 6,
-   "spacing_only": 246,
-   "both": 30,
-   "any_boundary": 36,
+   "feasible_flag": 1754,
+   "any_boundary": 62,
+   "rule": "1e-6 m (distance outside the circle; spacing deficit), as the Feasible flag",
+   "legacy_1mm": {
+    "infeasible": 282,
+    "boundary_only": 6,
+    "spacing_only": 246,
+    "both": 30
+   },
+   "infeasible": 286,
+   "boundary_only": 10,
+   "spacing_only": 224,
+   "both": 52,
+   "tangent": 60,
+   "tangent_boundary_only": 10,
+   "tangent_both": 50,
    "final_on_box": 68,
-   "infeasible_on_box": 56,
-   "outside_turbines_on_box": 40,
-   "feasible_flag": 1754
+   "infeasible_on_box": 60,
+   "resolved_exact": 46,
+   "undecided": 0,
+   "flag_contradictions": 0,
+   "outside_turbines": 66,
+   "outside_turbines_on_box": 64
   },
   "PSOC": {
    "runs": 2040,
+   "feasible_flag": 2040,
+   "any_boundary": 0,
+   "rule": "1e-6 m (distance outside the circle; spacing deficit), as the Feasible flag",
+   "legacy_1mm": {
+    "infeasible": 0,
+    "boundary_only": 0,
+    "spacing_only": 0,
+    "both": 0
+   },
    "infeasible": 0,
    "boundary_only": 0,
    "spacing_only": 0,
    "both": 0,
-   "any_boundary": 0,
+   "tangent": 0,
+   "tangent_boundary_only": 0,
+   "tangent_both": 0,
    "final_on_box": 2,
    "infeasible_on_box": 0,
-   "outside_turbines_on_box": 0,
-   "feasible_flag": 2040
+   "resolved_exact": 0,
+   "undecided": 0,
+   "flag_contradictions": 0,
+   "outside_turbines": 0,
+   "outside_turbines_on_box": 0
   }
  },
  "T2": {
@@ -1998,6 +2029,10 @@
    "descent_evals_pct_of_phase2": 78.45333333333333,
    "ls_evals_pct_of_phase2": 99.97527777777778,
    "shake_evals_pct_of_phase2": 0.024722222222222225,
+   "cycle_evals_pct_of_phase2": 21.546666666666667,
+   "descent_evals_pct_median": 95.33333333333334,
+   "cycle_evals_pct_median": 4.666666666666666,
+   "runs_with_cycle_evals": 62,
    "shakes_median": 1.0,
    "shakes_min": 0,
    "shakes_max": 3,
@@ -2039,6 +2074,8 @@
    "imp_descent_share_pct": 97.52141778511128,
    "imp_cycles_share_pct": 0.45982478038672353,
    "imp_cutoff_share_pct": 2.018757434502003,
+   "imp_cycles_all_share_pct": 2.4785822148887267,
+   "cycle_evals_pct_of_phase2_imp_runs": 22.255172413793105,
    "imp_runs_zero": 0,
    "runs_descent_whole_phase2": 57,
    "descent_not_finished_by_n": {
@@ -2099,6 +2136,10 @@
    "descent_evals_pct_of_phase2": 75.86888888888889,
    "ls_evals_pct_of_phase2": 99.97416666666666,
    "shake_evals_pct_of_phase2": 0.025833333333333333,
+   "cycle_evals_pct_of_phase2": 24.13111111111111,
+   "descent_evals_pct_median": 97.33333333333333,
+   "cycle_evals_pct_median": 2.6666666666666665,
+   "runs_with_cycle_evals": 62,
    "shakes_median": 1.0,
    "shakes_min": 0,
    "shakes_max": 3,
@@ -2140,6 +2181,8 @@
    "imp_descent_share_pct": 90.32639730098136,
    "imp_cycles_share_pct": 3.4319311808482285,
    "imp_cutoff_share_pct": 6.241671518170416,
+   "imp_cycles_all_share_pct": 9.673602699018645,
+   "cycle_evals_pct_of_phase2_imp_runs": 25.837333333333333,
    "imp_runs_zero": 0,
    "runs_descent_whole_phase2": 57,
    "descent_not_finished_by_n": {
@@ -2200,6 +2243,10 @@
    "descent_evals_pct_of_phase2": 84.80762852404644,
    "ls_evals_pct_of_phase2": 99.9828634604754,
    "shake_evals_pct_of_phase2": 0.017136539524599224,
+   "cycle_evals_pct_of_phase2": 15.192371475953564,
+   "descent_evals_pct_median": 100.0,
+   "cycle_evals_pct_median": 0.0,
+   "runs_with_cycle_evals": 42,
    "shakes_median": 0.0,
    "shakes_min": 0,
    "shakes_max": 3,
@@ -2241,6 +2288,8 @@
    "imp_descent_share_pct": 88.5951113205243,
    "imp_cycles_share_pct": 3.54914115850343,
    "imp_cutoff_share_pct": 7.855747520972297,
+   "imp_cycles_all_share_pct": 11.404888679475727,
+   "cycle_evals_pct_of_phase2_imp_runs": 28.14883913764511,
    "imp_runs_zero": 0,
    "runs_descent_whole_phase2": 78,
    "descent_not_finished_by_n": {
@@ -2503,6 +2552,7 @@
   "PSOBV": {
    "runs": 2040,
    "median_calls": 180.0,
+   "switch": 3030,
    "pct_by_switch": 98.72549019607844,
    "pct_by_30": 38.82352941176471,
    "never": 0
@@ -2510,6 +2560,7 @@
   "SSABV": {
    "runs": 2040,
    "median_calls": 240.0,
+   "switch": 3030,
    "pct_by_switch": 95.68627450980392,
    "pct_by_30": 38.82352941176471,
    "never": 9
@@ -2517,7 +2568,8 @@
   "RSVNS": {
    "runs": 2040,
    "median_calls": 180.0,
-   "pct_by_switch": 66.66666666666666,
+   "switch": 3015,
+   "pct_by_switch": 64.2156862745098,
    "pct_by_30": 38.82352941176471,
    "never": 12
   }

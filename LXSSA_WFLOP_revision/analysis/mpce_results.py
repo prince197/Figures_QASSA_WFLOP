@@ -127,15 +127,27 @@ def zo(a):
 
 
 def switch_call(alg, budget, np_=30, split=0.5):
-    """First call of phase 2 of a hybrid (HybridBVNS / RSVNS iteration arithmetic). Split variants carry the share
-    in their label: PSOBV25 / PSOBV75 / PSOBV90 (omega = 0.25 / 0.75 / 0.9; PSOBV90 -> 30 + 180 x 30 = 5,430 PSO
-    evaluations at 6,030). RSVNS and the disc-sampling control RSDVNS (Phase 6) share the random-sampling Phase 1
-    (split 0.5: 3,015 samples incl. the common initial population; checkpoint arithmetic of RSVNS)."""
-    p1 = "RS" if alg in ("RSVNS", "RSDVNS") else PHASE1[alg.rstrip("0123456789")]
+    """Number of Phase-1 evaluations of a two-phase variant, i.e. the call after which the VNS phase starts.
+    Swarm hybrids (HybridBVNS iteration arithmetic): np_ + round((split B - np_) / per) x per, e.g. 3,030 for
+    PSO-VNS at 6,030. Split variants carry the share in their label: PSOBV25 / PSOBV75 / PSOBV90 (omega = 0.25 /
+    0.75 / 0.9; PSOBV90 -> 30 + 180 x 30 = 5,430 PSO evaluations at 6,030). RSVNS and the disc-sampling control
+    RSDVNS (Phase 6) sample one layout per call: n1 = round(split B) = 3,015 Phase-1 evaluations at 6,030 (rs_vns.RSVNS,
+    self.n1; incl. the common initial population of 30). (Until R3-9 of review round 2 RS/RSD used the iteration
+    arithmetic too, which gave 3,030 and read the switch 15 VNS evaluations late.)"""
+    if alg in ("RSVNS", "RSDVNS"):
+        return int(round(split * budget))
+    p1 = PHASE1[alg.rstrip("0123456789")]
     if alg[-2:] in ("25", "75", "90"):
         split = int(alg[-2:]) / 100
     per = PHASE1_ITER_CALLS[p1]
     return np_ + max(1, int(round((split * budget - np_) / per))) * per
+
+
+def switch_index(sw, budget):
+    """Index of the last convergence checkpoint at or before call sw (checkpoint k is at call (k + 1) x step,
+    step = (B - 30) // 200 = 30 at 6,030): 3,030 -> index 100 (call 3,030), 3,015 -> index 99 (call 3,000; the
+    last 15 Phase-1 samples of RS-VNS / RSD-VNS are not observable in the stored curves)."""
+    return int(sw // max(1, (budget - 30) // 200)) - 1
 
 
 HR_ORDER = ["PSOBV", "SSABV", "LXBV", "RSVNS", "BVNS", "PSOC", "SSA", "LXSSA", "DE", "SLSQP"]   # main-text order (tables)
@@ -636,7 +648,7 @@ def phase2_stat(D, alg, switch=None, validate=True):
         return None
     b = int(X.Budget.iloc[0])
     sw = switch or switch_call(alg, b)
-    idx = int(round(sw / max(1, (b - 30) // 200))) - 1
+    idx = switch_index(sw, b)
     gains, made_feasible, invalid, lsw = [], 0, 0, []
     for ideal, obj, cv in zip(Hy.Ideal.values, Hy.Objective.values, Hy.Curve.values):
         at = float(cv.split(";")[idx])
@@ -682,7 +694,7 @@ def phase1_replay(D, n1=3015, npop=30):
         if not len(X):
             continue
         feas_any, feas_samp, nfeas, nsamp, per_case = {}, {}, 0, 0, {}
-        first3000 = {}
+        first3000, inside_any, spaced_any = {}, {}, {}
         for rad, n in sorted({(int(r), int(n)) for r, n in zip(X.Radius, X.Turbines)}):
             iu = np.triu_indices(n, 1)
             k_case = 0
@@ -700,6 +712,7 @@ def phase1_replay(D, n1=3015, npop=30):
                 dd = np.sqrt(((XY[:, :, None] - XY[:, None]) ** 2).sum(-1))[:, iu[0], iu[1]].min(-1)
                 fz = inside & (dd >= SMIN_M - 1e-6)
                 feas_any[(rad, n, sd)] = bool(fz.any()); feas_samp[(rad, n, sd)] = bool(fz[npop:].any())
+                inside_any[(rad, n, sd)] = bool(inside.any()); spaced_any[(rad, n, sd)] = bool((dd >= SMIN_M - 1e-6).any())
                 first3000[(rad, n, sd)] = bool(fz[:3000].any())
                 nfeas += int(fz.sum()); nsamp += n1
                 k_case += int(not fz.any())
@@ -716,12 +729,40 @@ def phase1_replay(D, n1=3015, npop=30):
                         runs_no_feasible_sample_sampled_part=int(nds * sum(not feas_samp[k] for k in runs)),
                         pct_feasible_samples=float(100 * nfeas / nsamp),
                         runs_no_feasible_sample_per_case_dsI=per_case,
+                        runs_no_feasible_but_inside_sample=int(nds * sum(not feas_any[k] and inside_any[k] for k in runs)),
+                        runs_no_feasible_but_spaced_sample=int(nds * sum(not feas_any[k] and spaced_any[k] for k in runs)),
+                        runs_no_inside_sample=int(nds * sum(not inside_any[k] for k in runs)),
+                        runs_no_feasible_first3000=int(nds * sum(not first3000[k] for k in runs)),
+                        _feas_any={f"{r_}-{n_}-{s_}": feas_any[(r_, n_, s_)] for r_, n_, s_ in runs}, _nds=int(nds),
                         verified_runs=chk, verified_agree=agree, verification_ok=bool(chk > 0 and agree == chk),
                         note="Phase-1 samples = 30 common initial layouts (square) + 2,985 samples (square for RS-VNS, "
                              "disc for RSD-VNS); counts over both data sets (identical geometry and seeds)")
         log(f"  Phase-1 replay {LAB[alg]}: {out[alg]['runs_no_feasible_sample']} of {out[alg]['runs']} runs without a feasible "
             f"sample ({out[alg]['runs_no_feasible_sample_sampled_part']} ignoring the initial population); feasible samples "
             f"{out[alg]['pct_feasible_samples']:.2f}%; curve check {agree}/{chk}")
+    # R3-6 (review round 2): how many RS-VNS runs without a feasible sample can the square be blamed for? Paired over
+    # the same runs (case, seed; same initial population): disc sampling (RSD-VNS) rescues a run iff it has a feasible
+    # sample where square sampling has none; runs without a feasible sample under both are limited by the spacing
+    # constraint (packing density), not by the square.
+    if "RSVNS" in out and "RSDVNS" in out:
+        fa, fb = out["RSVNS"].pop("_feas_any"), out["RSDVNS"].pop("_feas_any")
+        nds = out["RSVNS"].pop("_nds"); out["RSDVNS"].pop("_nds")
+        common = sorted(set(fa) & set(fb))
+        dec = dict(runs=int(nds * len(common)),
+                   rs_none_rsd_some=int(nds * sum(not fa[k] and fb[k] for k in common)),
+                   rs_none_rsd_none=int(nds * sum(not fa[k] and not fb[k] for k in common)),
+                   rs_some_rsd_none=int(nds * sum(fa[k] and not fb[k] for k in common)),
+                   note="paired over runs (case, seed, both data sets): rs_none_rsd_some = RS-VNS runs without a feasible "
+                        "Phase-1 sample that disc sampling would rescue (the most the square can explain); rs_none_rsd_none "
+                        "= runs without a feasible sample even when sampling in the disc (spacing / packing density)")
+        out["square_vs_disc"] = dec
+        log(f"  Phase-1 replay, square vs disc (paired): of {out['RSVNS']['runs_no_feasible_sample']} RS-VNS runs without a "
+            f"feasible sample, {dec['rs_none_rsd_some']} have one with disc sampling and {dec['rs_none_rsd_none']} have none "
+            f"either way ({dec['rs_some_rsd_none']} runs feasible with the square only); "
+            f"{out['RSVNS']['runs_no_feasible_but_inside_sample']} of them have a sample with all turbines inside the circle")
+    else:
+        for v in out.values():
+            v.pop("_feas_any", None); v.pop("_nds", None)
     return out
 
 
@@ -1328,7 +1369,7 @@ def main(argv=None):
             if not len(x):
                 continue
             M = curves(x)
-            idx = int(round(switch_call(FOCUS, 6030) / max(1, (6030 - 30) // 200))) - 1
+            idx = switch_index(switch_call(FOCUS, 6030), 6030)
             ph1 = G[(G.Algorithm == ref) & (G.Dataset == ds) & (G.Radius == 500) & (G.Turbines == 10)] if ref else x.iloc[:0]
             dense[ds] = dict(feasible_at_switch_pct=float(100 * np.isfinite(M[:, idx]).mean()),
                              feasible_final_pct=float(100 * x.Feasible.mean()),
@@ -1674,7 +1715,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         f1 = lambda x, d=1: "--" if x is None or not np.isfinite(x) else f"{x:.{d}f}"
         swl.append(f"{nm_} & {v['switch_call']:,} & {f1(v['feasible_at_switch_pct'])} & {f1(v['mean_loss_at_switch_pct'], 2)} & "
                    f"{f1(v['mean'])} & {f1(v['median'])} & {v['infeasible_at_switch_made_feasible']} \\\\".replace(",", "{,}", 1))
-    supp.append(table("table", "Switch point of the two-phase variants (68 cases, 30 runs, 6,030 evaluations): first evaluation of the VNS phase, runs whose best layout is feasible at the switch (\\%%), mean wake loss at the switch (\\%%, feasible runs), mean and median share (\\%%) of the wake loss left at the switch that the second phase removes, and runs infeasible at the switch that end feasible. ``%s continued'': %s alone over the same evaluations." % (LAB[P1], LAB[P1]),
+    supp.append(table("table", "Switch point of the two-phase variants (68 cases, 30 runs, 6,030 evaluations): number of Phase-1 evaluations (the VNS phase starts with the next evaluation), runs whose best layout is feasible at the switch (\\%%; read at the last convergence checkpoint at or before the switch, i.e.\\ at 3{,}000 evaluations for RS-VNS and RSD-VNS, whose last 15 Phase-1 samples are not observable in the stored curves), mean wake loss at the switch (\\%%, feasible runs), mean and median share (\\%%) of the wake loss left at the switch that the second phase removes, and runs infeasible at the switch that end feasible. ``%s continued'': %s alone over the same evaluations." % (LAB[P1], LAB[P1]),
                       "tab:switch", "lcccccc", "Variant & Switch & Feas. (\\%) & Loss (\\%) & Mean share & Median share & Made feasible", swl, pos="!htb"))
     for alg, v in ph2.items():
         if v is None:

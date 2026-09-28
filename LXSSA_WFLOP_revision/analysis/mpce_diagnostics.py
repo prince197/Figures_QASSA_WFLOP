@@ -421,7 +421,7 @@ def run_one(alg, ds, rad, n, seed, init, instrument):
 
 def job(t):
     kind, alg, ds, rad, n, seed, init, verify = t
-    r = run_one(alg, ds, rad, n, seed, init, True)
+    r = run_one(alg, ds, rad, n, seed, init, kind != "T1b")      # T1b: plain reproduction (no instrumentation)
     r["kind"] = kind
     if verify:
         u = run_one(alg, ds, rad, n, seed, init, False)
@@ -446,6 +446,12 @@ def all_jobs():
         for c in T3_CASES:
             for s in T3_SEEDS:
                 J.append(("T3", alg, *c, s, "feasible", s == 1))
+    # T1b (review round 2, R3-7): reproduce the stored old-setting runs whose final boundary status is not decidable
+    # from the 1-mm coordinates (about 1 min); the cached T1 runs already hold the unrounded positions of their runs
+    t1 = {(ds, rad, n, s) for ds, rad, n in T1_CASES for s in T1_SEEDS}
+    for ds, rad, n, s in ambiguous_old_runs():
+        if (ds, rad, n, s) not in t1:
+            J.append(("T1b", "PSO", ds, rad, n, s, "random", False))
     J.sort(key=lambda t: -t[4])            # larger N first (load balance)
     return J
 
@@ -570,27 +576,83 @@ def t1_summary(res):
     return S, curves
 
 
-def stored_violation_summary():
-    """Constraint violations of the final layouts of all stored runs of both PSO settings (68 cases x 30)."""
+ROUND_M = 5e-4 * np.sqrt(2)    # coordinates are stored to 1 mm: a stored turbine radius is within 0.71 mm of the true one
+TOL_M = 1e-6                    # feasibility rule of the paper (run_grid): distance outside the circle / spacing deficit
+
+
+def _xy(coords):
+    return np.array([[float(v) for v in p.split()] for p in coords.split(";")])
+
+
+def ambiguous_old_runs():
+    """Stored old-setting (PSO) runs with an infeasible final layout in which some turbine's distance outside the circle
+    cannot be decided against the 1e-6 m rule from the 1-mm coordinates (|stored excess - 1e-6 m| <= 0.71 mm). These
+    runs are reproduced (study T1b: plain reruns, verified against the stored run) to get the unrounded positions."""
+    d = pd.read_csv(os.path.join(HERE, STORED["PSO"][0])); d = d[(d.Algorithm == "PSO") & (~d.Feasible)]
+    out = []
+    for _, r in d.iterrows():
+        ex = np.sqrt((_xy(r.Coordinates) ** 2).sum(1)) - float(r.Radius)
+        if (np.abs(ex - TOL_M) <= ROUND_M).any():
+            out.append((int(r.Dataset), int(r.Radius), int(r.Turbines), int(r.Seed)))
+    return out
+
+
+def stored_violation_summary(exact=None):
+    """Constraint violations of the final layouts of all stored runs of both PSO settings (68 cases x 30), with the
+    feasibility rule of the paper (run_grid): a turbine violates the boundary if its distance outside the circle
+    exceeds 1e-6 m, a pair violates the spacing if it is closer than 8R - 1e-6 m. Infeasible = the stored Feasible flag
+    (computed with this rule on the unrounded positions at run time), so infeasible = runs - feasible runs.
+    Spacing from the stored MinSpacing column (unrounded, 1e-6 m). Boundary from the stored 1-mm coordinates where
+    this is decidable (|stored excess - 1e-6 m| > 0.71 mm for every turbine), otherwise from the unrounded positions
+    of the reproduced run (exact: {(alg, ds, rad, n, seed): pos} from the cached instrumented T1 runs and the T1b
+    reruns). "Tangent": an infeasible final with a turbine outside the circle that has a coordinate on the box bound
+    (|x| = r or |y| = r; clipped there, the boundary violation grows only with the square of the other coordinate).
+    legacy_1mm: the earlier classification with a 1-mm tolerance on the stored coordinates (282 infeasible)."""
+    exact = exact or {}
     out = {}
     for a, fn in (("PSO", "fresh_grid.csv"), ("PSOC", "mpce_psoc_s0of1.csv")):
         d = pd.read_csv(os.path.join(HERE, fn)); d = d[d.Algorithm == a]
-        nb = ns = both = inf = atbox = atbox_inf = corner_out = 0
+        c = dict(infeasible=0, boundary_only=0, spacing_only=0, both=0, tangent=0, tangent_boundary_only=0, tangent_both=0,
+                 final_on_box=0, infeasible_on_box=0, resolved_exact=0, undecided=0, flag_contradictions=0,
+                 outside_turbines=0, outside_turbines_on_box=0)
+        leg = dict(infeasible=0, boundary_only=0, spacing_only=0, both=0)
         for _, r in d.iterrows():
-            xy = np.array([[float(v) for v in p.split()] for p in r.Coordinates.split(";")])
-            rad = float(r.Radius); n = len(xy)
-            b = np.sqrt((xy ** 2).sum(1)).max() > rad + 1e-3          # coordinates stored to 1 mm
-            s = n > 1 and min_spacing(xy) < SMIN - 1e-3
-            onbox = bool((np.abs(xy) >= rad - 5e-4).any())
-            atbox += onbox
-            if b or s:
-                inf += 1; nb += b and not s; ns += s and not b; both += b and s; atbox_inf += onbox
-            # turbines outside the circle that sit on the box bound (clipped coordinate)
-            out_t = np.sqrt((xy ** 2).sum(1)) > rad + 1e-3
-            corner_out += int((out_t & (np.abs(xy) >= rad - 5e-4).any(1)).sum())
-        out[a] = dict(runs=len(d), infeasible=inf, boundary_only=nb, spacing_only=ns, both=both,
-                      any_boundary=nb + both, final_on_box=atbox, infeasible_on_box=atbox_inf,
-                      outside_turbines_on_box=corner_out, feasible_flag=int(d.Feasible.sum()))
+            xy = _xy(r.Coordinates); rad = float(r.Radius); n = len(xy)
+            key = (a, int(r.Dataset), int(rad), n, int(r.Seed))
+            onbox_st = bool((np.abs(xy) >= rad - 5e-4).any())
+            c["final_on_box"] += onbox_st
+            # legacy 1-mm classification (stored coordinates)
+            lb = np.sqrt((xy ** 2).sum(1)).max() > rad + 1e-3
+            lsp = n > 1 and min_spacing(xy) < SMIN - 1e-3
+            if lb or lsp:
+                leg["infeasible"] += 1; leg["boundary_only"] += lb and not lsp; leg["spacing_only"] += lsp and not lb
+                leg["both"] += lb and lsp
+            if bool(r.Feasible):
+                c["flag_contradictions"] += int(n > 1 and float(r.MinSpacing) < SMIN - TOL_M)
+                continue
+            c["infeasible"] += 1; c["infeasible_on_box"] += onbox_st
+            if key in exact:
+                P_ = np.asarray(exact[key], float).reshape(-1, 2)
+                out_t = np.sqrt((P_ ** 2).sum(1)) - rad > TOL_M
+                box_t = (np.abs(P_) >= rad - 1e-9).any(1)
+                s_ = n > 1 and min_spacing(P_) < SMIN - TOL_M
+                c["resolved_exact"] += 1
+            else:
+                ex = np.sqrt((xy ** 2).sum(1)) - rad
+                if (np.abs(ex - TOL_M) <= ROUND_M).any():
+                    c["undecided"] += 1
+                out_t = ex > TOL_M
+                box_t = (np.abs(xy) >= rad - 5e-4).any(1)
+                s_ = n > 1 and float(r.MinSpacing) < SMIN - TOL_M
+            b_ = bool(out_t.any())
+            if not (b_ or s_):
+                c["flag_contradictions"] += 1
+            c["boundary_only"] += b_ and not s_; c["spacing_only"] += s_ and not b_; c["both"] += b_ and s_
+            tg = bool((out_t & box_t).any())
+            c["tangent"] += tg; c["tangent_boundary_only"] += tg and not s_; c["tangent_both"] += tg and s_
+            c["outside_turbines"] += int(out_t.sum()); c["outside_turbines_on_box"] += int((out_t & box_t).sum())
+        out[a] = dict(runs=len(d), feasible_flag=int(d.Feasible.sum()), any_boundary=c["boundary_only"] + c["both"],
+                      rule="1e-6 m (distance outside the circle; spacing deficit), as the Feasible flag", legacy_1mm=leg, **c)
     return out
 
 
@@ -644,6 +706,12 @@ def t2_summary(res):
             descent_evals_pct_of_phase2=100 * float(P.descent_evals.sum() / P.phase2_evals.sum()),
             ls_evals_pct_of_phase2=100 * float((P.descent_evals.sum() + P.ls_evals.sum()) / P.phase2_evals.sum()),
             shake_evals_pct_of_phase2=100 * float(P.shake_evals.sum() / P.phase2_evals.sum()),
+            # R3-2 / R3-18 (review round 2): evaluations spent in shake-plus-local-search cycles (everything after the
+            # first descent), pooled over the runs and as the median of the per-run shares
+            cycle_evals_pct_of_phase2=100 * float((P.shake_evals.sum() + P.ls_evals.sum()) / P.phase2_evals.sum()),
+            descent_evals_pct_median=float(np.median(100 * P.descent_evals / P.phase2_evals)),
+            cycle_evals_pct_median=float(np.median(100 * (P.shake_evals + P.ls_evals) / P.phase2_evals)),
+            runs_with_cycle_evals=int(((P.shake_evals + P.ls_evals) > 0).sum()),
             shakes_median=float(P.shakes.median()), shakes_min=int(P.shakes.min()), shakes_max=int(P.shakes.max()),
             shakes_median_by_n={int(k): float(v) for k, v in P.groupby("n").shakes.median().items()},
             ls_evals_per_cycle_median=float(P.ls_evals.sum() / max(1, P.cycles_complete.sum())),
@@ -660,6 +728,10 @@ def t2_summary(res):
             imp_descent_share_pct=100 * float(fe.imp_descent_pp.sum() / tot) if tot > 0 else None,
             imp_cycles_share_pct=100 * float(fe.imp_cycles_pp.sum() / tot) if tot > 0 else None,
             imp_cutoff_share_pct=100 * float(fe.imp_cutoff_pp.sum() / tot) if tot > 0 else None,
+            # gain of the cycle stage as a whole: accepted cycles plus the local search of the cycle cut off by the budget
+            imp_cycles_all_share_pct=100 * float((fe.imp_cycles_pp.sum() + fe.imp_cutoff_pp.sum()) / tot) if tot > 0 else None,
+            cycle_evals_pct_of_phase2_imp_runs=100 * float((P.loc[fe.index, "shake_evals"].sum() + P.loc[fe.index, "ls_evals"].sum())
+                                                           / P.loc[fe.index, "phase2_evals"].sum()) if len(fe) else None,
             imp_runs_zero=int((fe.imp_total_pp <= 0).sum()) if len(fe) else None,
             runs_descent_whole_phase2=int(((~P.descent_done) & (P.shakes == 0)).sum()),
             descent_not_finished_by_n={int(k): int((~g.descent_done).sum()) for k, g in P.groupby("n")},
@@ -797,9 +869,13 @@ def t3_summary(res):
 
 
 # ------------------------------------------------------------------ extra: calls to first feasibility (stored)
+SWITCH = {"PSOBV": 3030, "SSABV": 3030, "RSVNS": 3015}   # Phase-1 evaluations at 6,030 (RS-VNS: round(0.5 x 6,030))
+
+
 def first_feasible_calls():
     """From the stored convergence curves (checkpoint every 30 calls at 6,030): calls until the first feasible
-    layout, Phase 1 of the hybrids (identical to their stand-alone Phase 1 up to the switch), over 68 x 30 runs."""
+    layout, Phase 1 of the hybrids (identical to their stand-alone Phase 1 up to the switch), over 68 x 30 runs.
+    pct_by_switch: first feasible checkpoint at or before the switch (SWITCH; RS-VNS: checkpoint 3,000 <= 3,015)."""
     out = {}
     for a, files in (("PSOBV", STORED["PSOBV"]), ("SSABV", STORED["SSABV"]), ("RSVNS", STORED["RSVNS"])):
         d = pd.concat([pd.read_csv(os.path.join(HERE, f)) for f in files])
@@ -811,7 +887,8 @@ def first_feasible_calls():
             calls.append(np.nan if k is None else 30 * (k + 1))
         calls = np.array(calls, float)
         out[a] = dict(runs=len(calls), median_calls=float(np.nanmedian(calls)),
-                      pct_by_switch=100 * float(np.mean(calls <= 3030)), pct_by_30=100 * float(np.mean(calls <= 30)),
+                      switch=SWITCH[a], pct_by_switch=100 * float(np.mean(calls <= SWITCH[a])),
+                      pct_by_30=100 * float(np.mean(calls <= 30)),
                       never=int(np.isnan(calls).sum()))
     return out
 
@@ -916,6 +993,11 @@ def fmt(v, d=1):
     return s.replace(",", "{,}")
 
 
+def _n(d, k):
+    """d[k] for an int key k, also after a JSON round trip (string keys)."""
+    return d[k] if k in d else d[str(k)]
+
+
 def macros(Sm):
     S1, V, S2, S3, FF, C4 = Sm["T1"], Sm["T1_stored"], Sm["T2"], Sm["T3"], Sm["first_feasible"], Sm["T4"]
     M = {}
@@ -938,6 +1020,15 @@ def macros(Sm):
         M[f"NDStoredBoundOnly{s}"] = v["boundary_only"]; M[f"NDStoredSpacingOnly{s}"] = v["spacing_only"]
         M[f"NDStoredBoth{s}"] = v["both"]; M[f"NDStoredOnBox{s}"] = v["final_on_box"]
         M[f"NDStoredInfeasOnBox{s}"] = v["infeasible_on_box"]
+        # review round 2 (R3-7, R5-F2): classification with the paper's 1e-6 m rule; tangent = an outside turbine pinned
+        # at a box tangent point; the earlier 1-mm classification kept for the reconciliation 282 vs 286
+        M[f"NDStoredFeas{s}"] = fmt(v["feasible_flag"]); M[f"NDStoredFeasPct{s}"] = fmt(100 * v["feasible_flag"] / v["runs"], 1)
+        M[f"NDStoredAnyBound{s}"] = v["any_boundary"]
+        M[f"NDStoredTangent{s}"] = v["tangent"]; M[f"NDStoredTangentBoth{s}"] = v["tangent_both"]
+        M[f"NDStoredTangentBoundOnly{s}"] = v["tangent_boundary_only"]
+        M[f"NDStoredResolved{s}"] = v["resolved_exact"]
+        M[f"NDStoredInfeasOneMm{s}"] = v["legacy_1mm"]["infeasible"]
+        M[f"NDStoredSpacingOnlyOneMm{s}"] = v["legacy_1mm"]["spacing_only"]
     M["NDVnsCases"] = len(S2["cases"]); M["NDVnsSeeds"] = S2["seeds"]
     for a in T2_ALGS:
         A = S2[a]; p = MAC[a]
@@ -945,6 +1036,11 @@ def macros(Sm):
         M[f"NDShakesMin{p}"] = A["shakes_min"]; M[f"NDShakesMax{p}"] = A["shakes_max"]
         M[f"NDDescentEvals{p}"] = fmt(A["descent_evals_median"], 0)
         M[f"NDDescentEvalsPct{p}"] = fmt(A["descent_evals_pct_of_phase2"], 1)
+        M[f"NDDescentEvalsPctMedian{p}"] = fmt(A["descent_evals_pct_median"], 1)
+        M[f"NDCycleEvalsPct{p}"] = fmt(A["cycle_evals_pct_of_phase2"], 1)          # R3-2: pooled share of Phase-2 evaluations
+        M[f"NDCycleEvalsPctMedian{p}"] = fmt(A["cycle_evals_pct_median"], 1)
+        M[f"NDCycleEvalsPctImp{p}"] = fmt(A["cycle_evals_pct_of_phase2_imp_runs"], 1)   # same runs as the gain shares
+        M[f"NDCycleAllShare{p}"] = fmt(A["imp_cycles_all_share_pct"], 1)          # gain of accepted + cut-off cycles
         M[f"NDLSEvalsPct{p}"] = fmt(A["ls_evals_pct_of_phase2"], 2)
         M[f"NDShakeEvalsPct{p}"] = fmt(A["shake_evals_pct_of_phase2"], 2)
         M[f"NDAccepted{p}"] = fmt(A["accepted_mean"], 1)
@@ -961,10 +1057,10 @@ def macros(Sm):
         M[f"NDStartNotBestFeas{p}"] = A["start_not_best_feasible"]
         M[f"NDVnsRuns{p}"] = A["runs"]
         nn = A["shakes_median_by_n"]
-        M[f"NDShakesNSix{p}"] = fmt(nn[6], 0 if float(nn[6]).is_integer() else 1)
-        M[f"NDShakesNFifteen{p}"] = fmt(nn[15], 0 if float(nn[15]).is_integer() else 1)
+        M[f"NDShakesNSix{p}"] = fmt(_n(nn, 6), 0 if float(_n(nn, 6)).is_integer() else 1)
+        M[f"NDShakesNFifteen{p}"] = fmt(_n(nn, 15), 0 if float(_n(nn, 15)).is_integer() else 1)
         dn = A["descent_not_finished_by_n"]
-        M[f"NDDescentUnfinishedLarge{p}"] = dn[12] + dn[15]
+        M[f"NDDescentUnfinishedLarge{p}"] = _n(dn, 12) + _n(dn, 15)
         M[f"NDRunsLarge{p}"] = 2 * S2["seeds"] * 2           # N = 12 and N = 15, both data sets
     M["NDFsCases"] = len(S3["cases"]); M["NDFsSeeds"] = S3["seeds"]
     for a, p in (("PSOC", "PSO"), ("DE", "DE")):
@@ -1078,11 +1174,18 @@ def supp_tex(Sm, path):
           f"{fmt(a['infeasible_boundary_only_pct'],1)} / {fmt(b['infeasible_boundary_only_pct'],1)}\\%, spacing only "
           f"{fmt(a['infeasible_spacing_only_pct'],1)} / {fmt(b['infeasible_spacing_only_pct'],1)}\\%, both "
           f"{fmt(a['infeasible_both_pct'],1)} / {fmt(b['infeasible_both_pct'],1)}\\%. "
-          "Final layouts of all stored runs (old / constriction): "
+          "Final layouts of all stored runs (old / constriction; feasibility rule of the paper: a turbine more than "
+          "$10^{-6}$~m outside the circle, a pair more than $10^{-6}$~m closer than $8R$): "
           f"infeasible {V['PSO']['infeasible']} / {V['PSOC']['infeasible']} of {fmt(V['PSO']['runs'])}; of these, "
           f"outside the circle only {V['PSO']['boundary_only']} / {V['PSOC']['boundary_only']}, "
           f"spacing only {V['PSO']['spacing_only']} / {V['PSOC']['spacing_only']}, both {V['PSO']['both']} / {V['PSOC']['both']}; "
-          "final layouts with a coordinate on the box bound: "
+          f"with a turbine outside the circle that sits on the box bound at a tangent point ($|x|=r$ or $|y|=r$): "
+          f"{V['PSO']['tangent']} / {V['PSOC']['tangent']}. "
+          "(Spacing from the stored minimum spacing; boundary from the coordinates, which are stored to 1~mm; the "
+          f"{V['PSO']['resolved_exact']} old-setting finals whose boundary status is not decidable at 1~mm, or that are among the instrumented runs, "
+          "are classified with the unrounded positions of the reproduced runs. With a 1-mm tolerance instead, "
+          f"{V['PSO']['legacy_1mm']['infeasible']} finals are infeasible and {V['PSO']['legacy_1mm']['spacing_only']} violate only the spacing.) "
+          "Final layouts with a coordinate on the box bound: "
           f"{fmt(V['PSO']['final_on_box'])} / {fmt(V['PSOC']['final_on_box'])} (infeasible ones: {V['PSO']['infeasible_on_box']} / {V['PSOC']['infeasible_on_box']}).}}",
           "\\end{table*}", ""]
     # Table VNS internals
@@ -1091,9 +1194,11 @@ def supp_tex(Sm, path):
           f"\\caption{{Inside the VNS phase (Phase~2) of the hybrids at 6,030 evaluations: {len(S2['cases'])} split cases "
           f"(both data sets; $r=500, 750, 1000$~m with $N=6, 8, 10$ and $N=10, 12, 15$) $\\times$ {S2['seeds']} seeds. "
           "A cycle is one shaking step followed by the complete local search (compass search); the first descent is the "
-          "local search from the switch point, before any shaking. Improvement shares refer to the reduction of the "
-          "wake loss in Phase~2 in the runs whose switch point is feasible; the remainder is found in a cycle cut off by "
-          "the budget.}",
+          "local search from the switch point, before any shaking; every evaluation after it belongs to a cycle. "
+          "Evaluation shares are pooled over the runs (sum over runs of the evaluations of a stage divided by the sum of the "
+          "Phase-2 evaluations); medians of the per-run shares are given separately. Improvement shares refer to the "
+          "reduction of the wake loss in Phase~2 in the runs whose switch point is feasible (pooled); the gain of the "
+          "cycles includes the local search of a cycle cut off by the budget.}",
           "\\label{tab:D-vns}", "\\scriptsize\\setlength{\\tabcolsep}{3pt}",
           "\\resizebox{\\ifdim\\width>\\columnwidth\\columnwidth\\else\\width\\fi}{!}{%", "\\begin{tabular}{lccc}", "\\toprule", f" & {heads} \\\\", "\\midrule"]
 
@@ -1103,7 +1208,11 @@ def supp_tex(Sm, path):
     row("Runs with feasible switch point", "switch_feasible", 0, lambda s: f"{s['switch_feasible']} of {s['runs']}")
     row("Phase-2 evaluations (median)", "phase2_evals_median", 0)
     row("First descent: evaluations (median)", "descent_evals_median", 0)
-    row("\\quad share of Phase-2 evaluations (\\%)", "descent_evals_pct_of_phase2", 1)
+    row("\\quad share of Phase-2 evaluations (pooled, \\%)", "descent_evals_pct_of_phase2", 1)
+    row("\\quad share of Phase-2 evaluations (median over runs, \\%)", "descent_evals_pct_median", 1)
+    row("Shake-plus-search cycles: share of Phase-2 evaluations (pooled, \\%)", "cycle_evals_pct_of_phase2", 1)
+    row("\\quad in the runs with a feasible switch point (pooled, \\%)", "cycle_evals_pct_of_phase2_imp_runs", 1)
+    row("\\quad runs with at least one cycle evaluation", "runs_with_cycle_evals", 0)
     row("Shaking steps per run (median)", "shakes_median", 1)
     row("\\quad range over runs", None, 0, lambda s: f"{s['shakes_min']}--{s['shakes_max']}")
     for nn in sorted(S2[T2_ALGS[0]]["shakes_median_by_n"]):
@@ -1115,8 +1224,9 @@ def supp_tex(Sm, path):
     row("\\quad accepted with $k=1,\\dots,5$", None, 0, lambda s: "/".join(str(v) for v in s["accepted_by_k"]))
     row("\\quad runs without an accepted cycle", "runs_no_accepted_cycle", 0)
     row("\\quad shaken point already better (\\% of accepted)", "shake_better_pct_of_accepted", 1)
-    row("Improvement from the first descent (\\%)", "imp_descent_share_pct", 1)
+    row("Improvement from the first descent (pooled, \\%)", "imp_descent_share_pct", 1)
     row("Improvement from accepted cycles (\\%)", "imp_cycles_share_pct", 1)
+    row("Improvement from all cycles, incl.\\ the one cut off (\\%)", "imp_cycles_all_share_pct", 1)
     row("Infeasible at switch, feasible after descent", "made_feasible_descent", 0)
     row("Infeasible at switch, feasible after a cycle", "made_feasible_cycle", 0)
     row("Feasible incumbent made infeasible", "lost_feasibility", 0)
@@ -1170,8 +1280,8 @@ def supp_tex(Sm, path):
           "\\caption{Phase~1 of RS-VNS replayed (geometry only, the seeded random stream of the runs): feasible samples among "
           "the 3,015 uniform samples in the bounding square, over 30 seeds (90,450 samples per row; the geometry is the same "
           "for both data sets). Inside: all $N$ turbines inside the circle, observed rate and $(\\pi/4)^N$. Disc: Monte Carlo "
-          "feasibility rate of the same number of samples uniform in the disc (the Phase-1 distribution of the planned "
-          "control RSDVNS). Rows with $N\\le 5$ at 750 and 1000~m omitted (all 30 seeds have feasible samples).}",
+          "feasibility rate of the same number of samples uniform in the disc (the Phase-1 distribution of the "
+          "disc-sampling control RSD-VNS). Rows with $N\\le 5$ at 750 and 1000~m omitted (all 30 seeds have feasible samples).}",
           "\\label{tab:D-rsreplay}", "\\scriptsize\\setlength{\\tabcolsep}{3pt}",
           "\\begin{tabular}{rrrrrrr}", "\\toprule",
           "$r$ (m) & $N$ & feasible & seeds with one & inside (\\%) & $(\\pi/4)^N$ (\\%) & disc feasible (\\%) \\\\", "\\midrule"]
@@ -1198,8 +1308,9 @@ def main():
     if cache and os.path.exists(cache):
         res = [r for r in pickle.load(open(cache, "rb")) if r["kind"] not in rerun]
         print("loaded", len(res), "instrumented runs from", cache, flush=True)
+        rerun |= {"T1", "T2", "T3", "T1b"} - {r["kind"] for r in res}      # studies missing from the cache
     else:
-        rerun = {"T1", "T2", "T3"}
+        rerun = {"T1", "T2", "T3", "T1b"}
     J = [j for j in all_jobs() if j[0] in rerun]
     if J:
         t0 = time.time()
@@ -1210,13 +1321,20 @@ def main():
         if cache:
             os.makedirs(a.cache, exist_ok=True); pickle.dump(res, open(cache, "wb"))
     res.sort(key=lambda r: (r["kind"], r["alg"], str(r["ds"]), r["rad"], r["n"], r["seed"]))
+    rep = [r for r in res if r["kind"] == "T1b"]            # plain reproductions, verified separately below
+    res = [r for r in res if r["kind"] != "T1b"]
     S = stored_table()
     cmp = compare_stored(res, S)
+    cmp_b = compare_stored(rep, S)
+    exact = {(r["alg"], int(r["ds"]), int(r["rad"]), int(r["n"]), int(r["seed"])): r["pos"]
+             for r in res + rep if r["kind"] in ("T1", "T1b") and r["init"] == "random"}
     bit = [r["bitident"] for r in res if "bitident" in r]
     ver = dict(instrumented_runs=len(res), stored_found=sum(v is not None for _, v in cmp),
                stored_match=sum(bool(v) for _, v in cmp), stored_mismatch=[list(map(str, k)) for k, v in cmp if v is False],
                stored_missing=[list(map(str, k)) for k, v in cmp if v is None],
                bitident_runs=len(bit), bitident_match=int(sum(bit)),
+               t1b_runs=len(rep), t1b_match=sum(bool(v) for _, v in cmp_b),
+               t1b_expected=len([j for j in all_jobs() if j[0] == "T1b"]),
                note="stored_match: WakeLoss (relative difference <= 1e-13, the precision of the CSV), coordinate string, curve string and call count equal to the stored run "
                     "of the paper; bitident: seed 1 of every case and method rerun uninstrumented in the same process, "
                     "final position array, tracker curve, calls and WakeLoss bit-identical")
@@ -1227,7 +1345,7 @@ def main():
                rs_replay_note="RS-VNS runs of T2: 'Phase 1 evaluated a feasible sample' (recorded during the run) equals "
                               "'the replayed stream has a feasible sample'")
     S1, curves = t1_summary(res)
-    Sm = dict(verification=ver, T1=S1, T1_stored=stored_violation_summary(), T2=t2_summary(res), T3=t3_summary(res),
+    Sm = dict(verification=ver, T1=S1, T1_stored=stored_violation_summary(exact), T2=t2_summary(res), T3=t3_summary(res),
               first_feasible=first_feasible_calls(), T4=cpu_estimates(), rs_replay=RP,
               design=dict(T1=dict(cases=T1_CASES, seeds=list(T1_SEEDS), algs=T1_ALGS),
                           T2=dict(cases=T2_CASES, seeds=list(T2_SEEDS), algs=T2_ALGS),

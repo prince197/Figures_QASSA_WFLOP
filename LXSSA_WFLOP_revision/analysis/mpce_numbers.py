@@ -577,6 +577,16 @@ def build(s, allow_partial=False):
     P("NRSRunsNoFeasSample", lambda: replay_runs("RSVNS"), REQ_ABL)
     P("NRSDPctFeasSamples", lambda: num(rp["RSDVNS"]["pct_feasible_samples"], 1), REQ_ABL)
     P("NRSPctFeasSamples", lambda: num(rp["RSVNS"]["pct_feasible_samples"], 1), REQ_ABL)
+    # R3-6 (review round 2): square vs disc, paired over the same runs. \NRsSquareExplains RS-VNS runs without a feasible
+    # sample would have one with disc sampling (the most the square can explain); \NRsSpacingDominates have none either
+    # way (spacing / packing density); \NRsNoFeasInside of the RS-VNS runs without a feasible sample do sample layouts
+    # with all turbines inside the circle, but none of them is spaced
+    sq = rp.get("square_vs_disc") or {}
+    P("NRsSquareExplains", lambda: num(sq["rs_none_rsd_some"], 0), REQ_ABL)
+    P("NRsSpacingDominates", lambda: num(sq["rs_none_rsd_none"], 0), REQ_ABL)
+    P("NRsSquareOnly", lambda: num(sq["rs_some_rsd_none"], 0), REQ_ABL)
+    P("NRsNoFeasInside", lambda: num(rp["RSVNS"]["runs_no_feasible_but_inside_sample"], 0), REQ_ABL)
+    P("NRsNoInside", lambda: num(rp["RSVNS"]["runs_no_inside_sample"], 0), REQ_ABL)
     return M
 
 

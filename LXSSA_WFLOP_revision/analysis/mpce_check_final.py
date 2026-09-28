@@ -330,6 +330,27 @@ CONDITIONS += [
                 and p["case_mean_omega90"]["PSOBV90-PSOBV75"]["p"] >= 0.05
                 and p["mean_loss"]["PSOBV90"] > p["mean_loss"]["PSOBV75"] and p["avg_rank"]["PSOBV90"] > p["avg_rank"]["PSOBV75"]
                 and p["mean_loss"]["PSOBV90"] < p["mean_loss"]["PSOC"] and p["mean_loss"]["PSOBV90"] < p["mean_loss"]["PSOBV"])(g(s, "split"))),
+    ("C60", "RS-VNS weakness is mainly spacing, not the square (R3-6): paired over the same runs, fewer of the RS-VNS runs "
+            "without a feasible Phase-1 sample are rescued by disc sampling (\\NRsSquareExplains) than stay without one "
+            "under disc sampling too (\\NRsSpacingDominates); the counts add up to the RS-VNS total and the RSD-VNS total "
+            "(\\NRSRunsNoFeasSample, \\NRSDRunsNoFeasSample); both replays reproduce the stored curves",
+     "ablation.phase1_replay.square_vs_disc, ablation.phase1_replay.RSVNS/RSDVNS",
+     lambda s: (lambda rp: (lambda d: d["rs_none_rsd_some"] < d["rs_none_rsd_none"]
+                            and d["rs_none_rsd_some"] + d["rs_none_rsd_none"] == rp["RSVNS"]["runs_no_feasible_sample"]
+                            and d["rs_none_rsd_none"] + d["rs_some_rsd_none"] == rp["RSDVNS"]["runs_no_feasible_sample"]
+                            and rp["RSVNS"]["verification_ok"] and rp["RSDVNS"]["verification_ok"])(rp["square_vs_disc"]))(
+         g(s, "ablation", "phase1_replay"))),
+    ("C61", "switch point (R3-9): RS-VNS and RSD-VNS switch after round(0.5 x 6,030) = 3,015 Phase-1 evaluations, the swarm "
+            "hybrids after 3,030; the RS-VNS / RSD-VNS runs infeasible at the switch (read at the last checkpoint before it, "
+            "call 3,000) equal the replayed runs without a feasible sample among the first 3,000 samples, and for RS-VNS also "
+            "among all 3,015 (\\NRSRunsNoFeasSample; RSD-VNS: at most 15 samples later, a few runs more are feasible)",
+     "ablation.phase2_loss_reduction_pct.*.switch_call/feasible_at_switch_pct/runs, ablation.phase1_replay",
+     lambda s: (lambda p, rp: p["RSVNS"]["switch_call"] == 3015 and p["RSDVNS"]["switch_call"] == 3015
+                and all(p[a]["switch_call"] == 3030 for a in ("PSOBV", "SSABV", "LXBV"))
+                and all(round(p[a]["runs"] * (1 - p[a]["feasible_at_switch_pct"] / 100)) == rp[a]["runs_no_feasible_first3000"]
+                        >= rp[a]["runs_no_feasible_sample"] for a in ("RSVNS", "RSDVNS"))
+                and rp["RSVNS"]["runs_no_feasible_first3000"] == rp["RSVNS"]["runs_no_feasible_sample"])(
+         g(s, "ablation", "phase2_loss_reduction_pct"), g(s, "ablation", "phase1_replay"))),
 ]
 
 
@@ -357,7 +378,12 @@ def scan_refs(files):
                     ids |= set(re.findall(r"\b(%s\d{2,3})\b" % L, br))
                 for i in ids:
                     refs[kind].setdefault(i, set()).add(os.path.basename(fn))
+                if not ids and not re.match(r"\s*\[[A-Z]nn\]", scope):   # R5-12: a tag without a parsable id (e.g. "CHECK-FINAL [NEW, D2]") is reported, not ignored
+                    MALFORMED.append(f"{os.path.basename(fn)}: CHECK-{kind}{scope.strip()[:60]}")
     return refs
+
+
+MALFORMED = []
 
 
 def defined_ids(kind):
@@ -394,6 +420,8 @@ def main(argv=None):
             print(f"  [{cid}] UNDEFINED: used in the manuscript but not defined in mpce_check_final.py")
         for cid in sorted(set(res) - used):
             print(f"  [{cid}] (not referenced in the manuscript)")
+        for m in MALFORMED:
+            print(f"  WARNING: CHECK comment without a parsable id (not evaluated): {m}")
     n = {k: sum(v == k for v in res.values()) for k in ("PASS", "FAIL", "PENDING")}
     print(f"  summary: {n['PASS']} PASS, {n['FAIL']} FAIL, {n['PENDING']} PENDING")
     if refs is not None:
