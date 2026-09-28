@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 18:10:10",
+ "generated": "2026-09-28 18:11:04",
  "script": "mpce_inference_extra.py",
  "n_cases": 68,
  "clusters": [
@@ -6533,5 +6533,5 @@
   "pair_recorded_vs_paper_abs_diff": 3.8163916471489756e-17,
   "note": "|L_Gauss - L_Jensen| of the same feasible final layouts (8 main methods, 68 cases), pp of the wake-free power; pair: change of the per-case mean difference PSO-VNS - PSO between the two wake models"
  },
- "seconds": 7.0
+ "seconds": 6.7
 }

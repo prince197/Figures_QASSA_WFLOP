@@ -24,9 +24,16 @@ evaluations, random initialization, 30 seed-paired runs):
      minus that for N < 10; unrestricted and stratified by cluster), Spearman correlation of the case difference
      with N (overall, per data set, and a within-cluster stratified trend test), and a paired Data Set II vs I
      test over identical (r, N) cases.
+  Phase 6 controls: the four component-analysis contrasts with the disc-sampling control RSD-VNS (experiment rsdisc)
+     and the omega = 0.9 budget-split tests (experiment omega90, PSOBV90) enter analyses 1-3 (the split tests, 12 cases
+     = 2 per cluster, get their own threshold / cluster / LOCO results: summary keys split_case_level, cluster_split,
+     loco_split).
   5. Effect sizes in energy terms: headline differences as % of the benchmark AEP and in MWh/yr of benchmark
      (model) energy. The benchmark objective is 15 x the expected farm power in kW (03_model.tex), so the gross
      benchmark AEP is objective / 15 x 8.76 MWh/yr.
+  6. Wake-model uncertainty (to put the +-0.05 pp equivalence margin in context): |L_Gauss - L_Jensen| of the same
+     feasible final layouts from mpce_reevaluation.csv (written by mpce_results.py, section 8), and the change of the
+     PSO-VNS - PSO case-mean difference between the two wake models (\\NXModelShift... macros, tab:X-modelshift).
 
 The data are loaded and the helpers (Wilcoxon with zero differences dropped, Holm, the ranking rule, the case-
 mean Wilcoxon with imputation) are re-implemented here exactly as in mpce_results.py (that file is owned by
@@ -1014,7 +1021,7 @@ def write_tables(s, fn):
                    "Thresh. & Unq. & Best & " + " & ".join(stack(*h) for h in (("Rank", "PSO-VNS"), ("Rank", "PSO"), ("$p_z$", "ns"),
                    ("PSO-VNS/", "PSO"), ("SSA-VNS/", "RS-VNS"), ("LX-SSA-VNS/", "RS-VNS"), ("SSA-VNS/", "LX-SSA-VNS"), ("PSO-VNS/", "RS-VNS"))) + " & Same", lines))
     # --- threshold table of the Phase 6 controls (RSD-VNS contrasts, budget split incl. omega = 0.9)
-    vm = {"A": "$+$", "B": "$-$", "ns": "$\\cdot$"}
+    vm = {"A": "\\,$+$", "B": "\\,$-$", "ns": "\\,$\\cdot$"}
     lines = []
     for t in s["thresholds"]:
         x = TH[str(t)]; ab = x["ablation_case_mean"]; sp = x["split_case_mean"]
