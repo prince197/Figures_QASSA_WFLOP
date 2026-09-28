@@ -125,6 +125,17 @@ CONDITIONS = [
      lambda s: (lambda o, c: any(o[h] < o["PSO"] for h in ("SSABV", "LXBV"))
                 and all(c["PSO"] < c[a] for a in ("SSA", "LXSSA", "SSABV", "LXBV")))(
          g(s, "baseline", "old", "avg_rank"), g(s, "baseline", "constriction", "avg_rank"))),
+    ("C28", "feasibility-preserving initialization, six largest cases: VNS alone (BVNS) has the best average rank and PSO-VNS ranks second",
+     "feasbudget.rank_feasible_init",
+     lambda s: (lambda r: rankpos(r, "BVNS") == 1 and min(r, key=r.get) == "BVNS" and sum(v <= r["PSOBV"] for v in r.values()) == 2)(
+         g(s, "feasbudget", "rank_feasible_init"))),
+    ("C29", "six largest cases: PSO-VNS has the best average rank at all three budgets (6,030, 30,030, 120,030)",
+     "feasbudget.rank.{6030,30030,120030}",
+     lambda s: all((lambda r: all(r["PSOBV"] < v for a, v in r.items() if a != "PSOBV"))(g(s, "feasbudget", "rank", b))
+                   for b in ("6030", "30030", "120030"))),
+    ("C30", "Horns Rev 1 at 30,030 evaluations: PSO-VNS mean AEP exceeds the installed layout",
+     "hr16.loss_by_setting.PSOBV.30030R.mean_aep, hr16.installed_aep",
+     lambda s: g(s, "hr16", "loss_by_setting", "PSOBV", "30030R", "mean_aep") > g(s, "hr16", "installed_aep")),
 ]
 
 

@@ -2,7 +2,7 @@
 \label{sec:prelim}
 This section describes the Phase-1 population methods and the basic VNS. A population method keeps $N_p$ candidate vectors $\mathbf X^i\in\mathbb R^{n}$ with components $X^i_m$ and bounds $lb_m$, $ub_m$, and it costs $N_p$ objective calls per iteration unless stated otherwise.
 
-\subsection{Particle Swarm Optimization and Its Convergence Condition}
+\subsection{PSO and Its Convergence Condition}
 \label{sec:pso}
 We use the standard global-best PSO~\cite{Kennedy1995} with unmodified update rules. Particle $i$ has a position $\mathbf X^i$, a velocity $\mathbf V^i$ and a personal best $\mathbf P^i$, the swarm keeps the global best $\mathbf G$, and in the inertia-weight form~\cite{Shi1998} a particle moves by
 \begin{align}

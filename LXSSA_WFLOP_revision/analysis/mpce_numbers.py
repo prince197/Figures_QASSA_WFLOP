@@ -296,6 +296,9 @@ def build(s, allow_partial=False):
         P(f"NHRMean{nm}PSOVNS", lambda tag=tag: num(lb["PSOBV"][tag]["mean_aep"], 2), req + REQ_HR)
         P(f"NHRAbove{nm}PSOVNS", lambda tag=tag: str(lb["PSOBV"][tag]["runs_above_installed"]), req + REQ_HR)
         P(f"NHRFeas{nm}PSO", lambda tag=tag: f"{lb['PSOC'][tag]['feasible']}/{lb['PSOC'][tag]['runs']}", req + REQ_HR)
+    # Horns Rev 1 block at 30,030 evaluations (PSO-VNS): mean AEP and runs above the installed layout ('x of y')
+    P("NHRThirtyKMean", lambda: num(lb["PSOBV"]["30030R"]["mean_aep"], 2), REQ_B30 + REQ_HR)
+    P("NHRThirtyKAbove", lambda: f"{lb['PSOBV']['30030R']['runs_above_installed']} of {lb['PSOBV']['30030R']['runs']}", REQ_B30 + REQ_HR)
 
     # ---------------- feasible initialization and budget (six largest benchmark cases)
     fb = s.get("feasbudget") or {}

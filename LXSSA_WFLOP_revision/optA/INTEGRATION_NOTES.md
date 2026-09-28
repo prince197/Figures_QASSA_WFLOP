@@ -14,3 +14,4 @@
 - 10: "best published IEA37 layouts obtained with gradient-based methods" — only participant 4 (SNOPT+WEC per Baker 2019, unverified) is known; reword to "the best feasible published layout (reported as a gradient-based method, \TBD{verify})" or drop "gradient-based".
 - 10: "behind salp-swarm hybrids" plural — fine if both LXBV and SSABV rank ahead of old PSO in tab:baseline (check C27 numbers).
 - Pipeline asked for C28 (feasible-start: BVNS 1st, PSOBV 2nd), C29 (PSOBV best at all budgets), C30 (HR16 30k mean > installed; macros \NHRThirtyKMean, \NHRThirtyKAbove).
+- 04_methods: new labels sec:vns, sec:template; constriction factor symbol is κ (χ = Laplace scale); references sec:psosetting (06) — 06 must keep it; possible duplication with 05_setup (iteration counts, RS-VNS/LX-SSA-VNS details) → trim in 05 during integration.

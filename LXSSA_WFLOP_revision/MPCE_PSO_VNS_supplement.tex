@@ -63,7 +63,7 @@
 \setcounter{totalnumber}{6}\setcounter{topnumber}{4}\renewcommand{\topfraction}{0.95}\renewcommand{\textfraction}{0.05}
 \renewcommand{\floatpagefraction}{0.6}
 
-\title{Supplementary Material for\\ ``Revisiting Metaheuristic Comparisons for Continuous Wind Farm Layout Optimization:\\ Baseline Configuration, Component Analysis and a Two-Phase PSO-VNS Design''}
+\title{Supplementary Material for\\ ``Revisiting Metaheuristic Comparisons for Continuous Wind Farm Layout Optimization: Baseline Configuration, Component Analysis and a Two-Phase PSO-VNS Design''}
 \author{Prince Solanki, Pulkit Dwivedi, Vanita Garg, and Vinay Shukla}
 \date{}
 
@@ -145,12 +145,14 @@ Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard devi
 \SuppTable{tab:res-2-750}
 \SuppTable{tab:res-2-1000}
 
+\FloatBarrier
 \subsection{Case-Level Statistics and Best Layouts}
 \label{sec:S-caselevel}
 Table~\ref{tab:friedman68-full} extends Table~\ref{M-tab:friedman68} by the full case-level statistics, and Table~\ref{tab:coords} lists the coordinates of the best layouts for the largest $N$ of each farm (shown in Fig.~\ref{fig:S-layouts}).
 \SuppTable{tab:friedman68-full}
 \SuppTable{tab:coords}
 
+\FloatBarrier
 \subsection{Additional Figures}
 \label{sec:S-figs}
 Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} show the convergence, the distribution of the final wake loss, the feasibility and the best layouts of the eight methods of the main comparison.
@@ -208,6 +210,7 @@ Tables~\ref{tab:feasinit} and~\ref{tab:budget} summarize the six largest benchma
 \SuppTable{tab:budget}
 \SuppTable{tab:budget-cases}
 
+\FloatBarrier
 \subsection{Horns Rev~1 16-Turbine Block}
 \label{sec:S-hr16}
 Table~\ref{tab:hr-site-full} gives the full results for the Horns Rev~1 block, and Fig.~\ref{fig:S-hr16} its convergence and layouts.
@@ -219,6 +222,7 @@ Table~\ref{tab:hr-site-full} gives the full results for the Horns Rev~1 block, a
 \label{fig:S-hr16}
 \end{figure}
 
+\FloatBarrier
 \subsection{IEA37 Case Study~1}
 \label{sec:S-iea37}
 Table~\ref{tab:iea37-detail} gives the results of all methods at both budgets, Table~\ref{tab:iea37-pub} compares our best layouts with the submitted ones~\cite{Baker2019,IEA37repo}, and Fig.~\ref{fig:S-iea37-conv} shows the convergence at the largest budget.
@@ -231,6 +235,7 @@ Table~\ref{tab:iea37-detail} gives the results of all methods at both budgets, T
 \label{fig:S-iea37-conv}
 \end{figure}
 
+\FloatBarrier
 \subsection{Computational Cost}
 \label{sec:S-cost}
 \SuppTable{tab:cost}
@@ -252,6 +257,7 @@ For the re-evaluation of Section~\ref{M-sec:powercurve}, the deficit of the Jens
 \end{equation}
 for turbines $i$ downstream of $j$, with $K_{\rm G}=0.04$, the lateral offset $v_{ij}$ and downstream distance $d_{ij}$ of Section~\ref{M-sec:model}, and the same root-sum-square superposition and Weibull scaling as the benchmark.
 
+\FloatBarrier
 \subsection{Re-Evaluation and Spacing}
 \label{sec:S-robust-tables}
 Table~\ref{tab:robust} gives the full re-evaluation of the final layouts under the alternative power-curve and wake models; Table~\ref{tab:capacity} gives the constructive capacity of the three farms at $4D$, $5D$ and $6D$ spacing, and Table~\ref{tab:spacing-authors} the re-optimization of six cases at larger spacing with the original SSA and LX-SSA code.
@@ -282,6 +288,7 @@ Figs.~\ref{fig:S-farm}--\ref{fig:S-halfcone} illustrate the farm geometry and th
 \label{fig:S-halfcone}
 \end{figure}
 
+\FloatBarrier
 \subsection{Discrete Form of the Expected Power}
 \label{sec:S-power}
 Following~\cite{Kusiak2010}, the integrals of \eqref{M-eq8} are evaluated with a Riemann sum. The wind direction is divided into bins $\theta_0 = 0^\circ, \theta_1, \ldots, \theta_{N_\theta} = 360^\circ$ with probabilities $p_l$, and the speed range between $s_{\text{cut-in}}$ and $s_{\text{rated}}$ into bins $s_0 = s_{\text{cut-in}}, s_1, \ldots, s_{N_s} = s_{\text{rated}}$. With $\bar\theta_l=(\theta_{l-1}+\theta_l)/2$ and $W_i(s,\theta)=\exp\{-[s/\psi_i(\theta)]^{\zeta(\theta)}\}$,
