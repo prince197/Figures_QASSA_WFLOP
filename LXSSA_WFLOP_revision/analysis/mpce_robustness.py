@@ -15,7 +15,7 @@ import numpy as np, pandas as pd
 from multiprocessing import Pool
 from scipy.stats import rankdata, kendalltau
 
-MODELS = (("Linear", "Benchmark (linear curve, Jensen)"), ("Cubic", "Cubic power curve"),
+MODELS = (("Objective", "Benchmark (linear curve, Jensen)"), ("Cubic", "Cubic power curve"),
           ("CubicCutout", "Cubic curve with 25 m/s cut-out"), ("Gauss", "Gaussian wake ($k^*=0.04$)"))
 VALS = ["Linear", "Cubic", "CubicCutout", "Gauss", "IdealCubic", "IdealCubicCutout"]
 
@@ -81,7 +81,15 @@ def robust_table(G, methods, lab, rank_fn, n_runs=30):
     out, lines = {}, []
     keys = ["Dataset", "Radius", "Turbines"]
     cnt = G.groupby(keys + ["Algorithm"]).size().unstack().reindex(columns=methods).fillna(0)
-    base = G.groupby(keys + ["Algorithm"])["Linear"].mean().unstack().reindex(columns=methods)
+    # Base ordering = recorded objective of the runs (identical to the main case-level table). The stored
+    # coordinates are rounded to 1 mm, and optimized layouts often sit on a wake-cone edge, so a
+    # re-evaluation of the benchmark model ("Linear") can differ from the recorded objective; relative
+    # changes Delta are therefore taken with respect to the re-evaluated benchmark ("Linear"), i.e. the
+    # same rounded coordinates under both models.
+    base = G.groupby(keys + ["Algorithm"])["Objective"].mean().unstack().reindex(columns=methods)
+    dev = (G.Linear - G.Objective).abs() / G.Objective
+    out["rounding_check"] = dict(median_rel_dev=float(dev.median()), max_rel_dev=float(dev.max()),
+                                 n_rel_dev_above_1e_4=int((dev > 1e-4).sum()), n_layouts=int(len(G)))
     for col, name in MODELS:
         m = G.groupby(keys + ["Algorithm"])[col].mean().unstack().reindex(columns=methods)
         ranks = np.vstack([rank_fn(mv, cv, np.full(len(methods), n_runs)) for mv, cv in zip(m.values, cnt.values)])
@@ -93,17 +101,18 @@ def robust_table(G, methods, lab, rank_fn, n_runs=30):
                 taus.append(kendalltau(a[ok], b[ok])[0])
             if ok.sum() >= 1:
                 same.append(np.argmax(np.where(ok, a, -np.inf)) == np.argmax(np.where(ok, b, -np.inf)))
-        rel = {ds: float(100 * (G[G.Dataset.astype(str) == ds][col] / G[G.Dataset.astype(str) == ds]["Linear"] - 1).mean())
+        num = "Linear" if col == "Objective" else col
+        rel = {ds: float(100 * (G[G.Dataset.astype(str) == ds][num] / G[G.Dataset.astype(str) == ds]["Linear"] - 1).mean())
                for ds in ("1", "2")}
         out[col] = dict(avg_rank=dict(zip(methods, map(float, ranks.mean(0)))), tau=float(np.nanmean(taus)),
                         same_best_pct=float(100 * np.mean(same)), rel_change_pct=rel)
         lines.append(f"{name} & {rel['1']:+.1f} & {rel['2']:+.1f} & " +
                      " & ".join(f"{v:.2f}" for v in ranks.mean(0)) +
-                     (" & -- & -- \\\\" if col == "Linear" else f" & {np.nanmean(taus):.2f} & {100*np.mean(same):.0f} \\\\"))
+                     (" & -- & -- \\\\" if col == "Objective" else f" & {np.nanmean(taus):.2f} & {100*np.mean(same):.0f} \\\\"))
     k = len(methods)
     tex = r"""\begin{table*}[!t]
 \centering
-\caption{Robustness of the results to the benchmark model. All feasible final layouts of the seven methods are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model; average rank of each method over the 68 cases (ranking rule of Table~\ref{tab:friedman68}: methods with fewer than 15 feasible runs are ranked last, by their number of feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and the alternative ordering of the methods with at least 15 feasible runs within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
+\caption{Robustness of the results to the benchmark model. All feasible final layouts of the seven methods are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model (both evaluated on the stored coordinates, rounded to 1~mm); average rank of each method over the 68 cases (ranking rule of Table~\ref{tab:friedman68}: methods with fewer than 15 feasible runs are ranked last, by their number of feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and the alternative ordering of the methods with at least 15 feasible runs within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
 \label{tab:robust}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{l""" + "c" * (k + 4) + r"""}
