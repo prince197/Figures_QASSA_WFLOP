@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 07:42:37",
+ "generated": "2026-09-28 07:45:15",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -110,9 +110,16 @@
    ]
   },
   "mpce_slsqp": {
-   "status": "missing",
-   "shards": "0",
-   "rows": 0
+   "status": "complete",
+   "shards": "1/1",
+   "rows": 2040,
+   "methods": [
+    "SLSQP"
+   ],
+   "datasets": [
+    "1",
+    "2"
+   ]
   },
   "mpce_psosplit": {
    "status": "complete",
@@ -292,7 +299,6 @@
   }
  },
  "fallbacks": [
-  "SLSQP (68 cases): mpce_slsqp missing -> using the old-platform SLSQP runs of fresh_grid.csv",
   "SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (no rerun planned)"
  ],
  "ranking_rule": "Within each case a method is ranked by the mean objective of its feasible runs only if at least half of its runs (15 of 30; 5 of 10) are feasible; methods with fewer feasible runs receive the worst ranks, below all qualifying methods, ordered by their number of feasible runs (more = better, ties averaged). This removes the survivorship bias of ranking by the mean feasible objective.",
@@ -326,47 +332,47 @@
  "main": {
   "friedman": {
    "n_cases": 68,
-   "chi2": 319.37139107611546,
-   "p": 4.393210620558833e-65,
-   "iman_davenport": 136.61542006351013,
-   "iman_davenport_p": 6.015535388336197e-109,
+   "chi2": 319.2979002624672,
+   "p": 4.555038515279214e-65,
+   "iman_davenport": 136.519927642433,
+   "iman_davenport_p": 6.711189816494729e-109,
    "avg_rank": {
     "PSOBV": 1.8161764705882353,
     "PSOC": 1.9705882352941178,
     "SSABV": 3.448529411764706,
-    "SSA": 5.367647058823529,
+    "SSA": 5.382352941176471,
     "LXSSA": 6.0588235294117645,
-    "DE": 7.0588235294117645,
-    "BVNS": 4.411764705882353,
-    "SLSQP": 5.867647058823529
+    "DE": 7.044117647058823,
+    "BVNS": 4.397058823529412,
+    "SLSQP": 5.882352941176471
    },
    "best_ranked": "PSOBV",
    "z_vs_focus": {
     "PSOC": 0.3675735220573529,
     "SSABV": 3.885777233177728,
-    "SSA": 8.454191007319109,
+    "SSA": 8.48919800941981,
     "LXSSA": 10.09952010605202,
-    "DE": 12.479996248899637,
-    "BVNS": 6.178735870773593,
-    "SLSQP": 9.644429078742917
+    "DE": 12.444989246798936,
+    "BVNS": 6.143728868672894,
+    "SLSQP": 9.679436080843619
    },
    "p_holm_vs_focus": {
     "PSOC": 0.7131912610160718,
     "SSABV": 0.000204006023816942,
-    "SSA": 1.124115817459096e-16,
+    "SSA": 8.322717950001036e-17,
     "LXSSA": 3.3307905761444154e-23,
-    "DE": 6.719382126739282e-35,
-    "BVNS": 1.938506853686313e-09,
-    "SLSQP": 2.594958923248875e-21
+    "DE": 1.0423310013526964e-34,
+    "BVNS": 2.418191635497493e-09,
+    "SLSQP": 1.8437212849431202e-21
    },
    "p_holm_vs_best": {
     "PSOC": 0.7131912610160718,
     "SSABV": 0.000204006023816942,
-    "SSA": 1.124115817459096e-16,
+    "SSA": 8.322717950001036e-17,
     "LXSSA": 3.3307905761444154e-23,
-    "DE": 6.719382126739282e-35,
-    "BVNS": 1.938506853686313e-09,
-    "SLSQP": 2.594958923248875e-21
+    "DE": 1.0423310013526964e-34,
+    "BVNS": 2.418191635497493e-09,
+    "SLSQP": 1.8437212849431202e-21
    },
    "sole_best_count": {
     "PSOBV": 29,
@@ -384,13 +390,13 @@
     "PSOBV": 1.8161764705882353,
     "PSOC": 1.9705882352941178,
     "SSABV": 3.448529411764706,
-    "SSA": 5.338235294117647,
+    "SSA": 5.352941176470588,
     "LXSSA": 6.102941176470588,
-    "DE": 7.044117647058823,
-    "BVNS": 4.411764705882353,
-    "SLSQP": 5.867647058823529
+    "DE": 7.029411764705882,
+    "BVNS": 4.397058823529412,
+    "SLSQP": 5.882352941176471
    },
-   "chi2": 319.5446194225722
+   "chi2": 319.4658792650917
   },
   "case_mean_wilcoxon": {
    "PSOC": {
@@ -496,21 +502,21 @@
     "p_both_qualified_holm": 1.2591055737542433e-10
    },
    "SLSQP": {
-    "p": 3.8833865752892544e-12,
-    "rb": 0.96845694799659,
+    "p": 5.974424383134514e-12,
+    "rb": 0.9599317988064792,
     "n_cases": 68,
     "only_focus_qualified": 0,
     "only_other_qualified": 0,
     "neither_qualified": 0,
-    "mean_dloss_pp": -0.44257641171205614,
-    "median_dloss_pp": -0.49690177528729723,
+    "mean_dloss_pp": -0.4354035666654407,
+    "median_dloss_pp": -0.4949217439297423,
     "focus_lower_loss_cases": 66,
     "other_lower_loss_cases": 2,
-    "p_both_qualified": 3.8833865752892544e-12,
-    "rb_both_qualified": 0.96845694799659,
+    "p_both_qualified": 5.974424383134514e-12,
+    "rb_both_qualified": 0.9599317988064792,
     "n_both_qualified": 68,
-    "p_holm": 2.7183706027024783e-11,
-    "p_both_qualified_holm": 2.3300319451735527e-11
+    "p_holm": 4.18209706819416e-11,
+    "p_both_qualified_holm": 3.584654629880709e-11
    }
   },
   "feasible_pct": {
@@ -521,7 +527,7 @@
    "LXSSA": 96.86274509803921,
    "DE": 71.37254901960785,
    "BVNS": 100.0,
-   "SLSQP": 99.8529411764706
+   "SLSQP": 99.95098039215686
   },
   "mean_loss_pct_qualified_cases": {
    "PSOBV": 1.3224625271346837,
@@ -531,7 +537,7 @@
    "LXSSA": 1.9585605960391184,
    "DE": 1.4926725259887579,
    "BVNS": 1.787654058672649,
-   "SLSQP": 1.7650389388467396
+   "SLSQP": 1.7578660938001243
   },
   "cases_below_half_feasible": {
    "PSOBV": 0,
@@ -582,7 +588,7 @@
    "LXSSA": 0.9741935483870967,
    "DE": 1.0,
    "BVNS": 0.8365591397849462,
-   "SLSQP": 0.9827956989247312
+   "SLSQP": 0.9870967741935484
   },
   "by_n": {
    "PSOC": {
@@ -691,10 +697,10 @@
     },
     "n_large": 20,
     "n_small": 48,
-    "mean_dloss_pp_large": -0.7021362449889661,
-    "mean_dloss_pp_small": -0.33442648118001045,
-    "mean_abs_dloss_pp_small": 0.3367200863802979,
-    "max_abs_dloss_pp_small": 1.125406468353331
+    "mean_dloss_pp_large": -0.6882053526504375,
+    "mean_dloss_pp_small": -0.33006948917169193,
+    "mean_abs_dloss_pp_small": 0.33514329101219564,
+    "max_abs_dloss_pp_small": 1.0559404541762325
    }
   },
   "loss_largest_n": {
@@ -706,7 +712,7 @@
     "LXSSA": null,
     "DE": null,
     "BVNS": 4.905281168106046,
-    "SLSQP": 3.5572333579842352
+    "SLSQP": 3.428058326692209
    },
    "1-750-12": {
     "PSOBV": 1.7932173768970776,
@@ -716,7 +722,7 @@
     "LXSSA": 4.104660364309908,
     "DE": null,
     "BVNS": 2.8694771015546054,
-    "SLSQP": 2.3050136905625633
+    "SLSQP": 2.414959929941875
    },
    "1-1000-15": {
     "PSOBV": 1.6032939197128977,
@@ -726,7 +732,7 @@
     "LXSSA": 3.324507891354194,
     "DE": null,
     "BVNS": 1.9931733583280788,
-    "SLSQP": 2.195881991025837
+    "SLSQP": 2.2826715428747604
    },
    "2-500-10": {
     "PSOBV": 7.3547332246678945,
@@ -736,7 +742,7 @@
     "LXSSA": null,
     "DE": null,
     "BVNS": 8.33560830378462,
-    "SLSQP": 8.01804835842327
+    "SLSQP": 8.00494546319413
    },
    "2-750-12": {
     "PSOBV": 5.485716495491405,
@@ -746,7 +752,7 @@
     "LXSSA": 7.339277105193248,
     "DE": null,
     "BVNS": 6.169592948210721,
-    "SLSQP": 5.601587467085618
+    "SLSQP": 5.686995948327548
    },
    "2-1000-15": {
     "PSOBV": 4.498204766753881,
@@ -756,7 +762,7 @@
     "LXSSA": 6.7468067540574665,
     "DE": null,
     "BVNS": 5.4251950733875445,
-    "SLSQP": 5.356175767583313
+    "SLSQP": 5.312522704751051
    }
   },
   "largest_n_loss_reduction_vs_phase1_pp": {
@@ -766,7 +772,7 @@
    "n": 6,
    "all_positive": false
   },
-  "max_loss_n_le_3_pct": 0.2611956342742278,
+  "max_loss_n_le_3_pct": 0.24649661203806947,
   "n_runs": 16320,
   "feasible_runs_by_dataset": {
    "PSOBV": {
@@ -798,7 +804,7 @@
     "2": 1020
    },
    "SLSQP": {
-    "1": 1018,
+    "1": 1020,
     "2": 1019
    }
   },
@@ -816,26 +822,26 @@
   },
   "spacing_share": {
    "all": {
-    "n_layouts": 15612,
-    "pct_5d": 49.30181911350243,
-    "pct_6d": 35.80579041762746
+    "n_layouts": 15614,
+    "pct_5d": 49.173818368131165,
+    "pct_6d": 35.79479953887537
    },
    "n11_15": {
     "n_layouts": 3036,
-    "pct_5d": 4.3478260869565215,
+    "pct_5d": 4.084321475625823,
     "pct_6d": 0.06587615283267458
    },
    "n6_10": {
-    "n_layouts": 6816,
-    "pct_5d": 32.541079812206576,
-    "pct_6d": 12.910798122065728
+    "n_layouts": 6818,
+    "pct_5d": 32.45819888530361,
+    "pct_6d": 12.92167791141097
    }
   },
   "best_layout_maxN": [
    {
     "case": "1-500-10",
     "best_method": "SLSQP",
-    "focus_gap_pp": 0.125583841640991
+    "focus_gap_pp": 0.21108073966130486
    },
    {
     "case": "1-750-12",
@@ -883,11 +889,11 @@
    "PSOBV": 1.4264705882352942,
    "PSO": 5.117647058823529,
    "SSABV": 2.661764705882353,
-   "SSA": 4.838235294117647,
+   "SSA": 4.852941176470588,
    "LXSSA": 5.647058823529412,
-   "DE": 7.022058823529412,
-   "BVNS": 3.8455882352941178,
-   "SLSQP": 5.4411764705882355
+   "DE": 7.007352941176471,
+   "BVNS": 3.8308823529411766,
+   "SLSQP": 5.455882352941177
   }
  },
  "cost": {
@@ -899,7 +905,7 @@
    "LXSSA": 0.3956,
    "DE": 0.4668,
    "BVNS": 0.3711,
-   "SLSQP": 0.4881
+   "SLSQP": 1.8202
   },
   "sec_per_run_range": {
    "PSOBV": [
@@ -931,8 +937,8 @@
     3.3508245362333224
    ],
    "SLSQP": [
-    2.3601025701666836,
-    4.032467733166686
+    2.6208817319277964,
+    21.69325817998892
    ]
   },
   "source": {
@@ -941,7 +947,7 @@
    "LXSSA": "fresh_grid.csv",
    "PSOBV": "mpce_psobv",
    "PSOC": "mpce_psoc",
-   "SLSQP": "FALLBACK fresh_grid SLSQP",
+   "SLSQP": "mpce_slsqp",
    "SSA": "fresh_grid.csv",
    "SSABV": "fresh_bgrid.csv"
   },
@@ -1712,9 +1718,9 @@
      "LXSSA": 8.714285714285714,
      "DE": 10.0,
      "BVNS": 6.428571428571429,
-     "SLSQP": 4.285714285714286,
+     "SLSQP": 4.428571428571429,
      "LXBV": 5.142857142857143,
-     "RSVNS": 4.714285714285714
+     "RSVNS": 4.571428571428571
     },
     "best": "PSOBV",
     "avg_rank_grid6": {
@@ -1725,9 +1731,9 @@
      "LXSSA": 8.666666666666666,
      "DE": 10.0,
      "BVNS": 6.5,
-     "SLSQP": 3.8333333333333335,
+     "SLSQP": 4.0,
      "LXBV": 5.166666666666667,
-     "RSVNS": 4.833333333333333
+     "RSVNS": 4.666666666666667
     },
     "n_cases_grid6": 6,
     "best_grid6": "PSOBV",
@@ -1764,7 +1770,7 @@
      "LXSSA": 5.378813028728704,
      "DE": null,
      "BVNS": 4.949721325561936,
-     "SLSQP": 4.5056567721108065,
+     "SLSQP": 4.521692319296929,
      "LXBV": 4.80182759923784,
      "RSVNS": 4.829709026538708
     },
@@ -1821,8 +1827,8 @@
       "fresh_vhr16.csv"
      ],
      "SLSQP": [
-      "FALLBACK fresh_grid SLSQP",
-      "fresh_hr16.csv"
+      "fresh_hr16.csv",
+      "mpce_slsqp"
      ],
      "LXBV": [
       "fresh_bgrid.csv",
@@ -1835,52 +1841,52 @@
     },
     "focus_vs_slsqp": {
      "1-500-10": {
-      "p": 0.6554384250193834,
-      "rb": -0.0967741935483871,
+      "p": 0.40449450351297855,
+      "rb": -0.17849462365591398,
       "focus": 135160.4758948336,
-      "slsqp": 135460.97714643765,
+      "slsqp": 135642.41300286315,
       "focus_loss": 3.7711781610898103,
-      "slsqp_loss": 3.5572333579842352
+      "slsqp_loss": 3.428058326692209
      },
      "1-750-12": {
-      "p": 0.00011058151721954346,
-      "rb": 0.7591397849462366,
+      "p": 3.453157842159271e-05,
+      "rb": 0.8021505376344086,
       "focus": 165526.401198089,
-      "slsqp": 164663.77440506374,
+      "slsqp": 164478.46128469033,
       "focus_loss": 1.7932173768970776,
-      "slsqp_loss": 2.3050136905625633
+      "slsqp_loss": 2.414959929941875
      },
      "1-1000-15": {
-      "p": 1.218356192111969e-05,
-      "rb": 0.8365591397849462,
+      "p": 1.6391277313232422e-07,
+      "rb": 0.9440860215053763,
       "focus": 207308.1437476054,
-      "slsqp": 206059.64328489054,
+      "slsqp": 205876.7897971345,
       "focus_loss": 1.6032939197128977,
-      "slsqp_loss": 2.195881991025837
+      "slsqp_loss": 2.2826715428747604
      },
      "2-500-10": {
-      "p": 1.0609626770019531e-05,
-      "rb": 0.8408602150537634,
+      "p": 0.0003800932317972183,
+      "rb": 0.7075268817204301,
       "focus": 67773.51829380615,
-      "slsqp": 67288.27817397201,
+      "slsqp": 67297.8634376387,
       "focus_loss": 7.3547332246678945,
-      "slsqp_loss": 8.01804835842327
+      "slsqp_loss": 8.00494546319413
      },
      "2-750-12": {
-      "p": 0.4161298982799053,
-      "rb": 0.17419354838709677,
+      "p": 0.09194962680339813,
+      "rb": 0.3548387096774194,
       "focus": 82968.929704558,
-      "slsqp": 82867.21290429744,
+      "slsqp": 82792.23746128942,
       "focus_loss": 5.485716495491405,
-      "slsqp_loss": 5.601587467085618
+      "slsqp_loss": 5.686995948327548
      },
      "2-1000-15": {
       "p": 1.30385160446167e-07,
       "rb": 0.9483870967741935,
       "focus": 104794.76542543314,
-      "slsqp": 103853.30804702309,
+      "slsqp": 103901.20884792884,
       "focus_loss": 4.498204766753881,
-      "slsqp_loss": 5.356175767583313
+      "slsqp_loss": 5.312522704751051
      },
      "HR-0-16": {
       "p": 1.862645149230957e-08,
@@ -2782,21 +2788,21 @@
  "iea37_published_file": true,
  "robustness": {
   "rounding_check": {
-   "median_rel_dev": 1.1365582723224955e-09,
+   "median_rel_dev": 1.1313517459169194e-09,
    "max_rel_dev": 0.00942228678398459,
-   "n_rel_dev_above_1e_4": 432,
-   "n_layouts": 15612
+   "n_rel_dev_above_1e_4": 440,
+   "n_layouts": 15614
   },
   "Objective": {
    "avg_rank": {
     "PSOBV": 1.8161764705882353,
     "PSOC": 1.9705882352941178,
     "SSABV": 3.448529411764706,
-    "SSA": 5.367647058823529,
+    "SSA": 5.382352941176471,
     "LXSSA": 6.0588235294117645,
-    "DE": 7.0588235294117645,
-    "BVNS": 4.411764705882353,
-    "SLSQP": 5.867647058823529
+    "DE": 7.044117647058823,
+    "BVNS": 4.397058823529412,
+    "SLSQP": 5.882352941176471
    },
    "tau": 1.0,
    "same_best_pct": 100.0,
@@ -2811,18 +2817,18 @@
    "avg_rank": {
     "PSOBV": 1.8161764705882353,
     "PSOC": 1.8970588235294117,
-    "SSABV": 3.5441176470588234,
-    "SSA": 5.632352941176471,
+    "SSABV": 3.5294117647058822,
+    "SSA": 5.676470588235294,
     "LXSSA": 5.970588235294118,
-    "DE": 6.911764705882353,
+    "DE": 6.897058823529412,
     "BVNS": 4.419117647058823,
-    "SLSQP": 5.8088235294117645
+    "SLSQP": 5.794117647058823
    },
-   "tau": 0.9518213471161303,
+   "tau": 0.9491369400199585,
    "same_best_pct": 94.11764705882352,
    "rel_change_pct": {
-    "1": -17.68742049848018,
-    "2": -36.890298874300456
+    "1": -17.687910099417874,
+    "2": -36.88942832765709
    },
    "best_method": "PSOBV",
    "focus_rank_position": 1
@@ -2831,38 +2837,38 @@
    "avg_rank": {
     "PSOBV": 1.8014705882352942,
     "PSOC": 1.911764705882353,
-    "SSABV": 3.5441176470588234,
-    "SSA": 5.647058823529412,
+    "SSABV": 3.5294117647058822,
+    "SSA": 5.676470588235294,
     "LXSSA": 5.970588235294118,
-    "DE": 6.926470588235294,
+    "DE": 6.897058823529412,
     "BVNS": 4.419117647058823,
-    "SLSQP": 5.779411764705882
+    "SLSQP": 5.794117647058823
    },
-   "tau": 0.9375479594965898,
+   "tau": 0.9375479594965896,
    "same_best_pct": 89.70588235294117,
    "rel_change_pct": {
-    "1": -21.47378489669055,
-    "2": -37.043851885388435
+    "1": -21.474031469273214,
+    "2": -37.04299051531466
    },
    "best_method": "PSOBV",
    "focus_rank_position": 1
   },
   "Gauss": {
    "avg_rank": {
-    "PSOBV": 1.9264705882352942,
-    "PSOC": 1.8970588235294117,
-    "SSABV": 3.9558823529411766,
-    "SSA": 5.411764705882353,
+    "PSOBV": 1.9705882352941178,
+    "PSOC": 1.911764705882353,
+    "SSABV": 3.926470588235294,
+    "SSA": 5.426470588235294,
     "LXSSA": 6.044117647058823,
-    "DE": 6.955882352941177,
-    "BVNS": 5.088235294117647,
-    "SLSQP": 4.720588235294118
+    "DE": 6.9411764705882355,
+    "BVNS": 5.117647058823529,
+    "SLSQP": 4.661764705882353
    },
-   "tau": 0.6719761388948117,
-   "same_best_pct": 57.35294117647059,
+   "tau": 0.6623630259874923,
+   "same_best_pct": 54.41176470588235,
    "rel_change_pct": {
-    "1": -0.27216890030649377,
-    "2": -0.43300075526730675
+    "1": -0.2739935970810872,
+    "2": -0.4311714563704043
    },
    "best_method": "PSOC",
    "focus_rank_position": 2
@@ -2928,7 +2934,7 @@
     "n": 180
    },
    "SLSQP": {
-    "loss": 4.5056567721108065,
+    "loss": 4.521692319296929,
     "feas": 99.44444444444444,
     "n": 180
    }
@@ -2954,13 +2960,13 @@
     "PSOBV": 1.5,
     "SSABV": 4.333333333333333,
     "LXBV": 5.166666666666667,
-    "RSVNS": 4.833333333333333,
+    "RSVNS": 4.666666666666667,
     "BVNS": 6.5,
     "PSOC": 1.8333333333333333,
     "SSA": 8.333333333333334,
     "LXSSA": 8.666666666666666,
     "DE": 10.0,
-    "SLSQP": 3.8333333333333335
+    "SLSQP": 4.0
    }
   },
   "complete": {
@@ -2981,7 +2987,7 @@
     "SSA": 4.8277077947315545,
     "LXSSA": 5.378813028728704,
     "DE": null,
-    "SLSQP": 4.5056567721108065
+    "SLSQP": 4.521692319296929
    }
   },
   "feas_pct": {
@@ -3432,11 +3438,11 @@
     "PSOBV": 1.8161764705882353,
     "PSOC": 1.9705882352941178,
     "SSABV": 3.448529411764706,
-    "SSA": 5.367647058823529,
+    "SSA": 5.382352941176471,
     "LXSSA": 6.0588235294117645,
-    "DE": 7.0588235294117645,
-    "BVNS": 4.411764705882353,
-    "SLSQP": 5.867647058823529
+    "DE": 7.044117647058823,
+    "BVNS": 4.397058823529412,
+    "SLSQP": 5.882352941176471
    },
    "rank_position": {
     "PSOBV": 1,
@@ -3456,16 +3462,10 @@
     "LXSSA": 1.9585605960391184,
     "DE": 1.4926725259887579,
     "BVNS": 1.787654058672649,
-    "SLSQP": 1.7650389388467396
+    "SLSQP": 1.7578660938001243
    },
    "note": "68 benchmark cases, 6,030 calls",
-   "fallback_sources": {
-    "SLSQP": [
-     "FALLBACK fresh_grid SLSQP",
-     "dataset 1",
-     "dataset 2"
-    ]
-   },
+   "fallback_sources": {},
    "PSOC": {
     "case_mean_p": 0.2958623332952982,
     "case_mean_p_holm7": 0.2958623332952982,
@@ -3563,16 +3563,10 @@
      "LXSSA": 5.378813028728704,
      "DE": null,
      "BVNS": 4.949721325561936,
-     "SLSQP": 4.5056567721108065
+     "SLSQP": 4.521692319296929
     },
     "note": "six largest benchmark cases + Horns Rev 16",
-    "fallback_sources": {
-     "SLSQP": [
-      "FALLBACK fresh_grid SLSQP",
-      "dataset 1",
-      "dataset 2"
-     ]
-    },
+    "fallback_sources": {},
     "hr16_mean_aep": {
      "PSOBV": 138.73398704990842,
      "PSOC": 138.0571624487686,
@@ -4091,11 +4085,9 @@
    "  68 cases, 6,030 calls      cases=68  PSO-VNS runs=2040 (seeds 30)  avg rank: PSO-VNS 1.82, PSO 1.97, SSA-VNS 3.45  (best: PSO-VNS 1.82)",
    "      vs PSO      case-mean Wilcoxon p=0.296 (Holm7 0.296) r_rb=+0.16  mean dL=-0.018 pp  lower-loss cases 34 vs 26  run-level W/T/L 14/50/4",
    "      vs SSA-VNS  case-mean Wilcoxon p=1.9e-11 (Holm7 5.7e-11) r_rb=+1.00  mean dL=-0.330 pp  lower-loss cases 59 vs 1  run-level W/T/L 49/19/0",
-   "      NOTE: MS-SLSQP uses development-fallback runs here (FALLBACK fresh_grid SLSQP; dataset 1; dataset 2)",
    "  large-6 + HR16, 6,030      cases= 7  PSO-VNS runs=210 (seeds 30)  avg rank: PSO-VNS 1.43, PSO 1.86, SSA-VNS 3.57  (best: PSO-VNS 1.43)",
    "      vs PSO      case-mean Wilcoxon p=0.297 (Holm7 0.297) r_rb=+0.50  mean dL=-0.147 pp  lower-loss cases 5 vs 2  run-level W/T/L 3/3/1",
    "      vs SSA-VNS  case-mean Wilcoxon p=0.016 (Holm7 0.109) r_rb=+1.00  mean dL=-0.581 pp  lower-loss cases 7 vs 0  run-level W/T/L 6/1/0",
-   "      NOTE: MS-SLSQP uses development-fallback runs here (FALLBACK fresh_grid SLSQP; dataset 1; dataset 2)",
    "      HR16 mean AEP (GWh/yr): PSO-VNS 138.73 (30/30), PSO 138.06 (19/30), SSA-VNS 137.98 (30/30)",
    "  large-6 + HR16, 30,030     cases= 7  PSO-VNS runs=210 (seeds 30)  avg rank: PSO-VNS 1.14, PSO 3.00, SSA-VNS 4.14  (best: PSO-VNS 1.14)",
    "      vs PSO      case-mean Wilcoxon p=0.016 (Holm7 0.109) r_rb=+1.00  mean dL=-0.196 pp  lower-loss cases 7 vs 0  run-level W/T/L 5/2/0",
@@ -4150,7 +4142,7 @@
   "  mpce_rsvns           complete                                      shards=   1/1 rows=  2040  methods=RSVNS",
   "  mpce_psoc            complete                                      shards=   1/1 rows=  2040  methods=PSOC",
   "  mpce_psobv           complete                                      shards=   2/2 rows=  2070  methods=PSOBV",
-  "  mpce_slsqp           missing                                       shards=     0 rows=     0",
+  "  mpce_slsqp           complete                                      shards=   1/1 rows=  2040  methods=SLSQP",
   "  mpce_psosplit        complete                                      shards=   1/1 rows=   720  methods=PSOBV25,PSOBV75",
   "  mpce_ssasplit        missing                                       shards=     0 rows=     0",
   "  mpce_hr16new         complete                                      shards=   1/1 rows=    60  methods=PSOC,RSVNS",
@@ -4164,15 +4156,14 @@
   "  mpce_b120kp          PARTIAL (used, --partial)                     shards=   3/4 rows=   142  methods=PSOBV",
   "  mpce_iea16p          complete                                      shards=   1/1 rows=    60  methods=PSOBV",
   "  mpce_iea36p          complete                                      shards=   1/1 rows=    60  methods=PSOBV",
-  "  FALLBACK: SLSQP (68 cases): mpce_slsqp missing -> using the old-platform SLSQP runs of fresh_grid.csv",
   "  FALLBACK: SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (no rerun planned)",
   "  FOCUS (proposed method): PSOBV = PSO-VNS",
   "==============================================================================",
   "\n[1] Main comparison (68 cases)",
-  "  Friedman chi2=319.4 p=4.39e-65  ID F=136.6",
-  "  avg ranks: PSO-VNS 1.82, PSO 1.97, SSA-VNS 3.45, VNS 4.41, SSA 5.37, MS-SLSQP 5.87, LX-SSA 6.06, DE 7.06",
+  "  Friedman chi2=319.3 p=4.56e-65  ID F=136.5",
+  "  avg ranks: PSO-VNS 1.82, PSO 1.97, SSA-VNS 3.45, VNS 4.40, SSA 5.38, MS-SLSQP 5.88, LX-SSA 6.06, DE 7.04",
   "  W/T/L vs PSO-VNS: PSO 14/50/4, SSA-VNS 49/19/0, SSA 59/9/0, LX-SSA 60/8/0, DE 56/12/0, VNS 51/16/1, MS-SLSQP 59/9/0",
-  "  spacing: {'all': {'n_layouts': 15612, 'pct_5d': 49.30181911350243, 'pct_6d': 35.80579041762746}, 'n11_15': {'n_layouts': 3036, 'pct_5d': 4.3478260869565215, 'pct_6d': 0.06587615283267458}, 'n6_10': {'n_layouts': 6816, 'pct_5d': 32.541079812206576, 'pct_6d': 12.910798122065728}}",
+  "  spacing: {'all': {'n_layouts': 15614, 'pct_5d': 49.173818368131165, 'pct_6d': 35.79479953887537}, 'n11_15': {'n_layouts': 3036, 'pct_5d': 4.084321475625823, 'pct_6d': 0.06587615283267458}, 'n6_10': {'n_layouts': 6818, 'pct_5d': 32.45819888530361, 'pct_6d': 12.92167791141097}}",
   "  old PSO setting: avg rank 5.12 (position 5 of 8), feasible 86.0%, constriction vs old {'W': 56, 'T': 12}",
   "\n[2] Ablation",
   "  ablation hybrid PSO-VNS; avg ranks: PSO-VNS 1.868, SSA-VNS 3.787, LX-SSA-VNS 4.618, RS-VNS 4.456, VNS 5.316, PSO 2.103, SSA 6.559, LX-SSA 7.294",
@@ -4198,7 +4189,7 @@
   "\n[5] Feasible initialization",
   "  per method (loss random -> feasible): PSO-VNS 4.509->4.370",
   "\n[6] Budget scaling",
-  "  budget 6030: avg ranks PSO-VNS 1.43, PSO 1.86, SSA-VNS 4.14, MS-SLSQP 4.29, RS-VNS 4.71, LX-SSA-VNS 5.14, VNS 6.43, SSA 8.29, LX-SSA 8.71, DE 10.00",
+  "  budget 6030: avg ranks PSO-VNS 1.43, PSO 1.86, SSA-VNS 4.14, MS-SLSQP 4.43, RS-VNS 4.57, LX-SSA-VNS 5.14, VNS 6.43, SSA 8.29, LX-SSA 8.71, DE 10.00",
   "  budget 30030: avg ranks PSO-VNS 1.14, PSO 3.00, VNS 3.86, SSA-VNS 4.71, LX-SSA-VNS 5.57, DE 5.71, RS-VNS 6.00, MS-SLSQP 6.57, SSA 8.57, LX-SSA 9.86",
   "  budget 120030: avg ranks PSO-VNS 2.71, DE 3.43, RS-VNS 4.00, PSO 4.43, SSA-VNS 4.71, LX-SSA-VNS 4.71, VNS 5.00, MS-SLSQP 7.14, SSA 8.86, LX-SSA 10.00",
   "\n[7] IEA37 Case Study 1 (16- and 36-turbine scenarios)",
@@ -4206,16 +4197,17 @@
   "  IEA37 CS1, 16 turbines: PSO-VNS best 413331.9, best feasible published 418924.4 (par4), baseline 366941.6",
   "  IEA37 CS1, 36 turbines: PSO-VNS best 827385.0, best feasible published 863676.3 (par4), baseline 737883.1",
   "\n[8] Robustness re-evaluation",
-  "  robustness: 15612 layouts (0 newly evaluated, cache 18305)",
-  "  re-evaluation of the rounded coordinates vs recorded objective: {'median_rel_dev': 1.1365582723224955e-09, 'max_rel_dev': 0.00942228678398459, 'n_rel_dev_above_1e_4': 432, 'n_layouts': 15612}",
+  "  re-evaluating 1842 new layouts on 4 processes ...",
+  "  robustness: 15614 layouts (1842 newly evaluated, cache 20147)",
+  "  re-evaluation of the rounded coordinates vs recorded objective: {'median_rel_dev': 1.1313517459169194e-09, 'max_rel_dev': 0.00942228678398459, 'n_rel_dev_above_1e_4': 440, 'n_layouts': 15614}",
   "  Objective    tau=1.00 same best=100%  PSO-VNS rank 1.82",
   "  Cubic        tau=0.95 same best=94%  PSO-VNS rank 1.82",
   "  CubicCutout  tau=0.94 same best=90%  PSO-VNS rank 1.80",
-  "  Gauss        tau=0.67 same best=57%  PSO-VNS rank 1.93",
+  "  Gauss        tau=0.66 same best=54%  PSO-VNS rank 1.97",
   "\n[8b] Main-text tables (manuscript layout)",
-  "  feasbudget: pending ['feasible_6030', 'rank_30030', 'rank_120030']; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.833333333333333, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 3.8333333333333335}}",
+  "  feasbudget: pending ['feasible_6030', 'rank_30030', 'rank_120030']; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}}",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 8 tables, 14 figures, mpce_summary.json in 26 s"
+  "\nwrote 8 tables, 14 figures, mpce_summary.json in 37 s"
  ]
 }
