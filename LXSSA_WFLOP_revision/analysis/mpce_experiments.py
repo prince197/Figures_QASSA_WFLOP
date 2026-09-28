@@ -166,6 +166,11 @@ def tasks(exp):
         return [(run_grid, (a, *c, s, 6030, "random")) for c in SPLITCASES for a in ("SSABV25", "SSABV75") for s in S30]
     if exp == "hr16new":
         return [(run_hr, (a, 16, s, 6030, "random")) for a in ("PSOC", "RSVNS") for s in S30]
+    if exp == "feasx":
+        # feasible initialization without RS-VNS: with feasible initialization RS-VNS must build
+        # ~3,000 feasible random layouts per run (one packing solve each), about 100x the cost of
+        # the other methods; the remaining 8 methods of M9 are run here
+        return [t for t in tasks("feas") if t[1][0] != "RSVNS"]
     if exp.rstrip("p") in ("feas", "b30k", "b120k"):
         # feasp / b30kp / b120kp: the same design for the PSO-VNS arm only
         methods = ["PSOBV"] if exp.endswith("p") else M9
