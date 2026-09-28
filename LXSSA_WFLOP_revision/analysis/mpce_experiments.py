@@ -67,8 +67,9 @@ def run_method(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, 
         split = {"25": 0.25, "75": 0.75}.get(alg[-2:], 0.5)
         pos, _, _ = HybridBVNS(NP, budget, split, 0.0, 1.0, radius, "SSA" if alg.startswith("SSA") else "LXSSA",
                                seed=seed).optimize(fp, dim, lb, ub)
-    elif alg == "PSOBV":
-        pos, _, _ = HybridBVNS(NP, budget, 0.5, 0.0, 1.0, radius, "PSOC", seed=seed).optimize(fp, dim, lb, ub)
+    elif alg in ("PSOBV", "PSOBV25", "PSOBV75"):
+        split = {"25": 0.25, "75": 0.75}.get(alg[-2:], 0.5)
+        pos, _, _ = HybridBVNS(NP, budget, split, 0.0, 1.0, radius, "PSOC", seed=seed).optimize(fp, dim, lb, ub)
     elif alg == "RSVNS":
         pos, _, _ = RSVNS(NP, budget, 0.5, radius, seed=seed).optimize(fp, dim, lb, ub)
     elif alg == "BVNS":
@@ -154,6 +155,8 @@ def tasks(exp):
         return [(run_grid, ("RSVNS", *c, s, 6030, "random")) for c in GRID for s in S30]
     if exp == "slsqp":
         return [(run_grid, ("SLSQP", *c, s, 6030, "random")) for c in GRID for s in S30]
+    if exp == "psosplit":
+        return [(run_grid, (a, *c, s, 6030, "random")) for c in SPLITCASES for a in ("PSOBV25", "PSOBV75") for s in S30]
     if exp == "psobv":
         return [(run_hr, ("PSOBV", 16, s, 6030, "random")) for s in S30] + \
                [(run_grid, ("PSOBV", *c, s, 6030, "random")) for c in GRID for s in S30]
