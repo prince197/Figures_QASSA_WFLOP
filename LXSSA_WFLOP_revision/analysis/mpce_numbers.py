@@ -477,6 +477,13 @@ def build(s, allow_partial=False):
     P("NHRLowerOneTwentyK", lambda: (lambda o: listing(LAB[a] for a in o) if o else "no other method")(
         [a for a in M10 if a != "PSOBV" and (lb.get(a) or {}).get("120030R") and lb[a]["120030R"]["loss"] is not None
          and lb[a]["120030R"]["loss"] < lb["PSOBV"]["120030R"]["loss"]]), hr_req(REQ_B120))
+    def hr_best(tag):
+        c = [a for a in M10 if (lb.get(a) or {}).get(tag) and lb[a][tag].get("mean_aep") is not None]
+        return LAB[max(c, key=lambda a: lb[a][tag]["mean_aep"])]
+    P("NHRBestHundredTwentyK", lambda: hr_best("120030R"), hr_req(REQ_B120))      # method with the highest mean AEP
+    P("NHRBestThirtyK", lambda: hr_best("30030R"), hr_req(REQ_B30))
+    P("NHRBestSixK", lambda: hr_best("6030R"), REQ_HRX)
+    P("NHRBestFeasInit", lambda: hr_best("6030F"), hr_req(REQ_FEAS))
     # boundary rule (robustness section): radial projection vs box clipping for SSA
     br = s.get("boundary_rule") or {}
     P("NBoundCases", lambda: WORD.get(br["n_cases"], str(br["n_cases"])), ())
