@@ -44,7 +44,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CASE = ["Dataset", "Radius", "Turbines"]
 KEY = ["Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init"]
 MAIN8 = ["PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP"]
-ABL = ["PSOBV", "SSABV", "LXBV", "RSVNS", "BVNS", "PSOC", "SSA", "LXSSA"]
+ABL = ["PSOBV", "SSABV", "LXBV", "RSVNS", "RSDVNS", "BVNS", "PSOC", "SSA", "LXSSA"]   # RSDVNS: disc-sampling control (rsdisc)
 FOCUS = "PSOBV"
 SPLITCASES = [(ds, r, n) for ds in ("1", "2") for r, n in ((500, 6), (750, 8), (1000, 10), (500, 10), (750, 12), (1000, 15))]
 THRESHOLDS = [1, 10, 15, 20, 25, 30]
@@ -54,19 +54,39 @@ PERM_SEED = 20260929
 ENERGY_FACTOR = 8.76 / 15.0          # MWh/yr per unit of benchmark objective (objective = 15 x expected power in kW)
 LAB = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "DE": "DE",
        "BVNS": "VNS", "SLSQP": "MS-SLSQP", "LXBV": "LX-SSA-VNS", "RSVNS": "RS-VNS",
-       "PSOBV25": "PSO-VNS ($\\omega=0.25$)", "PSOBV75": "PSO-VNS ($\\omega=0.75$)"}
+       "PSOBV25": "PSO-VNS ($\\omega=0.25$)", "PSOBV75": "PSO-VNS ($\\omega=0.75$)", "PSOBV90": "PSO-VNS ($\\omega=0.9$)",
+       "RSDVNS": "RSD-VNS"}
 MAC = {"PSOBV": "PSOVNS", "PSOC": "PSO", "SSABV": "SSAVNS", "SSA": "SSA", "LXSSA": "LXSSA", "DE": "DE",
-       "BVNS": "VNS", "SLSQP": "MSSLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS"}
-# main-table pairs (PSO-VNS vs each method) and the eleven component-analysis contrasts (first vs second)
+       "BVNS": "VNS", "SLSQP": "MSSLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS", "RSDVNS": "RSDVNS"}
+# main-table pairs (PSO-VNS vs each method) and the fifteen component-analysis contrasts (first vs second; the last
+# four, with the disc-sampling control RSD-VNS, were added in Phase 6 -- same family as mpce_results.py)
 MAIN_PAIRS = [(FOCUS, b) for b in MAIN8 if b != FOCUS]
 ABL_CONTR = [("PSOBV", "PSOC"), ("SSABV", "SSA"), ("LXBV", "LXSSA"), ("PSOBV", "BVNS"), ("PSOBV", "RSVNS"),
              ("SSABV", "RSVNS"), ("LXBV", "RSVNS"), ("PSOBV", "SSABV"), ("PSOBV", "LXBV"), ("SSABV", "LXBV"),
-             ("LXSSA", "SSA")]
-ALL_PAIRS = list(dict.fromkeys(MAIN_PAIRS + ABL_CONTR))          # 15 unique pairs
+             ("LXSSA", "SSA"), ("SSABV", "RSDVNS"), ("LXBV", "RSDVNS"), ("PSOBV", "RSDVNS"), ("RSDVNS", "RSVNS")]
+RSD_CONTR = [("SSABV", "RSDVNS"), ("LXBV", "RSDVNS"), ("PSOBV", "RSDVNS"), ("RSDVNS", "RSVNS")]
+ALL_PAIRS = list(dict.fromkeys(MAIN_PAIRS + ABL_CONTR))          # 19 unique pairs (15 before Phase 6 controls)
 # the conclusions of the paper that the threshold / LOCO analyses re-test (component analysis: D1 of PHASE4.md)
-KEY_CONTR = [("PSOBV", "PSOC"), ("SSABV", "RSVNS"), ("LXBV", "RSVNS"), ("SSABV", "LXBV"), ("PSOBV", "RSVNS")]
+KEY_CONTR = [("PSOBV", "PSOC"), ("SSABV", "RSVNS"), ("LXBV", "RSVNS"), ("SSABV", "LXBV"), ("PSOBV", "RSVNS")] + RSD_CONTR
 EXPECT = {("PSOBV", "PSOC"): "ns", ("SSABV", "RSVNS"): "A", ("LXBV", "RSVNS"): "ns", ("SSABV", "LXBV"): "A",
-          ("PSOBV", "RSVNS"): "A"}     # A = first method significantly better (p < 0.05, lower mean loss); ns = p >= 0.05
+          ("PSOBV", "RSVNS"): "A",
+          # Phase 6 controls (lead decision D11): SSA-VNS and LX-SSA-VNS significantly WORSE than RSD-VNS (B),
+          # PSO-VNS better than RSD-VNS, RSD-VNS better than RS-VNS
+          ("SSABV", "RSDVNS"): "B", ("LXBV", "RSDVNS"): "B", ("PSOBV", "RSDVNS"): "A", ("RSDVNS", "RSVNS"): "A"}
+# A = first method significantly better (p < 0.05, lower mean loss); B = second significantly better; ns = p >= 0.05
+# budget split (12 cases, 2 per cluster): the case-mean tests of the split table; omega = 0.9 (PSOBV90, experiment
+# omega90) added in Phase 6. Split tests are unadjusted in the paper; EXPECT_SPLIT = the paper's verdicts (raw p).
+SPM = ["PSOBV25", "PSOBV", "PSOBV75", "PSOBV90", "PSOC"]
+SPLIT_PAIRS = [("PSOBV", "PSOBV25"), ("PSOBV", "PSOBV75"), ("PSOBV", "PSOC"), ("PSOBV75", "PSOC"),
+               ("PSOBV", "PSOBV90"), ("PSOBV90", "PSOBV75")]
+SPLIT_NAME = {("PSOBV", "PSOBV25"): "SplitFiftyVsTwentyFive", ("PSOBV", "PSOBV75"): "SplitFiftyVsSeventyFive",
+              ("PSOBV", "PSOC"): "SplitFiftyVsHundred", ("PSOBV75", "PSOC"): "SplitSeventyFiveVsHundred",
+              ("PSOBV", "PSOBV90"): "SplitFiftyVsNinety", ("PSOBV90", "PSOBV75"): "SplitNinetyVsSeventyFive"}
+SPLIT_LAB = {"PSOBV25": "$\\omega=0.25$", "PSOBV": "$\\omega=0.5$", "PSOBV75": "$\\omega=0.75$", "PSOBV90": "$\\omega=0.9$",
+             "PSOC": "$\\omega=1$ (PSO)"}
+EXPECT_SPLIT = {("PSOBV", "PSOBV25"): "A", ("PSOBV", "PSOBV75"): "B", ("PSOBV", "PSOC"): "ns", ("PSOBV75", "PSOC"): "A",
+                ("PSOBV", "PSOBV90"): "B", ("PSOBV90", "PSOBV75"): "ns"}
+EQ_MARGIN = 0.05                     # practical-equivalence margin (pp of wake loss), as mpce_results.EQ_MARGIN
 
 
 def pk(a, b):
@@ -120,7 +140,7 @@ def load(data_dir):
     for fn, drop in (("fresh_grid.csv", ["VNS", "PSO", "SLSQP"]), ("fresh_vgrid.csv", []), ("fresh_bgrid.csv", [])):
         d = std_cols(pd.read_csv(os.path.join(HERE, fn), usecols=lambda c: c not in ("Coordinates", "Curve")))
         parts.append(d[~d.Algorithm.isin(drop)])           # old PSO dropped; SLSQP replaced by mpce_slsqp (as load())
-    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit"):
+    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "omega90", "rsdisc"):   # omega90 / rsdisc: Phase 6 controls
         parts.append(read_shards(exp, data_dir))
     A = pd.concat(parts, ignore_index=True).drop_duplicates(KEY, keep="first")
     A = A[(A.Budget == 6030) & (A.Init == "random") & A.Dataset.isin(["1", "2"])].reset_index(drop=True)
@@ -302,7 +322,10 @@ def listing(items):
 
 
 WORD = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine",
-        10: "ten", 11: "eleven", 12: "twelve"}
+        10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", 15: "fifteen", 16: "sixteen",
+        17: "seventeen", 18: "eighteen", 19: "nineteen", 20: "twenty"}
+WORD.update({20 + i: "twenty-" + WORD[i] for i in range(1, 10)})
+WORD[30] = "thirty"
 
 
 def table(env, caption, label, spec, header, lines, sep="2.5pt", pos="!htb", foot=None, resize=False):
@@ -317,10 +340,12 @@ def table(env, caption, label, spec, header, lines, sep="2.5pt", pos="!htb", foo
 
 
 # ------------------------------------------------------------------ 1. qualification threshold
-def threshold_block(G, SP):
+def threshold_block(G, Sp):
+    """G: runs of the 68 cases; Sp: runs of the 12 budget-split cases (SPM settings)."""
     out = {}
     for thr in THRESHOLDS:
         S = case_stats(G, sorted(set(MAIN8) | set(ABL)), thr)
+        SPt = case_stats(Sp, SPM, thr)
         FR = friedman(S, MAIN8)
         FA = friedman(S, ABL)
         main = {b: cm_test(S, FOCUS, b) for b in MAIN8 if b != FOCUS}
@@ -339,8 +364,12 @@ def threshold_block(G, SP):
             ok_raw = verdict(x) == EXPECT[(a, b)]
             ok_holm = verdict(dict(x, p=x["p_holm"])) == EXPECT[(a, b)]
             concl[f"{pk(a, b)}_{EXPECT[(a, b)]}"] = bool(ok_raw and ok_holm)
+        split = {pk(a, b): cm_test(SPt, a, b) for a, b in SPLIT_PAIRS}
+        for a, b in SPLIT_PAIRS:                                        # unadjusted, as in the split table
+            concl[f"split:{pk(a, b)}_{EXPECT_SPLIT[(a, b)]}"] = bool(verdict(split[pk(a, b)]) == EXPECT_SPLIT[(a, b)])
         out[thr] = dict(threshold=thr, friedman=FR, ablation_friedman=dict(avg_rank=FA["avg_rank"], best_ranked=FA["best_ranked"]),
-                        main_case_mean=main, ablation_case_mean=abl,
+                        main_case_mean=main, ablation_case_mean=abl, split_case_mean=split,
+                        imputed_split=int(sum(split[k]["imputed"] for k in split)),
                         imputed_main=int(sum(main[b]["imputed"] for b in main)),
                         dropped_main=int(sum(main[b]["dropped"] for b in main)),
                         imputed_ablation=int(sum(abl[k]["imputed"] for k in abl)),
@@ -350,13 +379,13 @@ def threshold_block(G, SP):
 
 
 # ------------------------------------------------------------------ 2. clusters
-def cluster_block(S, clusters, perm_seed):
+def cluster_block(S, clusters, pairs=ALL_PAIRS):
     cl_of = {c: (c[0], c[1]) for c in S.set_index(CASE).index.unique()}
     res = {}
     G = len(clusters)
     signs = np.array(list(itertools.product([1, -1], repeat=G)))       # all 2^G sign patterns
     tcrit = t_dist.ppf(0.975, G - 1)
-    for a, b in ALL_PAIRS:
+    for a, b in pairs:
         d = case_diffs(S, a, b)                                          # L(a) - L(b), both qualified
         cid = np.array([clusters.index(cl_of[c]) for c in d.index])
         dv = d.values
@@ -398,22 +427,25 @@ def cluster_block(S, clusters, perm_seed):
     return res
 
 
-def loco_block(S, clusters, full):
+def loco_block(S, clusters, full, pairs=ALL_PAIRS, rank=True):
     out = {}
     per = []
     for c in clusters:
         m = ~((S.Dataset == c[0]) & (S.Radius == c[1]))
         Sx = S[m]
-        FR = friedman(Sx, MAIN8)
-        row = dict(dropped=f"{c[0]}-{c[1]}", n_cases=FR["n_cases"], best_ranked=FR["best_ranked"],
-                   posthoc_nonsig=FR["posthoc_nonsig"], avg_rank_PSOBV=FR["avg_rank"]["PSOBV"],
-                   avg_rank_PSOC=FR["avg_rank"]["PSOC"], tests={})
-        for a, b in ALL_PAIRS:
+        if rank:
+            FR = friedman(Sx, MAIN8)
+            row = dict(dropped=f"{c[0]}-{c[1]}", n_cases=FR["n_cases"], best_ranked=FR["best_ranked"],
+                       posthoc_nonsig=FR["posthoc_nonsig"], avg_rank_PSOBV=FR["avg_rank"]["PSOBV"],
+                       avg_rank_PSOC=FR["avg_rank"]["PSOC"], tests={})
+        else:
+            row = dict(dropped=f"{c[0]}-{c[1]}", n_cases=int(len(Sx[CASE].drop_duplicates())), tests={})
+        for a, b in pairs:
             x = cm_test(Sx, a, b)
             row["tests"][pk(a, b)] = dict(p=x["p"], wins=x["wins"], losses=x["losses"], mean_dloss_pp=x["mean_dloss_pp"],
                                           verdict=verdict(x))
         per.append(row)
-    for a, b in ALL_PAIRS:
+    for a, b in pairs:
         k = pk(a, b)
         ps = [r["tests"][k]["p"] for r in per]; mds = [r["tests"][k]["mean_dloss_pp"] for r in per]
         vs = [r["tests"][k]["verdict"] for r in per]
@@ -425,6 +457,8 @@ def loco_block(S, clusters, full):
                                                 (full[k]["wins"] > full[k]["losses"]) for r in per)),
                       verdict_changes=int(sum(v != full[k]["verdict"] for v in vs)),
                       changed_when_dropping=[r["dropped"] for r, v in zip(per, vs) if v != full[k]["verdict"]])
+    if not rank:
+        return dict(per_cluster=per, pairs=out)
     return dict(per_cluster=per, pairs=out,
                 best_ranked_always_PSOBV=bool(all(r["best_ranked"] == FOCUS for r in per)),
                 posthoc_only_PSOC_always=bool(all(r["posthoc_nonsig"] == ["PSOC"] for r in per)))
@@ -449,7 +483,7 @@ def multiplicity_block(S, G, SP):
         x = cm_test(Sg, FOCUS, "PSOC")
         tests.append(dict(key=f"sub:{tag}", label=f"PSO-VNS vs.\\ PSO, {txt}", family="Post hoc subgroups of PSO-VNS vs.\\ PSO",
                           n=x["n_cases"], p=x["p"], wins=x["wins"], losses=x["losses"], dl=x["mean_dloss_pp"]))
-    for a, b in (("PSOBV", "PSOBV25"), ("PSOBV", "PSOBV75"), ("PSOBV", "PSOC"), ("PSOBV75", "PSOC")):
+    for a, b in SPLIT_PAIRS:
         x = cm_test(SP, a, b)
         tests.append(dict(key=f"split:{pk(a, b)}", label=plab(a, b).replace("PSO-VNS vs", "PSO-VNS ($\\omega=0.5$) vs", 1)
                           if a == "PSOBV" else plab(a, b), family="Budget split (Table~\\ref{M-tab:split}, 12 cases)",
@@ -465,8 +499,9 @@ def multiplicity_block(S, G, SP):
                 n_sig_holm=int(sum(t["sig_holm"] for t in tests)), n_sig_bh=int(sum(t["sig_bh"] for t in tests)),
                 lost_under_holm=lost_holm, lost_under_bh=lost_bh, max_sig_p_holm=float(max(sig_h)) if sig_h else None,
                 note="one family = every case-mean Wilcoxon test quoted in the main text (main-table pairs, component-"
-                     "analysis contrasts not already in the main table, the three N >= 10 subgroups, the four budget-"
-                     "split tests); Holm (FWER) and Benjamini-Hochberg (FDR) over this family")
+                     "analysis contrasts not already in the main table (incl. the four RSD-VNS contrasts), the three "
+                     "N >= 10 subgroups, the six budget-split tests incl. omega = 0.9); Holm (FWER) and Benjamini-"
+                     "Hochberg (FDR) over this family")
 
 
 # ------------------------------------------------------------------ 4. post hoc subgroup
@@ -581,6 +616,71 @@ def energy_block(S):
     return out
 
 
+# ------------------------------------------------------------------ 6. wake-model uncertainty (Jensen vs Gaussian)
+def model_shift_block(S, data_dir):
+    """Wake-model uncertainty from the paper's own data: mpce_results.py (section 8, mpce_robustness.py) re-evaluates
+    every feasible final layout of the eight main methods (68 cases) with the Bastankhah--Porte-Agel Gaussian wake
+    (k* = 0.04, linear curve) and the benchmark Jensen model (column Linear: same stored coordinates, rounded to 1 mm)
+    and writes them to mpce_reevaluation.csv. Wake loss of a layout under model M: 100 (Ideal - P_M) / Ideal (pp of
+    the wake-free power, which does not depend on the wake model). Reported: |L_Gauss - L_Jensen| per layout, and the
+    change of the PSO-VNS - PSO case-mean difference between the two models over the cases in which both methods have
+    >= 15 feasible runs (qualification rule of the paper; case means over the feasible runs)."""
+    fn = os.path.join(data_dir, "mpce_reevaluation.csv")
+    if not os.path.exists(fn):
+        fn = os.path.join(HERE, "mpce_reevaluation.csv")
+    R = pd.read_csv(fn, usecols=["Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init", "Feasible",
+                                 "Objective", "Ideal", "Linear", "Gauss"])
+    R["Dataset"] = R.Dataset.astype(str).str.replace(r"\.0$", "", regex=True)
+    R["Feasible"] = R.Feasible.astype(str).str.lower().isin(["true", "1", "1.0"])
+    R = R[(R.Budget == 6030) & (R.Init == "random") & R.Dataset.isin(["1", "2"]) & R.Feasible & R.Algorithm.isin(MAIN8)]
+    assert R.Gauss.notna().all() and R.Linear.notna().all()
+    R = R.assign(LJ=100 * (R.Ideal - R.Linear) / R.Ideal, LG=100 * (R.Ideal - R.Gauss) / R.Ideal,
+                 LRec=100 * (R.Ideal - R.Objective) / R.Ideal)
+    ad = (R.LG - R.LJ).abs()
+    out = dict(source=os.path.basename(fn), n_layouts=int(len(R)), methods=sorted(R.Algorithm.unique()),
+               n_cases=int(len(R[CASE].drop_duplicates())),
+               mean_abs_shift_pp=float(ad.mean()), median_abs_shift_pp=float(ad.median()),
+               q10_abs_shift_pp=float(ad.quantile(0.1)), q90_abs_shift_pp=float(ad.quantile(0.9)),
+               min_abs_shift_pp=float(ad.min()), max_abs_shift_pp=float(ad.max()),
+               share_abs_shift_above_margin=float((ad > EQ_MARGIN).mean()),
+               mean_signed_shift_pp=float((R.LG - R.LJ).mean()),
+               mean_loss_jensen_pp=float(R.LJ.mean()), mean_loss_gauss_pp=float(R.LG.mean()),
+               max_abs_rounding_pp=float((R.LJ - R.LRec).abs().max()),
+               by_dataset={ds: dict(mean_abs_shift_pp=float(ad[R.Dataset == ds].mean()),
+                                    median_abs_shift_pp=float(ad[R.Dataset == ds].median()), n=int((R.Dataset == ds).sum()))
+                           for ds in ("1", "2")},
+               by_method={a: float(ad[R.Algorithm == a].mean()) for a in MAIN8},
+               eq_margin_pp=EQ_MARGIN)
+    out["ratio_mean_to_margin"] = out["mean_abs_shift_pp"] / EQ_MARGIN
+    out["ratio_median_to_margin"] = out["median_abs_shift_pp"] / EQ_MARGIN
+    # case means over the feasible runs, qualification >= BASE_THR feasible runs (as case_stats)
+    g = R.groupby(CASE + ["Algorithm"])
+    C = pd.DataFrame({"LJ": g.LJ.mean(), "LG": g.LG.mean(), "LRec": g.LRec.mean(), "NF": g.size()})
+    pairs = {}
+    for b in [x for x in MAIN8 if x != FOCUS]:
+        A_, B_ = C.xs(FOCUS, level="Algorithm"), C.xs(b, level="Algorithm")
+        com = A_.index.intersection(B_.index)
+        ok = (A_.loc[com, "NF"] >= BASE_THR) & (B_.loc[com, "NF"] >= BASE_THR)
+        com = com[ok.values]
+        dJ = A_.loc[com, "LJ"] - B_.loc[com, "LJ"]; dG = A_.loc[com, "LG"] - B_.loc[com, "LG"]
+        dR = A_.loc[com, "LRec"] - B_.loc[com, "LRec"]
+        ch = (dG - dJ).abs()
+        pairs[pk(FOCUS, b)] = dict(n_cases=int(len(com)), mean_abs_change_pp=float(ch.mean()),
+                                   median_abs_change_pp=float(ch.median()), max_abs_change_pp=float(ch.max()),
+                                   mean_diff_jensen_pp=float(dJ.mean()), mean_diff_gauss_pp=float(dG.mean()),
+                                   mean_diff_recorded_pp=float(dR.mean()),
+                                   abs_change_of_mean_pp=float(abs(dG.mean() - dJ.mean())),
+                                   sign_changes=int((np.sign(dG) * np.sign(dJ) < 0).sum()),
+                                   wilcoxon_p_jensen=wil(dJ.values)[0], wilcoxon_p_gauss=wil(dG.values)[0])
+    out["pairs"] = pairs
+    # consistency: the recorded-objective PSO-VNS - PSO difference equals the paper's (mpce_results case means)
+    ref = case_diffs(S, FOCUS, "PSOC").mean()
+    out["pair_recorded_vs_paper_abs_diff"] = float(abs(pairs[pk(FOCUS, "PSOC")]["mean_diff_recorded_pp"] - ref))
+    out["note"] = ("|L_Gauss - L_Jensen| of the same feasible final layouts (8 main methods, 68 cases), pp of the wake-free "
+                   "power; pair: change of the per-case mean difference PSO-VNS - PSO between the two wake models")
+    return out
+
+
 # ------------------------------------------------------------------ main
 def main(argv=None):
     ap = argparse.ArgumentParser()
@@ -591,10 +691,11 @@ def main(argv=None):
     t0 = time.time()
     A = load(args.data_dir)
     G = A[A.Algorithm.isin(set(MAIN8) | set(ABL))]
-    SPm = ["PSOBV25", "PSOBV", "PSOBV75", "PSOC"]
-    Sp = A[A.Algorithm.isin(SPm)]
+    Sp = A[A.Algorithm.isin(SPM)]
     Sp = Sp[[(d, r, n) in SPLITCASES for d, r, n in zip(Sp.Dataset, Sp.Radius, Sp.Turbines)]]
-    SP = case_stats(Sp, SPm, BASE_THR)
+    assert set(Sp.Algorithm) == set(SPM), f"split settings missing: {set(SPM) - set(Sp.Algorithm)}"
+    assert "RSDVNS" in set(G.Algorithm), "RSD-VNS runs (mpce_rsdisc) missing"
+    SP = case_stats(Sp, SPM, BASE_THR)
     S = case_stats(G, sorted(set(MAIN8) | set(ABL)), BASE_THR)
     cases = S[CASE].drop_duplicates()
     clusters = sorted({(d, int(r)) for d, r in zip(cases.Dataset, cases.Radius)})
@@ -606,7 +707,7 @@ def main(argv=None):
                 thresholds=THRESHOLDS, base_threshold=BASE_THR, boot=dict(n=BOOT_N, seed=BOOT_SEED),
                 perm=dict(n=args.perm, seed=PERM_SEED), energy_factor_mwh_per_objective=ENERGY_FACTOR)
     # --- 0. reproduction of mpce_summary.json at the baseline threshold
-    TH = threshold_block(G, SP)
+    TH = threshold_block(G, Sp)
     base = TH[BASE_THR]
     rep = dict(ok=None)
     try:
@@ -614,15 +715,27 @@ def main(argv=None):
         dr = max(abs(base["friedman"]["avg_rank"][a] - MS["main"]["friedman"]["avg_rank"][a]) for a in MAIN8)
         dp = max(abs(math.log10(base["main_case_mean"][b]["p"]) - math.log10(MS["main"]["case_mean_wilcoxon"][b]["p"]))
                  for b in base["main_case_mean"])
-        dpa = max(abs(math.log10(base["ablation_case_mean"][k]["p"]) - math.log10(MS["ablation"]["case_mean"][k]["p"]))
-                  for k in base["ablation_case_mean"])
+        assert set(base["ablation_case_mean"]) == set(MS["ablation"]["case_mean"]), "ablation contrast sets differ"
+        dpa = max(max(abs(math.log10(base["ablation_case_mean"][k][f]) - math.log10(MS["ablation"]["case_mean"][k][f]))
+                      for f in ("p", "p_holm")) for k in base["ablation_case_mean"])
+        dra = max(abs(base["ablation_friedman"]["avg_rank"][a] - MS["ablation"]["friedman"]["avg_rank"][a])
+                  for a in MS["ablation"]["variants"])
+        assert set(MS["ablation"]["variants"]) == set(ABL), "ablation variants differ"
         sub = MS["main"]["subgroup_vs_phase1"]["groups"]
         dsub = max(abs(math.log10(cm_test(S[S.Dataset.isin(v["datasets"]) & (S.Turbines >= 10)], FOCUS, "PSOC")["p"])
                        - math.log10(v["p"])) for v in sub.values())
-        dsp = max(abs(math.log10(cm_test(SP, *k.split("-"))["p"]) - math.log10(v["p"])) for k, v in MS["split"]["case_mean"].items())
-        rep = dict(max_abs_diff_avg_rank=dr, max_abs_diff_log10p_main=dp, max_abs_diff_log10p_ablation=dpa,
+        spl = dict(MS["split"]["case_mean"], **(MS["split"].get("case_mean_omega90") or {}))
+        assert set(spl) == {pk(a, b) for a, b in SPLIT_PAIRS}, f"split pairs differ: {sorted(spl)}"
+        dsp = max(max(abs(math.log10(cm_test(SP, *k.split("-"))["p"]) - math.log10(v["p"])),
+                      abs(cm_test(SP, *k.split("-"))["mean_dloss_pp"] - v["mean_dloss_pp"]))
+                  for k, v in spl.items())
+        dmd = max(abs(base["ablation_case_mean"][k]["mean_dloss_pp"] - MS["ablation"]["case_mean"][k]["mean_dloss_pp"])
+                  for k in base["ablation_case_mean"])
+        rep = dict(max_abs_diff_avg_rank=dr, max_abs_diff_avg_rank_ablation=dra, max_abs_diff_log10p_main=dp,
+                   max_abs_diff_log10p_ablation=dpa, max_abs_diff_mean_dloss_ablation=dmd,
                    max_abs_diff_log10p_subgroups=dsub, max_abs_diff_log10p_split=dsp,
-                   summary_generated=MS.get("generated"), ok=bool(max(dr, dp, dpa, dsub, dsp) < 1e-6))
+                   n_ablation_contrasts=len(base["ablation_case_mean"]), n_split_tests=len(spl),
+                   summary_generated=MS.get("generated"), ok=bool(max(dr, dra, dp, dpa, dmd, dsub, dsp) < 1e-6))
     except Exception as e:                                               # pragma: no cover
         rep = dict(ok=False, error=repr(e))
     summ["reproduction"] = rep
@@ -644,7 +757,7 @@ def main(argv=None):
               f"conclusions {TH[t]['conclusions']}")
 
     # --- 2. clusters
-    CL = cluster_block(S, clusters, PERM_SEED)
+    CL = cluster_block(S, clusters)
     full = {}
     for a, b in ALL_PAIRS:
         x = cm_test(S, a, b); x["verdict"] = verdict(x); full[pk(a, b)] = x
@@ -653,6 +766,19 @@ def main(argv=None):
     summ["cluster"] = CL
     summ["loco"] = LO
     summ["cluster_min_attainable_p"] = float(2 / 2 ** len(clusters))
+    # budget split (12 cases = 2 per cluster): the same cluster / LOCO analyses for the six split tests
+    fullsp = {}
+    for a, b in SPLIT_PAIRS:
+        x = cm_test(SP, a, b); x["verdict"] = verdict(x); fullsp[pk(a, b)] = x
+    CLS = cluster_block(SP, clusters, SPLIT_PAIRS)
+    LOS = loco_block(SP, clusters, fullsp, SPLIT_PAIRS, rank=False)
+    summ["split_case_level"] = fullsp
+    summ["cluster_split"] = CLS
+    summ["loco_split"] = LOS
+    for k, v in CLS.items():
+        print(f"split cluster {k:16s} fav {v['clusters_favour_first']}/{v['clusters_favour_second']} wil p {v['wilcoxon_exact_p']:.3f} "
+              f"CR1 p {v['cr1_p']:.2g} cboot {np.round(v['cluster_boot_ci95'], 3)} | case p {fullsp[k]['p']:.3g} | LOCO p "
+              f"{LOS['pairs'][k]['p_min']:.2g}-{LOS['pairs'][k]['p_max']:.2g} changes {LOS['pairs'][k]['verdict_changes']}")
     for k, v in CL.items():
         print(f"cluster {k:14s} fav {v['clusters_favour_first']}/{v['clusters_favour_second']} sign p {v['sign_test_p']:.3f} "
               f"wil p {v['wilcoxon_exact_p']:.3f} flip p {v['cluster_signflip_p']:.3f} CR1 p {v['cr1_p']:.2g} "
@@ -671,6 +797,13 @@ def main(argv=None):
     # --- 5. energy
     EN = energy_block(S)
     summ["energy"] = EN
+    # --- 6. wake-model uncertainty
+    MSH = model_shift_block(S, args.data_dir)
+    summ["model_shift"] = MSH
+    print(f"model shift: mean |L_G - L_J| {MSH['mean_abs_shift_pp']:.3f} pp, median {MSH['median_abs_shift_pp']:.3f} pp "
+          f"({MSH['n_layouts']} layouts; ratio to margin {MSH['ratio_mean_to_margin']:.1f}); PSO-VNS - PSO pair change "
+          f"{MSH['pairs']['PSOBV-PSOC']['mean_abs_change_pp']:.4f} pp (J {MSH['pairs']['PSOBV-PSOC']['mean_diff_jensen_pp']:+.4f}, "
+          f"G {MSH['pairs']['PSOBV-PSOC']['mean_diff_gauss_pp']:+.4f}); recorded vs paper {MSH['pair_recorded_vs_paper_abs_diff']:.2g}")
     for k, v in EN.items():
         print(f"energy {k}: dL {v['mean_dloss_pp']:+.4f} pp, gain {v['mean_gain_pct_aep']:+.4f} % AEP, "
               f"{v['mean_gain_mwh_yr']:+.1f} MWh/yr (CI {np.round(v['ci95_gain_mwh_yr'], 1)}), largest N {v['mean_gain_mwh_yr_largest_N']:+.1f}")
@@ -716,14 +849,20 @@ def write_macros(s, fn):
     m("NXThrPSOPMax", pval(max(ts["p_PSOBV_PSOC"].values())))
     for (a, b) in KEY_CONTR[1:]:
         ps = [TH[t]["ablation_case_mean"][pk(a, b)]["p"] for t in T]
-        if EXPECT[(a, b)] == "ns":
+        if EXPECT[(a, b)] == "ns" or (a, b) in RSD_CONTR:
             m(f"NXThr{pmac(a, b)}PMin", pval_down(min(ps)), f"{a}-{b}: smallest p over thresholds (rounded down)")
-        else:
+        if EXPECT[(a, b)] != "ns" or (a, b) in RSD_CONTR:
             m(f"NXThr{pmac(a, b)}PMax", pval_up(max(ps)), f"{a}-{b}: largest p over thresholds (rounded up)")
+    for (a, b) in SPLIT_PAIRS:                                        # budget split (12 cases), unadjusted
+        ps = [TH[t]["split_case_mean"][pk(a, b)]["p"] for t in T]
+        m(f"NXThr{SPLIT_NAME[(a, b)]}PMin", pval_down(min(ps)), f"split {a}-{b}: smallest p over thresholds (rounded down)")
+        m(f"NXThr{SPLIT_NAME[(a, b)]}PMax", pval_up(max(ps)), f"split {a}-{b}: largest p over thresholds (rounded up)")
     nconc = len(ts["conclusions"]); nun = sum(ts["unchanged"].values())
     m("NXThrNConcl", WORD.get(nconc, str(nconc))); m("NXThrNUnchanged", WORD.get(nun, str(nun)))
     changed = [c for c, v in ts["unchanged"].items() if not v]
     m("NXThrChanged", listing(changed).replace("_", " ") if changed else "none")
+    m("NXThrChangedAt", listing(sorted({t for t in T if not TH[t]["all_unchanged"]}, key=int)) or "none",
+      "thresholds at which at least one conclusion changes")
     imp = [TH[t]["imputed_main"] for t in T]
     m("NXThrImputedMin", str(min(imp))); m("NXThrImputedMax", str(max(imp)))
     # clusters
@@ -732,8 +871,10 @@ def write_macros(s, fn):
     m("NXClustersNum", str(len(s["clusters"])))
     m("NXClMinP", pval(s["cluster_min_attainable_p"]), "smallest attainable two-sided exact p over the clusters")
     m("NXBootN", "10{,}000")
-    for a, b in ALL_PAIRS:
-        k = pk(a, b); c = CL[k]; lo = LO["pairs"][k]; nm = pmac(a, b)
+    pairs_cl = [(pk(a, b), pmac(a, b), CL, LO) for a, b in ALL_PAIRS] + \
+               [(pk(a, b), SPLIT_NAME[(a, b)], s["cluster_split"], s["loco_split"]) for a, b in SPLIT_PAIRS]
+    for k, nm, CLx, LOx in pairs_cl:
+        c = CLx[k]; lo = LOx["pairs"][k]; a, b = k.split("-")
         m(f"NXCl{nm}Fav", str(c["clusters_favour_first"]), f"clusters in which {a} has the lower mean loss")
         m(f"NXCl{nm}Opp", str(c["clusters_favour_second"]))
         m(f"NXCl{nm}SignP", pval(c["sign_test_p"])); m(f"NXCl{nm}WilP", pval(c["wilcoxon_exact_p"]))
@@ -750,6 +891,12 @@ def write_macros(s, fn):
     m("NXLocoNPairs", WORD.get(len(ALL_PAIRS), str(len(ALL_PAIRS))))
     nfl = [k for k, v in LO["pairs"].items() if v["direction_flips"] > 0]
     m("NXLocoFlipped", listing([plab(*k.split("-")) for k in nfl]) if nfl else "none")
+    csig = [k for k, v in s["case_level"].items() if v["p"] < 0.05]
+    m("NXClNCaseSig", str(len(csig)), "68-case pairs significant on the case means (unadjusted)")
+    cun = [k for k in csig if min(CL[k]["clusters_favour_first"], CL[k]["clusters_favour_second"]) == 0]
+    m("NXClNCaseSigUnanimous", str(len(cun)), "of these: pairs in which all clusters favour the same method")
+    cnu = [k for k in csig if k not in cun]
+    m("NXClCaseSigNotUnanimous", listing([plab(*k.split("-")) for k in cnu]) if cnu else "none")
     nsig_cl = [k for k, v in CL.items() if v["wilcoxon_exact_p"] < 0.05]
     m("NXClNSigWil", str(len(nsig_cl)), "pairs significant at the cluster level (exact Wilcoxon over clusters)")
     nall = [k for k, v in CL.items() if min(v["clusters_favour_first"], v["clusters_favour_second"]) == 0]
@@ -762,6 +909,10 @@ def write_macros(s, fn):
     MU = s["multiplicity"]
     m("NXMultN", str(MU["n_tests"])); m("NXMultSigRaw", str(MU["n_sig_raw"]))
     m("NXMultSigHolm", str(MU["n_sig_holm"])); m("NXMultSigBH", str(MU["n_sig_bh"]))
+    fams = [t["key"].split(":")[0] for t in MU["tests"]]
+    for f_, nm in (("main", "Main"), ("abl", "Abl"), ("sub", "Sub"), ("split", "Split")):
+        m(f"NXMultN{nm}", str(fams.count(f_)), f"tests of kind '{f_}' in the all-family Holm")
+    m("NXMultNWord", WORD.get(MU["n_tests"], str(MU["n_tests"])))
     lab = {t["key"]: t["label"] for t in MU["tests"]}
     m("NXMultLostHolm", listing([lab[k] for k in MU["lost_under_holm"]]) if MU["lost_under_holm"] else "none")
     m("NXMultLostBH", listing([lab[k] for k in MU["lost_under_bh"]]) if MU["lost_under_bh"] else "none")
@@ -771,7 +922,11 @@ def write_macros(s, fn):
                     ("abl:PSOBV-RSVNS", "PSOVNSvsRSVNS"), ("main:PSOBV-PSOC", "PSOVNSvsPSO"), ("sub:dsIILarge", "PSOVNSvsPSOdsIILarge"),
                     ("sub:Large", "PSOVNSvsPSOLarge"), ("sub:dsILarge", "PSOVNSvsPSOdsILarge"), ("split:PSOBV-PSOBV75", "SplitFiftyVsSeventyFive"),
                     ("split:PSOBV-PSOBV25", "SplitFiftyVsTwentyFive"), ("split:PSOBV75-PSOC", "SplitSeventyFiveVsHundred"),
-                    ("split:PSOBV-PSOC", "SplitFiftyVsHundred")):
+                    ("split:PSOBV-PSOC", "SplitFiftyVsHundred"),
+                    # Phase 6 controls: RSD-VNS contrasts and omega = 0.9 split tests
+                    ("abl:SSABV-RSDVNS", "SSAVNSvsRSDVNS"), ("abl:LXBV-RSDVNS", "LXSSAVNSvsRSDVNS"),
+                    ("abl:PSOBV-RSDVNS", "PSOVNSvsRSDVNS"), ("abl:RSDVNS-RSVNS", "RSDVNSvsRSVNS"),
+                    ("split:PSOBV-PSOBV90", "SplitFiftyVsNinety"), ("split:PSOBV90-PSOBV75", "SplitNinetyVsSeventyFive")):
         m(f"NXHolm{nm}P", pval_up(tk[key]["p_holm_all"]) if tk[key]["p_holm_all"] < 0.05 else pval(tk[key]["p_holm_all"]),
           "all-family Holm p (rounded up when significant)")
         m(f"NXBH{nm}Q", pval_up(tk[key]["q_bh_all"]) if tk[key]["q_bh_all"] < 0.05 else pval(tk[key]["q_bh_all"]))
@@ -808,6 +963,24 @@ def write_macros(s, fn):
         m(f"NXEn{nm}MWhLargest", num(v["mean_gain_mwh_yr_largest_N"], 0), f"mean gain at N = {v['largest_N']}")
         m(f"NXEn{nm}PctLargest", num(v["mean_gain_pct_aep_largest_N"], 3))
     m("NXEnFactor", "8.76/15", "MWh/yr per unit of benchmark objective")
+    # wake-model uncertainty (Jensen vs Gaussian re-evaluation of the same final layouts)
+    MS = s["model_shift"]; mp = MS["pairs"]["PSOBV-PSOC"]
+    m("NXModelShiftMean", num(MS["mean_abs_shift_pp"], 2), "mean |L_Gauss - L_Jensen| of the same feasible final layouts (pp)")
+    m("NXModelShiftMedian", num(MS["median_abs_shift_pp"], 2), "median |L_Gauss - L_Jensen| (pp)")
+    m("NXModelShiftPTen", num(MS["q10_abs_shift_pp"], 2)); m("NXModelShiftPNinety", num(MS["q90_abs_shift_pp"], 2))
+    m("NXModelShiftSigned", num(MS["mean_signed_shift_pp"], 2, sign=True), "mean L_Gauss - L_Jensen (pp)")
+    m("NXModelShiftDsI", num(MS["by_dataset"]["1"]["mean_abs_shift_pp"], 2)); m("NXModelShiftDsII", num(MS["by_dataset"]["2"]["mean_abs_shift_pp"], 2))
+    m("NXModelShiftNLayouts", f"{MS['n_layouts']:,}".replace(",", "{,}"), "feasible final layouts re-evaluated (8 main methods)")
+    m("NXModelShiftRatio", num(MS["ratio_mean_to_margin"], 1), "mean model shift / equivalence margin")
+    m("NXModelShiftMedianRatio", num(MS["ratio_median_to_margin"], 1), "median model shift / equivalence margin")
+    m("NXModelShiftAboveMarginPct", num(100 * MS["share_abs_shift_above_margin"], 0), "% of layouts whose shift exceeds the margin")
+    m("NXModelShiftPairMean", num(mp["mean_abs_change_pp"], 3), "mean |change| of the per-case PSO-VNS - PSO difference, Gauss vs Jensen (pp)")
+    m("NXModelShiftPairMax", num(mp["max_abs_change_pp"], 3))
+    m("NXModelShiftPairChangeOfMean", num(mp["abs_change_of_mean_pp"], 3), "|mean_Gauss - mean_Jensen| of PSO-VNS - PSO (pp)")
+    m("NXModelShiftPairJensen", num(mp["mean_diff_jensen_pp"], 3), "mean PSO-VNS - PSO (pp), Jensen, re-evaluated coordinates")
+    m("NXModelShiftPairGauss", num(mp["mean_diff_gauss_pp"], 3), "mean PSO-VNS - PSO (pp), Gaussian wake")
+    m("NXModelShiftPairSignChanges", str(mp["sign_changes"]), "cases in which the sign of PSO-VNS - PSO differs between the models")
+    m("NXModelShiftPairN", str(mp["n_cases"]))
     hdr = ["% generated by mpce_inference_extra.py from the per-run data (" + s["generated"] + ") -- do not edit by hand",
            "% Phase 6, W2 (inference robustness): qualification threshold, cluster-level / leave-one-cluster-out / cluster",
            "% bootstrap, one Holm (and BH) family over all main-text case-mean tests, the post hoc N >= 10 subgroup, and",
@@ -833,13 +1006,27 @@ def write_tables(s, fn):
         cells = [f"{t}" + (" (paper)" if t == s["base_threshold"] else ""), str(x["imputed_main"]),
                  LAB[fr["best_ranked"]], f"{fr['avg_rank']['PSOBV']:.2f}", f"{fr['avg_rank']['PSOC']:.2f}",
                  ", ".join(LAB[a] for a in fr["posthoc_nonsig"]) or "--",
-                 tp(mc["PSOC"]["p"])] + [tp(ab[pk(a, b)]["p"]) for a, b in KEY_CONTR[1:]] + \
+                 tp(mc["PSOC"]["p"])] + [tp(ab[pk(a, b)]["p"]) for a, b in KEY_CONTR[1:5]] + \
                 ["yes" if x["all_unchanged"] else "\\textbf{no}"]
         lines.append(" & ".join(cells) + " \\\\")
-    T.append(table("table*", "Sensitivity of the case-level conclusions to the qualification threshold (a method is ranked in a case by the mean objective of its feasible runs only if at least this many of its 30 runs are feasible; the paper uses 15). Unq.: case--method cells of the eight-method comparison that do not qualify (PSO-VNS always qualifies, so each of them enters a case-mean test of PSO-VNS with an imputed maximal difference). Best-ranked method and average ranks of the Friedman ranking of Table~\\ref{M-tab:friedman68}; $p_z$\\,ns: methods not significantly different from PSO-VNS in the Holm-adjusted average-rank tests. Unadjusted two-sided Wilcoxon $p$ on the per-case mean wake losses (with the same imputation rule at each threshold) for PSO-VNS vs.\\ PSO and the component-analysis contrasts SSA-VNS vs.\\ RS-VNS, LX-SSA-VNS vs.\\ RS-VNS, SSA-VNS vs.\\ LX-SSA-VNS and PSO-VNS vs.\\ RS-VNS. Same: every conclusion of the paper holds at this threshold (best rank of PSO-VNS; only PSO not significantly different in rank; PSO-VNS vs.\\ PSO not significant; SSA-VNS better than RS-VNS; LX-SSA-VNS not different from RS-VNS; SSA-VNS better than LX-SSA-VNS; PSO-VNS better than RS-VNS; each both unadjusted and Holm-adjusted within its table family).",
+    T.append(table("table*", "Sensitivity of the case-level conclusions to the qualification threshold (a method is ranked in a case by the mean objective of its feasible runs only if at least this many of its 30 runs are feasible; the paper uses 15). Unq.: case--method cells of the eight-method comparison that do not qualify (PSO-VNS always qualifies, so each of them enters a case-mean test of PSO-VNS with an imputed maximal difference). Best-ranked method and average ranks of the Friedman ranking of Table~\\ref{M-tab:friedman68}; $p_z$\\,ns: methods not significantly different from PSO-VNS in the Holm-adjusted average-rank tests. Unadjusted two-sided Wilcoxon $p$ on the per-case mean wake losses (with the same imputation rule at each threshold) for PSO-VNS vs.\\ PSO and the component-analysis contrasts SSA-VNS vs.\\ RS-VNS, LX-SSA-VNS vs.\\ RS-VNS, SSA-VNS vs.\\ LX-SSA-VNS and PSO-VNS vs.\\ RS-VNS. Same: every conclusion of the paper holds at this threshold (best rank of PSO-VNS; only PSO not significantly different in rank; PSO-VNS vs.\\ PSO not significant; SSA-VNS better than RS-VNS; LX-SSA-VNS not different from RS-VNS; SSA-VNS better than LX-SSA-VNS; PSO-VNS better than RS-VNS; each both unadjusted and Holm-adjusted within its table family), and so do those of the controls in Table~\\ref{tab:X-threshold-controls}.",
                    "tab:X-threshold", "c" * 12,
                    "Thresh. & Unq. & Best & " + " & ".join(stack(*h) for h in (("Rank", "PSO-VNS"), ("Rank", "PSO"), ("$p_z$", "ns"),
                    ("PSO-VNS/", "PSO"), ("SSA-VNS/", "RS-VNS"), ("LX-SSA-VNS/", "RS-VNS"), ("SSA-VNS/", "LX-SSA-VNS"), ("PSO-VNS/", "RS-VNS"))) + " & Same", lines))
+    # --- threshold table of the Phase 6 controls (RSD-VNS contrasts, budget split incl. omega = 0.9)
+    vm = {"A": "$+$", "B": "$-$", "ns": "$\\cdot$"}
+    lines = []
+    for t in s["thresholds"]:
+        x = TH[str(t)]; ab = x["ablation_case_mean"]; sp = x["split_case_mean"]
+        cells = [f"{t}" + (" (paper)" if t == s["base_threshold"] else ""), str(x["imputed_split"])]
+        cells += [tp(ab[pk(a, b)]["p"]) + vm[verdict(dict(ab[pk(a, b)], p=max(ab[pk(a, b)]["p"], ab[pk(a, b)]["p_holm"])))]
+                  for a, b in RSD_CONTR]
+        cells += [tp(sp[pk(a, b)]["p"]) + vm[verdict(sp[pk(a, b)])] for a, b in SPLIT_PAIRS]
+        lines.append(" & ".join(cells) + " \\\\")
+    T.append(table("table*", "Sensitivity of the Phase-6 control comparisons to the qualification threshold (as Table~\\ref{tab:X-threshold}). Left: case-mean Wilcoxon $p$ (68 cases, unadjusted) of the four component-analysis contrasts with the disc-sampling control RSD-VNS; mark: verdict at $\\alpha=0.05$ both unadjusted and Holm-adjusted over the %d component-analysis contrasts ($+$: first method better, $-$: second better, $\\cdot$: not significant). Right: case-mean Wilcoxon $p$ (12 split cases, unadjusted as in Table~\\ref{M-tab:split}) of the budget-split tests of PSO-VNS (share $\\omega$ of the evaluations for PSO; $\\omega=1$: PSO alone); mark: unadjusted verdict. Unq.: split case--setting cells that do not qualify (imputed maximal differences)." % len(ABL_CONTR),
+                   "tab:X-threshold-controls", "c" * (2 + len(RSD_CONTR) + len(SPLIT_PAIRS)),
+                   "Thresh. & Unq. & " + " & ".join(stack(LAB[a] + "/", LAB[b]) for a, b in RSD_CONTR) + " & "
+                   + " & ".join(stack(SPLIT_LAB[a] + "/", SPLIT_LAB[b]) for a, b in SPLIT_PAIRS), lines, resize=True))
     # --- cluster table
     CL = s["cluster"]; LO = s["loco"]
     cls = s["clusters"]
@@ -870,6 +1057,21 @@ def write_tables(s, fn):
                    "tab:X-loco", "lcccccccc",
                    "Pair (first vs.\\ second) & $\\overline{\\Delta L}$ & Case boot. CI & Cluster boot. CI & CR1 CI & Verdict & LOCO $p$ & Flips & Changed",
                    lines, sep="2pt", resize=True))
+    # --- budget split: cluster level and LOCO (12 cases = 2 per cluster)
+    CLS = s["cluster_split"]; LOS = s["loco_split"]
+    lines = []
+    for a, b in SPLIT_PAIRS:
+        c = CLS[pk(a, b)]; lo = LOS["pairs"][pk(a, b)]
+        cm = [("--" if c["cluster_means_pp"][k] is None else f"{c['cluster_means_pp'][k]:+.3f}".replace("-", "$-$")) for k in cls]
+        chg = ", ".join(cname[k] for k in lo["changed_when_dropping"]) or "--"
+        lines.append(f"{SPLIT_LAB[a]} vs.\\ {SPLIT_LAB[b]} & {c['n_cases']} & ${c['mean_dloss_pp']:+.3f}$ & " + " & ".join(cm) +
+                     f" & {c['clusters_favour_first']}/{c['clusters_favour_second']} & {tp(c['wilcoxon_exact_p'])} & {tp(c['cr1_p'])} & "
+                     f"{ci_tab(c['cluster_boot_ci95'])} & {tp(s['split_case_level'][pk(a, b)]['p'])} & {vmap[lo['full_verdict']]} & "
+                     f"{tp(lo['p_min'])}--{tp(lo['p_max'])} & {chg} \\\\")
+    T.append(table("table*", "Budget-split tests of PSO-VNS (Table~\\ref{M-tab:split}; share $\\omega$ of the 6,030 evaluations for PSO, $\\omega=1$: PSO alone) at the cluster level. The 12 split cases are two per (data set, radius) cluster. Columns as in Tables~\\ref{tab:X-cluster} and \\ref{tab:X-loco}: mean case difference (pp, first minus second; negative = first better) overall and per cluster; Fav.: clusters favouring the first/second setting; $p_{\\rm W}$: exact Wilcoxon over the six cluster means; $p_{\\rm CR}$: cluster-robust $t$ (CR1, 5 d.f.); cluster-bootstrap 95\\% CI; $p_{\\rm case}$: case-mean Wilcoxon over the 12 cases (unadjusted, as in the paper); Verdict and LOCO $p$ range (10 cases each) as in Table~\\ref{tab:X-loco}; Changed: clusters whose removal changes the verdict.",
+                   "tab:X-cluster-split", "lcc" + "c" * len(cls) + "cccccccc",
+                   "Split test & $n$ & $\\overline{\\Delta L}$ & " + " & ".join(cname[k] for k in cls) +
+                   " & Fav. & $p_{\\rm W}$ & $p_{\\rm CR}$ & Cluster boot. CI & $p_{\\rm case}$ & Verdict & LOCO $p$ & Changed", lines, sep="2pt", resize=True))
     # --- multiplicity
     MU = s["multiplicity"]
     lines, fam = [], None
@@ -910,6 +1112,22 @@ def write_tables(s, fn):
     T.append(table("table*", "Headline differences in benchmark energy. $\\overline{\\Delta L}$: mean difference of the case-mean wake losses (pp of the wake-free AEP, first minus second). Gain: mean over the cases of the first method's benchmark AEP minus the second's, in \\% of the second's and in MWh/yr of benchmark (model) energy per case, with 95\\% percentile bootstrap CIs over the cases (10{,}000 resamples, fixed seed); per turbine: gain divided by $N$; largest $N$: mean gain over the cases with the largest $N$ of the set. Benchmark AEP $=$ objective$/15\\times8.76$~MWh/yr (Section~\\ref{M-sec:powermodel}); the Kusiak--Song benchmark has a capacity factor far above real sites (62\\% wake-free for Data Set~I), so these values indicate the order of magnitude of the differences, not the energy of a real farm.",
                    "tab:X-energy", "lcccccc",
                    "Pair (first vs.\\ second) & Cases & $\\overline{\\Delta L}$ (pp) & Gain (\\% AEP) & Gain (MWh/yr) & per turbine & largest $N$", lines))
+    # --- wake-model uncertainty
+    MS = s["model_shift"]
+    lines = [f"All feasible final layouts & {MS['n_layouts']:,} & {MS['mean_abs_shift_pp']:.3f} & {MS['median_abs_shift_pp']:.3f} & "
+             f"[{MS['q10_abs_shift_pp']:.3f}, {MS['q90_abs_shift_pp']:.3f}] & ${MS['mean_signed_shift_pp']:+.3f}$ \\\\".replace(",", "{,}", 1)]
+    for ds, txt in (("1", "Data Set I"), ("2", "Data Set II")):
+        v = MS["by_dataset"][ds]
+        lines.append(f"\\quad {txt} & {v['n']:,} & {v['mean_abs_shift_pp']:.3f} & {v['median_abs_shift_pp']:.3f} & -- & -- \\\\".replace(",", "{,}", 1))
+    lines.append("\\midrule")
+    lines.append("\\multicolumn{6}{l}{\\emph{Case-mean difference PSO-VNS minus other method (pp)}} \\\\")
+    lines.append("Pair & Cases & Jensen & Gaussian & mean $|$change$|$ & sign changes \\\\")
+    for b in [x for x in MAIN8 if x != FOCUS]:
+        v = MS["pairs"][pk(FOCUS, b)]
+        lines.append(f"{plab(FOCUS, b)} & {v['n_cases']} & ${v['mean_diff_jensen_pp']:+.3f}$ & ${v['mean_diff_gauss_pp']:+.3f}$ & "
+                     f"{v['mean_abs_change_pp']:.3f} & {v['sign_changes']} \\\\")
+    T.append(table("table", "Wake-model uncertainty from the study's own layouts. Every feasible final layout of the eight main methods (68 cases, 6{,}030 evaluations) is re-evaluated (not re-optimized) with the benchmark Jensen model and with the Gaussian wake of Bastankhah and Port\\'e-Agel ($k^*=0.04$, Table~\\ref{tab:robust}); wake loss in pp of the wake-free power. Top: absolute difference $|L_{\\rm Gauss}-L_{\\rm Jensen}|$ of the same layout (mean, median, 10--90\\%% quantiles) and mean signed difference, to be compared with the equivalence margin of $\\pm%g$~pp. Bottom: mean over the cases (both methods $\\ge15$ feasible runs) of the case-mean difference under each model, the mean absolute change of the per-case difference between the models, and the cases in which its sign differs." % EQ_MARGIN,
+                   "tab:X-modelshift", "lccccc", "Layouts & $n$ & mean & median & 10--90\\% & signed", lines, sep="3pt"))
     hdr = ("% generated by mpce_inference_extra.py (" + s["generated"] + ") -- do not edit by hand\n"
            "% Supplementary tables of the inference-robustness analyses (Phase 6, W2); requires booktabs\n\n")
     open(fn, "w").write(hdr + "\n".join(T))

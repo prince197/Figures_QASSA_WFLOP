@@ -47,10 +47,11 @@ PSO-VNS is thus a simple reference method with limits: it has the best average r
 \begin{figure*}[!t]
 \centering
 \pipefig{0.7\textwidth}{figures_mpce/ablation_convergence.pdf}{6.6cm}
-\caption{Convergence of the eight component-analysis variants (Table~\ref{tab:ablation}) for the largest turbine count of each farm: median best feasible wake loss over 30 runs versus evaluations. PSO-VNS and PSO coincide up to 3,030 evaluations (dotted line), where PSO-VNS switches to VNS. Curves of the main comparison: Fig.~\ref{S-fig:S-conv-max} of the supplementary material.}
+\caption{Convergence of the \NAblNVar{} component-analysis variants (Table~\ref{tab:ablation}) for the largest turbine count of each farm: median best feasible wake loss over 30 runs versus evaluations. PSO-VNS and PSO coincide up to 3,030 evaluations (dotted line), where PSO-VNS switches to VNS. Curves of the main comparison: Fig.~\ref{S-fig:S-conv-max} of the supplementary material.}
 \label{fig:conv-max}
 \label{fig:ablation}
 \end{figure*}
+% CHECK (pipeline-generated count): \NAblNVar = number of variants of Table~\ref{tab:ablation} = curves of figures_mpce/ablation_convergence.pdf (both from ablp in mpce_results.py; RSD-VNS included); C58 checks the ranks of these variants
 
 The wake loss grows with $N$, falls as the farm becomes larger, and is higher for the broader wind rose of Data Set~II (Section~\ref{S-sec:S-figs}). On the six largest cases, the mean wake loss of PSO minus that of PSO-VNS is \NBigGainMin{} to \NBigGainMax{} percentage points (PSO-VNS lower in \NBigGainPos).
 % CHECK-FINAL [C42]: PSO-VNS case-mean wake loss grows with N, falls with r, DS II >= DS I

@@ -823,7 +823,7 @@ def rs_replay(seeds=range(1, 31), n1=3015, disc_seed=20260928):
     from the legacy stream, so one uniform(-r, r, (n1, 2N)) call gives the same numbers. Counts the feasible
     samples (1e-6 m tolerance) and the samples with all turbines inside the circle, per case over 30 seeds; compares
     with (pi/4)^N. No objective call. Also a Monte Carlo estimate (separate RNG, same number of samples) of the
-    feasibility rate of disc samples (the Phase-1 distribution of the planned control RSDVNS)."""
+    feasibility rate of disc samples (the Phase-1 distribution of the disc-sampling control RSD-VNS)."""
     out = {}
     rng = np.random.default_rng(disc_seed)
     for ds, rad, n in E.GRID:

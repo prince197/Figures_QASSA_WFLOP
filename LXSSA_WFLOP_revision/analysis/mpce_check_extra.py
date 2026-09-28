@@ -11,6 +11,8 @@ import os, re, sys, json, argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SIG_PAIRS_EXPECTED_NS = {"PSOBV-PSOC", "LXBV-RSVNS"}          # the two pairs the paper calls not significant
+RSD = ["SSABV-RSDVNS", "LXBV-RSDVNS", "PSOBV-RSDVNS", "RSDVNS-RSVNS"]  # Phase 6 disc-sampling control contrasts
+EQ_MARGIN = 0.05
 
 
 def thr(s):
@@ -26,8 +28,10 @@ def mt(s, key):
 
 
 CHECKS = [
-    ("X01", "The re-implementation reproduces the pipeline exactly at the paper's 15-run threshold (average ranks and every "
-            "case-mean p of the main table, component analysis, N>=10 subgroups and budget split equal mpce_summary.json).",
+    ("X01", "The re-implementation reproduces the pipeline exactly at the paper's 15-run threshold (average ranks of the main "
+            "and component-analysis Friedman rankings, and every case-mean p of the main table, of the fifteen component-analysis "
+            "contrasts incl. RSD-VNS (raw and Holm), of the N>=10 subgroups and of the six budget-split tests incl. omega = 0.9 "
+            "equal mpce_summary.json).",
      lambda s: s["reproduction"]["ok"] is True),
     ("X02", "The best-ranked method of the eight-method comparison is PSO-VNS for every qualification threshold from 1 to 30 "
             "feasible runs (\\NXThrList).",
@@ -53,9 +57,14 @@ CHECKS = [
      lambda s: s["n_cases"] == 68 and len(s["clusters"]) == 6
      and sorted(s["cluster_sizes"].values()) == [9, 9, 11, 11, 14, 14]),
     ("X11", "Every comparison that is significant on the 68 case means favours the same method in all six clusters (the "
-            "strongest result attainable with six clusters, exact p = \\NXClMinP).",
+            "strongest result attainable with six clusters, exact p = \\NXClMinP), except the two contrasts of the SSA hybrids "
+            "with the disc-sampling control (\\NXClCaseSigNotUnanimous: \\NXClSSAVNSvsRSDVNSFav/\\NXClSSAVNSvsRSDVNSOpp and "
+            "\\NXClLXSSAVNSvsRSDVNSFav/\\NXClLXSSAVNSvsRSDVNSOpp clusters).",
      lambda s: all(min(s["cluster"][k]["clusters_favour_first"], s["cluster"][k]["clusters_favour_second"]) == 0
-                   and s["cluster"][k]["wilcoxon_exact_p"] <= s["cluster_min_attainable_p"] + 1e-12 for k in case_sig(s))
+                   and s["cluster"][k]["wilcoxon_exact_p"] <= s["cluster_min_attainable_p"] + 1e-12
+                   for k in case_sig(s) - {"SSABV-RSDVNS", "LXBV-RSDVNS"})
+     and all(min(s["cluster"][k]["clusters_favour_first"], s["cluster"][k]["clusters_favour_second"]) > 0
+             for k in ("SSABV-RSDVNS", "LXBV-RSDVNS"))
      and case_sig(s) == set(s["case_level"]) - SIG_PAIRS_EXPECTED_NS),
     ("X12", "At the cluster level PSO-VNS and PSO do not differ either: PSO-VNS has the lower mean in \\NXClPSOVNSvsPSOFav of the "
             "six clusters (all cluster-level p >= 0.05) and the cluster-bootstrap CI \\NXClPSOVNSvsPSOCI contains zero.",
@@ -66,25 +75,32 @@ CHECKS = [
             "cluster level.",
      lambda s: (lambda c: c["clusters_favour_first"] > 0 and c["clusters_favour_second"] > 0
                 and min(c["sign_test_p"], c["wilcoxon_exact_p"], c["cluster_signflip_p"], c["cr1_p"]) >= 0.05)(s["cluster"]["LXBV-RSVNS"])),
-    ("X14", "Leaving out any one of the six clusters changes none of the fifteen case-mean verdicts (significant or not, "
-            "and which method is better when significant), PSO-VNS keeps the best average rank, and PSO remains the only method not significantly behind it.",
-     lambda s: all(v["verdict_changes"] == 0 for v in s["loco"]["pairs"].values())
+    ("X14", "Leaving out any one of the six clusters changes none of the \\NXLocoNPairs case-mean verdicts (significant or not, "
+            "and which method is better when significant) except that of SSA-VNS vs RSD-VNS (\\NXLocoSSAVNSvsRSDVNSChanges of six "
+            "runs, p up to \\NXLocoSSAVNSvsRSDVNSPMax); PSO-VNS keeps the best average rank, and PSO remains the only method not "
+            "significantly behind it.",
+     lambda s: {k for k, v in s["loco"]["pairs"].items() if v["verdict_changes"] > 0} == {"SSABV-RSDVNS"}
      and s["loco"]["best_ranked_always_PSOBV"] and s["loco"]["posthoc_only_PSOC_always"]),
     ("X15", "In the leave-one-cluster-out runs the sign of the mean difference changes only for the two non-significant pairs "
-            "(PSO-VNS vs PSO, LX-SSA-VNS vs RS-VNS); PSO-VNS vs PSO stays non-significant (p >= \\NXLocoPSOVNSvsPSOPMin).",
-     lambda s: {k for k, v in s["loco"]["pairs"].items() if v["direction_flips"] > 0} <= SIG_PAIRS_EXPECTED_NS
+            "(PSO-VNS vs PSO, LX-SSA-VNS vs RS-VNS) and for SSA-VNS vs RSD-VNS; PSO-VNS vs PSO stays non-significant "
+            "(p >= \\NXLocoPSOVNSvsPSOPMin).",
+     lambda s: {k for k, v in s["loco"]["pairs"].items() if v["direction_flips"] > 0} <= SIG_PAIRS_EXPECTED_NS | {"SSABV-RSDVNS"}
      and s["loco"]["pairs"]["PSOBV-PSOC"]["p_min"] >= 0.05),
-    ("X16", "The cluster-bootstrap 95% CI excludes zero for every comparison that is significant on the case means and contains "
-            "zero for the two that are not.",
-     lambda s: all(s["cluster"][k]["cluster_boot_excludes_zero"] == (k in case_sig(s)) for k in s["cluster"])),
-    ("X17", "CAVEAT: SSA-VNS vs RS-VNS is the only case-level-significant comparison that is not significant with the "
-            "cluster-robust t test (5 d.f., p = \\NXClSSAVNSvsRSVNSCRP; CI \\NXClSSAVNSvsRSVNSCRCI), although all six clusters "
-            "favour SSA-VNS; the SSA gain over random sampling is consistent but small.",
-     lambda s: {k for k in case_sig(s) if s["cluster"][k]["cr1_p"] >= 0.05} == {"SSABV-RSVNS"}
+    ("X16", "The cluster-bootstrap 95% CI excludes zero for every comparison that is significant on the case means except "
+            "SSA-VNS vs RSD-VNS (\\NXClSSAVNSvsRSDVNSCI), and contains zero for the two that are not significant.",
+     lambda s: all(s["cluster"][k]["cluster_boot_excludes_zero"] == (k in case_sig(s) - {"SSABV-RSDVNS"}) for k in s["cluster"])),
+    ("X17", "CAVEAT: three case-level-significant comparisons are not significant with the cluster-robust t test (5 d.f.): "
+            "SSA-VNS vs RS-VNS (p = \\NXClSSAVNSvsRSVNSCRP, although all six clusters favour SSA-VNS; consistent but small), "
+            "SSA-VNS vs RSD-VNS (p = \\NXClSSAVNSvsRSDVNSCRP) and LX-SSA-VNS vs RSD-VNS (p = \\NXClLXSSAVNSvsRSDVNSCRP); all other "
+            "significant comparisons are.",
+     lambda s: {k for k in case_sig(s) if s["cluster"][k]["cr1_p"] >= 0.05} == {"SSABV-RSVNS", "SSABV-RSDVNS", "LXBV-RSDVNS"}
      and s["cluster"]["SSABV-RSVNS"]["clusters_favour_first"] == 6),
-    ("X18", "With one Holm correction over all \\NXMultN case-mean tests quoted in the main text, every test significant "
-            "unadjusted stays significant except the post hoc N>=10 subgroup over both data sets (same under Benjamini-Hochberg).",
-     lambda s: s["multiplicity"]["lost_under_holm"] == ["sub:Large"] and s["multiplicity"]["lost_under_bh"] == ["sub:Large"]),
+    ("X18", "With one Holm correction over all \\NXMultN case-mean tests quoted in the main text (\\NXMultNMain main-table, "
+            "\\NXMultNAbl component-analysis, \\NXMultNSub subgroup and \\NXMultNSplit budget-split tests), every test significant "
+            "unadjusted stays significant except the post hoc N>=10 subgroup over both data sets and omega = 0.5 vs omega = 0.9 "
+            "(\\NXMultLostHolm); under Benjamini-Hochberg only the former is lost (\\NXMultLostBH).",
+     lambda s: sorted(s["multiplicity"]["lost_under_holm"]) == ["split:PSOBV-PSOBV90", "sub:Large"]
+     and s["multiplicity"]["lost_under_bh"] == ["sub:Large"]),
     ("X19", "The Data Set II, N>=10 subgroup of PSO-VNS vs PSO remains significant after the all-family Holm correction "
             "(p_Holm <= \\NXHolmPSOVNSvsPSOdsIILargeP).",
      lambda s: mt(s, "sub:dsIILarge")["sig_holm"] and mt(s, "sub:dsIILarge")["wins"] > mt(s, "sub:dsIILarge")["losses"]),
@@ -122,6 +138,66 @@ CHECKS = [
             "CI \\NXEnPSOVNSvsPSOdsIILargePctCI) and positive in every case.",
      lambda s: (lambda e: 0.1 <= e["mean_gain_pct_aep"] < 0.3 and e["ci95_gain_pct_aep"][0] > 0
                 and e["min_gain_pct_aep"] > 0)(s["energy"]["PSOBV-PSOC_dsIILarge"])),
+    ("X29", "The wake-model uncertainty exceeds ten times the equivalence margin: the wake loss of the same final layouts "
+            "differs between the Jensen and the Gaussian wake model by \\NXModelShiftMean pp on average (> 10 x 0.05 pp).",
+     lambda s: s["model_shift"]["mean_abs_shift_pp"] > 10 * EQ_MARGIN),
+    ("X30", "The wake loss of the same final layouts differs between the Jensen and Gaussian wake models by \\NXModelShiftMean pp "
+            "on average (median \\NXModelShiftMedian pp; \\NXModelShiftRatio times the equivalence margin; above the margin for "
+            "\\NXModelShiftAboveMarginPct% of the \\NXModelShiftNLayouts layouts), whereas the per-case PSO-VNS - PSO difference "
+            "changes by only \\NXModelShiftPairMean pp on average between the models (below the margin; mean \\NXModelShiftPairJensen "
+            "vs \\NXModelShiftPairGauss pp).",
+     lambda s: (lambda m, p: m["mean_abs_shift_pp"] > 5 * EQ_MARGIN and m["median_abs_shift_pp"] > 5 * EQ_MARGIN
+                and m["share_abs_shift_above_margin"] > 0.5 and p["mean_abs_change_pp"] < EQ_MARGIN
+                and abs(p["mean_diff_jensen_pp"]) < EQ_MARGIN and abs(p["mean_diff_gauss_pp"]) < EQ_MARGIN
+                and s["model_shift"]["pair_recorded_vs_paper_abs_diff"] < 1e-9)(s["model_shift"], s["model_shift"]["pairs"]["PSOBV-PSOC"])),
+    ("X31", "At every qualification threshold 1-30 the verdicts of the four RSD-VNS contrasts (SSA-VNS and LX-SSA-VNS worse, "
+            "PSO-VNS better than RSD-VNS; RSD-VNS better than RS-VNS; unadjusted and Holm over the component-analysis contrasts) "
+            "and of the six budget-split tests (incl. omega = 0.9 better than 0.5 unadjusted, 0.9 vs 0.75 not significant) are unchanged "
+            "(SSA-VNS vs RSD-VNS p between \\NXThrSSAVNSvsRSDVNSPMin and \\NXThrSSAVNSvsRSDVNSPMax).",
+     lambda s: all(v for x in thr(s) for c, v in x["conclusions"].items() if "RSDVNS" in c or c.startswith("split:"))
+     and sum(1 for c in thr(s)[0]["conclusions"] if "RSDVNS" in c or c.startswith("split:")) == 10),
+    ("X32", "PSO-VNS vs RSD-VNS and RSD-VNS vs RS-VNS are robust to case dependence: all six clusters favour PSO-VNS and RSD-VNS "
+            "respectively (exact p = \\NXClMinP), the cluster-robust t tests are significant (p = \\NXClPSOVNSvsRSDVNSCRP, "
+            "\\NXClRSDVNSvsRSVNSCRP), the cluster-bootstrap CIs exclude zero (\\NXClPSOVNSvsRSDVNSCI, \\NXClRSDVNSvsRSVNSCI) and no "
+            "leave-one-cluster-out run changes the verdict.",
+     lambda s: all(s["cluster"][k]["clusters_favour_first"] == 6 and s["cluster"][k]["cr1_p"] < 0.05
+                   and s["cluster"][k]["cluster_boot_excludes_zero"] and s["loco"]["pairs"][k]["verdict_changes"] == 0
+                   and s["case_level"][k]["verdict"] == "A" for k in ("PSOBV-RSDVNS", "RSDVNS-RSVNS"))),
+    ("X33", "CAVEAT: the case-level result that SSA-VNS is worse than RSD-VNS (Wilcoxon, also after the all-family Holm, p_Holm <= "
+            "\\NXHolmSSAVNSvsRSDVNSP) does NOT survive the cluster analyses: RSD-VNS has the lower mean in only \\NXClSSAVNSvsRSDVNSOpp of "
+            "six clusters (all cluster-level p >= 0.05, cluster-robust p = \\NXClSSAVNSvsRSDVNSCRP), the cluster-bootstrap CI "
+            "\\NXClSSAVNSvsRSDVNSCI contains zero and one leave-one-cluster-out run loses significance (p up to "
+            "\\NXLocoSSAVNSvsRSDVNSPMax). Write 'the SSA phase gives no gain over disc sampling', not 'SSA-VNS is significantly worse'.",
+     lambda s: (lambda c, t: s["case_level"]["SSABV-RSDVNS"]["verdict"] == "B" and t["sig_holm"]
+                and c["clusters_favour_first"] > 0 and min(c["sign_test_p"], c["wilcoxon_exact_p"], c["cluster_signflip_p"], c["cr1_p"]) >= 0.05
+                and not c["cluster_boot_excludes_zero"] and s["loco"]["pairs"]["SSABV-RSDVNS"]["verdict_changes"] >= 1)(
+         s["cluster"]["SSABV-RSDVNS"], mt(s, "abl:SSABV-RSDVNS"))),
+    ("X34", "LX-SSA-VNS is worse than RSD-VNS on the case means (all-family Holm p <= \\NXHolmLXSSAVNSvsRSDVNSP) in \\NXClLXSSAVNSvsRSDVNSOpp "
+            "of six clusters, with a cluster-bootstrap CI above zero (\\NXClLXSSAVNSvsRSDVNSCI) and no leave-one-cluster-out change; but "
+            "the cluster-robust t test is not significant (p = \\NXClLXSSAVNSvsRSDVNSCRP) -> 'worse', not 'clearly worse at the farm level'.",
+     lambda s: (lambda c: s["case_level"]["LXBV-RSDVNS"]["verdict"] == "B" and mt(s, "abl:LXBV-RSDVNS")["sig_holm"]
+                and c["clusters_favour_second"] >= 5 and c["cluster_boot_ci95"][0] > 0 and c["cr1_p"] >= 0.05
+                and s["loco"]["pairs"]["LXBV-RSDVNS"]["verdict_changes"] == 0)(s["cluster"]["LXBV-RSDVNS"])),
+    ("X35", "All four RSD-VNS contrasts remain significant after the all-family Holm correction over \\NXMultN tests "
+            "(SSA-VNS vs RSD-VNS p_Holm <= \\NXHolmSSAVNSvsRSDVNSP, LX-SSA-VNS vs RSD-VNS \\NXHolmLXSSAVNSvsRSDVNSP, PSO-VNS vs RSD-VNS "
+            "\\NXHolmPSOVNSvsRSDVNSP, RSD-VNS vs RS-VNS \\NXHolmRSDVNSvsRSVNSP).",
+     lambda s: all(mt(s, f"abl:{k}")["sig_holm"] for k in RSD)),
+    ("X36", "omega = 0.9 does not beat omega = 0.75 at any level (case means p = \\NXThrSplitNinetyVsSeventyFivePMin-"
+            "\\NXThrSplitNinetyVsSeventyFivePMax over thresholds, all-family Holm p = \\NXHolmSplitNinetyVsSeventyFiveP, "
+            "\\NXClSplitNinetyVsSeventyFiveFav/\\NXClSplitNinetyVsSeventyFiveOpp clusters, cluster-bootstrap CI "
+            "\\NXClSplitNinetyVsSeventyFiveCI); omega = 0.9 is better than 0.5 unadjusted and in all six clusters, but not after the "
+            "all-family Holm (p = \\NXHolmSplitFiftyVsNinetyP) and not in \\NXLocoSplitFiftyVsNinetyChanges of six LOCO runs.",
+     lambda s: (lambda c9, c5: s["split_case_level"]["PSOBV90-PSOBV75"]["p"] >= 0.05 and not mt(s, "split:PSOBV90-PSOBV75")["sig_holm"]
+                and not c9["cluster_boot_excludes_zero"] and c9["cr1_p"] >= 0.05
+                and s["split_case_level"]["PSOBV-PSOBV90"]["verdict"] == "B" and c5["clusters_favour_second"] == 6
+                and not mt(s, "split:PSOBV-PSOBV90")["sig_holm"] and s["loco_split"]["pairs"]["PSOBV-PSOBV90"]["verdict_changes"] >= 1)(
+         s["cluster_split"]["PSOBV90-PSOBV75"], s["cluster_split"]["PSOBV-PSOBV90"])),
+    ("X37", "The budget-split conclusions omega = 0.5 better than 0.25, 0.75 better than 0.5 and 0.75 better than 1 (PSO) hold in "
+            "all six clusters (cluster-bootstrap CIs exclude zero, no LOCO change); 0.5 vs 1 splits the clusters.",
+     lambda s: all(min(s["cluster_split"][k]["clusters_favour_first"], s["cluster_split"][k]["clusters_favour_second"]) == 0
+                   and s["cluster_split"][k]["cluster_boot_excludes_zero"] and s["loco_split"]["pairs"][k]["verdict_changes"] == 0
+                   for k in ("PSOBV-PSOBV25", "PSOBV-PSOBV75", "PSOBV75-PSOC"))
+     and min(s["cluster_split"]["PSOBV-PSOC"]["clusters_favour_first"], s["cluster_split"]["PSOBV-PSOC"]["clusters_favour_second"]) > 0),
     ("X28", "mpce_numbers_extra.tex and mpce_supp_inference.tex were generated in the same run as mpce_summary_extra.json.",
      lambda s: all(s["generated"] in open(os.path.join(HERE, f)).readline()
                    for f in ("mpce_numbers_extra.tex", "mpce_supp_inference.tex"))),
