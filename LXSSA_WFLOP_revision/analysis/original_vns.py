@@ -26,6 +26,7 @@ The initial solution is the best member of the same seeded initial population of
 other methods draw, so runs are seed-paired; every objective call counts against the budget.
 """
 import numpy as np
+from init_hook import init_pop
 
 
 class BudgetExhausted(Exception):
@@ -50,7 +51,7 @@ class BVNS:
             calls[0] += 1
             return obj_fun(x)
 
-        pop = np.random.uniform(lb, ub, (self.pop_size, dim))
+        pop = init_pop(self.pop_size, dim, lb, ub)
         try:
             fit = np.array([f(p) for p in pop])
         except BudgetExhausted:

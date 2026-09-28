@@ -2,6 +2,7 @@
 by the authors in September 2026. Only the classes needed for the reviewer experiments are kept;
 the update logic and the order of random-number calls are unchanged. All minimise obj_fun."""
 import numpy as np
+from init_hook import init_pop
 
 
 class GA:
@@ -11,7 +12,7 @@ class GA:
             np.random.seed(seed)
 
     def optimize(self, obj_fun, dim, lb, ub):
-        pop = np.random.uniform(lb, ub, (self.pop_size, dim))
+        pop = init_pop(self.pop_size, dim, lb, ub)
         fitness = np.array([obj_fun(ind) for ind in pop])
         best_idx = np.argmin(fitness)
         best_pos = pop[best_idx].copy(); best_score = fitness[best_idx]
@@ -52,7 +53,7 @@ class PSO:
             np.random.seed(seed)
 
     def optimize(self, obj_fun, dim, lb, ub):
-        X = np.random.uniform(lb, ub, (self.pop_size, dim))
+        X = init_pop(self.pop_size, dim, lb, ub)
         V = np.zeros((self.pop_size, dim))
         pbest = X.copy()
         pbest_score = np.array([obj_fun(x) for x in X])
@@ -82,7 +83,7 @@ class DE:
             np.random.seed(seed)
 
     def optimize(self, obj_fun, dim, lb, ub):
-        pop = np.random.uniform(lb, ub, (self.pop_size, dim))
+        pop = init_pop(self.pop_size, dim, lb, ub)
         fitness = np.array([obj_fun(ind) for ind in pop])
         best_idx = np.argmin(fitness)
         best_pos = pop[best_idx].copy(); best_score = fitness[best_idx]
@@ -115,7 +116,7 @@ class SSA:
             np.random.seed(seed)
 
     def optimize(self, obj_fun, dim, lb, ub):
-        pop = np.random.uniform(lb, ub, (self.pop_size, dim))
+        pop = init_pop(self.pop_size, dim, lb, ub)
         fitness = np.array([obj_fun(ind) for ind in pop])
         idx = np.argsort(fitness); pop = pop[idx]; fitness = fitness[idx]
         food_position = pop[0].copy(); food_fitness = fitness[0]
@@ -158,7 +159,7 @@ class LXSSA:
         return gamma
 
     def optimize(self, obj_fun, dim, lb, ub):
-        pop = np.random.uniform(lb, ub, (self.pop_size, dim))
+        pop = init_pop(self.pop_size, dim, lb, ub)
         fitness = np.array([obj_fun(ind) for ind in pop])
         idx = np.argsort(fitness); pop = pop[idx]; fitness = fitness[idx]
         food_position = pop[0].copy(); food_fitness = fitness[0]

@@ -12,6 +12,7 @@ Both draw the same initial population as the authors' optimizers for a given see
 (np.random.seed(seed); np.random.uniform(lb, ub, (pop, dim))), so runs are seed-paired.
 """
 import numpy as np
+from init_hook import init_pop
 from scipy.optimize import minimize
 
 
@@ -28,7 +29,7 @@ class VNS:
             np.random.seed(seed)
 
     def optimize(self, obj_fun, dim, lb, ub):
-        pop = np.random.uniform(lb, ub, (self.pop_size, dim))
+        pop = init_pop(self.pop_size, dim, lb, ub)
         fit = np.array([obj_fun(p) for p in pop])
         calls = self.pop_size
         x = pop[np.argmin(fit)].copy(); fx = fit.min()
@@ -88,7 +89,7 @@ class MSSLSQP:
         return np.concatenate([(d2 - self.smin ** 2) / self.smin ** 2, bnd])
 
     def optimize(self, obj_fun, dim, lb, ub):
-        pop = np.random.uniform(lb, ub, (self.pop_size, dim))
+        pop = init_pop(self.pop_size, dim, lb, ub)
         fit = np.array([obj_fun(p) for p in pop])
         self.calls = self.pop_size
         order = list(np.argsort(fit))
@@ -109,7 +110,7 @@ class MSSLSQP:
 
         starts = [pop[i] for i in order]
         while self.calls < self.budget:
-            x0 = starts.pop(0) if starts else np.random.uniform(lb, ub, dim)
+            x0 = starts.pop(0) if starts else init_pop(1, dim, lb, ub)[0]
             try:
                 minimize(wrapped, x0, method="SLSQP", bounds=[(lb, ub)] * dim,
                          constraints=[{"type": "ineq", "fun": self._cons}],
