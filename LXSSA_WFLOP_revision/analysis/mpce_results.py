@@ -411,9 +411,10 @@ def _bayes_selftest():
     return ok
 
 
-# the nine component-analysis pairs of the \NCm... macros (ablation.case_mean keys; first minus second)
+# the component-analysis pairs of the \NCm... macros (ablation.case_mean keys; first minus second): the nine of
+# Phase 4 and (Phase 6) the four contrasts of the disc-sampling control RSD-VNS (used only if its runs exist)
 EQ_PAIRS_ABL = ["SSABV-RSVNS", "LXBV-RSVNS", "PSOBV-RSVNS", "SSABV-LXBV", "LXSSA-SSA", "SSABV-SSA", "LXBV-LXSSA",
-                "PSOBV-PSOC", "PSOBV-BVNS"]
+                "PSOBV-PSOC", "PSOBV-BVNS", "SSABV-RSDVNS", "LXBV-RSDVNS", "PSOBV-RSDVNS", "RSDVNS-RSVNS"]
 
 
 def case_mean_diffs(S, a, b, val="Loss"):
@@ -433,7 +434,7 @@ def equivalence_block(S, SA, G, summary, supp):
     """Practical equivalence of the case-mean wake losses at EQ_MARGIN (summary["equivalence"], tab:equivalence)
     and spread / worst run of PSO-VNS vs PSO (summary["spread"]).
 
-    Pairs: the nine component-analysis pairs of the \\NCm... macros (case stats SA of the ablation variants) and
+    Pairs: the component-analysis pairs of the \\NCm... macros (EQ_PAIRS_ABL) (case stats SA of the ablation variants) and
     the focus vs each other method of the main comparison (case stats S); a pair in both groups is computed from
     both and must agree (same runs). d = L(A) - L(B) (pp, negative = A better) over the cases in which both
     methods qualify (case_mean_diffs). tost(): 90 % bootstrap CI (BOOT_N case resamples, seed BOOT_SEED),
@@ -655,6 +656,72 @@ def phase2_stat(D, alg, switch=None, validate=True):
                 final_infeasible=int(len(X) - len(Hy)), runs=int(len(X)), switch_call=int(sw),
                 pct_runs_improved=float(100 * np.mean(g > 1e-9)) if len(g) else np.nan,
                 mean_loss_at_switch_pct=float(np.mean(lsw)) if lsw else np.nan, feasible_at_switch_pct=feas_sw)
+
+
+SMIN_M = 8 * 38.5          # minimum spacing 4D = 8R = 308 m (wflop_model.R = 38.5 m), as run_grid of mpce_experiments.py
+
+
+def phase1_replay(D, n1=3015, npop=30):
+    """Geometry-only replay of the Phase 1 of RS-VNS (square sampling) and RSD-VNS (disc sampling) with random
+    initialization, 6,030 evaluations, split 0.5: n1 = round(0.5 x 6,030) = 3,015 samples per run, the first 30 of
+    them the common initial population (init_pop: uniform in the square [-r, r]^2N). The seeded legacy stream of each
+    run is replayed with np.random.RandomState(seed) (identical to the np.random.seed(seed) of RSVNS.__init__):
+      RS-VNS : n1 x 2N draws uniform(-r, r) (the population, then one init_pop(1, 2N) layout per sample);
+      RSD-VNS: the population (30 x 2N uniform(-r, r)), then per sample N angles uniform(0, 2 pi) followed by N radii
+               r sqrt(uniform(0, 1)) (mpce_experiments.RSDVNS.optimize; uniform(0, h) = h x random_sample exactly).
+    No objective call. A sample is feasible if every turbine is inside the circle and every pair is >= 4D apart
+    (tolerance 1e-6 m, as run_grid). The geometry does not depend on the wind data set, so Data Set II repeats Data
+    Set I. Returns, per method, the runs whose Phase-1 samples contain no feasible layout (whole Phase 1 incl. the
+    initial population, and the sampled part only), the feasible share of the samples, and a verification against
+    the stored convergence curves of D: the checkpoint at call 3,000 (index 99) is finite iff one of the first 3,000
+    samples is feasible (the tracker records the best feasible objective)."""
+    out = {}
+    for alg in ("RSVNS", "RSDVNS"):
+        X = D[(D.Algorithm == alg) & D.Dataset.isin(["1", "2"]) & (D.Budget == 6030) & (D.Init == "random")]
+        if not len(X):
+            continue
+        feas_any, feas_samp, nfeas, nsamp, per_case = {}, {}, 0, 0, {}
+        first3000 = {}
+        for rad, n in sorted({(int(r), int(n)) for r, n in zip(X.Radius, X.Turbines)}):
+            iu = np.triu_indices(n, 1)
+            k_case = 0
+            for sd in sorted(set(X[(X.Radius == rad) & (X.Turbines == n)].Seed)):
+                rs = np.random.RandomState(int(sd))
+                P0 = rs.uniform(-rad, rad, (npop, 2 * n))
+                if alg == "RSVNS":
+                    P1 = rs.uniform(-rad, rad, (n1 - npop, 2 * n))
+                else:
+                    U = rs.random_sample((n1 - npop, 2, n))
+                    ang, rr = 2 * np.pi * U[:, 0], rad * np.sqrt(U[:, 1])
+                    P1 = np.stack([rr * np.cos(ang), rr * np.sin(ang)], -1).reshape(n1 - npop, 2 * n)
+                XY = np.vstack([P0, P1]).reshape(n1, n, 2)
+                inside = np.sqrt((XY ** 2).sum(-1)).max(-1) <= rad + 1e-6
+                dd = np.sqrt(((XY[:, :, None] - XY[:, None]) ** 2).sum(-1))[:, iu[0], iu[1]].min(-1)
+                fz = inside & (dd >= SMIN_M - 1e-6)
+                feas_any[(rad, n, sd)] = bool(fz.any()); feas_samp[(rad, n, sd)] = bool(fz[npop:].any())
+                first3000[(rad, n, sd)] = bool(fz[:3000].any())
+                nfeas += int(fz.sum()); nsamp += n1
+                k_case += int(not fz.any())
+            per_case[f"{rad}-{n}"] = k_case
+        chk = agree = 0
+        for ds, rad, n, sd, cv in zip(X.Dataset, X.Radius, X.Turbines, X.Seed, X.Curve):
+            v = cv.split(";")[99]
+            fin = v != "nan" and np.isfinite(float(v))
+            chk += 1; agree += int(fin == first3000[(int(rad), int(n), sd)])
+        runs = {(r_, n_, s_) for r_, n_, s_ in zip(X.Radius.astype(int), X.Turbines.astype(int), X.Seed)}
+        nds = X.Dataset.nunique()
+        out[alg] = dict(runs=int(len(X)), samples_per_run=n1, initial_population=npop,
+                        runs_no_feasible_sample=int(nds * sum(not feas_any[k] for k in runs)),
+                        runs_no_feasible_sample_sampled_part=int(nds * sum(not feas_samp[k] for k in runs)),
+                        pct_feasible_samples=float(100 * nfeas / nsamp),
+                        runs_no_feasible_sample_per_case_dsI=per_case,
+                        verified_runs=chk, verified_agree=agree, verification_ok=bool(chk > 0 and agree == chk),
+                        note="Phase-1 samples = 30 common initial layouts (square) + 2,985 samples (square for RS-VNS, "
+                             "disc for RSD-VNS); counts over both data sets (identical geometry and seeds)")
+        log(f"  Phase-1 replay {LAB[alg]}: {out[alg]['runs_no_feasible_sample']} of {out[alg]['runs']} runs without a feasible "
+            f"sample ({out[alg]['runs_no_feasible_sample_sampled_part']} ignoring the initial population); feasible samples "
+            f"{out[alg]['pct_feasible_samples']:.2f}%; curve check {agree}/{chk}")
+    return out
 
 
 def split_section(R6, base, tabs, key, label, primary=True, supp=None):
@@ -1472,7 +1539,7 @@ def main(argv=None):
     if H0 != FOCUS:
         log(f"  focus {fl} is not a two-phase hybrid: ablation built around {LAB[H0]} (phase 1 = {fl})")
     P1 = PHASE1[H0]
-    ablv = list(dict.fromkeys([H0] + [h for h in HYBRIDS if h != H0] + ["RSVNS", "BVNS", P1] +
+    ablv = list(dict.fromkeys([H0] + [h for h in HYBRIDS if h != H0] + ["RSVNS", "RSDVNS", "BVNS", P1] +
                               [PHASE1[h] for h in HYBRIDS if h != H0]))           # table order: hybrids, controls, swarms
     ablp = [a for a in ablv if a in have]
     if [a for a in ablv if a not in have]:
@@ -1483,6 +1550,10 @@ def main(argv=None):
     CONTR += [(H0, "BVNS", "swarm start vs.\\ best initial point"),
               (H0, "RSVNS", f"{LAB[P1]} vs.\\ random sampling")]
     CONTR += [(h, "RSVNS", f"{LAB[PHASE1[h]]} vs.\\ random sampling") for h in HYBRIDS if h != H0]
+    # Phase 6: the disc-sampling control RSD-VNS (experiment rsdisc), a stronger random-sampling Phase 1
+    CONTR += [(H0, "RSDVNS", f"{LAB[P1]} vs.\\ disc sampling")]
+    CONTR += [(h, "RSDVNS", f"{LAB[PHASE1[h]]} vs.\\ disc sampling") for h in HYBRIDS if h != H0]
+    CONTR += [("RSDVNS", "RSVNS", "disc vs.\\ square sampling")]
     CONTR += [(H0, h, f"{LAB[P1]} vs.\\ {LAB[PHASE1[h]]} as Phase~1") for h in HYBRIDS if h != H0]
     CONTR += [("SSABV", "LXBV", "Laplace step in the hybrid")] if H0 != "LXBV" else []
     CONTR += [("LXSSA", "SSA", "Laplace step alone")]
@@ -1520,7 +1591,8 @@ def main(argv=None):
                                               "neither_qualified", "n_both_qualified")}
     for k, h in zip(CM, holm([v["p"] for v in CM.values()])):
         CM[k]["p_holm"] = float(h)
-    comp = {"PSOBV": ("PSO", "VNS"), "SSABV": ("SSA", "VNS"), "LXBV": ("LX-SSA", "VNS"), "RSVNS": ("random sampling", "VNS"),
+    comp = {"PSOBV": ("PSO", "VNS"), "SSABV": ("SSA", "VNS"), "LXBV": ("LX-SSA", "VNS"), "RSVNS": ("random (square)", "VNS"),
+            "RSDVNS": ("random (disc)", "VNS"),
             "BVNS": ("--", "VNS"), "PSOC": ("PSO", "--"), "SSA": ("SSA", "--"), "LXSSA": ("LX-SSA", "--")}
     afeas = {a: float(GB[GB.Algorithm == a].Feasible.mean() * 100) for a in ablp}
     rows1 = [f"{LAB[a]} & {comp[a][0]} & {comp[a][1]} & {FA['avg_rank'][a]:.2f} & {afeas[a]:.1f} \\\\" for a in ablp]
@@ -1529,7 +1601,8 @@ def main(argv=None):
         x = A[(A.A == a) & (A.B == b)]
         rows2.append(f"{LAB[a]} vs.\\ {LAB[b]} & {what} & {wtl_str(x.Outcome.value_counts())} & "
                      f"{fmt_p(CM[f'{a}-{b}']['p_holm'], 2)} & ${CM[f'{a}-{b}']['mean_dloss_pp']:+.3f}$ \\\\")
-    nw = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve"}
+    nw = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve", 13: "Thirteen", 14: "Fourteen",
+          15: "Fifteen", 16: "Sixteen"}
     ncw = nw.get(len(CONTR), len(CONTR))
     tabs["ablation"] = (r"""\begin{table}[!t]
 \centering
@@ -1559,7 +1632,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     sym = {"W": "$+$", "T": "$\\cdot$", "L": "$-$"}
     Lq = SA.pivot_table(index=CASE, columns="Algorithm", values="Loss")
     Qq = SA.pivot_table(index=CASE, columns="Algorithm", values="Qualified").astype(float)
-    extra_v = [a for a in ("LXBV", "RSVNS") if a in ablp]
+    extra_v = [a for a in ("LXBV", "RSVNS", "RSDVNS") if a in ablp]
     pl = []
     for (ds, r, n), x in A.groupby(CASE):
         oc = {(y.A, y.B): y.Outcome for y in x.itertuples()}
@@ -1571,7 +1644,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     supp.append(table("table*", "Component analysis per case (68 cases, 6,030 calls, 30 seed-paired runs): mean wake loss (\\%%) of the feasible runs of %s (``--'': fewer than 15 feasible runs), and run-level outcome of each planned contrast ($+$: first variant significantly better, $-$: significantly worse, $\\cdot$: no significant difference; Wilcoxon signed-rank, Holm-adjusted over the %d contrasts of the case). %s." % (" and ".join(LAB[a] for a in extra_v), len(CONTR), key_),
                       "tab:ablation-cases", "ccc" + "c" * (len(extra_v) + len(CONTR)),
                       "DS & $r$ & $N$ & " + " & ".join(LAB[a] for a in extra_v) + " & " + chead, pl, size="\\tiny", sep="2.2pt", pos="p"))
-    summary["ablation"] = dict(hybrid=H0, phase1=P1, variants=ablp, friedman=FA, feasible_pct=afeas,
+    summary["ablation"] = dict(hybrid=H0, phase1=P1, variants=ablp, friedman=FA, feasible_pct=afeas, n_contrasts=len(CONTR),
                                holm_family=f"per case, over the {len(CONTR)} contrasts (run level); case-mean p_holm over the same {len(CONTR)} contrasts",
                                contrasts={f"{a}-{b}": dict(A[(A.A == a) & (A.B == b)].Outcome.value_counts().to_dict(),
                                                             dloss_pp=float(A[(A.A == a) & (A.B == b)].DLoss.mean()),
@@ -1584,12 +1657,14 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
 
     # phase-2 statistic (VNS phase after the swarm) for every hybrid (and RS-VNS): share of the wake loss
     # left at the switch that the VNS phase removes; runs infeasible at the switch that end feasible
-    ph2 = {alg: phase2_stat(GA, alg) for alg in HYBRIDS + ["RSVNS"] if alg in have}
+    ph2 = {alg: phase2_stat(GA, alg) for alg in HYBRIDS + ["RSVNS", "RSDVNS"] if alg in have}
     if P1 in have:      # the phase-1 swarm alone over the same second half of the budget (no VNS)
         ph2[P1 + "_continued"] = phase2_stat(GA, P1, switch=switch_call(H0, 6030))
     summary["ablation"]["n_runs"] = int(len(GB))
     summary["ablation"]["n_runs_benchmark_total"] = int(len(GA[GA.Algorithm.isin(set(MAINP) | set(ablp))]))
     summary["ablation"]["phase2_loss_reduction_pct"] = ph2
+    # runs whose Phase-1 random samples contain no feasible layout (RS-VNS: square, RSD-VNS: disc), geometry-only replay
+    summary["ablation"]["phase1_replay"] = phase1_replay(GA)
     swl = []
     for alg, v in ph2.items():
         if v is None:
@@ -2101,7 +2176,8 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     pv = pd.concat([ALL] + ([po_.assign(Algorithm="PSO")] if po_ is not None and len(po_) else []), ignore_index=True)
     pv = pv.assign(Study=np.where(pv.Dataset.isin(["1", "2"]), "Benchmark",
                                   np.where(pv.Dataset == "HR", "Horns Rev 1", "IEA37")))
-    PROV_LAB = {'PSOBV25': 'PSO-VNS ($' + chr(92) + 'omega=0.25$)', 'PSOBV75': 'PSO-VNS ($' + chr(92) + 'omega=0.75$)'}
+    PROV_LAB = {'PSOBV25': 'PSO-VNS ($' + chr(92) + 'omega=0.25$)', 'PSOBV75': 'PSO-VNS ($' + chr(92) + 'omega=0.75$)',
+                'PSOBV90': 'PSO-VNS ($' + chr(92) + 'omega=0.9$)'}
     pvl = []
     for (st_, b, i), x in pv.groupby(["Study", "Budget", "Init"]):
         for src, y in x.groupby("Source"):
@@ -2109,7 +2185,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                        f"\\texttt{{{src.replace('_', chr(92) + '_')}}} & {len(y)} \\\\".replace(",", "{,}", 1))
     supp.append(table("table*", "Provenance of the per-run results used in this paper: study, budget (evaluations), initialization, methods, source file (\\texttt{mpce\\_<exp>}: all shards \\texttt{mpce\\_<exp>\\_s<i>of<k>.csv} of experiment \\texttt{<exp>} of \\texttt{mpce\\_experiments.py} / \\texttt{iea37\\_experiments.py}; \\texttt{fresh\\_*.csv}: earlier grid runs, see the repository README) and number of runs.",
                       "tab:provenance", "lccp{7.2cm}ll", "Study & Budget & Init. & Methods & Source & Runs",
-                      [l_.replace("PSOBV25", "PSO-VNS (0.25)").replace("PSOBV75", "PSO-VNS (0.75)") for l_ in pvl], size="\\scriptsize", pos="p"))
+                      [l_.replace("PSOBV25", "PSO-VNS (0.25)").replace("PSOBV75", "PSO-VNS (0.75)").replace("PSOBV90", "PSO-VNS (0.9)") for l_ in pvl], size="\\scriptsize", pos="p"))
 
     # =========================================================== 8b. main-text tables and figures in the manuscript layout
     log("\n[8b] Main-text tables (manuscript layout)")

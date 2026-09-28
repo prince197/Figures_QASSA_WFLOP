@@ -79,7 +79,7 @@
 \setcounter{totalnumber}{6}\setcounter{topnumber}{4}\renewcommand{\topfraction}{0.95}\renewcommand{\textfraction}{0.05}
 \renewcommand{\floatpagefraction}{0.6}
 
-\title{Supplementary Material for\\ ``Revisiting Metaheuristic Comparisons for Continuous Wind Farm Layout Optimization: Baseline Configuration, Component Analysis and a Two-Phase PSO-VNS Design''}
+\title{Supplementary Material for\\ ``Baseline Configuration and Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization, with a PSO--VNS Reference Method''}
 \author{Prince Solanki, Pulkit Dwivedi, Vanita Garg, and Vinay Shukla}
 \date{}
 
@@ -294,10 +294,14 @@ Neither does PSO-VNS differ from PSO in the spread of its runs: the per-case sta
 \subsection{Robustness of the Statistical Conclusions}
 \label{sec:S-inference}
 Tables~\ref{tab:X-threshold}--\ref{tab:X-energy} check whether the statistical conclusions of the main text depend on choices of the analysis. \emph{Qualification threshold} (Table~\ref{tab:X-threshold}): with any threshold from \NXThrMin{} to \NXThrMax{} feasible runs of 30 (the paper uses 15), PSO-VNS is best-ranked, the complete rank order of the eight methods is the same, and all \NXThrNConcl{} conclusions listed in the table are unchanged. % CHECK-EXTRA [X02]-[X09]
+
 \emph{Dependence between cases} (Tables~\ref{tab:X-cluster} and~\ref{tab:X-loco}): the 68 cases form \NXClusters{} (data set, radius) clusters with nested $N$. Every comparison that is significant on the case means favours the same method in all \NXClusters{} clusters, and leaving out any one cluster changes none of the verdicts; PSO-VNS is best-ranked in every leave-one-cluster-out run. % CHECK-EXTRA [X11], [X14]
 One comparison is weaker at the cluster level: SSA-VNS is better than RS-VNS in \NXClSSAVNSvsRSVNSFav{} of \NXClustersNum{} clusters and the cluster-bootstrap interval \NXClSSAVNSvsRSVNSCI~pp excludes zero, but the cluster-robust $t$ test gives $p=\NXClSSAVNSvsRSVNSCRP$, so this gain is consistent but small. % CHECK-EXTRA [X16], [X17]
+
 \emph{Multiplicity} (Table~\ref{tab:X-multiplicity}): with one Holm correction over all \NXMultN{} case-mean tests quoted in the main text, \NXMultSigHolm{} of the \NXMultSigRaw{} unadjusted significant tests remain significant; the only one lost is the post hoc subgroup \NXMultLostHolm{}, whereas the Data Set~II subgroup with $N\ge10$ survives ($p_{\rm Holm}=\NXHolmPSOVNSvsPSOdsIILargeP$). % CHECK-EXTRA [X18]-[X21]
+
 \emph{Subgroup} (Table~\ref{tab:X-subgroup}): the advantage of PSO-VNS over PSO grows with $N$ only in Data Set~II (mean within-farm Spearman $\rho=\NXSpearDsIIStrat$, $p=\NXSpearDsIIStratP$), not in Data Set~I and not over all cases once $N$ is compared only within a farm ($p=\NXSpearAllStratP$). % CHECK-EXTRA [X22]-[X24]
+
 \emph{Energy} (Table~\ref{tab:X-energy}): over the 68 cases, the benchmark-energy gain of PSO-VNS over PSO is \NXEnPSOVNSvsPSOPct\% of AEP (95\% CI \NXEnPSOVNSvsPSOPctCI\%), in Data Set~II with $N\ge10$ it is \NXEnPSOVNSvsPSOdsIILargePct\%, and the gain of SSA-VNS over RS-VNS is \NXEnSSAVNSvsRSVNSPct\%, against \NXEnPSOVNSvsRSVNSPct\% for PSO-VNS over RS-VNS. These are differences in benchmark (model) energy, whose capacity factor is far above real sites. % CHECK-EXTRA [X25]-[X27]
 \input{analysis/mpce_supp_inference.tex}
 
@@ -392,7 +396,7 @@ This section looks inside the runs: the dynamics of the two PSO settings (Sectio
 \subsection{PSO Dynamics of the Two Settings}
 \label{sec:S-diag-pso}
 Fig.~\ref{fig:D-psodyn} and Table~\ref{tab:D-psodyn} compare the old and the constriction setting on \NDDynCases{} cases $\times$ \NDDynSeeds{} seeds. At the last iteration, the swarm of the old setting is \NDSpreadRatio{} times as wide and its mean absolute velocity \NDVelRatio{} times as large as with the constriction setting, as expected from its missing order-2 stability (Proposition~\ref{prop:S-settings}). It clips \NDClipOld\% of the coordinates per iteration (constriction: \NDClipNew\%), and only \NDFeasPartOld\% of its particle evaluations in iterations 101--200 are feasible (constriction: \NDFeasPartNew\%). % CHECK-DIAG [D03]-[D05]
-Most of its infeasible evaluations violate both constraints. The infeasible \emph{final} layouts, however, mostly violate only the spacing constraint (\NDStoredSpacingOnlyOld{} of the \NDStoredInfeasOld{} infeasible final layouts of the old setting; boundary only: \NDStoredBoundOnlyOld): because the boundary violation $g^{\rm b}_i=x_i^2+y_i^2-r^2$ is measured in m$^2$ and the spacing violation $g^{\rm s}_{ij}$ in m~\eqref{M-eq:penalty}, a turbine slightly outside the circle is penalized much more than two turbines slightly too close, so the best infeasible layout lies inside the circle with turbines too close. The infeasibility of the old setting is therefore mainly a spacing problem, not one of turbines left outside the circle at the bounds of the box. % CHECK-DIAG [D06], [D07]
+Most of its infeasible evaluations violate both constraints. The infeasible \emph{final} layouts, however, mostly violate only the spacing constraint (\NDStoredSpacingOnlyOld{} of the \NDStoredInfeasOld{} infeasible final layouts of the old setting; boundary only: \NDStoredBoundOnlyOld): because, in $F_p$~\eqref{M-eq:penalty}, the boundary violation $g^{\rm b}_i=x_i^2+y_i^2-r^2$ is measured in m$^2$ and the spacing violation $g^{\rm s}_{ij}$ in m, a turbine slightly outside the circle is penalized much more than two turbines slightly too close, so the best infeasible layout lies inside the circle with turbines too close. The infeasibility of the old setting is therefore mainly a spacing problem, not one of turbines left outside the circle at the bounds of the box. % CHECK-DIAG [D06], [D07]
 
 \subsection{Inside the VNS Phase}
 \label{sec:S-diag-vns}
