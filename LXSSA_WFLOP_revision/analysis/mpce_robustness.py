@@ -1,4 +1,4 @@
-"""Robustness re-evaluation for the MPCE (SSA-VNS) study.
+"""Robustness re-evaluation for the MPCE study (all main-comparison methods, including PSO-VNS).
 
 Every feasible final layout is re-evaluated (not re-optimized) with
   * the benchmark model (linear power curve, Jensen wake)              -> "Linear"
@@ -77,10 +77,16 @@ def reevaluate(G, here, procs=4, log=print):
 
 
 def robust_table(G, methods, lab, rank_fn, n_runs=30):
-    """Table rows + summary. rank_fn(fmean, nfeas, nruns) implements the ranking rule of mpce_results."""
+    """Table rows + summary. rank_fn(fmean, nfeas, nruns) implements the ranking rule of mpce_results.
+    n_runs: runs per case and method (int, or Series indexed by Dataset, Radius, Turbines, Algorithm, e.g.
+    while a shard is missing); G holds the feasible runs only."""
     out, lines = {}, []
     keys = ["Dataset", "Radius", "Turbines"]
     cnt = G.groupby(keys + ["Algorithm"]).size().unstack().reindex(columns=methods).fillna(0)
+    if isinstance(n_runs, pd.Series):
+        NR = n_runs.unstack().reindex(index=cnt.index, columns=methods).fillna(30).values
+    else:
+        NR = np.full(cnt.shape, n_runs)
     # Base ordering = recorded objective of the runs (identical to the main case-level table). The stored
     # coordinates are rounded to 1 mm, and optimized layouts often sit on a wake-cone edge, so a
     # re-evaluation of the benchmark model ("Linear") can differ from the recorded objective; relative
@@ -92,8 +98,8 @@ def robust_table(G, methods, lab, rank_fn, n_runs=30):
                                  n_rel_dev_above_1e_4=int((dev > 1e-4).sum()), n_layouts=int(len(G)))
     for col, name in MODELS:
         m = G.groupby(keys + ["Algorithm"])[col].mean().unstack().reindex(columns=methods)
-        ranks = np.vstack([rank_fn(mv, cv, np.full(len(methods), n_runs)) for mv, cv in zip(m.values, cnt.values)])
-        qual = cnt.values >= np.ceil(n_runs / 2)
+        ranks = np.vstack([rank_fn(mv, cv, nr) for mv, cv, nr in zip(m.values, cnt.values, NR)])
+        qual = cnt.values >= np.ceil(NR / 2)
         taus, same = [], []
         for a, b, q in zip(base.values, m.values, qual):
             ok = q & np.isfinite(a) & np.isfinite(b)
@@ -112,7 +118,7 @@ def robust_table(G, methods, lab, rank_fn, n_runs=30):
     k = len(methods)
     tex = r"""\begin{table*}[!t]
 \centering
-\caption{Robustness of the results to the benchmark model. All feasible final layouts of the seven methods are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model (both evaluated on the stored coordinates, rounded to 1~mm); average rank of each method over the 68 cases (ranking rule of Table~\ref{tab:friedman68}: methods with fewer than 15 feasible runs are ranked last, by their number of feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and the alternative ordering of the methods with at least 15 feasible runs within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
+\caption{Robustness of the results to the benchmark model. All feasible final layouts of the """ + str(len(methods)) + r""" methods are re-evaluated (not re-optimized) with alternative power-curve and wake models. $\Delta$: mean relative change of the objective (expected power) with respect to the benchmark model (both evaluated on the stored coordinates, rounded to 1~mm); average rank of each method over the 68 cases (ranking rule of Table~\ref{tab:friedman68}: methods with fewer than half of their runs feasible are ranked last, by their number of feasible runs); $\bar\tau$: mean Kendall rank correlation between the benchmark and the alternative ordering of the methods with at least 15 feasible runs within a case; ``Same best'': percentage of cases in which the best method is unchanged.}
 \label{tab:robust}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{l""" + "c" * (k + 4) + r"""}
