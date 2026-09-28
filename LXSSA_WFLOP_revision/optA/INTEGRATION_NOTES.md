@@ -29,3 +29,5 @@
 - 02_intro contribution 3: must match D1 (check after S1).
 - 07 turned "Budget split" subsection into run-in paragraph; \ref{sec:split} → "Section VII".
 - Page count at WIP: 13 — cuts needed at integration.
+- For supplement (from 08): add figures_mpce/layouts_iea37_hr16.pdf in S-iea37 (labels sec:S-iea37, fig:S-hr16 must exist); PyWake check settings + \NHRPyWakeDiff in S-hr16; footnote PSO/DE feasible-start values coincide (R8-14); \input per-case component-analysis table if pipeline generates it.
+- 08 removed fig:layouts; C30 unattached; new C37–C40 (08 meanings) sent to pipeline; \NBudCloseGapOneTwentyK requested.

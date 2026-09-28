@@ -1156,6 +1156,19 @@ def main(argv=None):
     rt = (G.Seconds / G.Calls * 1000).groupby(G.Algorithm).mean().reindex(MAINP)
     rn = G.groupby(["Algorithm", "Turbines"]).Seconds.mean().unstack().reindex(MAINP)
     src = G.groupby("Algorithm").Source.agg(lambda s: ",".join(sorted(set(s))))
+    # time per evaluation (D6): ms per evaluation = Seconds / Calls * 1000 of every run, median over the runs of
+    # each method. Data: the 6,030-evaluation runs (random initialization) of the 68 benchmark cases of the main
+    # comparison (G: 30 runs x 68 cases per method; Seconds = wall-clock time of the run incl. optimizer
+    # overhead, measured by the experiment scripts on the machine that produced each file).
+    me = (G.Seconds / G.Calls * 1000).groupby(G.Algorithm).median().reindex(MAINP)
+    meta = [a for a in MAINP if a != "SLSQP"]
+    summary["cost_per_eval"] = dict(
+        median_ms={a: float(me[a]) for a in MAINP}, metaheuristics=meta,
+        meta_min_ms=float(me[meta].min()), meta_max_ms=float(me[meta].max()),
+        meta_min_method=str(me[meta].idxmin()), meta_max_method=str(me[meta].idxmax()),
+        slsqp_ms=float(me["SLSQP"]) if "SLSQP" in me else None,
+        slsqp_over_pso=float(me["SLSQP"] / me["PSOC"]) if {"SLSQP", "PSOC"} <= set(MAINP) else None,
+        data="6,030-evaluation runs of the 68 cases (random initialization), ms = Seconds / Calls * 1000, median over runs")
     summary["cost"] = dict(ms_per_call=rt.round(4).to_dict(),
                            sec_per_run_range={a: [float(rn.loc[a].min()), float(rn.loc[a].max())] for a in MAINP},
                            source=src.to_dict(),
@@ -1181,11 +1194,12 @@ def main(argv=None):
     if [a for a in ablv if a not in have]:
         log(f"  ablation variants without data (dropped with their contrasts): {[a for a in ablv if a not in have]}")
     GB = GA[GA.Algorithm.isin(ablp)]
-    CONTR = [(H0, P1, "VNS phase"),
-             (H0, "BVNS", "swarm start vs.\\ best initial point"),
-             (H0, "RSVNS", "swarm vs.\\ random sampling")]
+    CONTR = [(H0, P1, f"VNS phase ({LAB[P1]})")]
+    CONTR += [(h, PHASE1[h], f"VNS phase ({LAB[PHASE1[h]]})") for h in HYBRIDS if h != H0]
+    CONTR += [(H0, "BVNS", "swarm start vs.\\ best initial point"),
+              (H0, "RSVNS", f"{LAB[P1]} vs.\\ random sampling")]
+    CONTR += [(h, "RSVNS", f"{LAB[PHASE1[h]]} vs.\\ random sampling") for h in HYBRIDS if h != H0]
     CONTR += [(H0, h, f"{LAB[P1]} vs.\\ {LAB[PHASE1[h]]} as Phase~1") for h in HYBRIDS if h != H0]
-    CONTR += [("SSABV", "RSVNS", "SSA vs.\\ random sampling")] if H0 != "SSABV" else []
     CONTR += [("SSABV", "LXBV", "Laplace step in the hybrid")] if H0 != "LXBV" else []
     CONTR += [("LXSSA", "SSA", "Laplace step alone")]
     CONTR = list(dict.fromkeys(CONTR))
@@ -1210,6 +1224,18 @@ def main(argv=None):
     A.to_csv(OUT("mpce_ablation_tests.csv"), index=False)
     SA = case_stats(GB, ablp)
     FA = friedman_block(rank_matrix(SA, ablp), ablp, focus=H0)
+    # case-mean Wilcoxon of every contrast (same procedure as the main case-mean test, case_mean_wilcoxon):
+    # p unadjusted, p_holm = Holm over the contrasts of the table (one family), wins / losses = cases in which
+    # the first variant has the lower / higher case-mean loss (imputed cases included), mean_dloss_pp = first
+    # minus second (negative = first better) with a 95 % bootstrap CI over the both-qualified cases
+    CM = {}
+    for a, b, _ in CONTR:
+        x = case_mean_wilcoxon(SA, a, [b])[b]
+        CM[f"{a}-{b}"] = {k: x[k] for k in ("p", "rb", "n_cases", "wins", "losses", "mean_dloss_pp", "median_dloss_pp",
+                                              "ci95_mean_dloss_pp", "only_focus_qualified", "only_other_qualified",
+                                              "neither_qualified", "n_both_qualified")}
+    for k, h in zip(CM, holm([v["p"] for v in CM.values()])):
+        CM[k]["p_holm"] = float(h)
     comp = {"PSOBV": ("PSO", "VNS"), "SSABV": ("SSA", "VNS"), "LXBV": ("LX-SSA", "VNS"), "RSVNS": ("random sampling", "VNS"),
             "BVNS": ("--", "VNS"), "PSOC": ("PSO", "--"), "SSA": ("SSA", "--"), "LXSSA": ("LX-SSA", "--")}
     afeas = {a: float(GB[GB.Algorithm == a].Feasible.mean() * 100) for a in ablp}
@@ -1217,36 +1243,57 @@ def main(argv=None):
     rows2 = []
     for a, b, what in CONTR:
         x = A[(A.A == a) & (A.B == b)]
-        rows2.append(f"{LAB[a]} vs.\\ {LAB[b]} & {what} & {wtl_str(x.Outcome.value_counts())} & ${x.DLoss.mean():+.3f}$ \\\\")
-    nw = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}
+        rows2.append(f"{LAB[a]} vs.\\ {LAB[b]} & {what} & {wtl_str(x.Outcome.value_counts())} & "
+                     f"{fmt_p(CM[f'{a}-{b}']['p_holm'], 2)} & ${CM[f'{a}-{b}']['mean_dloss_pp']:+.3f}$ \\\\")
+    nw = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve"}
+    ncw = nw.get(len(CONTR), len(CONTR))
     tabs["ablation"] = (r"""\begin{table}[!t]
 \centering
-\caption{Ablation over the 68 Benchmark Cases (30 Seed-Paired Runs, 6,030 Calls). Top: Average Rank Among the %s Variants (Friedman $\chi^2_F=%.1f$, %d d.f., $p=%s$) and Feasible Runs. Bottom: Planned Contrasts, Cases in Which the First Variant Is Significantly Better / Not Different / Worse (Wilcoxon, Holm-Adjusted over the %s Contrasts of Each Case, $\alpha=0.05$), and Mean Difference of the Wake Loss $\overline{\Delta L}$ (Percentage Points; Negative = First Variant Better)}
+\caption{Component Analysis over the 68 Benchmark Cases (30 Seed-Paired Runs, 6,030 Calls). Top: Average Rank Among the %s Variants (Friedman $\chi^2_F=%.1f$, %d d.f., $p=%s$) and Feasible Runs. Bottom: Planned Contrasts; W/T/L: Cases in Which the First Variant Is Significantly Better / Not Different / Worse (Run-Level Wilcoxon, Holm-Adjusted over the %s Contrasts of Each Case, a Different Family from Table~\ref{tab:wtl}, $\alpha=0.05$); $p_W$: Wilcoxon Test on the 68 Per-Case Mean Wake Losses, Holm-Adjusted over the %s Contrasts; $\overline{\Delta L}$: Mean Difference of the Case-Mean Wake Losses (Percentage Points; Negative = First Variant Better)}
 \label{tab:ablation}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lcccc}
 \toprule
 Variant & Phase 1 & Phase 2 & Avg.\ rank & Feas.\ (\%%) \\
 \midrule
-""" % (nw.get(len(ablp), len(ablp)), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), nw.get(len(CONTR), len(CONTR))) + "\n".join(rows1) + r"""
+""" % (nw.get(len(ablp), len(ablp)), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), ncw, ncw) + "\n".join(rows1) + r"""
 \bottomrule
 \end{tabular}
 
 \smallskip
-\begin{tabular}{l>{\raggedright\arraybackslash}p{2.9cm}cc}
+\begin{tabular}{l>{\raggedright\arraybackslash}p{2.3cm}ccc}
 \toprule
-Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
+Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
 \midrule
 """ + "\n".join(rows2) + r"""
 \bottomrule
 \end{tabular}
 \end{table}
 """)
+    # per-case component analysis (supplement): mean loss of the two variants that have no per-case table
+    # elsewhere (LX-SSA-VNS, RS-VNS) and the run-level outcome of every contrast (+ / 0 / -)
+    sym = {"W": "$+$", "T": "$\\cdot$", "L": "$-$"}
+    Lq = SA.pivot_table(index=CASE, columns="Algorithm", values="Loss")
+    Qq = SA.pivot_table(index=CASE, columns="Algorithm", values="Qualified").astype(float)
+    extra_v = [a for a in ("LXBV", "RSVNS") if a in ablp]
+    pl = []
+    for (ds, r, n), x in A.groupby(CASE):
+        oc = {(y.A, y.B): y.Outcome for y in x.itertuples()}
+        lv = [(f"{Lq.loc[(ds, r, n), a]:.3f}" if Qq.loc[(ds, r, n), a] > 0.5 else "--") for a in extra_v]
+        pl.append(f"{'I' if ds == '1' else 'II'} & {r} & {n} & " + " & ".join(lv) + " & "
+                  + " & ".join(sym.get(oc.get((a, b)), "") for a, b, _ in CONTR) + " \\\\")
+    chead = " & ".join(f"C{i + 1}" for i in range(len(CONTR)))
+    key_ = "; ".join(f"C{i + 1}: {LAB[a]} vs.\\ {LAB[b]}" for i, (a, b, _) in enumerate(CONTR))
+    supp.append(table("table*", "Component analysis per case (68 cases, 6,030 calls, 30 seed-paired runs): mean wake loss (\\%%) of the feasible runs of %s (``--'': fewer than 15 feasible runs), and run-level outcome of each planned contrast ($+$: first variant significantly better, $-$: significantly worse, $\\cdot$: no significant difference; Wilcoxon signed-rank, Holm-adjusted over the %d contrasts of the case). %s." % (" and ".join(LAB[a] for a in extra_v), len(CONTR), key_),
+                      "tab:ablation-cases", "ccc" + "c" * (len(extra_v) + len(CONTR)),
+                      "DS & $r$ & $N$ & " + " & ".join(LAB[a] for a in extra_v) + " & " + chead, pl, size="\\tiny", sep="2.2pt", pos="p"))
     summary["ablation"] = dict(hybrid=H0, phase1=P1, variants=ablp, friedman=FA, feasible_pct=afeas,
+                               holm_family=f"per case, over the {len(CONTR)} contrasts (run level); case-mean p_holm over the same {len(CONTR)} contrasts",
                                contrasts={f"{a}-{b}": dict(A[(A.A == a) & (A.B == b)].Outcome.value_counts().to_dict(),
                                                             dloss_pp=float(A[(A.A == a) & (A.B == b)].DLoss.mean()),
                                                             isolates=w.replace("\\", ""))
-                                          for a, b, w in CONTR})
+                                          for a, b, w in CONTR},
+                               case_mean=CM)
     log(f"  ablation hybrid {LAB[H0]}; avg ranks: " + ", ".join(f"{LAB[a]} {FA['avg_rank'][a]:.3f}" for a in ablp))
     for k, v in summary["ablation"]["contrasts"].items():
         log(f"  {k}: {wtl_str(v)}  dL={v['dloss_pp']:+.3f}")
