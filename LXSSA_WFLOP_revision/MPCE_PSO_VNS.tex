@@ -67,33 +67,33 @@ Wind farm layout optimization, particle swarm optimization, constriction coeffic
 \addcontentsline{toc}{section}{Nomenclature}
 \begin{IEEEdescription}[\IEEEusemathlabelsep\IEEEsetlabelwidth{$\Delta_{ij}$, $\Delta_i$}]
 \item[$B$] Budget (number of objective calls).
-\item[$c_1$, $c_2$] Cognitive and social acceleration coefficients of PSO.
+\item[$c_1$, $c_2$] Acceleration coefficients of PSO.
 \item[$C_T$] Thrust coefficient.
 \item[$D$, $R$] Rotor diameter and rotor radius ($D=2R$).
-\item[$d_{ij}$] Downstream distance of turbine $i$ behind turbine $j$.
-\item[$\Delta_{ij}$, $\Delta_i$] Velocity deficit at turbine $i$ due to turbine $j$; combined deficit at turbine $i$.
+\item[$d_{ij}$] Distance of turbine $i$ behind turbine $j$.
+\item[$\Delta_{ij}$, $\Delta_i$] Deficit at $i$ due to $j$; total deficit at $i$.
 \item[$E(P_i)$] Expected power of turbine $i$ (benchmark units).
 \item[$E_{\rm ideal}$] Wake-free expected power of one turbine.
 \item[$F_p$] Penalized wake loss (minimized).
 \item[$g^{\rm b}_i$, $g^{\rm s}_{ij}$] Boundary and spacing violations.
-\item[$\mathbf G$, $\mathbf P^i$] Global best and personal best of particle $i$ (PSO).
-\item[$\mathbf H$] Food source (best layout of the salp swarm).
+\item[$\mathbf G$, $\mathbf P^i$] Global best; personal best of particle $i$.
+\item[$\mathbf H$] Food source (best layout of SSA).
 \item[$K$] Jensen wake-spreading constant.
 \item[$k$, $k_{\max}$] Index and number of VNS neighborhoods.
-\item[$\ell_{ij}$, $\ell_{\min}$] Distance between turbines $i$ and $j$; minimum spacing.
+\item[$\ell_{ij}$, $\ell_{\min}$] Distance of $i$ and $j$; minimum spacing.
 \item[$N$, $N_p$] Number of turbines; population size.
 \item[$N_\theta$, $N_s$] Numbers of wind-direction and wind-speed bins.
 \item[$p_l$] Probability of the $l$th wind-direction bin.
 \item[$r$] Farm radius.
 \item[$s$] Wind speed.
-\item[$t$, $T$, $T_1$] Iteration counter, number of swarm iterations, and number of swarm iterations in Phase~1.
+\item[$t$, $T$, $T_1$] Iteration; total and Phase-1 iterations.
 \item[$\mathbf V^i$] Velocity of particle $i$.
 \item[$w$] Inertia weight of PSO.
-\item[$\mathbf X$] Layout vector $(x_1,y_1,\ldots,x_N,y_N)\in\mathbb R^{2N}$ with turbine coordinates $(x_i,y_i)$.
-\item[$\alpha$, $\beta_{ij}$] Half-cone angle of the wake; wake angle of turbine $i$ with respect to turbine $j$.
+\item[$\mathbf X$] Layout vector $(x_1,y_1,\ldots,x_N,y_N)$.
+\item[$\alpha$, $\beta_{ij}$] Half-cone angle; wake angle of $i$ behind $j$.
 \item[$\zeta$, $\psi$] Weibull shape and scale parameters.
-\item[$\theta$] Wind direction (direction the wind blows towards, counter-clockwise from east).
-\item[$\kappa$, $\varphi_{1,2}$] Constriction factor; acceleration coefficients of constriction PSO.
+\item[$\theta$] Wind direction (blowing towards, CCW from east).
+\item[$\kappa$, $\varphi_{1,2}$] Constriction factor and coefficients.
 \item[$\mu$] Penalty factor.
 \item[$\omega$] Fraction of the budget given to Phase~1.
 \end{IEEEdescription}
