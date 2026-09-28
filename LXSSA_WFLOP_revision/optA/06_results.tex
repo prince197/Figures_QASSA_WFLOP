@@ -1,18 +1,3 @@
-% Fallbacks until analysis/mpce_numbers.tex defines the \NBase... macros of tab:baseline (pipeline agent);
-% \providecommand has no effect once the generated macros exist.
-\providecommand{\NBaseOldBest}{\TBD{macro: NBaseOldBest}}
-\providecommand{\NBaseNewBest}{\TBD{macro: NBaseNewBest}}
-\providecommand{\NBaseOldPSORank}{\TBD{macro: NBaseOldPSORank}}
-\providecommand{\NBaseNewPSORank}{\TBD{macro: NBaseNewPSORank}}
-\providecommand{\NBaseOldLXBVRank}{\TBD{macro: NBaseOldLXBVRank}}
-\providecommand{\NBaseNewLXBVRank}{\TBD{macro: NBaseNewLXBVRank}}
-\providecommand{\NBaseOldSSAVNSRank}{\TBD{macro: NBaseOldSSAVNSRank}}
-\providecommand{\NBaseNewSSAVNSRank}{\TBD{macro: NBaseNewSSAVNSRank}}
-\providecommand{\NBaseOldLXBVvsPSO}{\TBD{macro: NBaseOldLXBVvsPSO}}
-\providecommand{\NBaseNewLXBVvsPSO}{\TBD{macro: NBaseNewLXBVvsPSO}}
-\providecommand{\NBaseOldSSAVNSvsPSO}{\TBD{macro: NBaseOldSSAVNSvsPSO}}
-\providecommand{\NBaseNewSSAVNSvsPSO}{\TBD{macro: NBaseNewSSAVNSvsPSO}}
-
 \section{Results on the Benchmark}
 \label{sec:results}
 This section reports the 68 benchmark cases (\NRunsBenchmark{} runs): first the effect of the PSO baseline setting, then the overall comparison and the quality, feasibility and convergence of the solutions; the component analysis follows in Section~\ref{sec:ablation}. Per-case means and standard deviations are given in Tables~\ref{S-tab:res-1-500}--\ref{S-tab:res-2-1000} of the supplementary material.
@@ -24,7 +9,7 @@ This section reports the 68 benchmark cases (\NRunsBenchmark{} runs): first the 
 The setting $w=0.7$, $c_1=c_2=2$, common in PSO baselines for the WFLOP and used in the earlier version of this study, violates the convergence condition~\eqref{eq:poli}. We ran PSO with this setting on the same 68 cases with the same budget and seeds. Compared with the constriction setting~\eqref{eq:constriction}, it returns a feasible layout in only \NOldPSOFeas\% of the runs (fewer than 15 feasible runs in \NOldPSOBelowHalf{} cases), is significantly worse in \NOldPSOWorse{} of the 68 cases and never better (Wilcoxon, 30 seed-paired runs), and its mean wake loss is \NOldPSODL{} percentage points higher over the \NOldPSOCases{} cases in which both settings have at least 15 feasible runs. In the comparison of Table~\ref{tab:friedman68}, it would place PSO \NOldPSOPos{} (average rank \NOldPSORank) instead of \NPSOPos, where it ranks ahead of SSA, LX-SSA and SSA-VNS.
 % CHECK-FINAL [C12]: pso_setting: constriction_vs_old L == 0, W >= 34; positions old > constriction == 2; PSOC ahead of SSA, LXSSA, SSABV
 
-Table~\ref{tab:baseline} shows what this does to the conclusions of a comparison. It ranks the method pool of the earlier study (LX-SSA-VNS, SSA-VNS, LX-SSA, SSA, PSO, DE, VNS and MS-SLSQP, i.e., without PSO-VNS) once with each PSO setting, with the same runs of all other methods. With the old setting, \NBaseOldBest{} has the best average rank and a salp-swarm hybrid ranks ahead of PSO (average ranks: LX-SSA-VNS \NBaseOldLXBVRank, SSA-VNS \NBaseOldSSAVNSRank, PSO \NBaseOldPSORank; W/T/L against PSO \NBaseOldLXBVvsPSO{} and \NBaseOldSSAVNSvsPSO). With the constriction setting, PSO (\NBaseNewPSORank) ranks ahead of every salp-swarm method, including both hybrids (\NBaseNewLXBVRank{} and \NBaseNewSSAVNSRank; W/T/L against PSO \NBaseNewLXBVvsPSO{} and \NBaseNewSSAVNSvsPSO), and \NBaseNewBest{} has the best average rank. Changing the coefficients of one baseline thus reverses the order of PSO and the salp-swarm hybrids.
+Table~\ref{tab:baseline} shows what this does to the conclusions of a comparison. It ranks the method pool of the earlier study (LX-SSA-VNS, SSA-VNS, LX-SSA, SSA, PSO, DE, VNS and MS-SLSQP, i.e., without PSO-VNS) once with each PSO setting, with the same runs of all other methods. With the old setting, \NBaseOldBest{} has the best average rank and PSO ranks behind a salp-swarm hybrid (average ranks: LX-SSA-VNS \NBaseOldLXBVRank, SSA-VNS \NBaseOldSSAVNSRank, PSO \NBaseOldPSORank; W/T/L against PSO \NBaseOldLXBVvsPSO{} and \NBaseOldSSAVNSvsPSO). With the constriction setting, PSO (\NBaseNewPSORank) ranks ahead of every salp-swarm method, including both hybrids (\NBaseNewLXBVRank{} and \NBaseNewSSAVNSRank; W/T/L against PSO \NBaseNewLXBVvsPSO{} and \NBaseNewSSAVNSvsPSO). Changing the coefficients of one baseline thus reverses the order of PSO and the salp-swarm hybrids.
 % CHECK-FINAL [C27]: baseline: under the old PSO setting at least one salp-swarm hybrid (SSA-VNS or LX-SSA-VNS) ranks ahead of PSO; under the corrected setting PSO ranks ahead of every salp-swarm method (SSA, LX-SSA, SSA-VNS, LX-SSA-VNS)
 
 We regard this as a property of the setting, not of any particular study: a PSO baseline outside the convergence region understates what PSO achieves on the WFLOP, so a method compared with it can appear stronger than it is. We therefore recommend checking~\eqref{eq:poli}, or using the coefficients~\eqref{eq:constriction}, whenever PSO serves as a baseline. The salp-swarm methods, including our own LX-SSA, do not outperform a correctly configured PSO on this benchmark, which is why PSO forms the first phase of PSO-VNS; all other results use the constriction setting.

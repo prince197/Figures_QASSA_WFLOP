@@ -10,3 +10,7 @@
 - New refs cited by 02_intro: Sorensen2015, BartzBeielstein2020 → merge via optA/merge_newrefs.py.
 - 02_intro: claims without CHECK ids: "VNS alone ranks first with feasible starts" (\NFbFeasBestRank) and "best rank at all three budgets" (\NBudgetPhrase) → consider adding C28 (feasible-start best = BVNS) and C29 (PSOBV best rank at 30,030 and 120,030) in mpce_check_final.py; outline/contribution 4 must point to the discussion label if 10 creates sec:discussion; Horns Rev claim wording must match (C19 is at 6,030; 30,030 needs its own check).
 - Overfull box in 04_methods (equation ~line 37) — check in integration.
+- 10_limits_concl: new label sec:discussion → 02_intro outline/contribution 4 should reference sec:discussion for the recommendations.
+- 10: "best published IEA37 layouts obtained with gradient-based methods" — only participant 4 (SNOPT+WEC per Baker 2019, unverified) is known; reword to "the best feasible published layout (reported as a gradient-based method, \TBD{verify})" or drop "gradient-based".
+- 10: "behind salp-swarm hybrids" plural — fine if both LXBV and SSABV rank ahead of old PSO in tab:baseline (check C27 numbers).
+- Pipeline asked for C28 (feasible-start: BVNS 1st, PSOBV 2nd), C29 (PSOBV best at all budgets), C30 (HR16 30k mean > installed; macros \NHRThirtyKMean, \NHRThirtyKAbove).
