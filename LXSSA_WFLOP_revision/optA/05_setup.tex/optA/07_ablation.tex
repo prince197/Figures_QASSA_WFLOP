@@ -1,0 +1,24 @@
+\section{Component Analysis of Two-Phase Hybrids}
+\label{sec:ablation}
+\input{analysis/mpce_tab_ablation.tex}
+
+The eight variants of Table~\ref{tab:ablation} combine a Phase~1 (PSO, SSA, LX-SSA, random sampling or none) with or without the same VNS phase, at 6,030 calls and with the same seeds (convergence in Fig.~\ref{fig:ablation}). The Friedman test rejects equal average ranks ($\chi^2_F=\NAblChi$, 7 d.f., $p=\NAblP$).
+
+\emph{What the VNS phase contributes.} Adding VNS helps every swarm: each hybrid ranks ahead of the same swarm run alone for the full budget (PSO-VNS vs.\ PSO, SSA-VNS vs.\ SSA and LX-SSA-VNS vs.\ LX-SSA in Table~\ref{tab:ablation}); e.g., the mean wake loss falls from \NLossSSA\% (SSA) to \NLossSSAVNS\% (SSA-VNS). PSO-VNS and PSO share their first 3,030 calls, so their contrast measures only the use of the second half: switching to VNS instead of continuing the swarm gives a small gain that grows with $N$ (\NAblPSOVNSvsPSO{} under the Holm adjustment over the contrasts of Table~\ref{tab:ablation}, mean difference \NAblPSOVNSvsPSODL{} percentage points; Section~\ref{sec:overall}): a convergent PSO keeps improving in the second half on small layouts, whereas on larger layouts the single-turbine moves of the compass search pay off.
+% CHECK-FINAL [C13]: ablation.contrasts.PSOBV-PSOC W > L
+
+\emph{What the swarm phase contributes.} Two controls isolate Phase~1. VNS alone starts from the best initial layout and spends the whole budget on refinement; RS-VNS spends the 3,015 calls of Phase~1 on independent random layouts and refines the best one. PSO-VNS is significantly better than VNS in \NAblPSOVNSvsVNSW{} cases and worse in \NAblPSOVNSvsVNSL{} (\NAblPSOVNSvsVNSDL{} percentage points), and better than RS-VNS in \NAblPSOVNSvsRSVNSW{} cases and never worse (\NAblPSOVNSvsRSVNSDL{} percentage points). The PSO phase thus adds value beyond a longer refinement and beyond a random multistart of equal cost. The salp-swarm phases do not: SSA-VNS and RS-VNS are statistically tied in \NAblSSAVNSvsRSVNST{} of the 68 cases (\NAblSSAVNSvsRSVNS, \NAblSSAVNSvsRSVNSDL{} percentage points), and LX-SSA-VNS ranks even behind RS-VNS on average. As start generators for VNS, SSA and LX-SSA are no better than random sampling, which itself ranks ahead of VNS alone.
+% CHECK-FINAL [C14]: PSOBV-BVNS W >= 40, L <= 2; PSOBV-RSVNS W >= 40, L == 0
+% CHECK-FINAL [C15]: SSABV-RSVNS T >= 60, W and L <= 5
+
+\emph{Laplace step.} The Laplace step of LX-SSA gives no gain: without the VNS phase, LX-SSA is \NAblLXSSAvsSSA{} against SSA, and inside the hybrid, SSA-VNS is \NAblSSAVNSvsLXSSAVNS{} against LX-SSA-VNS (\NAblSSAVNSvsLXSSAVNSDL{} percentage points).
+% CHECK-FINAL [C17]: LXSSA-SSA W == 0; SSABV-LXBV L == 0
+
+\emph{Choice of Phase~1.} Among the Phase-1 options tested, only PSO is effective. With the same VNS phase, PSO-VNS is \NAblPSOVNSvsSSAVNS{} (W/T/L) against SSA-VNS and \NAblPSOVNSvsLXSSAVNS{} against LX-SSA-VNS. At the switch, its global best is feasible more often (\NSwitchFeasPSOVNS\% of the runs vs.\ \NSwitchFeasSSAVNS\% and \NSwitchFeasLXSSAVNS\%) and, when feasible, has a lower wake loss (\NSwitchLossPSOVNS\% vs.\ \NSwitchLossSSAVNS\% and \NSwitchLossLXSSAVNS\%), so VNS starts from a better layout. The first phase of a hybrid should therefore be judged against a random-sampling control of equal cost.
+% CHECK-FINAL [C16]: PSOBV-SSABV, PSOBV-LXBV: L == 0, W >= 34; switch feasibility higher and switch loss lower for PSOBV
+
+\subsection{Budget Split}
+\label{sec:split}
+\input{analysis/mpce_tab_split.tex}
+The split $\omega=0.5$ was fixed before the experiments and is used for all other results; Table~\ref{tab:split} compares it with $\omega=0.25$ and $0.75$ on the \NSplitCases{} cases with the middle and the largest $N$ of each farm (per-case values in Table~\ref{S-tab:split-cases} of the supplementary material). A longer PSO phase is better: with $\omega=0.75$, the mean wake loss is lower than with $\omega=0.5$ in \NSplitSeventyFiveLower{} of the \NSplitCases{} cases, significantly in \NSplitSeventyFiveSig, and \NSplitGainSeventyFive{} percentage points lower on average, and the default is significantly better in \NSplitFiftyBetterSeventyFive{} case; $\omega=0.25$ is significantly worse than the default in \NSplitTwentyFiveSig{} cases and better in \NSplitTwentyFiveBetter{} case. In line with the component analysis, most of the benefit comes from the PSO phase, and VNS serves as a final refinement. We do not re-tune $\omega$ on the test cases, so the main comparison may slightly understate PSO-VNS; since the split study covers only \NSplitCases{} cases and three values, we give $\omega=0.75$ as a recommended starting point for applications, not as an optimized setting.
+% CHECK-FINAL [C18]: split: 75% lower loss in >= 10 of 12; 50% never significantly better than 75%; 25% never significantly better than 50%; ranks 75 < 50 < 25

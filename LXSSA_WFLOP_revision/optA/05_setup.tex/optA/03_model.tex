@@ -1,0 +1,41 @@
+\section{Problem Modeling}
+\label{sec:model}
+
+For a prescribed number $N$ of identical turbines, the $2N$ coordinates $(x_i,y_i)$, measured from the center of the farm, are optimized to maximize the expected farm power, i.e., to minimize the wake loss, under the Jensen wake model~\cite{Jensen1983,Katic1986} and the power curve of~\cite{Kusiak2010}. The wind direction $\theta$ has the probability density $p_\theta$, and for each direction the wind speed $s$ follows a Weibull distribution with density $p_s(s;\zeta,\psi)=(\zeta/\psi)(s/\psi)^{\zeta-1}\exp[-(s/\psi)^\zeta]$, shape $\zeta(\theta)$ and scale $\psi(\theta)$. Here $\theta$ is the direction \emph{towards} which the wind blows, counter-clockwise from east; the meteorological directions $\theta_{\rm met}$ of Horns Rev~1 and IEA37 (wind \emph{from}, clockwise from north) are converted by $\theta=270^\circ-\theta_{\rm met}$. Two constraints apply: every pair of turbines satisfies $\ell_{ij}=\lVert(x_i-x_j,\,y_i-y_j)\rVert_2\ge\ell_{\min}=4D=8R$, as in~\cite{Kusiak2010,Bansal2017} (Section~\ref{sec:spacing} discusses $5D$ and $6D$), and the farm is circular, $x_i^2+y_i^2\le r^2$, with $r=500$, 750 or 1000~m.
+
+\subsection{Wake Effect Model}
+In the Jensen model, the wake of turbine $j$ is a half cone with half-angle $\alpha=\arctan K$, with the wake-spreading constant $K$, and its virtual vertex lies $R/K$ upstream of the rotor. With $u_{ij}=(x_i - x_j)\cos\theta + (y_i - y_j)\sin\theta + R/K$ and the lateral offset from the wake axis $v_{ij}=-(x_i - x_j)\sin\theta + (y_i - y_j)\cos\theta$, turbine $i$ lies in the wake if $\beta_{ij}=\cos^{-1}\!\bigl(u_{ij}/\sqrt{u_{ij}^2+v_{ij}^2}\bigr)<\alpha$. Its downstream distance is $d_{ij}=\lvert u_{ij}-R/K\rvert$, and with the thrust coefficient $C_T$ the velocity deficit is
+\begin{equation}
+    \Delta_{ij} = 1-\frac{s_{\text{down}}}{s_{\text{up}}}=\frac{1 - \sqrt{1 - C_T}}{\left(1 + K d_{ij}/R\right)^2}.
+    \label{eq:deficit}
+\end{equation}
+The deficits are combined by the root-sum-square rule,
+\begin{equation}\label{eq5}
+\Delta_i(\theta) = \Bigl( \textstyle\sum_{j \ne i,\ \beta_{ij} < \alpha} \Delta_{ij}^2 \Bigr)^{1/2} .
+\end{equation}
+Within a direction bin, the local wind speed is the free-stream speed times $1-\Delta_i(\theta)$. Since $aS\sim\mathrm{Weibull}(\zeta,a\psi)$ for $S\sim\mathrm{Weibull}(\zeta,\psi)$ and $a>0$, it keeps the shape parameter and has the scale parameter
+\begin{equation}
+\psi_i(\theta) = \psi(\theta)\left[1-\Delta_i(\theta)\right],\quad i=1,\ldots,N. \label{eq:weibull-scale}
+\end{equation}
+Schematics of the farm, the direction convention and the wake cone are in Figs.~\ref{S-fig:S-farm}--\ref{S-fig:S-halfcone} of the supplementary material.
+
+\subsection{Power Model}
+\label{sec:powermodel}
+The power curve of the Kusiak--Song benchmark~\cite{Kusiak2010} is $f(s)=0$ for $s<s_{\text{cut-in}}$, $f(s)=\lambda_1 s+\lambda_0$ for $s_{\text{cut-in}}\le s\le s_{\text{rated}}$ and $f(s)=P_{\text{rated}}$ above, with $s_{\text{cut-in}}=3.5$~m/s, $s_{\text{rated}}=14$~m/s, $P_{\text{rated}}=1500$~kW, $\lambda_1=140.86$ and $\lambda_0=-500$. We use it as published: it is slightly negative just above the cut-in speed, jumps from 1472 to 1500~kW at the rated speed and has no cut-out speed. The expected power of turbine $i$,
+\begin{equation}\label{eq8}
+E(P_i) = \int_0^{360} p_\theta(\theta) \int_0^{\infty} f(s)\,
+       p_s\bigl(s; \zeta(\theta), \psi_i(\theta)\bigr) \, ds \, d\theta ,
+\end{equation}
+is evaluated, as in~\cite{Kusiak2010}, by a Riemann sum over $N_\theta$ direction bins with probabilities $p_l$ and $N_s$ speed bins between $s_{\text{cut-in}}$ and $s_{\text{rated}}$ (Section~\ref{S-sec:S-power} of the supplementary material). As in the earlier studies, the direction sum keeps the bin width in degrees as a factor; with 24 bins of $15^\circ$ and $\sum_l p_l=1$, the benchmark objective $\sum_i E(P_i)$ is thus 15 times the expected farm power in kW, and $\mathrm{AEP}\,[\mathrm{MWh}] = (\text{objective}/15)\times 8.76$; e.g., the wake-free benchmark objective of one turbine under Wind Data Set~I, $E_{\rm ideal}=14045.74$, corresponds to 936.38~kW or 8202.7~MWh per year.
+
+\subsection{Constraint Handling}
+\label{sec:constraints}
+After every position update, each coordinate is clipped to $[-r,r]$ (box repair); the boundary and spacing constraints are handled by a penalty on the violations $g^{\rm b}_{i}=x_i^2+y_i^2-r^2$ and $g^{\rm s}_{ij}=\ell_{\min}-\ell_{ij}$, and a layout is feasible if all of them are $\le0$. All penalty-based optimizers minimize the penalized wake loss
+\begin{equation}
+\begin{split}
+F_p(\mathbf X)={}&\Bigl(N E_{\rm ideal}-\sum_{i=1}^{N}E(P_i)\Bigr)+\sum_{i:\,g^{\rm b}_i>0}\bigl(1+\mu g^{\rm b}_i\bigr)^2\\
+&+\sum_{i<j:\,g^{\rm s}_{ij}>0}\bigl(1+\mu g^{\rm s}_{ij}\bigr)^2,\qquad \mu=10^{10},
+\end{split}
+\label{eq:penalty}
+\end{equation}
+where $\mathbf X=(x_1,y_1,\ldots,x_N,y_N)$; since $N E_{\rm ideal}$ is the wake-free benchmark objective, the first term is the wake loss reported in our tables. Any violation above about $10^{-7}$ (m or m$^2$) makes the penalty exceed the largest possible wake loss, so comparing $F_p$ values is a feasibility-first rule: a feasible layout always beats an infeasible one, feasible layouts are compared by wake loss, and infeasible ones by total penalty. The comparison of final runs follows the same order (feasibility-aware ranking, Section~\ref{sec:setup}).
