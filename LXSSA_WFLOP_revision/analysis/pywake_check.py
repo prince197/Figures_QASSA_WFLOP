@@ -89,7 +89,7 @@ def main(argv=None):
                 print(f"{farm} {bname:22s} {r['Model']:32s} AEP {r['AEP_GWh']:9.3f}  ideal {r['IdealAEP_GWh']:9.3f}  loss {r['WakeLossPct']:6.3f} %")
     out = pd.DataFrame(rows)
     out.insert(0, "Generated", time.strftime("%Y-%m-%d %H:%M:%S"))
-    out.to_csv(os.path.join(args.out_dir, "pywake_check.csv"), index=False, float_format="%.6f")
+    out.to_csv(os.path.join(args.out_dir, "pywake_check.csv"), index=False, float_format="%.10g")
     print(f"wrote pywake_check.csv ({len(out)} rows), PyWake {ver}")
 
     if args.layouts:

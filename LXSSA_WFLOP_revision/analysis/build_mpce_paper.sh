@@ -15,9 +15,10 @@
 # and the checks mpce_check_extra.py (X01...) and mpce_check_diag.py (D01..., on the stored mpce_summary_diag.json),
 # then pdflatex of the supplement and the main text in alternation (they cross-reference each other through xr).
 # A FAIL of a check is reported (summary at the end) but does not stop the build; an error of a script does.
-# NOT rerun here (separate steps, README_reproduce.md section 3): the diagnostics mpce_diagnostics.py (~18 min;
-# -> mpce_numbers_diag.tex, mpce_supp_diag.tex, mpce_summary_diag.json, figures_mpce/diag_*) and the theory checks
-# make_theory_figures.py --check (~3 min; T01...).
+# NOT rerun here (separate steps, README_reproduce.md section 3): the diagnostics mpce_diagnostics.py (~18 min, or
+# ~1.5 min of post-processing with --cache=DIR holding diag_raw.pkl; -> mpce_numbers_diag.tex, mpce_supp_diag.tex,
+# mpce_summary_diag.json, figures_mpce/diag_*) and the theory checks make_theory_figures.py --check (~3 min; T01...).
+# mpce_check_diag.py D22 fails if mpce_numbers_diag.tex is out of sync with the stored mpce_summary_diag.json.
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE"

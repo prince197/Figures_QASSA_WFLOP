@@ -6,3 +6,8 @@ numpy==2.4.6
 scipy==1.17.1
 pandas==3.0.6
 matplotlib==3.11.2
+pyyaml==6.0.1
+# PyYAML: needed by iea37_model.py (_yaml) for every IEA37 file and by the official iea37_data/iea37-aepcalc.py.
+# Not installed and not needed by the build: py_wake==2.6.20 (DTU PyWake, the version whose Horns Rev 1 data
+# hornsrev_model.py copies). It would only recompute the PyWake reference AEP of the 80-turbine farm, which the
+# analysis uses as a constant (mpce_results.PYWAKE_HR80_AEP = 662.5 GWh/yr); see README_reproduce.md, section 3.

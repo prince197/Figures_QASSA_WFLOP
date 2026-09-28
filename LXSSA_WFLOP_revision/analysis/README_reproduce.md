@@ -26,15 +26,49 @@ Convergence checkpoints: every (B-30)//200 evaluations (201 values at 6,030, 200
 | `mpce_omega90_s0of1.csv` | `python3 mpce_experiments.py omega90 0 1` | Phase 6: 12 split cases, PSO-VNS with omega = 0.9 (label `PSOBV90`; 5,430 PSO evaluations, then VNS), 30 seeds |
 | `mpce_rsdisc_s0of1.csv` | `python3 mpce_experiments.py rsdisc 0 1` | Phase 6: 68 cases, RSD-VNS (label `RSDVNS`): RS-VNS whose 2,985 Phase-1 samples after the common initial population are uniform in the farm disc (3,015 Phase-1 evaluations), 30 seeds |
 | `mpce_hr16new_s0of1.csv` | `python3 mpce_experiments.py hr16new` | Horns Rev 16, PSO and RS-VNS (superseded by `hrfix`) |
-| `mpce_feas_s0of1.csv` | `python3 mpce_experiments.py feasx <i> 8` for i = 0..7, then the 8 shards `mpce_feasx_s<i>of8.csv` concatenated into `mpce_feas_s0of1.csv` (1,680 rows, identical objectives / coordinates) | feasible initialization, six largest cases + Horns Rev 16, the 8 methods of M9 without RS-VNS. The documented `feas` experiment (9 methods incl. RS-VNS) was **not** run as such: RS-VNS would need one packing solve per random sample. `mpce_results.py` reads only `mpce_feas_s*`, never the `feasx` shards |
+| `mpce_feas_s0of1.csv` | `python3 mpce_experiments.py feasx <i> 8` for i = 0..7, then the 8 shards `mpce_feasx_s<i>of8.csv` concatenated in shard order with `python3 -c "import glob, pandas as pd; pd.concat([pd.read_csv(f) for f in sorted(glob.glob('mpce_feasx_s*of8.csv'))], ignore_index=True).to_csv('mpce_feas_s0of1.csv', index=False)"` (1,680 rows; this command reproduces the stored file byte for byte -- the default pandas float parser drops the last digit of some floats, below 1e-15 relative) | feasible initialization, six largest cases + Horns Rev 16, the 8 methods of M9 without RS-VNS. The documented `feas` experiment (9 methods incl. RS-VNS) was **not** run as such: RS-VNS would need one packing solve per random sample. `mpce_results.py` reads only `mpce_feas_s*`, never the `feasx` shards |
 | `mpce_feasp_s0of1.csv` | `python3 mpce_experiments.py feasp` | PSO-VNS arm of the feasible-initialization study |
 | `mpce_b30k_s<i>of3.csv`, `mpce_b30kp_s0of1.csv` | `mpce_experiments.py b30k <i> 3`, `b30kp` | 30,030 evaluations, six largest cases + Horns Rev 16 (M9, PSO-VNS arm) |
 | `mpce_b120k_s<i>of8.csv`, `mpce_b120kp_s<i>of4.csv` | `mpce_experiments.py b120k <i> 8`, `b120kp <i> 4` | 120,030 evaluations (Horns Rev 16: 10 seeds) |
 | `mpce_iea16_s0of1.csv`, `mpce_iea36_s0of1.csv`, `mpce_iea16p_s0of1.csv`, `mpce_iea36p_s0of1.csv` | `python3 iea37_experiments.py iea16` / `iea36` / `iea16p` / `iea36p` | IEA37 Case Study 1, 16 and 36 turbines, 6,030 and 30,030 evaluations |
 | `mpce_hrfix_s<i>of24.csv` | `python3 mpce_experiments.py hrfix <i> 24` for i = 0..23 | **All** Horns Rev 1 16-turbine runs after the direction-binning fix of `hornsrev_model.py` (commit 7676da9): 10 methods at 6,030 random / 6,030 feasible (no RS-VNS) / 30,030 (30 seeds) / 120,030 (10 seeds) |
-| `iea37_published_results.csv` | built from the IEA37 repository (`iea37_data/`) | published CS1 layouts evaluated with the official calculator |
+| `iea37_published_results.csv` | built from the official files in `iea37_data/` (Section 1a) | published CS1 layouts (baseline + participants 1-12, 16 and 36 turbines) evaluated with the official calculator; optional for `mpce_results.py` (without it C40 and the published-layout comparisons are PENDING) |
 | `ssa_reference_runs.csv` | `python3 ssa_reference.py` | SSA with radial boundary projection (boundary-rule check, robustness section) |
 | `../selected_30_run_data.csv` | archived runs of the earlier study | original SSA / LX-SSA / PSO / DE runs (evaluator validation, calibration, boundary-rule check) |
+
+### 1a. IEA37 published results (`iea37_published_results.csv`)
+
+Source: the IEA Wind Task 37 case-study repository (https://github.com/IEAWindTask37/iea37-wflo-casestudies, folder
+`cs1-2`, commit 267f6e5), copied unmodified into `iea37_data/` (`iea37-ex16/36.yaml`, `iea37-cs1-results/iea37-par<p>-opt<n>.yaml`,
+`iea37-aepcalc.py`, `iea37-335mw.yaml`, `iea37-windrose.yaml`). The file was assembled once by the IEA37 agent; the
+numeric columns (and the columns `mpce_results.load_published` reads: `Turbines`, `Participant`,
+`AEP_MWh_official_calc`, `Feasible_tol1e-3m`) are recomputed and compared with the stored file by
+
+```
+python3 - <<'PY'
+import importlib.util, os, numpy as np, pandas as pd
+import iea37_model as M
+sp = importlib.util.spec_from_file_location("calc", os.path.join(M.DATA, "iea37-aepcalc.py")); C = importlib.util.module_from_spec(sp); sp.loader.exec_module(C)
+wd, wf, ws = C.getWindRoseYAML(os.path.join(M.DATA, "iea37-windrose.yaml"))
+ci, co, rws, rp, dia = C.getTurbAtrbtYAML(os.path.join(M.DATA, "iea37-335mw.yaml"))
+rows = []
+for n in (16, 36):
+    for par, fn in [("baseline (example layout)", os.path.join(M.DATA, f"iea37-ex{n}.yaml"))] + \
+                   [(f"par{p}", os.path.join(M.DATA, "iea37-cs1-results", f"iea37-par{p}-opt{n}.yaml")) for p in range(1, 13)]:
+        xy, rep, _ = M.load_layout(fn); tc, _, _ = C.getTurbLocYAML(fn)
+        ex = float(np.sqrt((xy ** 2).sum(1)).max() - M.RADIUS[n])
+        rows.append(dict(Turbines=n, Participant=par, AEP_MWh_reported=rep,
+                         AEP_MWh_official_calc=round(float(C.calcAEP(tc, wf, ws, wd, dia, ci, co, rws, rp).sum()), 5),
+                         AEP_MWh_iea37_model=M.aep(xy), MinSpacing_m=M.min_spacing(xy), MaxBoundaryExcess_m=ex,
+                         **{"Feasible_tol1e-3m": bool(M.min_spacing(xy) >= M.SMIN - 1e-3 and ex <= 1e-3)}))
+N, O = pd.DataFrame(rows), pd.read_csv("iea37_published_results.csv")
+for c in N.columns[2:]:
+    print(c, "max rel. diff", np.max(np.abs(N[c].astype(float).values - O[c].astype(float).values) / np.maximum(1, np.abs(O[c].astype(float).values))))
+PY
+```
+
+(all differences <= 2e-16 on 2026-09-28). The descriptive columns (`Case`, `BoundaryRadius_m`, `Algorithm`, `Source`
+URL, `AEP_MWh_boundary_projected`, `RankAmongParticipants`, `Notes`) are not used by the analysis.
 
 Horns Rev loading rule (`mpce_results.py`, `load`): as soon as any `mpce_hrfix_s*.csv` exists, every Horns Rev
 row of every other file is dropped and all Horns Rev results come from `hrfix` (incomplete shards are used, and
@@ -63,6 +97,12 @@ checks are separate steps (Section 3).
 | CHECK-EXTRA PASS / FAIL list (X01...) | `mpce_check_extra.py` (reads `mpce_summary_extra.json`) |
 | CHECK-DIAG PASS / FAIL list (D01...) | `mpce_check_diag.py` (reads the stored `mpce_summary_diag.json`; the diagnostics are not rerun by the build) |
 
+Switch point of the two-phase variants (`mpce_results.switch_call`): swarm hybrids switch after
+30 + round((0.5 x 6,030 - 30) / c) x c Phase-1 evaluations (3,030 for PSO-VNS, SSA-VNS, LX-SSA-VNS); RS-VNS and RSD-VNS after
+round(0.5 x 6,030) = 3,015 (`rs_vns.RSVNS.n1`). Feasibility and loss at the switch are read at the last convergence
+checkpoint at or before it (call 3,030, resp. 3,000 for RS/RSD; check C61). Before review round 2 RS/RSD were read at
+3,030 (R3-9).
+
 Statistics conventions (see the docstrings of `mpce_results.py`): run-level Wilcoxon signed-rank tests on 30
 seed-paired runs, Holm-adjusted within each case over the comparisons of that case (the family differs between
 tables, e.g. PSO-VNS vs PSO: 7 comparisons in Table wtl, the component-analysis contrasts in Table ablation);
@@ -78,9 +118,11 @@ rank-biserial correlation.
 | Model schematics (`../figures_final/fig_wind_farm.pdf`, `fig_wake_model.pdf`, `fig_half_cone.pdf`) | `python3 make_model_figures.py` |
 | Minimum-spacing re-optimization table (`tab:spacing-authors`, copied from `authors_tables.tex`) | `python3 authors_experiments.py spacing` -> `authors_runs_spacing.csv`, then `python3 analyze_authors_runs.py` -> `authors_tables.tex` |
 | Packing bounds (`tab:capacity`, `packing_capacity.csv`) | `python3 packing_capacity.py` |
-| Evaluator checks (720 archived objectives within 8.7e-11 absolute; 22 of 24 Mann-Whitney p >= 0.05) | `python3 validate_evaluator.py`; `python3 calibrate_authors_code.py SSA,LXSSA <penalty>` -> `calibration_vs_recorded.csv` |
-| Horns Rev 1 validation against PyWake (80 turbines; `\NHRPyWakeDiff`) | the model side is recomputed by `mpce_results.py`; the PyWake reference (662.5 GWh/yr) is a constant (PyWake is not installed here) |
+| Evaluator checks (720 archived objectives within 8.7e-11 absolute; 22 of 24 Mann-Whitney p >= 0.05) | `python3 validate_evaluator.py` (reads `../selected_30_run_data.csv`; prints `records 720`, largest absolute objective difference 8.73e-11); `python3 calibrate_authors_code.py SSA,LXSSA <penalty>` -> `calibration_vs_recorded.csv` (Mann-Whitney tests of re-run vs. recorded objectives). The numbers are typed in 05_setup.tex, not generated as macros |
+| IEA37 calculator check (relative AEP difference < 1e-11 against the official example layouts) | `python3 iea37_model.py` (prints `rel.err` -8.8e-12 / -2.8e-12 / 2.9e-12 for ex16 / ex36 / ex64 and the largest per-direction difference, 5e-6 MWh); the published layouts: Section 1a |
+| Horns Rev 1 validation against PyWake (80 turbines; `\NHRPyWakeDiff`) | the model side (664.6 GWh/yr) is recomputed by `mpce_results.py` with `hornsrev_model.py`; the PyWake reference 662.5 GWh/yr (wake loss 10.96 %) is the constant `PYWAKE_HR80_AEP` in `mpce_results.py`, quoted from the previous study (`hornsrev_site_text.tex`). PyWake is neither installed nor pinned in `requirements.txt` (the Horns Rev data of `hornsrev_model.py` come from PyWake 2.6.20). To recompute it: `pip install py_wake==2.6.20`, then PyWake's Jensen model (`NOJ`, k = 0.04, squared-sum superposition) on `py_wake.examples.data.hornsrev1` (`Hornsrev1Site`, `V80`, `wt_x`, `wt_y`) with 5-degree direction and 1-m/s speed bins, AEP of the installed layout. **Not executed in this container**; the settings are those stated in `hornsrev_site_text.tex` |
+| Robustness re-evaluation (cubic power curve, Gaussian wake; `mpce_reevaluation.csv`, `mpce_tab_robust_final.tex`) | `mpce_robustness.py` via `mpce_results.py` reads the cache `mpce_reevaluation_cache.csv` (key: md5 of data set + coordinate string) and evaluates only layouts not yet in it. Full recomputation: `rm mpce_reevaluation_cache.csv && python3 mpce_results.py` (the cache is then re-seeded from `final_reevaluation.csv` of the previous version, and every other layout is re-evaluated) |
 | Literature comparison table | `literature_values.csv` / `literature_values.md` (collected by hand) |
 | Per-run data (Section 1) | the experiment scripts above (hours of CPU time) |
-| Diagnostics (instrumented runs; `mpce_numbers_diag.tex` (`\ND...`), `mpce_supp_diag.tex`, `mpce_summary_diag.json`, `../figures_mpce/diag_*.pdf`) | `python3 mpce_diagnostics.py [--procs=2] [--cache=DIR]` (~18 min on 2 cores; with `--cache` the raw instrumented runs are stored and reused), then `python3 mpce_check_diag.py` (also run by the build on the stored summary) |
+| Diagnostics (instrumented runs; `mpce_numbers_diag.tex` (`\ND...`), `mpce_supp_diag.tex`, `mpce_summary_diag.json`, `../figures_mpce/diag_*.pdf`) | `python3 mpce_diagnostics.py [--procs=2] [--cache=DIR]` (~18 min on 2 cores; with `--cache` the raw runs are stored in `DIR/diag_raw.pkl` and reused, so a re-run only post-processes (~1.5 min); `--rerun=T1,T2,T3,T1b` recomputes chosen studies, and studies missing from the cache are run). Study T1b (review round 2, R3-7): the 23 stored old-setting PSO runs whose final boundary status cannot be decided from the 1-mm coordinates (and that are not among the instrumented T1 runs) are re-run uninstrumented (~40 s) and verified against the stored runs; the final layouts are then classified with the paper's 1e-6 m rule (infeasible = stored `Feasible` flag, 286 of 2,040). Then `python3 mpce_check_diag.py` (also run by the build on the stored summary; D22 checks that `mpce_numbers_diag.tex` equals the macros regenerated from `mpce_summary_diag.json`) |
 | Theory figures and checks T01... (`../figures_mpce/theory_*.pdf`) | `python3 make_theory_figures.py --check` (~3 min) |
