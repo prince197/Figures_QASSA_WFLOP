@@ -125,6 +125,10 @@ def switch_call(alg, budget, np_=30, split=0.5):
     return np_ + max(1, int(round((split * budget - np_) / per))) * per
 
 
+HR_ORDER = ["PSOBV", "SSABV", "LXBV", "RSVNS", "BVNS", "PSOC", "SSA", "LXSSA", "DE", "SLSQP"]   # main-text order (tables)
+HEAD2 = {a: "\\begin{tabular}{@{}c@{}}%s\\\\%s\\end{tabular}" % tuple(LAB[a].split("-", 1)[0:1] + [LAB[a].split("-", 1)[1]])
+         for a in ("SSABV", "LXSSA", "SLSQP", "LXBV", "RSVNS", "PSOBV")}
+HEAD2 = {a: v.replace("\\\\", "-\\\\", 1) for a, v in HEAD2.items()}      # two-line column heads, e.g. SSA-/VNS
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
 RADII = {500: 10, 750: 12, 1000: 15}
 MID = {500: 6, 750: 8, 1000: 10}
@@ -345,7 +349,7 @@ def phase2_stat(D, alg, switch=None, validate=True):
     b = int(X.Budget.iloc[0])
     sw = switch or switch_call(alg, b)
     idx = int(round(sw / max(1, (b - 30) // 200))) - 1
-    gains, made_feasible, invalid = [], 0, 0
+    gains, made_feasible, invalid, lsw = [], 0, 0, []
     for ideal, obj, cv in zip(Hy.Ideal.values, Hy.Objective.values, Hy.Curve.values):
         at = float(cv.split(";")[idx])
         if validate and np.isfinite(at) and not curve_valid(np.array([at]), [ideal])[0]:
@@ -353,17 +357,21 @@ def phase2_stat(D, alg, switch=None, validate=True):
         if not np.isfinite(at):
             made_feasible += 1; continue
         l1, l2 = ideal - at, ideal - obj
+        lsw.append(100 * l1 / ideal)
         if l1 > 1e-9:
             gains.append(100 * (l1 - l2) / l1)
     g = np.array(gains)
+    Mall = curves(X)
+    feas_sw = float(100 * np.isfinite(Mall[:, idx]).mean())
     return dict(mean=float(g.mean()) if len(g) else np.nan, median=float(np.median(g)) if len(g) else np.nan,
                 n_runs_with_loss_at_switch=len(g), infeasible_at_switch_made_feasible=made_feasible,
                 excluded_penalized_value_at_switch=invalid,
                 final_infeasible=int(len(X) - len(Hy)), runs=int(len(X)), switch_call=int(sw),
-                pct_runs_improved=float(100 * np.mean(g > 1e-9)) if len(g) else np.nan)
+                pct_runs_improved=float(100 * np.mean(g > 1e-9)) if len(g) else np.nan,
+                mean_loss_at_switch_pct=float(np.mean(lsw)) if lsw else np.nan, feasible_at_switch_pct=feas_sw)
 
 
-def split_section(R6, base, tabs, key, label, primary=True):
+def split_section(R6, base, tabs, key, label, primary=True, supp=None):
     """Budget-split table (25 / 50 / 75 % of the calls for phase 1) of hybrid `base`, if its split runs exist."""
     ids = (f"{base}25", base, f"{base}75")
     if base not in PHASE1:
@@ -400,10 +408,28 @@ def split_section(R6, base, tabs, key, label, primary=True):
         lines.append(f"{'I' if ds == '1' else 'II'} & {r} & {n} & " + " & ".join(cells) + f" & {fmt_p(ph[0])} & {fmt_p(ph[1])} \\\\")
     p1 = LAB[PHASE1[base]]
     pre = "" if primary else f"Secondary analysis ({LAB[base]}, not the proposed method). "
-    tabs[key] = table("table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases (25\\%, 50\\% and 75\\% of the 6,030 calls for {p1}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Holm-adjusted Wilcoxon signed-rank $p$ of the 50\\% split against the 25\\% and 75\\% splits (30 seed-paired runs).",
-                      label, "cccccccc", "DS & $r$ & $N$ & 25\\% & 50\\% & 75\\% & $p$ (25) & $p$ (75)", lines, sep="2.5pt")
     SR = pd.DataFrame(srows)
+    # compact main-text table: mean loss over the cases, average rank among the three splits, W/T/L of 50% vs each
+    Ssp = case_stats(Sp, list(ids))
+    Rsp = rank_matrix(Ssp, list(ids))
+    avg_sp = Rsp.mean(0).to_dict()
+    mloss = {a: float(np.mean([c["loss"][a] for c in srows])) for a in ids}
+    def wtl_split(pcol, rbcol):
+        w = int(((SR[pcol] < 0.05) & (SR[rbcol] > 0)).sum()); l = int(((SR[pcol] < 0.05) & (SR[rbcol] < 0)).sum())
+        return dict(W=w, T=int(len(SR) - w - l), L=l)
+    w25, w75 = wtl_split("p25_holm", "rb25"), wtl_split("p75_holm", "rb75")
+    lower = {a: int(sum(c["loss"][a] < c["loss"][base] - 1e-12 for c in srows)) for a in (ids[0], ids[2])}
+    cl = [f"{int(100 * w_)}\\% & {mloss[a]:.3f} & {avg_sp[a]:.2f} & " + ("--" if a == base else wtl_str(w25 if a == ids[0] else w75)) + " \\\\"
+          for w_, a in zip((0.25, 0.5, 0.75), ids)]
+    if primary:
+        tabs[key] = table("table", f"Budget Split of {LAB[base]} (25\\%, 50\\% and 75\\% of the 6,030 Calls for {p1}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the Three Splits, and Cases in Which the Default 50\\% Split Is Significantly Better / Not Different / Worse (Wilcoxon, Holm-Adjusted)",
+                          label, "cccc", f"{p1} share $\\omega$ & Mean loss (\\%) & Avg.\\ rank & 50\\% vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt")
+        label = label + "-cases"
+    (supp.append if supp is not None else (lambda t: tabs.__setitem__(key, t)))(table("table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases (25\\%, 50\\% and 75\\% of the 6,030 calls for {p1}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Holm-adjusted Wilcoxon signed-rank $p$ of the 50\\% split against the 25\\% and 75\\% splits (30 seed-paired runs).",
+                      label, "cccccccc", "DS & $r$ & $N$ & 25\\% & 50\\% & 75\\% & $p$ (25) & $p$ (75)", lines, sep="2.5pt", pos="!htb"))
     out = dict(method=base, primary=primary, cases=srows, best_count=SR.best.value_counts().to_dict(),
+               n_cases=int(len(SR)), avg_rank=avg_sp, mean_loss=mloss, wtl_50_vs_25=w25, wtl_50_vs_75=w75,
+               n_lower_loss_than_50=lower,
                sig_vs25=int((SR.p25_holm < 0.05).sum()), sig_vs75=int((SR.p75_holm < 0.05).sum()),
                sig_vs25_50better=int(((SR.p25_holm < 0.05) & (SR.rb25 > 0)).sum()),
                sig_vs75_50better=int(((SR.p75_holm < 0.05) & (SR.rb75 > 0)).sum()))
@@ -568,6 +594,7 @@ def load(data_dir, partial):
             A6 = pd.concat([A6, f], ignore_index=True)
             fallbacks.append(f"PSOC ({'68 cases' if dom[0] == '1' else 'Horns Rev 16'}): constriction-PSO runs missing "
                              f"-> using the old-settings PSO runs relabelled as PSOC (DEVELOPMENT ONLY)")
+    new["pso_old"] = A6[(A6.Algorithm == "PSO") & (A6.Source != "FALLBACK old PSO")].copy()   # w = 0.7, c1 = c2 = 2
     A6 = A6[A6.Algorithm != "PSO"]
     # nine-method experiments + their PSO-VNS-only arms (PSO-VNS becomes the tenth method, M10)
     extra = [new[e] for e in ("feas", "b30k", "b120k", "iea16", "iea36", "feasp", "b30kp", "b120kp", "iea16p", "iea36p")
@@ -590,9 +617,10 @@ def common_seeds(ALL):
 
 
 # ------------------------------------------------------------------ LaTeX helpers
-def table(env, caption, label, spec, header, lines, size="\\scriptsize", sep="3pt", resize=False, pos="!t"):
+def table(env, caption, label, spec, header, lines, size="\\scriptsize", sep="3pt", resize=False, pos="!t", foot=None):
     body = "\n".join(lines)
-    tab = f"\\begin{{tabular}}{{{spec}}}\n\\toprule\n{header} \\\\\n\\midrule\n{body}\n\\bottomrule\n\\end{{tabular}}"
+    ft = "" if not foot else "\n" + "\n".join(foot)
+    tab = f"\\begin{{tabular}}{{{spec}}}\n\\toprule\n{header} \\\\\n\\midrule\n{body}\n\\bottomrule{ft}\n\\end{{tabular}}"
     if resize:
         tab = "\\resizebox{\\textwidth}{!}{%\n" + tab + "}"
     return (f"\\begin{{{env}}}[{pos}]\n\\centering\n\\caption{{{caption}}}\n\\label{{{label}}}\n"
@@ -703,6 +731,23 @@ def main(argv=None):
                               f"tab:res-{ds}-{r}", "c" * (2 + len(MAINP)),
                               "$N$ & Ideal & " + " & ".join(LAB[a] for a in MAINP), lines, resize=True, sep="2pt"))
 
+    # --- minimum-spacing re-optimization (earlier runs with the original SSA / LX-SSA code; analyze_authors_runs.py)
+    #     and constructible turbine counts (packing_capacity.py), copied into the supplement after the per-case tables
+    try:
+        at = open(os.path.join(HERE, "authors_tables.tex")).read()
+        m_ = re.search(r"\\begin\{table\*\}\[!t\]\n(?:(?!\\end\{table\*\}).)*?\\label\{tab:spacing-authors\}.*?\\end\{table\*\}", at, re.S)
+        if m_:
+            t_ = m_.group(0).replace("with the authors' LX-SSA and SSA code", "re-optimization with the original LX-SSA and SSA code") \
+                .replace("DS & Radius &", "DS & $r$ (m) &").replace("[!t]", "[!htb]", 1)
+            supp.append(t_)
+        cap = pd.read_csv(os.path.join(HERE, "packing_capacity.csv"))
+        cl = [f"{r} & " + " & ".join(str(int(cap[(cap.Radius == r) & (cap.Spacing == sp_)].MaxNConstructed.iloc[0])) for sp_ in ("4D", "5D", "6D"))
+              + f" & {RADII[r]} \\\\" for r in RADII]
+        supp.append(table("table", "Largest turbine count for which a layout satisfying the circular boundary and the minimum spacing was constructed (multi-start packing search; constructive lower bound), compared with the largest tested $N$.",
+                          "tab:capacity", "ccccc", "$r$ (m) & $4D$ (308 m) & $5D$ (385 m) & $6D$ (462 m) & Largest tested $N$", cl, size="\\footnotesize", pos="!htb"))
+    except Exception as e:                                   # pragma: no cover
+        log(f"  spacing tables not copied: {e}")
+
     # --- W/T/L table
     lines = []
     for ds in ("1", "2"):
@@ -713,9 +758,27 @@ def main(argv=None):
     lines.append("\\midrule\nAll & & %d & " % C[CASE].drop_duplicates().shape[0] +
                  " & ".join(wtl_str(C[C.Baseline == b].Outcome.value_counts()) for b in others) + " \\\\")
     lines.append("$\\tilde r_{\\rm rb}$ & & & " + " & ".join(f"{C[C.Baseline == b].RB.median():+.2f}" for b in others) + " \\\\")
-    tabs["wtl"] = table("table", "Pairwise outcome of %s against each method: number of cases in which %s is significantly better / not significantly different / significantly worse (two-sided Wilcoxon signed-rank test on 30 seed-paired runs, Holm-adjusted over the %d comparisons of each case, $\\alpha=0.05$; infeasible runs rank below all feasible runs). Last row: median over the cases of the rank-biserial correlation $r_{\\rm rb}$ (positive = %s better)." % (fl, fl, len(others), fl),
+    nword = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine"}.get(len(others), str(len(others)))
+    tabs["wtl"] = table("table", "Pairwise Outcome of %s Against Each Method: Cases in Which %s Is Significantly Better / Not Different / Worse (Two-Sided Wilcoxon Signed-Rank Test, 30 Seed-Paired Runs, Holm-Adjusted over the %s Comparisons of Each Case, $\\alpha=0.05$; an Infeasible Run Ranks Below Every Feasible Run); Last Row: Median Rank-Biserial Correlation (Positive = %s Better)" % (fl, fl, nword, fl),
                         "tab:wtl", "llc" + "c" * len(others),
-                        "DS & $r$ (m) & Cases & " + " & ".join(LAB[b] for b in others), lines, sep="2.5pt")
+                        "DS & $r$ (m) & Cases & " + " & ".join(HEAD2.get(b, LAB[b]) for b in others), lines, sep="1.6pt")
+    # W/T/L and mean loss difference by farm size (N >= 10 vs N < 10), for the text
+    big = C.Turbines >= 10
+    Sq = S[S.Qualified].pivot_table(index=CASE, columns="Algorithm", values="Loss")
+    bign = Sq.index.get_level_values("Turbines") >= 10
+    by_n = {}
+    for b in others:
+        x = C[C.Baseline == b]
+        d = (Sq[FOCUS] - Sq[b]) if b in Sq else pd.Series(dtype=float)
+        by_n[b] = dict(wtl_large=x[x.Turbines >= 10].Outcome.value_counts().to_dict(),
+                       wtl_small=x[x.Turbines < 10].Outcome.value_counts().to_dict(),
+                       n_large=int(x[x.Turbines >= 10][CASE].drop_duplicates().shape[0]),
+                       n_small=int(x[x.Turbines < 10][CASE].drop_duplicates().shape[0]),
+                       mean_dloss_pp_large=float(d[bign].mean()) if len(d) else np.nan,
+                       mean_dloss_pp_small=float(d[~bign].mean()) if len(d) else np.nan,
+                       mean_abs_dloss_pp_small=float(d[~bign].abs().mean()) if len(d) else np.nan,
+                       max_abs_dloss_pp_small=float(d[~bign].abs().max()) if len(d) else np.nan)
+    summary["main"]["by_n"] = by_n
 
     # --- Friedman + case-mean Wilcoxon table
     order = sorted(MAINP, key=lambda a: FR["avg_rank"][a])
@@ -728,13 +791,101 @@ def main(argv=None):
             dl = f"${CW[a]['mean_dloss_pp']:+.3f}$"
         lines.append(f"{LAB[a]} & {FR['avg_rank'][a]:.2f} & {FR['sole_best_count'][a]} & {feas_pct[a]:.1f} & "
                      f"{summary['main']['cases_below_half_feasible'][a]} & {pz} & {pw} & {rb} & {dl} \\\\")
-    tabs["friedman68"] = table(
+    supp.append(table(
         "table*", "Case-level analysis over the %d benchmark cases. Ranks of the mean feasible objective within each case (1 = best); a method with fewer than 15 feasible runs out of 30 in a case is ranked below all other methods, by its number of feasible runs (``$<$15'': number of such cases). Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$, $p=%s$. $p_z$: Holm-adjusted $p$ of the average-rank $z$ test against %s (best-ranked method: %s). Because mean-rank post hoc tests depend on the pool of compared methods \\cite{Benavoli2016}, pairwise two-sided Wilcoxon signed-rank tests on the per-case mean wake losses (\\%%) are also given: $p_W$ (Holm-adjusted over the %d comparisons), matched-pairs rank-biserial correlation $r_{\\rm rb}$ (positive = %s better) and mean difference $\\overline{\\Delta L}$ of the wake loss (percentage points, %s minus method, over the cases where both methods have at least 15 feasible runs). ``Best'': cases in which the method alone ranks first; ``Feas.'': percentage of feasible runs."
         % (FR["n_cases"], FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"]).strip("$"), FR["iman_davenport"],
            fmt_p(FR["iman_davenport_p"]).strip("$"), fl, LAB[FR["best_ranked"]], len(others), fl, fl),
-        "tab:friedman68", "lcccccccc",
+        "tab:friedman68-full", "lcccccccc",
         "Method & Avg.\\ rank & Best & Feas.\\ (\\%) & $<$15 & $p_z$ & $p_W$ & $r_{\\rm rb}$ & $\\overline{\\Delta L}$ (pp)",
-        lines)
+        lines))
+    # main-text version (single column; manuscript layout)
+    lines = []
+    for a in order:
+        if a == FOCUS:
+            pz = pw = dl = "--"
+        else:
+            pz = fmt_p(FR["p_holm_vs_focus"][a]); pw = fmt_p(CW[a]["p_holm"])
+            dl = f"${CW[a]['mean_dloss_pp']:+.3f}$"
+        lines.append(f"{LAB[a]} & {FR['avg_rank'][a]:.2f} & {FR['sole_best_count'][a]} & {feas_pct[a]:.1f} & {pz} & {pw} & {dl} \\\\")
+    tabs["friedman68"] = table(
+        "table", "Case-Level Analysis over the %d Benchmark Cases. Avg.\\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\\%%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against %s. Because Mean-Rank Tests Depend on the Pool of Methods~\\cite{Benavoli2016}, $p_W$ and $\\overline{\\Delta L}$ Give the Holm-Adjusted Two-Sided Wilcoxon Signed-Rank Test on the %d Per-Case Mean Wake Losses and the Mean Wake-Loss Difference (Percentage Points, %s Minus Method; Negative = %s Better)"
+        % (FR["n_cases"], fl, FR["n_cases"], fl, fl),
+        "tab:friedman68", "lcccccc",
+        "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines, sep="2.8pt",
+        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$.}"
+              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"]).strip("$"), FR["iman_davenport"])])
+
+    # --- further numbers quoted in the text (all written to summary["main"])
+    ref = PHASE1.get(FOCUS)                      # phase-1 method of the focus hybrid (PSO for PSO-VNS)
+    largest = {}
+    for ds in ("1", "2"):
+        for r, n in RADII.items():
+            s_ = S[(S.Dataset == ds) & (S.Radius == r) & (S.Turbines == n)].set_index("Algorithm")
+            largest[f"{ds}-{r}-{n}"] = {a: (float(s_.Loss[a]) if bool(s_.Qualified[a]) else None) for a in MAINP}
+    summary["main"]["loss_largest_n"] = largest
+    if ref in MAINP:
+        dd = [v[ref] - v[FOCUS] for v in largest.values() if v.get(ref) is not None and v.get(FOCUS) is not None]
+        summary["main"]["largest_n_loss_reduction_vs_phase1_pp"] = dict(phase1=ref, min=float(min(dd)), max=float(max(dd)),
+                                                                        n=len(dd), all_positive=bool(min(dd) > 0))
+    sm = S[(S.Turbines <= 3) & S.Qualified]
+    summary["main"]["max_loss_n_le_3_pct"] = float(sm.Loss.max())
+    summary["main"]["n_runs"] = int(len(G))
+    # feasibility of the phase-1 swarm at the switch in the densest cases (500 m, N = 10)
+    if FOCUS in HYBRIDS:
+        dense = {}
+        for ds in ("1", "2"):
+            x = G[(G.Algorithm == FOCUS) & (G.Dataset == ds) & (G.Radius == 500) & (G.Turbines == 10)]
+            if not len(x):
+                continue
+            M = curves(x)
+            idx = int(round(switch_call(FOCUS, 6030) / max(1, (6030 - 30) // 200))) - 1
+            ph1 = G[(G.Algorithm == ref) & (G.Dataset == ds) & (G.Radius == 500) & (G.Turbines == 10)] if ref else x.iloc[:0]
+            dense[ds] = dict(feasible_at_switch_pct=float(100 * np.isfinite(M[:, idx]).mean()),
+                             feasible_final_pct=float(100 * x.Feasible.mean()),
+                             phase1_alone_final_feasible_pct=float(100 * ph1.Feasible.mean()) if len(ph1) else None)
+        summary["main"]["dense_500_10"] = dense
+    # minimum spacing of the feasible final layouts (5D = 385 m, 6D = 462 m)
+    Fz = G[G.Feasible]
+    mins = np.array([np.min(np.linalg.norm(xy[:, None] - xy[None], axis=2)[np.triu_indices(len(xy), 1)]) if len(xy) > 1 else np.inf
+                     for xy in map(coords, Fz.Coordinates)])
+    D_ = 77.0
+    sp = {}
+    for tag, m in (("all", np.ones(len(Fz), bool)), ("n11_15", (Fz.Turbines >= 11).values), ("n6_10", ((Fz.Turbines >= 6) & (Fz.Turbines <= 10)).values)):
+        sp[tag] = dict(n_layouts=int(m.sum()), pct_5d=float(100 * np.mean(mins[m] >= 5 * D_ - 1e-6)),
+                       pct_6d=float(100 * np.mean(mins[m] >= 6 * D_ - 1e-6)))
+    summary["main"]["spacing_share"] = sp
+    log(f"  spacing: {sp}")
+
+    # --- earlier PSO setting (w = 0.7, c1 = c2 = 2; fresh_grid.csv) in place of the constriction PSO
+    PO = new.get("pso_old")
+    if PO is not None and len(PO) and "PSOC" in MAINP:
+        PO = PO[PO.Dataset.isin(["1", "2"]) & (PO.Budget == 6030)]
+        pool = [("PSO" if a == "PSOC" else a) for a in MAINP]
+        GP = pd.concat([G[G.Algorithm != "PSOC"], PO], ignore_index=True)
+        SP = case_stats(GP, pool)
+        FP = friedman_block(rank_matrix(SP, pool), pool, focus=FOCUS if FOCUS != "PSOC" else "PSO")
+        ar = FP["avg_rank"]
+        GC = pd.concat([G[G.Algorithm == "PSOC"], PO], ignore_index=True)
+        oc = []
+        for _, sub in GC.groupby(CASE):
+            t = paired_vs(sub, "PSOC", ["PSO"])
+            if t:
+                oc.append(t[0]["Outcome"])
+        SC = case_stats(GC, ["PSOC", "PSO"])
+        Lq = SC[SC.Qualified].pivot_table(index=CASE, columns="Algorithm", values="Loss").dropna()
+        summary["pso_setting"] = dict(
+            old_avg_rank=float(ar["PSO"]), old_rank_position=int(1 + sorted(ar.values()).index(ar["PSO"])),
+            n_methods=len(pool), constriction_avg_rank=float(FR["avg_rank"]["PSOC"]),
+            constriction_rank_position=int(1 + sorted(FR["avg_rank"].values()).index(FR["avg_rank"]["PSOC"])),
+            old_feasible_pct=float(100 * PO.Feasible.mean()), constriction_feasible_pct=float(feas_pct["PSOC"]),
+            constriction_vs_old_wtl=pd.Series(oc).value_counts().to_dict(),
+            old_minus_constriction_loss_pp=float((Lq["PSO"] - Lq["PSOC"]).mean()),
+            n_cases_loss=int(len(Lq)), old_cases_below_half_feasible=int((~SP[SP.Algorithm == "PSO"].Qualified).sum()),
+            pool_avg_rank=ar)
+        log(f"  old PSO setting: avg rank {ar['PSO']:.2f} (position {summary['pso_setting']['old_rank_position']} of {len(pool)}), "
+            f"feasible {summary['pso_setting']['old_feasible_pct']:.1f}%, constriction vs old {summary['pso_setting']['constriction_vs_old_wtl']}")
+    else:
+        summary["pso_setting"] = None
 
     # --- figures: average ranks
     fig, ax = plt.subplots(figsize=(3.4, 2.1))
@@ -856,8 +1007,8 @@ def main(argv=None):
                            note="wall-clock times come from the machine that produced each file; runs from different "
                                 "files may not be directly comparable")
     lines = [f"{LAB[a]} & {rt[a]:.3f} & {rn.loc[a].min():.1f}--{rn.loc[a].max():.1f} \\\\" for a in MAINP]
-    tabs["cost"] = table("table", "Computational cost at 6,030 objective calls: mean wall-clock time per objective call (including the optimizer overhead) and range over $N$ of the mean time per run (single core).",
-                         "tab:cost", "lcc", "Method & ms per call & s per run", lines)
+    supp.append(table("table", "Computational cost at 6,030 objective calls: mean wall-clock time per objective call (including the optimizer overhead) and range over $N$ of the mean time per run (single core). Times come from the machine that produced each result file.",
+                      "tab:cost", "lcc", "Method & ms per call & s per run", lines))
 
     # =========================================================== 2. ablation
     log("\n[2] Ablation")
@@ -869,16 +1020,20 @@ def main(argv=None):
     if H0 != FOCUS:
         log(f"  focus {fl} is not a two-phase hybrid: ablation built around {LAB[H0]} (phase 1 = {fl})")
     P1 = PHASE1[H0]
-    ablv = list(dict.fromkeys([H0, P1, "BVNS", "RSVNS"] + [h for h in HYBRIDS if h != H0] + ["LXSSA", "SSA"]))
+    ablv = list(dict.fromkeys([H0] + [h for h in HYBRIDS if h != H0] + ["RSVNS", "BVNS", P1] +
+                              [PHASE1[h] for h in HYBRIDS if h != H0]))           # table order: hybrids, controls, swarms
     ablp = [a for a in ablv if a in have]
     if [a for a in ablv if a not in have]:
         log(f"  ablation variants without data (dropped with their contrasts): {[a for a in ablv if a not in have]}")
     GB = GA[GA.Algorithm.isin(ablp)]
-    CONTR = [(H0, P1, f"VNS phase (after {LAB[P1]})"),
-             (H0, "BVNS", f"{LAB[P1]} start vs.\\ best initial point"),
-             (H0, "RSVNS", "swarm phase vs.\\ random sampling (equal calls)")]
-    CONTR += [(H0, h, f"choice of phase-1 swarm ({LAB[P1]} vs.\\ {LAB[PHASE1[h]]})") for h in HYBRIDS if h != H0]
-    CONTR += [("LXSSA", "SSA", "Laplace step (LX-SSA vs.\\ SSA, no VNS)")]
+    CONTR = [(H0, P1, "VNS phase"),
+             (H0, "BVNS", "swarm start vs.\\ best initial point"),
+             (H0, "RSVNS", "swarm vs.\\ random sampling")]
+    CONTR += [(H0, h, f"{LAB[P1]} vs.\\ {LAB[PHASE1[h]]} as Phase~1") for h in HYBRIDS if h != H0]
+    CONTR += [("SSABV", "RSVNS", "SSA vs.\\ random sampling")] if H0 != "SSABV" else []
+    CONTR += [("SSABV", "LXBV", "Laplace step in the hybrid")] if H0 != "LXBV" else []
+    CONTR += [("LXSSA", "SSA", "Laplace step alone")]
+    CONTR = list(dict.fromkeys(CONTR))
     CONTR = [c for c in CONTR if c[0] in ablp and c[1] in ablp]
     arows = []
     for (ds, r, n), sub in GB.groupby(CASE):
@@ -903,27 +1058,27 @@ def main(argv=None):
     comp = {"PSOBV": ("PSO", "VNS"), "SSABV": ("SSA", "VNS"), "LXBV": ("LX-SSA", "VNS"), "RSVNS": ("random sampling", "VNS"),
             "BVNS": ("--", "VNS"), "PSOC": ("PSO", "--"), "SSA": ("SSA", "--"), "LXSSA": ("LX-SSA", "--")}
     afeas = {a: float(GB[GB.Algorithm == a].Feasible.mean() * 100) for a in ablp}
-    rows1 = [f"{LAB[a]} & {comp[a][0]} & {comp[a][1]} & {FA['avg_rank'][a]:.2f} & {afeas[a]:.1f} \\\\"
-             for a in sorted(ablp, key=lambda a: FA["avg_rank"][a])]
+    rows1 = [f"{LAB[a]} & {comp[a][0]} & {comp[a][1]} & {FA['avg_rank'][a]:.2f} & {afeas[a]:.1f} \\\\" for a in ablp]
     rows2 = []
     for a, b, what in CONTR:
         x = A[(A.A == a) & (A.B == b)]
         rows2.append(f"{LAB[a]} vs.\\ {LAB[b]} & {what} & {wtl_str(x.Outcome.value_counts())} & ${x.DLoss.mean():+.3f}$ \\\\")
+    nw = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten"}
     tabs["ablation"] = (r"""\begin{table}[!t]
 \centering
-\caption{Component ablation of %s over the 68 benchmark cases (30 seed-paired runs, 6,030 calls; every hybrid spends the first half of the budget on its phase-1 swarm and refines the best layout found by the same basic VNS; RS-VNS spends the first half on random layouts). Top: phase-1 and phase-2 components, average rank among the %d variants (ranking rule of Table~\ref{tab:friedman68}; Friedman $\chi^2_F=%.1f$, %d d.f., $p=%s$) and percentage of feasible runs. Bottom: planned contrasts, number of cases in which the first variant is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the %d contrasts of each case, $\alpha=0.05$), and mean difference of the wake loss $\overline{\Delta L}$ (percentage points; negative = first variant better).}
+\caption{Ablation over the 68 Benchmark Cases (30 Seed-Paired Runs, 6,030 Calls). Top: Average Rank Among the %s Variants (Friedman $\chi^2_F=%.1f$, %d d.f., $p=%s$) and Feasible Runs. Bottom: Planned Contrasts, Cases in Which the First Variant Is Significantly Better / Not Different / Worse (Wilcoxon, Holm-Adjusted over the %s Contrasts of Each Case, $\alpha=0.05$), and Mean Difference of the Wake Loss $\overline{\Delta L}$ (Percentage Points; Negative = First Variant Better)}
 \label{tab:ablation}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lcccc}
 \toprule
 Variant & Phase 1 & Phase 2 & Avg.\ rank & Feas.\ (\%%) \\
 \midrule
-""" % (LAB[H0], len(ablp), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), len(CONTR)) + "\n".join(rows1) + r"""
+""" % (nw.get(len(ablp), len(ablp)), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), nw.get(len(CONTR), len(CONTR)).lower()) + "\n".join(rows1) + r"""
 \bottomrule
 \end{tabular}
 
 \smallskip
-\begin{tabular}{l>{\raggedright\arraybackslash}p{2.8cm}cc}
+\begin{tabular}{l>{\raggedright\arraybackslash}p{2.9cm}cc}
 \toprule
 Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
 \midrule
@@ -944,8 +1099,14 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
     # phase-2 statistic (VNS phase after the swarm) for every hybrid (and RS-VNS): share of the wake loss
     # left at the switch that the VNS phase removes; runs infeasible at the switch that end feasible
     ph2 = {alg: phase2_stat(GA, alg) for alg in HYBRIDS + ["RSVNS"] if alg in have}
+    if P1 in have:      # the phase-1 swarm alone over the same second half of the budget (no VNS)
+        ph2[P1 + "_continued"] = phase2_stat(GA, P1, switch=switch_call(H0, 6030))
+    summary["ablation"]["n_runs"] = int(len(GB))
+    summary["ablation"]["n_runs_benchmark_total"] = int(len(GA[GA.Algorithm.isin(set(MAINP) | set(ablp))]))
     summary["ablation"]["phase2_loss_reduction_pct"] = ph2
     for alg, v in ph2.items():
+        if v is None:
+            continue
         log(f"  phase 2 of {LAB[alg]} (switch at call {v['switch_call']:,}) removes {v['mean']:.2f}% (median {v['median']:.2f}%) "
             f"of the loss left at the switch; {v['infeasible_at_switch_made_feasible']} runs infeasible at the switch made feasible")
 
@@ -1003,9 +1164,9 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
 
     # =========================================================== 3. budget split
     log("\n[3] Budget split")
-    summary["split"] = split_section(R6, FOCUS, tabs, "split", "tab:split", primary=True)
+    summary["split"] = split_section(R6, FOCUS, tabs, "split", "tab:split", primary=True, supp=supp)
     if FOCUS != "SSABV":
-        summary["split_ssabv"] = split_section(R6, "SSABV", tabs, "split_ssabv", "tab:split-ssabv", primary=False)
+        summary["split_ssabv"] = split_section(R6, "SSABV", tabs, "split_ssabv", "tab:split-ssabv", primary=False, supp=supp)
 
     # =========================================================== 4. Horns Rev 16
     log("\n[4] Horns Rev 1, 16 turbines")
@@ -1016,7 +1177,7 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         hr, inst = None, INSTALLED_HR16
         log(f"  hornsrev_model unavailable ({e}); installed AEP = {INSTALLED_HR16}")
     H = R6[(R6.Dataset == "HR") & (R6.Turbines == 16)]
-    hm = MAINP + (["RSVNS"] if "RSVNS" in set(H.Algorithm) else [])
+    hm = [a for a in HR_ORDER if a in M10]
     H = H[H.Algorithm.isin(hm)]
     hm = [a for a in hm if a in set(H.Algorithm)]
     if len(H):
@@ -1039,9 +1200,10 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
             hrsum[a] = dict(mean=float(s.Mean), sd=float(s.SD), best=float(s.Best), loss_pct=float(s.Loss),
                             feasible=int(s.NFeas), runs=int(s.N), rank=float(s.Rank),
                             gain_vs_installed_pct=float(100 * (s.Mean / inst - 1)),
+                            runs_above_installed=int(((H.Algorithm == a) & H.Feasible & (H.Objective > inst)).sum()),
                             p_holm=None if a == FOCUS else tt[a]["PHolm"], rb=None if a == FOCUS else tt[a]["RB"])
-        tabs["hr16"] = table("table", "Horns Rev~1 site case, 16-turbine block (Vestas V80 power and thrust curves, measured 12-sector wind climate, installed outline; Jensen wake $k=0.04$; minimum spacing $4D=320$~m; wake-free AEP %.2f~GWh/yr): AEP in GWh/yr, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls, mean wake loss (\\%%), feasible runs, Holm-adjusted Wilcoxon signed-rank $p$ of %s vs.\\ each method and rank-biserial $r_{\\rm rb}$ (positive = %s better); run-level Friedman $p=%s$ (over the seeds common to all methods)." % (ideal, fl, fl, fmt_p(pf).strip("$")),
-                             "tab:hr-site", "lccccc", "Layout / method & AEP & Loss (\\%) & Feas. & $p_{\\rm Holm}$ & $r_{\\rm rb}$", lines, size="\\footnotesize", sep="3pt")
+        supp.append(table("table", "Horns Rev~1 site case, 16-turbine block (Vestas V80 power and thrust curves, measured 12-sector wind climate, installed outline; Jensen wake $k=0.04$; minimum spacing $4D=320$~m; wake-free AEP %.2f~GWh/yr): AEP in GWh/yr, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls, mean wake loss (\\%%), feasible runs, Holm-adjusted Wilcoxon signed-rank $p$ of %s vs.\\ each method and rank-biserial $r_{\\rm rb}$ (positive = %s better); run-level Friedman $p=%s$ (over the seeds common to all methods)." % (ideal, fl, fl, fmt_p(pf).strip("$")),
+                             "tab:hr-site-full", "lccccc", "Layout / method & AEP & Loss (\\%) & Feas. & $p_{\\rm Holm}$ & $r_{\\rm rb}$", lines, size="\\footnotesize", sep="3pt", pos="!htb"))
         summary["hr16"] = dict(installed_aep=inst, ideal_aep=ideal, installed_loss_pct=100 * (1 - inst / ideal),
                                friedman_p=float(pf), methods=hrsum,
                                sources=H.groupby("Algorithm").Source.first().to_dict())
@@ -1076,7 +1238,7 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         ax.set_aspect("equal"); ax.tick_params(labelsize=6)
         ax.set_title("Layouts (m); AEP in GWh/yr", fontsize=8, color=INK)
         ax.legend(fontsize=6, loc="upper left", bbox_to_anchor=(0, -0.1), ncol=1)
-        legend_row(fig, hm, ncol=len(hm))
+        legend_row(fig, hm, ncol=5)
         fig.tight_layout()
         FG.save(fig, "hr16")
     else:
@@ -1122,9 +1284,9 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
             fb = "$^\\dagger$" if x.RandomSource.str.startswith("FALLBACK").any() else ""
             lines.append(f"{LAB[a]}{fb} & {x.LossR.mean():.3f} & {x.LossF.mean():.3f} & {100 * x.FeasR.sum() / x.NR.sum():.1f} & "
                          f"{100 * x.FeasF.sum() / x.NF.sum():.1f} & {wtl_str(x.Outcome.value_counts())} \\\\")
-        tabs["feasinit"] = table("table", "Feasibility-preserving versus uniform random initialization at 6,030 calls on the six largest benchmark cases and the Horns Rev 16-turbine block (%d cases, 30 seed-paired runs each): mean wake loss (\\%%) of the feasible runs averaged over the cases, percentage of feasible runs, and number of cases in which feasible initialization is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the methods of each case). Per-case values: Supplementary Table~\\ref{tab:feasinit-cases}.%s" % (Dt.case.nunique(), " $^\\dagger$: random-initialization runs are a development fallback." if "dagger" in "".join(lines) else ""),
+        supp.append(table("table", "Feasibility-preserving versus uniform random initialization at 6,030 calls on the six largest benchmark cases and the Horns Rev 16-turbine block (%d cases, 30 seed-paired runs each): mean wake loss (\\%%) of the feasible runs averaged over the cases, percentage of feasible runs, and number of cases in which feasible initialization is significantly better / not different / worse (Wilcoxon signed-rank, Holm-adjusted over the methods of each case). Per-case values: Supplementary Table~\\ref{tab:feasinit-cases}.%s" % (Dt.case.nunique(), " $^\\dagger$: random-initialization runs are a development fallback." if "dagger" in "".join(lines) else ""),
                                  "tab:feasinit", "lccccc",
-                                 "Method & \\multicolumn{2}{c}{Loss (\\%)} & \\multicolumn{2}{c}{Feas. (\\%)} & W/T/L \\\\\n & random & feasible & random & feasible &", lines)
+                                 "Method & \\multicolumn{2}{c}{Loss (\\%)} & \\multicolumn{2}{c}{Feas. (\\%)} & W/T/L \\\\\n & random & feasible & random & feasible &", lines, pos="!htb"))
         dl = []
         for case, x in Dt.groupby("case", sort=False):
             dl.append(f"\\multicolumn{{7}}{{l}}{{\\emph{{{case_name(case)}}}}} \\\\")
@@ -1166,7 +1328,12 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
             Rb = rank_matrix(Sb, mets)
             avg = Rb.mean(axis=0).to_dict()
             grid = Sb[Sb.Dataset != "HR"]
+            Rg = rank_matrix(grid, mets)
+            avg6 = Rg.mean(axis=0).to_dict()
             bsum[b] = dict(n_cases=len(Rb), avg_rank=avg, best=min(avg, key=avg.get),
+                           avg_rank_grid6=avg6, n_cases_grid6=int(len(Rg)), best_grid6=min(avg6, key=avg6.get) if avg6 else None,
+                           runs_grid6={a: int(((x.Algorithm == a) & (x.Dataset != "HR")).sum()) for a in mets},
+                           runs_hr16={a: int(((x.Algorithm == a) & (x.Dataset == "HR")).sum()) for a in mets},
                            focus_rank_position=int(1 + sorted(avg.values()).index(avg[FOCUS])) if FOCUS in avg else None,
                            mean_loss_grid={a: float(grid[(grid.Algorithm == a) & grid.Qualified].Loss.mean()) for a in mets},
                            feas_pct={a: float(100 * x[x.Algorithm == a].Feasible.mean()) for a in mets},
@@ -1188,6 +1355,7 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         SB.to_csv(OUT("mpce_budget_case_stats.csv"), index=False)
         summary["budget"] = dict(budgets=bl, per_budget=bsum,
                                  focus_best_at_all_budgets=all(bsum[b]["best"] == FOCUS for b in bl),
+                                 focus_best_grid6_at_all_budgets=all(bsum[b]["best_grid6"] == FOCUS for b in bl),
                                  note="HR16 at 120,030 calls uses 10 seeds (qualification: at least 5 feasible runs)")
         ms_all = [a for a in M10 if a in set(BD.Algorithm)]
         hdr = "Method & " + " & ".join(f"\\multicolumn{{3}}{{c}}{{{b:,} calls}}".replace(",", "{,}") for b in bl) + " \\\\\n & " + \
@@ -1201,8 +1369,8 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
                       f"{v['mean_loss_grid'][a]:.3f}" if np.isfinite(v["mean_loss_grid"].get(a, np.nan)) else "--",
                       f"{v['feas_pct'][a]:.0f}" if a in v["feas_pct"] else "--"]
             lines.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
-        tabs["budget"] = table("table*", "Budget scaling (random initialization) on the six largest benchmark cases and the Horns Rev 16-turbine block: average rank over the %d cases (ranking rule of Table~\\ref{tab:friedman68}), mean wake loss (\\%%) of the feasible runs averaged over the six benchmark cases in which the method has at least half of its runs feasible, and percentage of feasible runs. Per-case values: Table~\\ref{tab:budget-cases}." % len(cases7),
-                               "tab:budget", "l" + "ccc" * len(bl), hdr, lines, sep="3pt")
+        supp.append(table("table*", "Budget scaling (random initialization) on the six largest benchmark cases and the Horns Rev 16-turbine block: average rank over the %d cases (ranking rule of Table~\\ref{tab:friedman68}), mean wake loss (\\%%) of the feasible runs averaged over the six benchmark cases in which the method has at least half of its runs feasible, and percentage of feasible runs. Per-case values: Table~\\ref{tab:budget-cases}." % len(cases7),
+                               "tab:budget", "l" + "ccc" * len(bl), hdr, lines, sep="3pt", pos="!htb"))
         # per-case table
         dl = []
         for c in cases7:
@@ -1226,7 +1394,6 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
         tb = table("table", "Budget scaling per case: mean wake loss (\\%; Horns Rev: mean AEP in GWh/yr) of the feasible runs and feasible runs at each budget (random initialization).",
                    "tab:budget-cases", "l" + "cc" * len(bl),
                    "Method & " + " & ".join(f"{b:,}".replace(",", "{,}") + " & Feas." for b in bl), dl, pos="p")
-        tabs["budget_cases"] = tb
         supp.append(tb)
         # figure
         fig, axes = plt.subplots(2, 4, figsize=(7.1, 3.9))

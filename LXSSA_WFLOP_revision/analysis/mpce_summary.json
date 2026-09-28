@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 07:06:32",
+ "generated": "2026-09-28 07:11:07",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -150,9 +150,25 @@
    "rows": 0
   },
   "mpce_b30k": {
-   "status": "missing",
-   "shards": "0",
-   "rows": 0
+   "status": "PARTIAL (used, --partial)",
+   "shards": "1/3",
+   "rows": 630,
+   "methods": [
+    "BVNS",
+    "DE",
+    "LXBV",
+    "LXSSA",
+    "PSOC",
+    "RSVNS",
+    "SLSQP",
+    "SSA",
+    "SSABV"
+   ],
+   "datasets": [
+    "1",
+    "2",
+    "HR"
+   ]
   },
   "mpce_b120k": {
    "status": "missing",
@@ -208,9 +224,17 @@
    "rows": 0
   },
   "mpce_b120kp": {
-   "status": "missing",
-   "shards": "0",
-   "rows": 0
+   "status": "PARTIAL (used, --partial)",
+   "shards": "2/4",
+   "rows": 95,
+   "methods": [
+    "PSOBV"
+   ],
+   "datasets": [
+    "1",
+    "2",
+    "HR"
+   ]
   },
   "mpce_iea16p": {
    "status": "missing",
@@ -1107,7 +1131,269 @@
   }
  },
  "feasinit": null,
- "budget": null,
+ "budget": {
+  "budgets": [
+   6030,
+   30030,
+   120030
+  ],
+  "per_budget": {
+   "6030": {
+    "n_cases": 7,
+    "avg_rank": {
+     "PSOBV": 1.4285714285714286,
+     "PSOC": 1.8571428571428572,
+     "SSABV": 4.142857142857143,
+     "SSA": 8.285714285714286,
+     "LXSSA": 8.714285714285714,
+     "DE": 10.0,
+     "BVNS": 6.428571428571429,
+     "SLSQP": 4.285714285714286,
+     "LXBV": 5.142857142857143,
+     "RSVNS": 4.714285714285714
+    },
+    "best": "PSOBV",
+    "focus_rank_position": 1,
+    "mean_loss_grid": {
+     "PSOBV": 4.0843906574354945,
+     "PSOC": 4.18059506929789,
+     "SSABV": 4.678416376944009,
+     "SSA": 4.8277077947315545,
+     "LXSSA": 5.378813028728704,
+     "DE": null,
+     "BVNS": 4.949721325561936,
+     "SLSQP": 4.5056567721108065,
+     "LXBV": 4.80182759923784,
+     "RSVNS": 4.829709026538708
+    },
+    "feas_pct": {
+     "PSOBV": 100.0,
+     "PSOC": 94.76190476190476,
+     "SSABV": 95.71428571428572,
+     "SSA": 82.85714285714286,
+     "LXSSA": 80.0,
+     "DE": 0.9523809523809524,
+     "BVNS": 100.0,
+     "SLSQP": 99.52380952380952,
+     "LXBV": 99.04761904761905,
+     "RSVNS": 93.33333333333333
+    },
+    "hr16_aep": {
+     "PSOBV": 138.73398704990842,
+     "PSOC": 138.0571624487686,
+     "SSABV": 137.9842323651079,
+     "SSA": 136.66046554825363,
+     "LXSSA": 136.46104304597682,
+     "DE": null,
+     "BVNS": 137.67077703490713,
+     "SLSQP": 136.80013558013675,
+     "LXBV": 137.77094248593406,
+     "RSVNS": 137.961359163723
+    },
+    "sources": {
+     "PSOBV": [
+      "mpce_psobv"
+     ],
+     "PSOC": [
+      "mpce_hr16new",
+      "mpce_psoc"
+     ],
+     "SSABV": [
+      "fresh_bgrid.csv",
+      "fresh_bhr16.csv"
+     ],
+     "SSA": [
+      "fresh_grid.csv",
+      "fresh_hr16.csv"
+     ],
+     "LXSSA": [
+      "fresh_grid.csv",
+      "fresh_hr16.csv"
+     ],
+     "DE": [
+      "fresh_grid.csv",
+      "fresh_hr16.csv"
+     ],
+     "BVNS": [
+      "fresh_vgrid.csv",
+      "fresh_vhr16.csv"
+     ],
+     "SLSQP": [
+      "FALLBACK fresh_grid SLSQP",
+      "fresh_hr16.csv"
+     ],
+     "LXBV": [
+      "fresh_bgrid.csv",
+      "fresh_bhr16.csv"
+     ],
+     "RSVNS": [
+      "mpce_hr16new",
+      "mpce_rsvns"
+     ]
+    },
+    "focus_vs_slsqp": {
+     "1-500-10": {
+      "p": 0.6554384250193834,
+      "rb": -0.0967741935483871,
+      "focus": 135160.4758948336,
+      "slsqp": 135460.97714643765,
+      "focus_loss": 3.7711781610898103,
+      "slsqp_loss": 3.5572333579842352
+     },
+     "1-750-12": {
+      "p": 0.00011058151721954346,
+      "rb": 0.7591397849462366,
+      "focus": 165526.401198089,
+      "slsqp": 164663.77440506374,
+      "focus_loss": 1.7932173768970776,
+      "slsqp_loss": 2.3050136905625633
+     },
+     "1-1000-15": {
+      "p": 1.218356192111969e-05,
+      "rb": 0.8365591397849462,
+      "focus": 207308.1437476054,
+      "slsqp": 206059.64328489054,
+      "focus_loss": 1.6032939197128977,
+      "slsqp_loss": 2.195881991025837
+     },
+     "2-500-10": {
+      "p": 1.0609626770019531e-05,
+      "rb": 0.8408602150537634,
+      "focus": 67773.51829380615,
+      "slsqp": 67288.27817397201,
+      "focus_loss": 7.3547332246678945,
+      "slsqp_loss": 8.01804835842327
+     },
+     "2-750-12": {
+      "p": 0.4161298982799053,
+      "rb": 0.17419354838709677,
+      "focus": 82968.929704558,
+      "slsqp": 82867.21290429744,
+      "focus_loss": 5.485716495491405,
+      "slsqp_loss": 5.601587467085618
+     },
+     "2-1000-15": {
+      "p": 1.30385160446167e-07,
+      "rb": 0.9483870967741935,
+      "focus": 104794.76542543314,
+      "slsqp": 103853.30804702309,
+      "focus_loss": 4.498204766753881,
+      "slsqp_loss": 5.356175767583313
+     },
+     "HR-0-16": {
+      "p": 1.862645149230957e-08,
+      "rb": 0.978494623655914,
+      "focus": 138.73398704990842,
+      "slsqp": 136.80013558013675,
+      "focus_loss": 7.0541700564583945,
+      "slsqp_loss": 8.349767722665463
+     }
+    }
+   },
+   "30030": {
+    "n_cases": 7,
+    "avg_rank": {
+     "PSOC": 1.2857142857142858,
+     "SSABV": 3.4285714285714284,
+     "SSA": 8.142857142857142,
+     "LXSSA": 8.571428571428571,
+     "DE": 5.428571428571429,
+     "BVNS": 3.4285714285714284,
+     "SLSQP": 6.0,
+     "LXBV": 3.857142857142857,
+     "RSVNS": 4.857142857142857
+    },
+    "best": "PSOC",
+    "focus_rank_position": null,
+    "mean_loss_grid": {
+     "PSOC": 3.4354405574894056,
+     "SSABV": 3.6544696053117334,
+     "SSA": 4.973529381874306,
+     "LXSSA": 5.10024154219511,
+     "DE": 3.852830334886214,
+     "BVNS": 3.7204849698924494,
+     "SLSQP": 3.9400551112087228,
+     "LXBV": 3.801262765598331,
+     "RSVNS": 3.8310484905566664
+    },
+    "feas_pct": {
+     "PSOC": 98.57142857142858,
+     "SSABV": 100.0,
+     "SSA": 94.28571428571428,
+     "LXSSA": 97.14285714285714,
+     "DE": 82.85714285714286,
+     "BVNS": 100.0,
+     "SLSQP": 100.0,
+     "LXBV": 100.0,
+     "RSVNS": 100.0
+    },
+    "hr16_aep": {
+     "PSOC": 139.41297798010237,
+     "SSABV": 138.72865039737275,
+     "SSA": 137.01093625089374,
+     "LXSSA": 136.9122736962011,
+     "DE": 138.89710507953862,
+     "BVNS": 139.21601757836407,
+     "SLSQP": 137.76967483659115,
+     "LXBV": 138.63618135890277,
+     "RSVNS": 138.70578013210115
+    },
+    "sources": {
+     "PSOC": [
+      "mpce_b30k"
+     ],
+     "SSABV": [
+      "mpce_b30k"
+     ],
+     "SSA": [
+      "mpce_b30k"
+     ],
+     "LXSSA": [
+      "mpce_b30k"
+     ],
+     "DE": [
+      "mpce_b30k"
+     ],
+     "BVNS": [
+      "mpce_b30k"
+     ],
+     "SLSQP": [
+      "mpce_b30k"
+     ],
+     "LXBV": [
+      "mpce_b30k"
+     ],
+     "RSVNS": [
+      "mpce_b30k"
+     ]
+    }
+   },
+   "120030": {
+    "n_cases": 7,
+    "avg_rank": {
+     "PSOBV": 1.0
+    },
+    "best": "PSOBV",
+    "focus_rank_position": 1,
+    "mean_loss_grid": {
+     "PSOBV": 3.162832619792906
+    },
+    "feas_pct": {
+     "PSOBV": 100.0
+    },
+    "hr16_aep": {
+     "PSOBV": 139.71333631848583
+    },
+    "sources": {
+     "PSOBV": [
+      "mpce_b120kp"
+     ]
+    }
+   }
+  },
+  "focus_best_at_all_budgets": false,
+  "note": "HR16 at 120,030 calls uses 10 seeds (qualification: at least 5 feasible runs)"
+ },
  "iea37": {
   "IEA37 CS1, 16 turbines": {
    "dataset_id": "IEA37cs1",
@@ -1905,11 +2191,67 @@
    },
    "30030": {
     "available": false,
-    "note": "no data"
+    "note": "no PSO-VNS runs (30030 calls)"
    },
    "120030": {
-    "available": false,
-    "note": "no data"
+    "available": true,
+    "n_cases": 7,
+    "methods": [
+     "PSOBV"
+    ],
+    "n_comparisons": 0,
+    "psobv_runs": 95,
+    "psobv_seeds": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30
+    ],
+    "avg_rank": {
+     "PSOBV": 1.0
+    },
+    "rank_position": {
+     "PSOBV": 1
+    },
+    "mean_loss_pct": {
+     "PSOBV": 3.162832619792906
+    },
+    "note": "six largest benchmark cases + Horns Rev 16 (HR16: 10 seeds)",
+    "fallback_sources": {},
+    "hr16_mean_aep": {
+     "PSOBV": 139.71333631848583
+    },
+    "hr16_feasible": {
+     "PSOBV": "5/5"
+    },
+    "PSOC": null,
+    "SSABV": null
    }
   },
   "iea37": {
@@ -1942,8 +2284,11 @@
    "      vs SSA-VNS  case-mean Wilcoxon p=0.016 (Holm7 0.109) r_rb=+1.00  mean dL=-0.581 pp  lower-loss cases 7 vs 0  run-level W/T/L 6/1/0",
    "      NOTE: MS-SLSQP uses development-fallback runs here (FALLBACK fresh_grid SLSQP; dataset 1; dataset 2)",
    "      HR16 mean AEP (GWh/yr): PSO-VNS 138.73 (30/30), PSO 138.06 (19/30), SSA-VNS 137.98 (30/30)",
-   "  large-6 + HR16, 30,030     n/a (no data)",
-   "  large-6 + HR16, 120,030    n/a (no data)",
+   "  large-6 + HR16, 30,030     n/a (no PSO-VNS runs (30030 calls))",
+   "  large-6 + HR16, 120,030    cases= 7  PSO-VNS runs=95 (seeds 30)  avg rank: PSO-VNS 1.00  (best: PSO-VNS 1.00)",
+   "      vs PSO      n/a",
+   "      vs SSA-VNS  n/a",
+   "      HR16 mean AEP (GWh/yr): PSO-VNS 139.71 (5/5)",
    "  IEA37 16T_6030             n/a (no PSO-VNS runs (iea16p missing))",
    "  IEA37 16T_30030            n/a (no PSO-VNS runs (iea16p missing))",
    "  IEA37 36T_6030             n/a (no PSO-VNS runs (iea36p missing))",
@@ -1957,6 +2302,8 @@
   "mpce_tab_ablation.tex",
   "mpce_tab_split.tex",
   "mpce_tab_hr16.tex",
+  "mpce_tab_budget.tex",
+  "mpce_tab_budget_cases.tex",
   "mpce_tab_iea37.tex",
   "mpce_tab_iea37_published.tex",
   "mpce_tab_robust.tex",
@@ -1973,6 +2320,7 @@
   "figures_mpce/layouts_max.pdf",
   "figures_mpce/ablation_convergence.pdf",
   "figures_mpce/hr16.pdf",
+  "figures_mpce/budget_scaling.pdf",
   "figures_mpce/iea37_layouts.pdf",
   "figures_mpce/iea37_convergence.pdf"
  ],
@@ -1993,13 +2341,13 @@
   "  mpce_ssasplit        missing                                       shards=     0 rows=     0",
   "  mpce_hr16new         complete                                      shards=   1/1 rows=    60  methods=PSOC,RSVNS",
   "  mpce_feas            missing                                       shards=     0 rows=     0",
-  "  mpce_b30k            missing                                       shards=     0 rows=     0",
+  "  mpce_b30k            PARTIAL (used, --partial)                     shards=   1/3 rows=   630  methods=BVNS,DE,LXBV,LXSSA,PSOC,RSVNS,SLSQP,SSA,SSABV",
   "  mpce_b120k           missing                                       shards=     0 rows=     0",
   "  mpce_iea16           complete                                      shards=   1/1 rows=   540  methods=BVNS,DE,LXBV,LXSSA,PSOC,RSVNS,SLSQP,SSA,SSABV",
   "  mpce_iea36           complete                                      shards=   1/1 rows=   540  methods=BVNS,DE,LXBV,LXSSA,PSOC,RSVNS,SLSQP,SSA,SSABV",
   "  mpce_feasp           missing                                       shards=     0 rows=     0",
   "  mpce_b30kp           missing                                       shards=     0 rows=     0",
-  "  mpce_b120kp          missing                                       shards=     0 rows=     0",
+  "  mpce_b120kp          PARTIAL (used, --partial)                     shards=   2/4 rows=    95  methods=PSOBV",
   "  mpce_iea16p          missing                                       shards=     0 rows=     0",
   "  mpce_iea36p          missing                                       shards=     0 rows=     0",
   "  FALLBACK: SLSQP (68 cases): mpce_slsqp missing -> using the old-platform SLSQP runs of fresh_grid.csv",
@@ -2031,7 +2379,9 @@
   "\n[5] Feasible initialization",
   "  SKIPPED: mpce_feas not available",
   "\n[6] Budget scaling",
-  "  SKIPPED: mpce_b30k / mpce_b120k not available",
+  "  budget 6030: avg ranks PSO-VNS 1.43, PSO 1.86, SSA-VNS 4.14, MS-SLSQP 4.29, RS-VNS 4.71, LX-SSA-VNS 5.14, VNS 6.43, SSA 8.29, LX-SSA 8.71, DE 10.00",
+  "  budget 30030: avg ranks PSO 1.29, SSA-VNS 3.43, VNS 3.43, LX-SSA-VNS 3.86, RS-VNS 4.86, DE 5.43, MS-SLSQP 6.00, SSA 8.14, LX-SSA 8.57",
+  "  budget 120030: avg ranks PSO-VNS 1.00",
   "\n[7] IEA37 Case Study 1 (16- and 36-turbine scenarios)",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "  IEA37 CS1, 16 turbines: PSO-VNS best nan, best feasible published 418924.4 (par4), baseline 366941.6",
@@ -2044,6 +2394,6 @@
   "  CubicCutout  tau=0.94 same best=90%  PSO-VNS rank 1.80",
   "  Gauss        tau=0.67 same best=57%  PSO-VNS rank 1.93",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 9 tables, 12 figures, mpce_summary.json in 19 s"
+  "\nwrote 11 tables, 13 figures, mpce_summary.json in 23 s"
  ]
 }
