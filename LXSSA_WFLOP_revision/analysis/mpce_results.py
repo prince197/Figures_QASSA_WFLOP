@@ -826,7 +826,7 @@ def split_section(R6, base, tabs, key, label, primary=True, supp=None):
     pheads = [f"$p$ ({lab_p[t]})" for t, _, _ in comps]
     pct = ", ".join(f"{int(round(100 * shares[a]))}\\%" for a in idsN if a != p1c)
     (supp.append if supp is not None else (lambda t: tabs.__setitem__(key, t)))(table("table*" if has100 else "table", pre + f"Sensitivity of {LAB[base]} to the budget split between the {p1} and VNS phases ({pct} of the 6,030 calls for {p1}{'; 100' + chr(92) + '%: ' + p1 + ' alone, same seeds' if has100 else ''}): mean benchmark objective of the feasible runs (superscript: feasible runs when fewer than 30) and Wilcoxon signed-rank $p$ (30 seed-paired runs), Holm-adjusted over the {len(comps)} comparisons of each case.",
-                      label, "ccc" + "c" * (len(heads) + len(pheads)), "DS & $r$ & $N$ & " + " & ".join(heads + pheads), lines, sep="2.5pt" if len(comps) <= 4 else "1.8pt", pos="!htb"))
+                      label, "ccc" + "c" * (len(heads) + len(pheads)), "DS & $r$ & $N$ & " + " & ".join(heads + pheads), lines, sep="2.5pt" if len(comps) <= 4 else "1.5pt", pos="!htb"))
     out = dict(method=base, primary=primary, cases=srows, best_count=SR.best.value_counts().to_dict(),
                n_cases=int(len(SR)), settings={a: shares[a] for a in idsN}, omega1_method=p1c if has100 else None,
                omega90_method=i90 if has90 else None, n_settings=len(idsN), n_comparisons=len(comps),
@@ -1642,7 +1642,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                   + " & ".join(sym.get(oc.get((a, b)), "") for a, b, _ in CONTR) + " \\\\")
     chead = " & ".join(f"C{i + 1}" for i in range(len(CONTR)))
     key_ = "; ".join(f"C{i + 1}: {LAB[a]} vs.\\ {LAB[b]}" for i, (a, b, _) in enumerate(CONTR))
-    supp.append(table("table*", "Component analysis per case (68 cases, 6,030 calls, 30 seed-paired runs): mean wake loss (\\%%) of the feasible runs of %s (``--'': fewer than 15 feasible runs), and run-level outcome of each planned contrast ($+$: first variant significantly better, $-$: significantly worse, $\\cdot$: no significant difference; Wilcoxon signed-rank, Holm-adjusted over the %d contrasts of the case). %s." % (" and ".join(LAB[a] for a in extra_v), len(CONTR), key_),
+    supp.append(table("table*", "Component analysis per case (68 cases, 6,030 calls, 30 seed-paired runs): mean wake loss (\\%%) of the feasible runs of %s (``--'': fewer than 15 feasible runs), and run-level outcome of each planned contrast ($+$: first variant significantly better, $-$: significantly worse, $\\cdot$: no significant difference; Wilcoxon signed-rank, Holm-adjusted over the %d contrasts of the case). %s." % ((lambda l_: ", ".join(l_[:-1]) + " and " + l_[-1] if len(l_) > 1 else "".join(l_))([LAB[a] for a in extra_v]), len(CONTR), key_),
                       "tab:ablation-cases", "ccc" + "c" * (len(extra_v) + len(CONTR)),
                       "DS & $r$ & $N$ & " + " & ".join(LAB[a] for a in extra_v) + " & " + chead, pl, size="\\tiny", sep="2.2pt", pos="p"))
     summary["ablation"] = dict(hybrid=H0, phase1=P1, variants=ablp, friedman=FA, feasible_pct=afeas, n_contrasts=len(CONTR),
