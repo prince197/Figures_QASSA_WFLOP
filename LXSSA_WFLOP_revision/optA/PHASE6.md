@@ -40,3 +40,12 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
 - SSA-VNS vs LX-SSA-VNS: not equivalent; Bayes 0.53 better / 0.47 rope.
 - Spread: no significant difference (SD p 0.55, worst p 0.80) → do NOT claim PSO-VNS is more robust in spread; the robustness advantage is feasibility (Horns Rev 30/30 vs 19/30). C52.
 - Supplement: add \SuppTableOpt{tab:equivalence} after tab:switch; add Benavoli2017 bibitem.
+
+## W2 results (inference robustness) — notes for Phase B text
+- Threshold 1–30: all 7 conclusions and the full rank order unchanged (X02–X09).
+- Clusters (6): all 13 significant pairs favour the same method in 6/6 clusters; LOCO changes no verdict, PSO-VNS always best.
+- CAVEAT: SSA-VNS vs RS-VNS: 6/6 clusters and cluster-bootstrap CI excludes 0, but cluster-robust t p = 0.061 → "consistent but small".
+- "Gain grows with N" NOT supported overall; only within Data Set II (ρ = −0.66, p = 3e-4). Always write "in Data Set II".
+- Multiplicity (22 tests, one Holm): only the pooled N ≥ 10 subgroup is lost; DS II N ≥ 10 survives (p_Holm 0.012).
+- Energy: PSO-VNS vs PSO ≈ 0.020 % AEP (CI contains 0); DS II N ≥ 10 ≈ 0.22 %; SSA vs RS 0.071 %; PSO-VNS vs RS 0.41 % (benchmark energy).
+- Integration: \input{analysis/mpce_numbers_extra.tex} in both preambles; \input{analysis/mpce_supp_inference.tex} in supplement; build: add mpce_inference_extra.py + mpce_check_extra.py after mpce_results.py.

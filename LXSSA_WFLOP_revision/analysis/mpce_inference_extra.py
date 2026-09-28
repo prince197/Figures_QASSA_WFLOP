@@ -290,6 +290,10 @@ def ci_tab(ci, d=3):
     return "[" + ", ".join(f"{v:.{d}f}".replace("-", "$-$") for v in ci) + "]"
 
 
+def stack(a, b):
+    return f"\\begin{{tabular}}{{@{{}}c@{{}}}}{a}\\\\{b}\\end{{tabular}}"
+
+
 def listing(items):
     items = list(items)
     if len(items) <= 1:
@@ -301,12 +305,15 @@ WORD = {0: "none", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six
         10: "ten", 11: "eleven", 12: "twelve"}
 
 
-def table(env, caption, label, spec, header, lines, sep="2.5pt", pos="!htb", foot=None):
+def table(env, caption, label, spec, header, lines, sep="2.5pt", pos="!htb", foot=None, resize=False):
     body = "\n".join(lines)
     ft = "" if not foot else "\n" + "\n".join(foot)
+    tab = (f"\\begin{{tabular}}{{{spec}}}\n\\toprule\n{header} \\\\\n"
+           f"\\midrule\n{body}\n\\bottomrule{ft}\n\\end{{tabular}}")
+    if resize:
+        tab = "\\resizebox{\\textwidth}{!}{%\n" + tab + "}"
     return (f"\\begin{{{env}}}[{pos}]\n\\centering\n\\caption{{{caption}}}\n\\label{{{label}}}\n"
-            f"\\scriptsize\\setlength{{\\tabcolsep}}{{{sep}}}\n\\begin{{tabular}}{{{spec}}}\n\\toprule\n{header} \\\\\n"
-            f"\\midrule\n{body}\n\\bottomrule{ft}\n\\end{{tabular}}\n\\end{{{env}}}\n")
+            f"\\scriptsize\\setlength{{\\tabcolsep}}{{{sep}}}\n{tab}\n\\end{{{env}}}\n")
 
 
 # ------------------------------------------------------------------ 1. qualification threshold
@@ -428,24 +435,24 @@ def multiplicity_block(S, G, SP):
     tests = []
     main = {b: cm_test(S, FOCUS, b) for b in MAIN8 if b != FOCUS}
     for b, x in main.items():
-        tests.append(dict(key=f"main:{pk(FOCUS, b)}", label=plab(FOCUS, b), family="main table (tab:friedman68)",
+        tests.append(dict(key=f"main:{pk(FOCUS, b)}", label=plab(FOCUS, b), family="Main comparison (Table~\\ref{M-tab:friedman68})",
                           n=x["n_cases"], p=x["p"], wins=x["wins"], losses=x["losses"], dl=x["mean_dloss_pp"]))
     for a, b in ABL_CONTR:
         if (a, b) in MAIN_PAIRS:
             continue                                                    # same test as in the main table
         x = cm_test(S, a, b)
-        tests.append(dict(key=f"abl:{pk(a, b)}", label=plab(a, b), family="component analysis (tab:ablation)",
+        tests.append(dict(key=f"abl:{pk(a, b)}", label=plab(a, b), family="Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
                           n=x["n_cases"], p=x["p"], wins=x["wins"], losses=x["losses"], dl=x["mean_dloss_pp"]))
     for tag, dsl, txt in (("Large", ("1", "2"), "$N\\ge10$, both data sets"), ("dsILarge", ("1",), "$N\\ge10$, Data Set I"),
                           ("dsIILarge", ("2",), "$N\\ge10$, Data Set II")):
         Sg = S[S.Dataset.isin(dsl) & (S.Turbines >= 10)]
         x = cm_test(Sg, FOCUS, "PSOC")
-        tests.append(dict(key=f"sub:{tag}", label=f"PSO-VNS vs.\\ PSO, {txt}", family="post hoc subgroup (Sec. results)",
+        tests.append(dict(key=f"sub:{tag}", label=f"PSO-VNS vs.\\ PSO, {txt}", family="Post hoc subgroups of PSO-VNS vs.\\ PSO",
                           n=x["n_cases"], p=x["p"], wins=x["wins"], losses=x["losses"], dl=x["mean_dloss_pp"]))
     for a, b in (("PSOBV", "PSOBV25"), ("PSOBV", "PSOBV75"), ("PSOBV", "PSOC"), ("PSOBV75", "PSOC")):
         x = cm_test(SP, a, b)
         tests.append(dict(key=f"split:{pk(a, b)}", label=plab(a, b).replace("PSO-VNS vs", "PSO-VNS ($\\omega=0.5$) vs", 1)
-                          if a == "PSOBV" else plab(a, b), family="budget split (tab:split, 12 cases)",
+                          if a == "PSOBV" else plab(a, b), family="Budget split (Table~\\ref{M-tab:split}, 12 cases)",
                           n=x["n_cases"], p=x["p"], wins=x["wins"], losses=x["losses"], dl=x["mean_dloss_pp"]))
     p = [t["p"] for t in tests]
     for t, h, q in zip(tests, holm(p), bh(p)):
@@ -823,15 +830,16 @@ def write_tables(s, fn):
     lines = []
     for t in s["thresholds"]:
         x = TH[str(t)]; fr = x["friedman"]; mc = x["main_case_mean"]; ab = x["ablation_case_mean"]
-        cells = [f"{t}" + (" (paper)" if t == s["base_threshold"] else ""), str(x["unqualified_cells_main"]), str(x["imputed_main"]),
+        cells = [f"{t}" + (" (paper)" if t == s["base_threshold"] else ""), str(x["imputed_main"]),
                  LAB[fr["best_ranked"]], f"{fr['avg_rank']['PSOBV']:.2f}", f"{fr['avg_rank']['PSOC']:.2f}",
                  ", ".join(LAB[a] for a in fr["posthoc_nonsig"]) or "--",
                  tp(mc["PSOC"]["p"])] + [tp(ab[pk(a, b)]["p"]) for a, b in KEY_CONTR[1:]] + \
                 ["yes" if x["all_unchanged"] else "\\textbf{no}"]
         lines.append(" & ".join(cells) + " \\\\")
-    T.append(table("table*", "Sensitivity of the case-level conclusions to the qualification threshold (a method is ranked in a case by the mean objective of its feasible runs only if at least this many of its 30 runs are feasible; the paper uses 15). Unq.: case--method cells of the eight-method comparison that do not qualify; Imp.: cases entering the seven case-mean tests of PSO-VNS with an imputed maximal difference (only one method qualifies). Best-ranked method and average ranks of the Friedman ranking of Table~\\ref{M-tab:friedman68}; $p_z$\\,ns: methods not significantly different from PSO-VNS in the Holm-adjusted average-rank tests. Unadjusted two-sided Wilcoxon $p$ on the per-case mean wake losses (with the same imputation rule at each threshold) for PSO-VNS vs.\\ PSO and the component-analysis contrasts SSA-VNS vs.\\ RS-VNS, LX-SSA-VNS vs.\\ RS-VNS, SSA-VNS vs.\\ LX-SSA-VNS and PSO-VNS vs.\\ RS-VNS. Same: every conclusion of the paper holds at this threshold (best rank of PSO-VNS; only PSO not significantly different in rank; PSO-VNS vs.\\ PSO not significant; SSA-VNS better than RS-VNS; LX-SSA-VNS not different from RS-VNS; SSA-VNS better than LX-SSA-VNS; PSO-VNS better than RS-VNS; each both unadjusted and Holm-adjusted within its table family).",
-                   "tab:X-threshold", "cccccccccccc",
-                   "Threshold & Unq. & Imp. & Best & PSO-VNS & PSO & $p_z$\\,ns & PSO-VNS/PSO & SSA-VNS/RS-VNS & LX-SSA-VNS/RS-VNS & SSA-VNS/LX-SSA-VNS & PSO-VNS/RS-VNS & Same", lines))
+    T.append(table("table*", "Sensitivity of the case-level conclusions to the qualification threshold (a method is ranked in a case by the mean objective of its feasible runs only if at least this many of its 30 runs are feasible; the paper uses 15). Unq.: case--method cells of the eight-method comparison that do not qualify (PSO-VNS always qualifies, so each of them enters a case-mean test of PSO-VNS with an imputed maximal difference). Best-ranked method and average ranks of the Friedman ranking of Table~\\ref{M-tab:friedman68}; $p_z$\\,ns: methods not significantly different from PSO-VNS in the Holm-adjusted average-rank tests. Unadjusted two-sided Wilcoxon $p$ on the per-case mean wake losses (with the same imputation rule at each threshold) for PSO-VNS vs.\\ PSO and the component-analysis contrasts SSA-VNS vs.\\ RS-VNS, LX-SSA-VNS vs.\\ RS-VNS, SSA-VNS vs.\\ LX-SSA-VNS and PSO-VNS vs.\\ RS-VNS. Same: every conclusion of the paper holds at this threshold (best rank of PSO-VNS; only PSO not significantly different in rank; PSO-VNS vs.\\ PSO not significant; SSA-VNS better than RS-VNS; LX-SSA-VNS not different from RS-VNS; SSA-VNS better than LX-SSA-VNS; PSO-VNS better than RS-VNS; each both unadjusted and Holm-adjusted within its table family).",
+                   "tab:X-threshold", "c" * 12,
+                   "Thresh. & Unq. & Best & " + " & ".join(stack(*h) for h in (("Rank", "PSO-VNS"), ("Rank", "PSO"), ("$p_z$", "ns"),
+                   ("PSO-VNS/", "PSO"), ("SSA-VNS/", "RS-VNS"), ("LX-SSA-VNS/", "RS-VNS"), ("SSA-VNS/", "LX-SSA-VNS"), ("PSO-VNS/", "RS-VNS"))) + " & Same", lines))
     # --- cluster table
     CL = s["cluster"]; LO = s["loco"]
     cls = s["clusters"]
@@ -847,7 +855,7 @@ def write_tables(s, fn):
                    % (len(cls), len(cls), len(cls), len(cls) - 1, len(cls), f"{s['cluster_min_attainable_p']:.3f}"),
                    "tab:X-cluster", "lcc" + "c" * len(cls) + "cccccc",
                    "Pair (first vs.\\ second) & $n$ & $\\overline{\\Delta L}$ & " + " & ".join(cname[k] for k in cls) +
-                   " & Fav. & $p_{\\rm sign}$ & $p_{\\rm W}$ & $p_{\\rm flip}$ & $p_{\\rm CR}$ & $p_{\\rm case}$", lines, sep="2pt"))
+                   " & Fav. & $p_{\\rm sign}$ & $p_{\\rm W}$ & $p_{\\rm flip}$ & $p_{\\rm CR}$ & $p_{\\rm case}$", lines, sep="2pt", resize=True))
     lines = []
     vmap = {"A": "first", "B": "second", "ns": "ns"}
     for a, b in ALL_PAIRS:
@@ -861,7 +869,7 @@ def write_tables(s, fn):
                       ", and PSO is the only method not significantly different from it in rank" if LO["posthoc_only_PSOC_always"] else ""),
                    "tab:X-loco", "lcccccccc",
                    "Pair (first vs.\\ second) & $\\overline{\\Delta L}$ & Case boot. CI & Cluster boot. CI & CR1 CI & Verdict & LOCO $p$ & Flips & Changed",
-                   lines, sep="2pt"))
+                   lines, sep="2pt", resize=True))
     # --- multiplicity
     MU = s["multiplicity"]
     lines, fam = [], None

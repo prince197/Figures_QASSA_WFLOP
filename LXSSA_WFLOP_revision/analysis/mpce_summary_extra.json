@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 16:45:51",
+ "generated": "2026-09-28 16:49:04",
  "script": "mpce_inference_extra.py",
  "n_cases": 68,
  "clusters": [
@@ -3737,7 +3737,7 @@
    {
     "key": "main:PSOBV-PSOC",
     "label": "PSO-VNS vs.\\ PSO",
-    "family": "main table (tab:friedman68)",
+    "family": "Main comparison (Table~\\ref{M-tab:friedman68})",
     "n": 68,
     "p": 0.2958623332952982,
     "wins": 34,
@@ -3752,7 +3752,7 @@
    {
     "key": "main:PSOBV-SSABV",
     "label": "PSO-VNS vs.\\ SSA-VNS",
-    "family": "main table (tab:friedman68)",
+    "family": "Main comparison (Table~\\ref{M-tab:friedman68})",
     "n": 68,
     "p": 1.8964365613380834e-11,
     "wins": 59,
@@ -3767,7 +3767,7 @@
    {
     "key": "main:PSOBV-SSA",
     "label": "PSO-VNS vs.\\ SSA",
-    "family": "main table (tab:friedman68)",
+    "family": "Main comparison (Table~\\ref{M-tab:friedman68})",
     "n": 68,
     "p": 7.576651760171568e-12,
     "wins": 62,
@@ -3782,7 +3782,7 @@
    {
     "key": "main:PSOBV-LXSSA",
     "label": "PSO-VNS vs.\\ LX-SSA",
-    "family": "main table (tab:friedman68)",
+    "family": "Main comparison (Table~\\ref{M-tab:friedman68})",
     "n": 68,
     "p": 7.576651760171568e-12,
     "wins": 62,
@@ -3797,7 +3797,7 @@
    {
     "key": "main:PSOBV-DE",
     "label": "PSO-VNS vs.\\ DE",
-    "family": "main table (tab:friedman68)",
+    "family": "Main comparison (Table~\\ref{M-tab:friedman68})",
     "n": 68,
     "p": 1.3982864665308031e-11,
     "wins": 60,
@@ -3812,7 +3812,7 @@
    {
     "key": "main:PSOBV-BVNS",
     "label": "PSO-VNS vs.\\ VNS",
-    "family": "main table (tab:friedman68)",
+    "family": "Main comparison (Table~\\ref{M-tab:friedman68})",
     "n": 68,
     "p": 6.295527868771217e-11,
     "wins": 55,
@@ -3827,7 +3827,7 @@
    {
     "key": "main:PSOBV-SLSQP",
     "label": "PSO-VNS vs.\\ MS-SLSQP",
-    "family": "main table (tab:friedman68)",
+    "family": "Main comparison (Table~\\ref{M-tab:friedman68})",
     "n": 68,
     "p": 5.974424383134514e-12,
     "wins": 66,
@@ -3842,7 +3842,7 @@
    {
     "key": "abl:SSABV-SSA",
     "label": "SSA-VNS vs.\\ SSA",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 68,
     "p": 5.68217838734419e-11,
     "wins": 60,
@@ -3857,7 +3857,7 @@
    {
     "key": "abl:LXBV-LXSSA",
     "label": "LX-SSA-VNS vs.\\ LX-SSA",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 68,
     "p": 7.576651760171568e-12,
     "wins": 62,
@@ -3872,7 +3872,7 @@
    {
     "key": "abl:PSOBV-RSVNS",
     "label": "PSO-VNS vs.\\ RS-VNS",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 68,
     "p": 2.6491274058951022e-11,
     "wins": 58,
@@ -3887,7 +3887,7 @@
    {
     "key": "abl:SSABV-RSVNS",
     "label": "SSA-VNS vs.\\ RS-VNS",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 68,
     "p": 0.00044561122684435374,
     "wins": 42,
@@ -3902,7 +3902,7 @@
    {
     "key": "abl:LXBV-RSVNS",
     "label": "LX-SSA-VNS vs.\\ RS-VNS",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 68,
     "p": 0.7183098583564869,
     "wins": 27,
@@ -3917,7 +3917,7 @@
    {
     "key": "abl:PSOBV-LXBV",
     "label": "PSO-VNS vs.\\ LX-SSA-VNS",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 68,
     "p": 1.6295557943119345e-11,
     "wins": 60,
@@ -3932,7 +3932,7 @@
    {
     "key": "abl:SSABV-LXBV",
     "label": "SSA-VNS vs.\\ LX-SSA-VNS",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 68,
     "p": 5.378103296945853e-06,
     "wins": 47,
@@ -3947,7 +3947,7 @@
    {
     "key": "abl:LXSSA-SSA",
     "label": "LX-SSA vs.\\ SSA",
-    "family": "component analysis (tab:ablation)",
+    "family": "Component analysis (Table~\\ref{M-tab:ablation}; pairs not in the main comparison)",
     "n": 66,
     "p": 1.868005162193947e-07,
     "wins": 9,
@@ -3962,7 +3962,7 @@
    {
     "key": "sub:Large",
     "label": "PSO-VNS vs.\\ PSO, $N\\ge10$, both data sets",
-    "family": "post hoc subgroup (Sec. results)",
+    "family": "Post hoc subgroups of PSO-VNS vs.\\ PSO",
     "n": 20,
     "p": 0.04844093322753906,
     "wins": 14,
@@ -3977,7 +3977,7 @@
    {
     "key": "sub:dsILarge",
     "label": "PSO-VNS vs.\\ PSO, $N\\ge10$, Data Set I",
-    "family": "post hoc subgroup (Sec. results)",
+    "family": "Post hoc subgroups of PSO-VNS vs.\\ PSO",
     "n": 10,
     "p": 0.322265625,
     "wins": 4,
@@ -3992,7 +3992,7 @@
    {
     "key": "sub:dsIILarge",
     "label": "PSO-VNS vs.\\ PSO, $N\\ge10$, Data Set II",
-    "family": "post hoc subgroup (Sec. results)",
+    "family": "Post hoc subgroups of PSO-VNS vs.\\ PSO",
     "n": 10,
     "p": 0.001953125,
     "wins": 10,
@@ -4007,7 +4007,7 @@
    {
     "key": "split:PSOBV-PSOBV25",
     "label": "PSO-VNS ($\\omega=0.5$) vs.\\ PSO-VNS ($\\omega=0.25$)",
-    "family": "budget split (tab:split, 12 cases)",
+    "family": "Budget split (Table~\\ref{M-tab:split}, 12 cases)",
     "n": 12,
     "p": 0.00146484375,
     "wins": 11,
@@ -4022,7 +4022,7 @@
    {
     "key": "split:PSOBV-PSOBV75",
     "label": "PSO-VNS ($\\omega=0.5$) vs.\\ PSO-VNS ($\\omega=0.75$)",
-    "family": "budget split (tab:split, 12 cases)",
+    "family": "Budget split (Table~\\ref{M-tab:split}, 12 cases)",
     "n": 12,
     "p": 0.00146484375,
     "wins": 1,
@@ -4037,7 +4037,7 @@
    {
     "key": "split:PSOBV-PSOC",
     "label": "PSO-VNS ($\\omega=0.5$) vs.\\ PSO",
-    "family": "budget split (tab:split, 12 cases)",
+    "family": "Budget split (Table~\\ref{M-tab:split}, 12 cases)",
     "n": 12,
     "p": 0.423828125,
     "wins": 7,
@@ -4052,7 +4052,7 @@
    {
     "key": "split:PSOBV75-PSOC",
     "label": "PSO-VNS ($\\omega=0.75$) vs.\\ PSO",
-    "family": "budget split (tab:split, 12 cases)",
+    "family": "Budget split (Table~\\ref{M-tab:split}, 12 cases)",
     "n": 12,
     "p": 0.00048828125,
     "wins": 12,
