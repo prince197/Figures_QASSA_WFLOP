@@ -93,7 +93,29 @@ SPLIT_LAB = {"PSOBV25": "$\\omega=0.25$", "PSOBV": "$\\omega=0.5$", "PSOBV75": "
              "PSOC": "$\\omega=1$ (PSO)"}
 EXPECT_SPLIT = {("PSOBV", "PSOBV25"): "A", ("PSOBV", "PSOBV75"): "B", ("PSOBV", "PSOC"): "ns", ("PSOBV75", "PSOC"): "A",
                 ("PSOBV", "PSOBV90"): "B", ("PSOBV90", "PSOBV75"): "ns"}
-EQ_MARGIN = 0.05                     # practical-equivalence margin (pp of wake loss), as mpce_results.EQ_MARGIN
+def _eq_margin():
+    """The practical-equivalence margin (pp of wake loss) is owned by mpce_results.py (EQ_MARGIN); it is read from
+    mpce_summary.json ("equivalence" -> "margin_pp") so that both scripts always use the same value."""
+    try:
+        return float(json.load(open(os.path.join(HERE, "mpce_summary.json")))["equivalence"]["margin_pp"]), "mpce_summary.json"
+    except Exception:                                                   # pragma: no cover
+        return 0.05, "default (mpce_summary.json missing)"
+
+
+EQ_MARGIN, EQ_MARGIN_SRC = _eq_margin()
+# ---- Phase 6 / review round 2 (R2 statistics, lead decision D13): equivalence at three inference levels,
+# heterogeneity, Bayesian posterior means, Hodges-Lehmann estimates, McNemar (functions in section 7)
+# the 18 pairs of tab:equivalence (mpce_results.equivalence_block: component-analysis pairs, then PSO-VNS vs each
+# main method); order as in that table
+EQ_PAIRS = ["SSABV-RSVNS", "LXBV-RSVNS", "PSOBV-RSVNS", "SSABV-LXBV", "LXSSA-SSA", "SSABV-SSA", "LXBV-LXSSA",
+            "PSOBV-PSOC", "PSOBV-BVNS", "SSABV-RSDVNS", "LXBV-RSDVNS", "PSOBV-RSDVNS", "RSDVNS-RSVNS",
+            "PSOBV-SSABV", "PSOBV-SSA", "PSOBV-LXSSA", "PSOBV-DE", "PSOBV-SLSQP"]
+HL_KEY = [("PSOBV", "PSOC"), ("SSABV", "RSDVNS"), ("LXBV", "RSDVNS"), ("PSOBV", "RSDVNS"), ("SSABV", "RSVNS"), ("SSABV", "LXBV")]
+SEED_BOOT_SEED = 20260930            # seed-level (fixed-benchmark) bootstrap: runs resampled within cases
+BAYES_S, BAYES_Z0, BAYES_N, BAYES_SEED = 0.5, 0.0, 50000, 20260928   # as mpce_results.py (reproduced, check X38)
+WEBB = np.array([-math.sqrt(1.5), -1.0, -math.sqrt(0.5), math.sqrt(0.5), 1.0, math.sqrt(1.5)])  # Webb (2014) 6-point
+SMIN_M = 308.0                       # minimum spacing 4D = 308 m (mpce_results.SMIN_M); density phi = N (SMIN_M / 2r)^2
+CURVE_GRID = np.round(np.arange(0.0, 0.1201, 0.001), 3)               # margins (pp) of the equivalence curve
 
 
 def pk(a, b):

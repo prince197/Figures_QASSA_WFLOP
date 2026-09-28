@@ -26,6 +26,9 @@ Experiments
            10 methods; 6,030 random / 6,030 feasible (no RS-VNS) / 30,030 random (30 seeds), 120,030 (10 seeds)
   omega90  (Phase 6) PSO-VNS with split 0.9 (PSOBV90) on the 12 split cases, 30 seeds, 6,030 calls
   rsdisc   (Phase 6) RS-VNS with Phase-1 samples uniform in the farm disc (RSDVNS), 68 cases, 30 seeds, 6,030 calls
+  csweep   (review round 2, R3 #1) stand-alone PSO on the 12 split cases, 30 seeds, 6,030 calls: w = 0.7 with
+           c1 = c2 = c in {1.2, 1.4, 1.6, 1.7, 1.8, 1.9, 2.0} (PSOW07C12 ... PSOW07C20), the old setting with velocity
+           zeroed on clip (PSOOLD_VZERO) or clamped to 0.2 (ub - lb) (PSOOLD_VMAX); 3,240 runs; see CSWEEP
 Convergence curves: one checkpoint every (B-30)//200 calls, i.e. 201 checkpoints at 6,030 calls and 200 at
 30,030 / 120,030 calls (the first checkpoint is at call 30 only for B = 6,030).
 """
@@ -210,6 +213,15 @@ def tasks(exp):
         # RS-VNS with Phase-1 samples uniform in the farm disc instead of the bounding square (label RSDVNS),
         # 68 cases, 30 seeds, 6,030 calls; heaviest cases first
         return [(run_grid_x, ("RSDVNS", *c, s, 6030, "random")) for c in GRID[::-1] for s in S30]
+    # ---- Review round 2 (R3 issue 1): PSO coefficient sweep and bound handling, run through run_grid_cs ----
+    if exp == "csweep":
+        # stand-alone PSO on the 12 split cases (psosplit design), 30 seeds, 6,030 calls, random starts:
+        # w = 0.7, c1 = c2 = c in CS_C (PSOW07C12 ... PSOW07C20; c = 2 = old setting), the old setting with
+        # velocity zeroed on clip (PSOOLD_VZERO) and with velocity clamping |v| <= 0.2 (ub - lb) (PSOOLD_VMAX);
+        # 9 labels x 12 cases x 30 seeds = 3,240 runs. The constriction reference is the stored PSOC data
+        # (mpce_psoc); label PSOCREF (not in this list) reruns it through PSOBH for verification only
+        return [(run_grid_cs, (a, *c, s, 6030, "random")) for c in SPLITCASES for a in CSWEEP if a != "PSOCREF"
+                for s in S30]
     raise ValueError(exp)
 
 
@@ -281,6 +293,111 @@ def run_grid_x(task):
         return run_grid(task)
     finally:
         g["run_method"] = orig
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Review round 2 (R3 issue 1) additions: experiment csweep. Nothing above is changed (the only edit above is
+# the new `if exp == "csweep"` block in tasks()). The new labels are handled by run_method_cs; run_grid_cs runs
+# the unchanged run_grid with run_method_cs in place of run_method and appends the dynamics columns logged by
+# PSOBH (Spread, VelMean, ClipPct, ClipLatePct, FeasEvalLatePct) after the standard columns.
+CS_C = (1.2, 1.4, 1.6, 1.7, 1.8, 1.9, 2.0)
+CSWEEP = {f"PSOW07C{int(round(10 * c))}": (0.7, c, "clip") for c in CS_C}      # label: (w, c1 = c2, bound)
+CSWEEP["PSOOLD_VZERO"] = (0.7, 2.0, "vzero")
+CSWEEP["PSOOLD_VMAX"] = (0.7, 2.0, "vmax")
+CSWEEP["PSOCREF"] = (0.7298, 1.49618, "clip")
+VMAX_FRAC = 0.2
+_CS_LOG = {}                      # dynamics of the last PSOBH run in this process (one task at a time)
+
+
+class PSOBH(PSO):
+    """authors_optimizers.PSO with a choice of bound handling and passive logging.
+
+    bound = "clip"  : position clipped to [lb, ub], velocity kept (the implemented PSO; bit-identical to PSO)
+            "vzero" : position clipped, and every clipped velocity component set to zero
+            "vmax"  : velocity clamped to |v| <= vmax_frac (ub - lb) per coordinate before the position update
+                      (as in early PSO, Kennedy-Eberhart 1995 / Shi-Eberhart 1998), then the position clipped
+    optimize() is a verbatim copy of PSO.optimize with the two bound-handling lines and [log] lines added; the
+    log lines only read state and draw no random numbers, so the random stream (and the seeded initial swarm)
+    is the same for every setting and bound. Logged (in self.log): final swarm spread (mean over particles of
+    the RMS turbine distance to the global best, m, as in mpce_diagnostics T1), final mean |V| per coordinate,
+    share of coordinates outside the box before clipping (all iterations / iterations 101-200), share of
+    particle evaluations with a feasible layout in iterations 101-200 (needs `feasible`)."""
+
+    def __init__(self, pop_size=50, max_iter=100, w=0.7, c1=2.0, c2=2.0, bound="clip", vmax_frac=VMAX_FRAC,
+                 feasible=None, seed=None):
+        super().__init__(pop_size, max_iter, w, c1, c2, seed=seed)
+        if bound not in ("clip", "vzero", "vmax"):
+            raise ValueError(bound)
+        self.bound = bound; self.vmax_frac = vmax_frac; self.feasible = feasible
+
+    def optimize(self, obj_fun, dim, lb, ub):
+        from init_hook import init_pop as _init_pop
+        half = self.max_iter // 2; nclip = [0, 0]; ncoord = [0, 0]; nfe = 0; nev = 0              # [log]
+        vmax = self.vmax_frac * (np.asarray(ub, float) - np.asarray(lb, float))
+        X = _init_pop(self.pop_size, dim, lb, ub)
+        V = np.zeros((self.pop_size, dim))
+        pbest = X.copy()
+        pbest_score = np.array([obj_fun(x) for x in X])
+        gbest_idx = np.argmin(pbest_score)
+        gbest = pbest[gbest_idx].copy(); gbest_score = pbest_score[gbest_idx]
+        curve = [gbest_score]
+        for it in range(self.max_iter):
+            late = int(it >= half)                                                                   # [log]
+            for i in range(self.pop_size):
+                r1 = np.random.rand(dim); r2 = np.random.rand(dim)
+                V[i] = (self.w * V[i] + self.c1 * r1 * (pbest[i] - X[i])
+                        + self.c2 * r2 * (gbest - X[i]))
+                if self.bound == "vmax":
+                    V[i] = np.clip(V[i], -vmax, vmax)
+                X[i] = X[i] + V[i]
+                out = (X[i] < lb) | (X[i] > ub)
+                nclip[late] += int(out.sum()); ncoord[late] += dim                                   # [log]
+                X[i] = np.clip(X[i], lb, ub)
+                if self.bound == "vzero":
+                    V[i][out] = 0.0
+                score = obj_fun(X[i])
+                if late and self.feasible is not None:                                               # [log]
+                    nev += 1; nfe += int(bool(self.feasible(X[i].copy())))
+                if score < pbest_score[i]:
+                    pbest_score[i] = score; pbest[i] = X[i].copy()
+                if score < gbest_score:
+                    gbest_score = score; gbest = X[i].copy()
+            curve.append(gbest_score)
+        n = dim // 2                                                                                 # [log]
+        self.log = dict(Spread=float(np.mean(np.sqrt(((X - gbest) ** 2).sum(1) / n))), VelMean=float(np.abs(V).mean()),
+                        ClipPct=100.0 * sum(nclip) / max(1, sum(ncoord)), ClipLatePct=100.0 * nclip[1] / max(1, ncoord[1]),
+                        FeasEvalLatePct=100.0 * nfe / nev if nev else np.nan)
+        return gbest, gbest_score, np.array(curve)
+
+
+def run_method_cs(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, bcons=None):
+    """run_method for the csweep labels (CSWEEP); any other label is passed to run_method unchanged."""
+    if alg not in CSWEEP:
+        return _RUN_METHOD(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, bcons)
+    tr = Tracker(feasible, max(1, (budget - NP) // 200))
+
+    def fp(x):
+        v = f(x); tr.see(x, v); return v
+    w, c, bound = CSWEEP[alg]
+    opt = PSOBH(NP, (budget - NP) // NP, w=w, c1=c, c2=c, bound=bound, feasible=feasible, seed=seed)
+    pos, _, _ = opt.optimize(fp, dim, lb, ub)
+    _CS_LOG.clear(); _CS_LOG.update(opt.log)
+    return pos, tr
+
+
+def run_grid_cs(task):
+    """run_grid (unchanged) with run_method_cs in place of run_method; dynamics columns appended."""
+    g = globals()
+    orig = g["run_method"]
+    g["run_method"] = run_method_cs
+    _CS_LOG.clear()
+    try:
+        row = run_grid(task)
+    finally:
+        g["run_method"] = orig
+    for k in ("Spread", "VelMean", "ClipPct", "ClipLatePct", "FeasEvalLatePct"):
+        row[k] = _CS_LOG.get(k, np.nan)
+    return row
 
 
 def _call(pair):
