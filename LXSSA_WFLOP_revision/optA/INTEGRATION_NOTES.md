@@ -8,3 +8,5 @@
 - 07 optional: run-level contrasts SSA-VNS vs SSA, LX-SSA-VNS vs LX-SSA (not needed).
 - Cover letter pulls macros from analysis/mpce_numbers.tex; must stay in LXSSA_WFLOP_revision/.
 - New refs cited by 02_intro: Sorensen2015, BartzBeielstein2020 → merge via optA/merge_newrefs.py.
+- 02_intro: claims without CHECK ids: "VNS alone ranks first with feasible starts" (\NFbFeasBestRank) and "best rank at all three budgets" (\NBudgetPhrase) → consider adding C28 (feasible-start best = BVNS) and C29 (PSOBV best rank at 30,030 and 120,030) in mpce_check_final.py; outline/contribution 4 must point to the discussion label if 10 creates sec:discussion; Horns Rev claim wording must match (C19 is at 6,030; 30,030 needs its own check).
+- Overfull box in 04_methods (equation ~line 37) — check in integration.
