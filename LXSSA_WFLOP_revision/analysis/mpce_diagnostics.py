@@ -426,7 +426,9 @@ def compare_stored(res, S):
             out.append((key, None)); continue
         if isinstance(s, pd.DataFrame):
             s = s.iloc[0]
-        ok = (float(s.WakeLoss) == float(r["WakeLoss"]) and s.Coordinates == r["Coordinates"]
+        # the stored CSVs hold the WakeLoss float with 16-17 significant digits (last digit may be rounded), so the
+        # float is compared to a relative tolerance of 1e-13; the coordinate and curve strings are compared exactly
+        ok = (abs(float(s.WakeLoss) - float(r["WakeLoss"])) <= 1e-13 * abs(float(r["WakeLoss"])) and s.Coordinates == r["Coordinates"]
               and int(s.Calls) == int(r["calls"]) and s.Curve == r["Curve"])
         out.append((key, bool(ok)))
     return out
@@ -553,12 +555,12 @@ def t2_summary(res):
                                         ("descent" if L["x1_feasible"] else ("cycle" if L["inc_feasible"] else "never")))
             d["lost_feasibility"] = any(chain[i] and not chain[i + 1] for i in range(len(chain) - 1))
             if L["x0_feasible"] and L["x1_feasible"]:
+                # a descent cut off by the budget has not returned; its progress is in best_F (not in x1_F / inc_F)
+                x1 = L["x1_F"] if L["descent_done"] else L["best_F"]
                 d["imp_total_pp"] = C.pct(L["x0_F"] - L["best_F"])
-                d["imp_descent_pp"] = C.pct(L["x0_F"] - L["x1_F"])
+                d["imp_descent_pp"] = C.pct(L["x0_F"] - x1)
                 d["imp_cycles_pp"] = C.pct(sum(c["F_before"] - c["F_ls"] for c in accd))
-                d["imp_cutoff_pp"] = C.pct(L["inc_F"] - L["best_F"])
-                d["imp_cycles_shake_pp"] = C.pct(sum(c["F_before"] - c["F_shake"] for c in accd))
-                d["imp_cycles_ls_pp"] = C.pct(sum(c["F_shake"] - c["F_ls"] for c in accd))
+                d["imp_cutoff_pp"] = C.pct(L["inc_F"] - L["best_F"]) if L["descent_done"] else 0.0
             per.append(d)
         P = pd.DataFrame(per)
         fe = P[P.imp_total_pp.notna()] if "imp_total_pp" in P else P.iloc[:0]
@@ -588,8 +590,9 @@ def t2_summary(res):
             imp_descent_share_pct=100 * float(fe.imp_descent_pp.sum() / tot) if tot > 0 else None,
             imp_cycles_share_pct=100 * float(fe.imp_cycles_pp.sum() / tot) if tot > 0 else None,
             imp_cutoff_share_pct=100 * float(fe.imp_cutoff_pp.sum() / tot) if tot > 0 else None,
-            imp_cycles_shake_pp_sum=float(fe.imp_cycles_shake_pp.sum()) if len(fe) else None,
-            imp_cycles_ls_pp_sum=float(fe.imp_cycles_ls_pp.sum()) if len(fe) else None,
+            imp_runs_zero=int((fe.imp_total_pp <= 0).sum()) if len(fe) else None,
+            runs_descent_whole_phase2=int(((~P.descent_done) & (P.shakes == 0)).sum()),
+            descent_not_finished_by_n={int(k): int((~g.descent_done).sum()) for k, g in P.groupby("n")},
             made_feasible_descent=int((P.made_feasible_stage == "descent").sum()),
             made_feasible_cycle=int((P.made_feasible_stage == "cycle").sum()),
             never_feasible=int((P.made_feasible_stage == "never").sum()),
@@ -607,20 +610,33 @@ def t2_summary(res):
 
 
 # ------------------------------------------------------------------ T3 summary
-def mixture_feasibility(P, G, n, rad, c2, rng, draws=200, match=False):
-    """Share of first-update PSO candidates P + c2 U(0,1) (G - P) that are feasible (P = own start = pbest,
-    V = 0), optionally after relabelling the turbines of P to the nearest turbines of G."""
+MIX_MODES = ("raw", "matched", "matched_convex", "matched_scalar")
+
+
+def mixture_stats(P, G, n, rad, c2, rng, mode, draws=200):
+    """Counterfactual first-update candidates between a particle's feasible start P (= its pbest; V = 0) and the
+    global best G (separate RNG; nothing here touches the optimizer). Modes:
+      raw             P + c2 U(0,1)^dim (G - P): the actual first PSO move (independent weight per coordinate,
+                      up to c2 = 1.496, i.e. overshooting G), original turbine labels
+      matched         the same after relabelling the turbines of P to the nearest turbines of G (assignment)
+      matched_convex  matched, independent weights in [0, 1] (no overshoot)
+      matched_scalar  matched, one weight in [0, 1] for all coordinates (a convex combination of the layouts)
+    Returns (share feasible, share with a turbine outside the circle, median minimum spacing (m))."""
     p = P.reshape(n, 2).copy(); g = G.reshape(n, 2)
-    if match:
+    if mode != "raw":
         cost = ((p[:, None] - g[None]) ** 2).sum(-1)
         ri, ci = linear_sum_assignment(cost)
         q = np.empty_like(p); q[ci] = p[ri]; p = q
-    ok = 0
+    ok = bo = 0; sp = []
     for _ in range(draws):
-        x = p + c2 * rng.random((n, 2)) * (g - p)
-        x = np.clip(x, -rad, rad)
-        ok += (min_spacing(x) >= SMIN - 1e-6) and np.sqrt((x ** 2).sum(1)).max() <= rad + 1e-6
-    return ok / draws
+        if mode == "matched_scalar":
+            w = rng.random()
+        else:
+            w = rng.random((n, 2)) * (c2 if mode in ("raw", "matched") else 1.0)
+        x = np.clip(p + w * (g - p), -rad, rad)
+        m = min_spacing(x); b = np.sqrt((x ** 2).sum(1)).max() > rad + 1e-6
+        ok += (m >= SMIN - 1e-6) and not b; bo += b; sp.append(m)
+    return ok / draws, bo / draws, float(np.median(sp))
 
 
 def matched_rms(P, G, n):
@@ -637,7 +653,8 @@ def t3_summary(res):
     for a in T3_ALGS:
         rs = [r for r in R3 if r["alg"] == a]
         feas_all = []; nbest = 0; first_feas = []; first_msp = []; improved = 0; nfb = 0; nfp = 0
-        acc = 0; frozen_runs = 0; gb_particle_still = 0; mix_raw = []; mix_match = []; mrms = []; rawrms = []
+        acc = 0; frozen_runs = 0; gb_particle_still = 0; mix = {m: [] for m in MIX_MODES}; mrms = []; rawrms = []
+        it_one_feas = 0; it_total = 0; bviol_c = []; sviol_c = []
         disp_late = []; vel_late = []
         for r in rs:
             L = r["log"]; n = r["n"]
@@ -648,6 +665,9 @@ def t3_summary(res):
                 nbest += sum(rec["ngbest"] for rec in L[1:])
                 nfb += sum(rec["nfeas_better_g"] for rec in L[1:]); nfp += sum(rec["nfeas_better_p"] for rec in L[1:])
                 frozen_runs += int(all(rec["nzero_v"] >= 1 for rec in L[1:]))
+                # iterations in which exactly one of the 30 candidates is feasible (the G-particle re-evaluating G)
+                it_one_feas += sum(abs(rec["feas"] * len(r["init_X"]) - 1) < 1e-9 for rec in L[1:]); it_total += len(L) - 1
+                bviol_c += [rec["bviol"] for rec in L[1:]]; sviol_c += [rec["sviol"] for rec in L[1:]]
                 fi = r["first"]
                 gb_particle_still += int(any(g and v and not m for g, v, m in zip(fi["is_gbest_particle"], fi["v_zero"], fi["moved"])))
                 disp_late.append(np.mean([rec["disp"] for rec in L[-50:]])); vel_late.append(np.mean([rec["vel"] for rec in L[-50:]]))
@@ -655,8 +675,8 @@ def t3_summary(res):
                 for i in range(len(X0)):
                     if i == gi:
                         continue
-                    mix_raw.append(mixture_feasibility(X0[i], G, n, r["rad"], 1.49618, rng))
-                    mix_match.append(mixture_feasibility(X0[i], G, n, r["rad"], 1.49618, rng, match=True))
+                    for m in MIX_MODES:
+                        mix[m].append(mixture_stats(X0[i], G, n, r["rad"], 1.49618, rng, m))
                     m1, m0 = matched_rms(X0[i], G, n); mrms.append(m1); rawrms.append(m0)
             else:
                 feas_all += [rec["feas"] for rec in L]
@@ -670,8 +690,12 @@ def t3_summary(res):
             d.update(feasible_better_than_gbest=int(nfb), feasible_better_than_pbest=int(nfp),
                      runs_gbest_particle_zero_velocity_throughout=frozen_runs,
                      runs_gbest_particle_not_moved_first_update=gb_particle_still,
-                     mixture_feasible_pct_raw=100 * float(np.mean(mix_raw)),
-                     mixture_feasible_pct_matched=100 * float(np.mean(mix_match)),
+                     iterations_exactly_one_feasible=int(it_one_feas), iterations=int(it_total),
+                     candidates_outside_circle_pct=100 * float(np.mean(bviol_c)),
+                     candidates_spacing_violation_pct=100 * float(np.mean(sviol_c)),
+                     mixture={m: dict(feasible_pct=100 * float(np.mean([v[0] for v in mix[m]])),
+                                      outside_pct=100 * float(np.mean([v[1] for v in mix[m]])),
+                                      min_spacing_median_m=float(np.median([v[2] for v in mix[m]]))) for m in MIX_MODES},
                      init_matched_rms_median_m=float(np.median(mrms)), init_matched_rms_min_m=float(np.min(mrms)),
                      init_unmatched_rms_median_m=float(np.median(rawrms)),
                      disp_last50_median_m=float(np.median(disp_late)), vel_last50_median_m=float(np.median(vel_late)))
@@ -752,8 +776,9 @@ def figure(curves, S1):
         if logy:
             ax.set_yscale("log")
         ax.set_xlabel("iteration"); ax.set_ylabel(yl); ax.set_xlim(0, len(x) - 1)
-    axes[0].legend(loc="lower left", fontsize=7)
-    fig.tight_layout(w_pad=1.2)
+    h, l = axes[0].get_legend_handles_labels()
+    fig.tight_layout(w_pad=1.2, rect=(0, 0, 1, 0.9))
+    fig.legend(h, l, loc="upper center", ncol=2, fontsize=7.5, bbox_to_anchor=(0.5, 1.0))
     d = os.path.join(HERE, "..", "figures_mpce")
     fig.savefig(os.path.join(d, "diag_pso_dynamics.pdf"), bbox_inches="tight")
     fig.savefig(os.path.join(d, "diag_pso_dynamics.png"), dpi=160, bbox_inches="tight")
@@ -800,8 +825,8 @@ def macros(Sm):
         M[f"NDShakesMin{p}"] = A["shakes_min"]; M[f"NDShakesMax{p}"] = A["shakes_max"]
         M[f"NDDescentEvals{p}"] = fmt(A["descent_evals_median"], 0)
         M[f"NDDescentEvalsPct{p}"] = fmt(A["descent_evals_pct_of_phase2"], 1)
-        M[f"NDLSEvalsPct{p}"] = fmt(A["ls_evals_pct_of_phase2"], 1)
-        M[f"NDShakeEvalsPct{p}"] = fmt(A["shake_evals_pct_of_phase2"], 1)
+        M[f"NDLSEvalsPct{p}"] = fmt(A["ls_evals_pct_of_phase2"], 2)
+        M[f"NDShakeEvalsPct{p}"] = fmt(A["shake_evals_pct_of_phase2"], 2)
         M[f"NDAccepted{p}"] = fmt(A["accepted_mean"], 1)
         M[f"NDAcceptRate{p}"] = fmt(A["accept_rate_pct"], 1)
         M[f"NDAccKOne{p}"] = fmt(A["accepted_k1_pct"], 1)
@@ -828,8 +853,13 @@ def macros(Sm):
         M[f"NDFsStoredRuns{p}"] = S3["stored"][a]["runs"]
         M[f"NDFsStoredMoved{p}"] = S3["stored"][a]["runs_final_differs_from_initial_best"]
     A = S3["PSOC"]
-    M["NDFsMixRaw"] = fmt(A["mixture_feasible_pct_raw"], 1)
-    M["NDFsMixMatched"] = fmt(A["mixture_feasible_pct_matched"], 1)
+    for m, nm in zip(MIX_MODES, ("Raw", "Matched", "Convex", "Scalar")):
+        M[f"NDFsMix{nm}"] = fmt(A["mixture"][m]["feasible_pct"], 1)
+        M[f"NDFsMixOut{nm}"] = fmt(A["mixture"][m]["outside_pct"], 1)
+        M[f"NDFsMixMinSp{nm}"] = fmt(A["mixture"][m]["min_spacing_median_m"], 0)
+    M["NDFsOneFeasIter"] = fmt(A["iterations_exactly_one_feasible"]); M["NDFsIter"] = fmt(A["iterations"])
+    M["NDFsCandOut"] = fmt(A["candidates_outside_circle_pct"], 1)
+    M["NDFsCandSpacing"] = fmt(A["candidates_spacing_violation_pct"], 1)
     M["NDFsInitRms"] = fmt(A["init_matched_rms_median_m"], 0)
     M["NDFsInitRmsMin"] = fmt(A["init_matched_rms_min_m"], 0)
     M["NDFsFrozen"] = A["runs_gbest_particle_zero_velocity_throughout"]
@@ -931,7 +961,7 @@ def supp_tex(Sm, path):
     row("\\quad range over runs", None, 0, lambda s: f"{s['shakes_min']}--{s['shakes_max']}")
     for nn in sorted(S2[T2_ALGS[0]]["shakes_median_by_n"]):
         row(f"\\quad median for $N={nn}$", None, 1, lambda s, nn=nn: s["shakes_median_by_n"][nn])
-    row("Local-search share of Phase-2 evaluations (\\%)", "ls_evals_pct_of_phase2", 1)
+    row("Shaking evaluations (\\% of Phase~2; rest: local search)", "shake_evals_pct_of_phase2", 2)
     row("Accepted cycles per run (mean)", "accepted_mean", 1)
     row("\\quad acceptance rate of cycles (\\%)", "accept_rate_pct", 1)
     row("\\quad share accepted with $k=1$ (\\%)", "accepted_k1_pct", 1)
@@ -956,8 +986,10 @@ def supp_tex(Sm, path):
           f"$N=10$; DS~II, 750~m, $N=12$; DS~I, 1000~m, $N=15$) $\\times$ {S3['seeds']} seeds with feasibility-preserving "
           "initialization, 6,030 evaluations; every candidate is logged. Mixture test: first-update PSO candidates "
           "$\\mathbf P^i+c_2\\,\\mathbf r\\odot(\\mathbf G-\\mathbf P^i)$ between a particle's feasible start and the "
-          "global best (200 draws per particle, separate random stream), with the original turbine labels and after "
-          "relabelling the turbines of $\\mathbf P^i$ to their nearest turbines of $\\mathbf G$ (assignment problem).}",
+          "global best (200 draws per particle, separate random stream; $c_2=1.496$, independent $\\mathbf r\\sim U(0,1)$ per "
+          "coordinate), with the original turbine labels and after relabelling the turbines of $\\mathbf P^i$ to their "
+          "nearest turbines of $\\mathbf G$ (assignment problem); then, relabelled, without overshoot (weights in $[0,1]$) "
+          "and with one common weight (a convex combination of the two layouts).}",
           "\\label{tab:D-feasstart}", "\\scriptsize\\setlength{\\tabcolsep}{3pt}",
           "\\begin{tabular}{lcc}", "\\toprule", " & PSO & DE \\\\", "\\midrule",
           f"Runs with an improved global best & {P['improved_runs']} of {P['runs']} & {D['improved_runs']} of {D['runs']} \\\\",
@@ -967,8 +999,15 @@ def supp_tex(Sm, path):
           f"Feasible candidates better than own $\\mathbf P^i$ / than $\\mathbf G$ & {P['feasible_better_than_pbest']} / {P['feasible_better_than_gbest']} & -- \\\\",
           f"Accepted DE trials & -- & {D['accepted_trials']} \\\\",
           f"Runs in which the $\\mathbf G$-particle keeps $\\mathbf V=\\mathbf 0$ & {P['runs_gbest_particle_zero_velocity_throughout']} of {P['runs']} & -- \\\\",
-          f"Mixture feasible, original labels (\\%) & {fmt(P['mixture_feasible_pct_raw'],1)} & \\\\",
-          f"Mixture feasible, after relabelling (\\%) & {fmt(P['mixture_feasible_pct_matched'],1)} & \\\\",
+          f"Iterations with exactly one feasible candidate ($\\mathbf G$ re-evaluated) & {fmt(P['iterations_exactly_one_feasible'])} of {fmt(P['iterations'])} & \\\\",
+          f"Candidates with a turbine outside the circle / spacing violation (\\%) & {fmt(P['candidates_outside_circle_pct'],1)} / {fmt(P['candidates_spacing_violation_pct'],1)} & \\\\",
+          "\\midrule",
+          "\\multicolumn{3}{l}{Mixture test (feasible \\% / turbine outside the circle \\% / median min.\\ spacing, m):} \\\\",
+          f"\\quad first PSO move, original labels & \\multicolumn{{2}}{{l}}{{{fmt(P['mixture']['raw']['feasible_pct'],1)} / {fmt(P['mixture']['raw']['outside_pct'],1)} / {fmt(P['mixture']['raw']['min_spacing_median_m'],0)}}} \\\\",
+          f"\\quad first PSO move, relabelled & \\multicolumn{{2}}{{l}}{{{fmt(P['mixture']['matched']['feasible_pct'],1)} / {fmt(P['mixture']['matched']['outside_pct'],1)} / {fmt(P['mixture']['matched']['min_spacing_median_m'],0)}}} \\\\",
+          f"\\quad relabelled, weights in $[0,1]$ & \\multicolumn{{2}}{{l}}{{{fmt(P['mixture']['matched_convex']['feasible_pct'],1)} / {fmt(P['mixture']['matched_convex']['outside_pct'],1)} / {fmt(P['mixture']['matched_convex']['min_spacing_median_m'],0)}}} \\\\",
+          f"\\quad relabelled, one weight (convex comb.) & \\multicolumn{{2}}{{l}}{{{fmt(P['mixture']['matched_scalar']['feasible_pct'],1)} / {fmt(P['mixture']['matched_scalar']['outside_pct'],1)} / {fmt(P['mixture']['matched_scalar']['min_spacing_median_m'],0)}}} \\\\",
+          "\\midrule",
           f"Initial layouts: RMS turbine distance to $\\mathbf G$ after relabelling (m, median / min) & {fmt(P['init_matched_rms_median_m'],0)} / {fmt(P['init_matched_rms_min_m'],0)} & \\\\",
           f"Stored runs (6 largest cases and Horns Rev~1, 30 seeds): final $\\ne$ best initial & {S3['stored']['PSOC']['runs_final_differs_from_initial_best']} of {S3['stored']['PSOC']['runs']} & {S3['stored']['DE']['runs_final_differs_from_initial_best']} of {S3['stored']['DE']['runs']} \\\\",
           "\\bottomrule", "\\end{tabular}", "\\end{table}", ""]
@@ -1000,7 +1039,7 @@ def main():
                stored_match=sum(bool(v) for _, v in cmp), stored_mismatch=[list(map(str, k)) for k, v in cmp if v is False],
                stored_missing=[list(map(str, k)) for k, v in cmp if v is None],
                bitident_runs=len(bit), bitident_match=int(sum(bit)),
-               note="stored_match: WakeLoss float, coordinate string, curve string and call count equal to the stored run "
+               note="stored_match: WakeLoss (relative difference <= 1e-13, the precision of the CSV), coordinate string, curve string and call count equal to the stored run "
                     "of the paper; bitident: seed 1 of every case and method rerun uninstrumented in the same process, "
                     "final position array, tracker curve, calls and WakeLoss bit-identical")
     S1, curves = t1_summary(res)

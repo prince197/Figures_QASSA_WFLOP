@@ -1,0 +1,56 @@
+% ============================================================================================================
+% Phase 6, W4 (theory): main-text inserts. Three drop-in blocks; the lead places them as marked.
+% Net length: about +0.3 page without the optional figure (block A replaces an existing paragraph of 04, block C
+% replaces two sentences of 08). Labels: prop:pso-stability, prop:box, prop:feasible-start, fig:th-stability
+% (optional). eq:poli is KEPT (defined in block A). All numbers are mathematics; they are recomputed and checked
+% against this file by `python analysis/make_theory_figures.py --check` (T01-T12). Proofs: supplement
+% Section S-theory (optA/supp_theory.tex).
+% Needs a proposition environment. IEEEtran defines none; the guard below defines it once (the lead may move it
+% to the preamble of MPCE_PSO_VNS.tex instead).
+\makeatletter\@ifundefined{proposition}{\newtheorem{proposition}{Proposition}}{}\makeatother
+%
+% ---------------------------------------------------------------------------------------------------------
+% BLOCK A -> 04_methods.tex, Section \ref{sec:pso}: replaces the paragraph from "Under stagnation (fixed ..."
+% up to and including the DE/Zaharie sentence and its two comment lines (keep the CHECK-FINAL [C27] comment).
+% ---------------------------------------------------------------------------------------------------------
+\emph{Stability.} Under stagnation (fixed $\mathbf P^i$ and $\mathbf G$) and without active bounds, each coordinate of \eqref{eq:pso-v}, \eqref{eq:pso-x} follows a linear recursion with the random coefficient $c_1\rho_1+c_2\rho_2$, whose mean is $(c_1+c_2)/2$.
+\begin{proposition}\label{prop:pso-stability}
+Under these assumptions, the expected position converges to $(c_1\mathbf P^i+c_2\mathbf G)/(c_1+c_2)$ for all initial values if and only if $\lvert w\rvert<1$ and $0<c_1+c_2<4(1+w)$ (order-1 stability). For $c_1=c_2$, the second moments converge as well (order-2 stability) if and only if, in addition,
+\begin{equation}
+c_1+c_2<\frac{24\,(1-w^2)}{7-5w},
+\label{eq:poli}
+\end{equation}
+and the limit variance of coordinate $m$ is then proportional to $(P^i_m-G_m)^2$~\cite{Poli2009}.
+\end{proposition}
+Proofs and the case $c_1\ne c_2$ are given in Section~\ref{S-sec:S-th-pso} of the supplementary material; the same region holds under a weaker, non-stagnant assumption~\cite{Cleghorn2018}. The constriction setting is order-2 stable ($c_1+c_2=2.99<3.35$; asymptotically, the second moments contract by the factor 0.94 per iteration). The old setting is order-1 stable ($4<6.8$) but violates~\eqref{eq:poli} ($4>3.50$): under stagnation its second moments grow by the factor 1.12 per iteration (Fig.~\ref{S-fig:S-th-stability}). Neither condition says that $\mathbf G$ is good: order-2 stability only means that each particle samples around $\mathbf P^i$ and $\mathbf G$ with bounded spread. Both results assume stagnation and no bounds. In our code, a clipped coordinate keeps its velocity, so it stays at $\pm r$ while the velocity points outward, and since $x_i=\pm r$ implies $x_i^2+y_i^2\ge r^2$, every such clip places the turbine outside the circular farm unless $y_i=0$ (Lemma~\ref{S-lem:S-clip}). The unbounded second moments of the old setting thus show up as infeasible layouts rather than as growing positions, which plausibly explains its low feasibility. Likewise, the DE scale factor 0.5 (Section~\ref{sec:setup}) exceeds Zaharie's critical value $\sqrt{(1-\mathrm{CR}/2)/N_p}=0.14$ ($\mathrm{CR}=0.9$)~\cite{Zaharie2002}.
+% CHECK-FINAL [C27]: under the old PSO setting at least one salp-swarm hybrid ranks ahead of PSO; under the corrected setting PSO ranks ahead of every salp-swarm method (SSA, LX-SSA, SSA-VNS, LX-SSA-VNS)
+% verified (make_theory_figures.py --check, T01-T05): 24(1-0.7^2)/(7-3.5)=3.497; 24(1-0.7298^2)/(7-5*0.7298)=3.348;
+% 4(1+0.7)=6.8; spectral radius of the second-moment matrix 1.124 (old) and 0.944 (constriction); sqrt((1-0.45)/30)=0.135
+%
+% OPTIONAL (only if the page budget allows; otherwise the reference above points to the supplement figure and this
+% float stays out). If used, change "Fig.~\ref{S-fig:S-th-stability}" above to "Fig.~\ref{fig:th-stability}".
+%\begin{figure}[!t]
+%\centering
+%\pipefig{0.92\columnwidth}{figures_mpce/theory_stability.pdf}{4.5cm}
+%\caption{Stability regions of the PSO update~\eqref{eq:pso-v}, \eqref{eq:pso-x} under stagnation and without bounds ($c_1=c_2$). Light: order-1 only; dark: order-1 and order-2 stable~\eqref{eq:poli}.}
+%\label{fig:th-stability}
+%\end{figure}
+%
+% ---------------------------------------------------------------------------------------------------------
+% BLOCK B -> 04_methods.tex, Section \ref{sec:template}: append after "... with RS-VNS as a weak, no-search
+% minimum bar." (end of the Two-Phase Template paragraph).
+% ---------------------------------------------------------------------------------------------------------
+\begin{proposition}\label{prop:box}
+A layout drawn uniformly in the bounding square has all $N$ turbines inside the farm with probability $(\pi/4)^N$; including the spacing constraint, its probability of being feasible is smaller still (an explicit bound is in Proposition~\ref{S-prop:S-box} of the supplementary material).
+\end{proposition}
+For the largest benchmark cases, Monte Carlo estimates of this probability are below $10^{-6}$ (Table~\ref{S-tab:S-th-box}), so the Phase~1 of RS-VNS almost never contains a feasible layout and passes the least-violating of its samples to VNS.
+%
+% ---------------------------------------------------------------------------------------------------------
+% BLOCK C -> 08_beyond.tex, paragraph "Feasible starts": replaces the two sentences "As the turbine labels are
+% arbitrary, ... and the global best of PSO does not move." (keep "PSO and DE never improve on the best initial
+% layout in these runs." and everything after "The single-coordinate moves of VNS are not affected.").
+% ---------------------------------------------------------------------------------------------------------
+\begin{proposition}\label{prop:feasible-start}
+With feasible initial layouts, zero initial velocities and $\mathbf P^i=\mathbf X^i$, the particle holding $\mathbf G$ keeps zero velocity and re-evaluates $\mathbf G$ until another particle improves $\mathbf G$; a trial of PSO or DE replaces $\mathbf G$ only if it is feasible (violations below about $10^{-7}$) and has a lower wake loss.
+\end{proposition}
+The other particles move each coordinate toward the same coordinate of $\mathbf G$, and a DE trial takes on average 27.1 of its 30 coordinates ($N=15$) from a combination of three other layouts. As the turbine numbering of independently packed layouts is arbitrary, these moves combine unrelated turbines; in our runs they never produced a feasible layout with a lower wake loss than $\mathbf G$. This last part is an observation, not a consequence of Proposition~\ref{prop:feasible-start} (Section~\ref{S-sec:S-th-feas}).

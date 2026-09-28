@@ -49,3 +49,9 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
 - Multiplicity (22 tests, one Holm): only the pooled N ≥ 10 subgroup is lost; DS II N ≥ 10 survives (p_Holm 0.012).
 - Energy: PSO-VNS vs PSO ≈ 0.020 % AEP (CI contains 0); DS II N ≥ 10 ≈ 0.22 %; SSA vs RS 0.071 %; PSO-VNS vs RS 0.41 % (benchmark energy).
 - Integration: \input{analysis/mpce_numbers_extra.tex} in both preambles; \input{analysis/mpce_supp_inference.tex} in supplement; build: add mpce_inference_extra.py + mpce_check_extra.py after mpce_results.py.
+
+## W4 results (theory) — notes for Phase B
+- optA/drafts/theory_main.tex: Block A → 04 sec:pso (prop:pso-stability; Poli bound "for c1 = c2"; order-1 uses E[φ]); Block B → 04 sec:template (prop:box, (π/4)^N); Block C → 08 feasible starts (prop:feasible-start; stall is OBSERVED, not implied). ~+0.3 page net → cut elsewhere.
+- optA/supp_theory.tex → \input in supplement (sec:S-theory); replace its two \TBD with W3 section refs; cite Benavoli2017 in sec:S-th-equiv.
+- prop:S-prefix: PSO-VNS final value never worse than PSO's value at B1 (exact prefix property) — useful for the equivalence discussion.
+- checks T01–T13: python analysis/make_theory_figures.py --check (3 min) → add to reproducibility map (not to every build).
