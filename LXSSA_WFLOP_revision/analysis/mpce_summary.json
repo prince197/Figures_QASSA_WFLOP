@@ -1,9 +1,9 @@
 {
- "generated": "2026-09-28 08:38:56",
+ "generated": "2026-09-28 09:00:23",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
-  "partial": true,
+  "partial": false,
   "common_seeds": false
  },
  "colours": {
@@ -152,9 +152,24 @@
    ]
   },
   "mpce_feas": {
-   "status": "missing",
-   "shards": "0",
-   "rows": 0
+   "status": "complete",
+   "shards": "1/1",
+   "rows": 1680,
+   "methods": [
+    "BVNS",
+    "DE",
+    "LXBV",
+    "LXSSA",
+    "PSOC",
+    "SLSQP",
+    "SSA",
+    "SSABV"
+   ],
+   "datasets": [
+    "1",
+    "2",
+    "HR"
+   ]
   },
   "mpce_b30k": {
    "status": "complete",
@@ -1576,7 +1591,13 @@
      "mean_aep": 137.9842323651079,
      "runs_above_installed": 0
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 6.992087184550438,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 138.82665397592896,
+     "runs_above_installed": 1
+    },
     "30030R": {
      "loss": 7.164631117132513,
      "feasible": 30,
@@ -1600,7 +1621,13 @@
      "mean_aep": 137.77094248593406,
      "runs_above_installed": 0
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 7.061614617846133,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 138.7228750539879,
+     "runs_above_installed": 2
+    },
     "30030R": {
      "loss": 7.056755748445147,
      "feasible": 30,
@@ -1648,7 +1675,13 @@
      "mean_aep": 137.67077703490713,
      "runs_above_installed": 0
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 6.877012483459781,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 138.99841824013086,
+     "runs_above_installed": 3
+    },
     "30030R": {
      "loss": 6.718519034276691,
      "feasible": 30,
@@ -1672,7 +1705,13 @@
      "mean_aep": 138.0571624487686,
      "runs_above_installed": 1
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 8.390303960395709,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 136.73962986531623,
+     "runs_above_installed": 0
+    },
     "30030R": {
      "loss": 6.815519419888233,
      "feasible": 28,
@@ -1696,7 +1735,13 @@
      "mean_aep": 136.66046554825363,
      "runs_above_installed": 0
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 7.891418052494185,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 137.48428329547266,
+     "runs_above_installed": 0
+    },
     "30030R": {
      "loss": 8.13528131493607,
      "feasible": 30,
@@ -1720,7 +1765,13 @@
      "mean_aep": 136.46104304597682,
      "runs_above_installed": 0
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 7.963641211220442,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 137.37648064554725,
+     "runs_above_installed": 0
+    },
     "30030R": {
      "loss": 8.484968379948159,
      "feasible": 30,
@@ -1744,7 +1795,13 @@
      "mean_aep": null,
      "runs_above_installed": 0
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 8.39030396039571,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 136.73962986531626,
+     "runs_above_installed": 0
+    },
     "30030R": {
      "loss": 7.281047659676819,
      "feasible": 8,
@@ -1768,7 +1825,13 @@
      "mean_aep": 136.80013558013673,
      "runs_above_installed": 0
     },
-    "6030F": null,
+    "6030F": {
+     "loss": 8.061414933382956,
+     "feasible": 30,
+     "runs": 30,
+     "mean_aep": 137.23054038859806,
+     "runs_above_installed": 0
+    },
     "30030R": {
      "loss": 7.789599107740044,
      "feasible": 30,
@@ -1797,6 +1860,59 @@
    "HR-0-16"
   ],
   "per_method": {
+   "BVNS": {
+    "loss_random": 5.352114741024194,
+    "loss_feasible": 4.2484128642859105,
+    "feas_random_pct": 100.0,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "W": 7
+    },
+    "random_source": [
+     "fresh_vgrid.csv",
+     "fresh_vhr16.csv"
+    ]
+   },
+   "DE": {
+    "loss_random": 9.46087438308432,
+    "loss_feasible": 5.95471936005068,
+    "feas_random_pct": 0.9523809523809523,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "W": 7
+    },
+    "random_source": [
+     "fresh_grid.csv",
+     "fresh_hr16.csv"
+    ]
+   },
+   "LXBV": {
+    "loss_random": 5.215762038098876,
+    "loss_feasible": 4.3961012192339055,
+    "feas_random_pct": 99.04761904761905,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "W": 6,
+     "T": 1
+    },
+    "random_source": [
+     "fresh_bgrid.csv",
+     "fresh_bhr16.csv"
+    ]
+   },
+   "LXSSA": {
+    "loss_random": 6.686753242749513,
+    "loss_feasible": 5.4642777682660775,
+    "feas_random_pct": 80.0,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "W": 7
+    },
+    "random_source": [
+     "fresh_grid.csv",
+     "fresh_hr16.csv"
+    ]
+   },
    "PSOBV": {
     "loss_random": 4.508644857295908,
     "loss_feasible": 4.369696332741154,
@@ -1809,10 +1925,74 @@
     "random_source": [
      "mpce_psobv"
     ]
+   },
+   "PSOC": {
+    "loss_random": 4.655883424217589,
+    "loss_feasible": 5.954719360050681,
+    "feas_random_pct": 94.76190476190476,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "L": 5,
+     "T": 2
+    },
+    "random_source": [
+     "mpce_hr16new",
+     "mpce_psoc"
+    ]
+   },
+   "SLSQP": {
+    "loss_random": 5.068560234063861,
+    "loss_feasible": 4.83236516473478,
+    "feas_random_pct": 99.52380952380952,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "T": 6,
+     "W": 1
+    },
+    "random_source": [
+     "fresh_hr16.csv",
+     "mpce_slsqp"
+    ]
+   },
+   "SSA": {
+    "loss_random": 6.182695872409732,
+    "loss_feasible": 5.367478099786854,
+    "feas_random_pct": 82.85714285714286,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "W": 5,
+     "T": 2
+    },
+    "random_source": [
+     "fresh_grid.csv",
+     "fresh_hr16.csv"
+    ]
+   },
+   "SSABV": {
+    "loss_random": 5.089567406881531,
+    "loss_feasible": 4.389035911679408,
+    "feas_random_pct": 95.71428571428571,
+    "feas_feasible_pct": 100.0,
+    "wtl": {
+     "W": 6,
+     "T": 1
+    },
+    "random_source": [
+     "fresh_bgrid.csv",
+     "fresh_bhr16.csv"
+    ]
    }
   },
   "avg_rank_feasible_init": {
-   "PSOBV": 1.0
+   "BVNS": 1.0,
+   "DE": 8.5,
+   "LXBV": 3.2857142857142856,
+   "LXSSA": 6.857142857142857,
+   "PSOBV": 2.7142857142857144,
+   "PSOC": 8.5,
+   "SLSQP": 5.142857142857143,
+   "SSA": 5.857142857142857,
+   "SSABV": 3.142857142857143
   }
  },
  "budget": {
@@ -3059,15 +3239,47 @@
     "feas": 100.0,
     "n": 180
    },
-   "SSABV": null,
-   "LXBV": null,
+   "SSABV": {
+    "loss": 3.955194032867569,
+    "feas": 100.0,
+    "n": 180
+   },
+   "LXBV": {
+    "loss": 3.951848986131868,
+    "feas": 100.0,
+    "n": 180
+   },
    "RSVNS": null,
-   "BVNS": null,
-   "PSOC": null,
-   "SSA": null,
-   "LXSSA": null,
-   "DE": null,
-   "SLSQP": null
+   "BVNS": {
+    "loss": 3.8103129277569323,
+    "feas": 100.0,
+    "n": 180
+   },
+   "PSOC": {
+    "loss": 5.548788593326507,
+    "feas": 100.0,
+    "n": 180
+   },
+   "SSA": {
+    "loss": 4.9468214410022995,
+    "feas": 100.0,
+    "n": 180
+   },
+   "LXSSA": {
+    "loss": 5.04771719444035,
+    "feas": 100.0,
+    "n": 180
+   },
+   "DE": {
+    "loss": 5.548788593326507,
+    "feas": 100.0,
+    "n": 180
+   },
+   "SLSQP": {
+    "loss": 4.294190203293416,
+    "feas": 100.0,
+    "n": 180
+   }
   },
   "rank": {
    "6030": {
@@ -3109,7 +3321,7 @@
   },
   "complete": {
    "random_6030": true,
-   "feasible_6030": false,
+   "feasible_6030": true,
    "rank_6030": true,
    "rank_30030": true,
    "rank_120030": true
@@ -3190,9 +3402,18 @@
     "SLSQP": 100.0
    }
   },
-  "pending": [
-   "feasible_6030"
-  ],
+  "rank_feasible_init": {
+   "PSOBV": 2.8333333333333335,
+   "SSABV": 3.1666666666666665,
+   "LXBV": 3.1666666666666665,
+   "BVNS": 1.0,
+   "PSOC": 8.5,
+   "SSA": 6.0,
+   "LXSSA": 7.0,
+   "DE": 8.5,
+   "SLSQP": 4.833333333333333
+  },
+  "pending": [],
   "best": {
    "6030": "PSOBV",
    "30030": "PSOBV",
@@ -4334,7 +4555,7 @@
   "  mpce_psosplit        complete                                      shards=   1/1 rows=   720  methods=PSOBV25,PSOBV75",
   "  mpce_ssasplit        missing                                       shards=     0 rows=     0",
   "  mpce_hr16new         complete                                      shards=   1/1 rows=    60  methods=PSOC,RSVNS",
-  "  mpce_feas            missing                                       shards=     0 rows=     0",
+  "  mpce_feas            complete                                      shards=   1/1 rows=  1680  methods=BVNS,DE,LXBV,LXSSA,PSOC,SLSQP,SSA,SSABV",
   "  mpce_b30k            complete                                      shards=   3/3 rows=  1890  methods=BVNS,DE,LXBV,LXSSA,PSOC,RSVNS,SLSQP,SSA,SSABV",
   "  mpce_b120k           complete                                      shards=   8/8 rows=  1710  methods=BVNS,DE,LXBV,LXSSA,PSOC,RSVNS,SLSQP,SSA,SSABV",
   "  mpce_iea16           complete                                      shards=   1/1 rows=   540  methods=BVNS,DE,LXBV,LXSSA,PSOC,RSVNS,SLSQP,SSA,SSABV",
@@ -4375,7 +4596,7 @@
   "\n[4] Horns Rev 1, 16 turbines",
   "  mean AEP: PSO-VNS 138.73(30), SSA-VNS 137.98(30), LX-SSA-VNS 137.77(30), RS-VNS 137.96(28), VNS 137.67(30), PSO 138.06(19), SSA 136.66(30), LX-SSA 136.46(28), DE nan(0), MS-SLSQP 136.80(30); installed 139.51",
   "\n[5] Feasible initialization",
-  "  per method (loss random -> feasible): PSO-VNS 4.509->4.370",
+  "  per method (loss random -> feasible): VNS 5.352->4.248, DE 9.461->5.955, LX-SSA-VNS 5.216->4.396, LX-SSA 6.687->5.464, PSO-VNS 4.509->4.370, PSO 4.656->5.955, MS-SLSQP 5.069->4.832, SSA 6.183->5.367, SSA-VNS 5.090->4.389",
   "\n[6] Budget scaling",
   "  budget 6030: avg ranks PSO-VNS 1.43, PSO 1.86, SSA-VNS 4.14, MS-SLSQP 4.43, RS-VNS 4.57, LX-SSA-VNS 5.14, VNS 6.43, SSA 8.29, LX-SSA 8.71, DE 10.00",
   "  budget 30030: avg ranks PSO-VNS 1.14, PSO 2.57, SSA-VNS 4.43, VNS 4.43, LX-SSA-VNS 5.57, DE 5.86, RS-VNS 6.00, MS-SLSQP 6.71, SSA 8.57, LX-SSA 9.71",
@@ -4392,9 +4613,9 @@
   "  CubicCutout  tau=0.95 same best=93%  PSO-VNS rank 1.80",
   "  Gauss        tau=0.66 same best=54%  PSO-VNS rank 1.97",
   "\n[8b] Main-text tables (manuscript layout)",
-  "  feasbudget: pending ['feasible_6030']; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}, 30030: {'PSOBV': 1.1666666666666667, 'SSABV': 4.166666666666667, 'LXBV': 5.666666666666667, 'RSVNS': 6.333333333333333, 'BVNS': 4.833333333333333, 'PSOC': 2.5, 'SSA': 8.666666666666666, 'LXSSA': 9.833333333333334, 'DE': 5.166666666666667, 'SLSQP': 6.666666666666667}, 120030: {'PSOBV': 2.1666666666666665, 'SSABV': 4.166666666666667, 'LXBV': 5.833333333333333, 'RSVNS': 4.666666666666667, 'BVNS': 3.1666666666666665, 'PSOC': 5.833333333333333, 'SSA': 8.833333333333334, 'LXSSA': 10.0, 'DE': 3.3333333333333335, 'SLSQP': 7.0}}",
+  "  feasbudget: pending []; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}, 30030: {'PSOBV': 1.1666666666666667, 'SSABV': 4.166666666666667, 'LXBV': 5.666666666666667, 'RSVNS': 6.333333333333333, 'BVNS': 4.833333333333333, 'PSOC': 2.5, 'SSA': 8.666666666666666, 'LXSSA': 9.833333333333334, 'DE': 5.166666666666667, 'SLSQP': 6.666666666666667}, 120030: {'PSOBV': 2.1666666666666665, 'SSABV': 4.166666666666667, 'LXBV': 5.833333333333333, 'RSVNS': 4.666666666666667, 'BVNS': 3.1666666666666665, 'PSOC': 5.833333333333333, 'SSA': 8.833333333333334, 'LXSSA': 10.0, 'DE': 3.3333333333333335, 'SLSQP': 7.0}}",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 8 tables, 14 figures, mpce_summary.json in 34 s"
+  "\nwrote 8 tables, 14 figures, mpce_summary.json in 28 s"
  ]
 }
