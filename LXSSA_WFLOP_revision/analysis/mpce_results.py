@@ -1784,6 +1784,14 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         robustness(G, MAINP, args, summary, tabs, OUT)
         supp.append(tabs.pop("robust").replace("[!t]", "[!htb]", 1).replace("{\\tabcolsep}{3pt}", "{\\tabcolsep}{1.8pt}"))
 
+    # =========================================================== 7b. data checks for CHECK-FINAL (no tables)
+    log("\n[7b] Data checks (seed pairing, loss monotonicity, boundary rule, provenance)")
+    summary["pairing"] = pairing_check(ALL)
+    summary["main"]["loss_monotone"] = loss_monotone(S, FOCUS)
+    summary["boundary_rule"] = boundary_rule()
+    summary["provenance"] = {f"{a}|{ds}|{b}|{i}": sorted(set(x.Source))
+                             for (a, ds, b, i), x in ALL.groupby(["Algorithm", "Dataset", "Budget", "Init"])}
+
     # =========================================================== 8b. main-text tables and figures in the manuscript layout
     log("\n[8b] Main-text tables (manuscript layout)")
     main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args)
@@ -1823,6 +1831,75 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     import mpce_numbers, mpce_check_final
     mpce_numbers.main(["--summary", OUT("mpce_summary.json"), "--out", OUT("mpce_numbers.tex")])
     mpce_check_final.main(["--summary", OUT("mpce_summary.json")])
+
+
+def pairing_check(ALL):
+    """Seed pairing (CHECK-FINAL C43): within every case x budget x initialization, every method has the same
+    set of seeds; at 6,030 evaluations the first convergence checkpoint (best feasible objective among the 30
+    initial layouts, i.e. the common initial population) is identical for all methods of a case-seed pair
+    (compared as stored; checked only where it is finite -- infeasible initial populations are stored as nan).
+    Split variants (*25 / *75) are included. Other budgets log their first checkpoint later than call 30."""
+    grp = CASE + ["Budget", "Init"]
+    sets = ALL.groupby(grp + ["Algorithm"]).Seed.agg(lambda v: tuple(sorted(set(v))))
+    nset = sets.groupby(level=list(range(len(grp)))).nunique()
+    X = ALL[ALL.Budget == 6030]
+    c0 = pd.to_numeric(X.Curve.str.split(";").str[0], errors="coerce")
+    X = X.assign(C0=c0)[np.isfinite(c0)]
+    spread = X.groupby(CASE + ["Init", "Seed"]).C0.agg(lambda v: float(v.max() - v.min()))
+    nm = X.groupby(CASE + ["Init", "Seed"]).Algorithm.nunique()
+    out = dict(groups=int(len(nset)), groups_with_different_seed_sets=int((nset > 1).sum()),
+               case_seed_pairs_6030=int(len(spread)), pairs_compared=int((nm > 1).sum()),
+               pairs_first_checkpoint_differs=int(((spread > 1e-9) & (nm > 1)).sum()),
+               max_first_checkpoint_spread=float(spread.max()) if len(spread) else None)
+    log(f"  seed pairing: {out}")
+    return out
+
+
+def loss_monotone(S, a):
+    """Monotonicity of the case-mean wake loss of method a (CHECK-FINAL C42): violations of (i) loss
+    non-decreasing in N within each data set and radius, (ii) loss non-increasing in r at fixed N and data set,
+    (iii) Data Set II >= Data Set I at the same (r, N); ties within 1e-6 pp allowed."""
+    L = S[(S.Algorithm == a) & S.Qualified].set_index(CASE).Loss.sort_index()
+    tol = 1e-6
+    vn, vr, vd, npair, dsgt = [], [], [], 0, 0
+    for (d, r), x in L.groupby(level=[0, 1]):
+        x = x.sort_index(level=2)
+        vn += [f"{d}-{r}-{n}" for n, dv in zip(x.index.get_level_values(2)[1:], np.diff(x.values)) if dv < -tol]
+    for (d, n), x in L.groupby(level=[0, 2]):
+        x = x.sort_index(level=1)
+        vr += [f"{d}-{rr}-{n}" for rr, dv in zip(x.index.get_level_values(1)[1:], np.diff(x.values)) if dv > tol]
+    for (r, n), x in L.groupby(level=[1, 2]):
+        if x.index.get_level_values(0).nunique() == 2:
+            npair += 1
+            l1, l2 = float(x.xs("1", level=0).iloc[0]), float(x.xs("2", level=0).iloc[0])
+            dsgt += int(l2 > l1 + tol)
+            if l2 < l1 - tol:
+                vd.append(f"{r}-{n}")
+    return dict(method=a, violations_n=vn, violations_r=vr, violations_ds=vd, ds_pairs=npair, ds2_higher=dsgt,
+                ds_ties=npair - dsgt - len(vd))
+
+
+def boundary_rule():
+    """Boundary-handling check quoted in the robustness section (CHECK-FINAL C41): SSA with radial projection
+    onto the circle (ssa_reference.py, ssa_reference_runs.csv: 4D, 3,030 evaluations, non-greedy) versus the
+    archived runs of the original SSA with box clipping (../selected_30_run_data.csv, Algorithm SSA,
+    EnergyProduction), six cases x 30 runs; two-sided Mann-Whitney U on the feasible runs' objectives."""
+    from scipy.stats import mannwhitneyu
+    fr, fa = os.path.join(HERE, "ssa_reference_runs.csv"), os.path.join(HERE, "..", "selected_30_run_data.csv")
+    if not (os.path.exists(fr) and os.path.exists(fa)):
+        log("  boundary rule: input files missing"); return None
+    R_, A_ = pd.read_csv(fr), pd.read_csv(fa)
+    R_ = R_[(R_.Spacing == "4D") & (R_.Evaluations == 3030) & (~R_.Greedy.astype(bool))]
+    rows = []
+    for (d, r, n), x in R_.groupby(["Dataset", "Radius", "Turbines"]):
+        y = A_[(A_.Algorithm == "SSA") & (A_.Dataset == d) & (A_.Radius == r) & (A_.Turbines == n)].EnergyProduction
+        xf = x[x.Feasible.astype(bool)].Objective
+        rows.append(dict(case=f"{d}-{r}-{n}", n_proj=int(len(xf)), n_orig=int(len(y)), diff=float(xf.mean() - y.mean()),
+                         p=float(mannwhitneyu(xf, y).pvalue)))
+    out = dict(cases=rows, n_cases=len(rows), n_higher=int(sum(r_["diff"] > 0 for r_ in rows)),
+               max_p=max(r_["p"] for r_ in rows), min_diff=min(r_["diff"] for r_ in rows), max_diff=max(r_["diff"] for r_ in rows))
+    log(f"  boundary rule: projection higher in {out['n_higher']} of {out['n_cases']} cases, max p {out['max_p']:.2g}")
+    return out
 
 
 PEND = "\\TBD{}"            # table cell whose data are still missing (the manuscript defines \TBD)
