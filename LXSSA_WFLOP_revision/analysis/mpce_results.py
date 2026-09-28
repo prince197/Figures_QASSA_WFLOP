@@ -1600,6 +1600,8 @@ Contrast & Isolates & W/T/L & $\overline{\Delta L}$ \\
 
 
 PEND = "\\TBD{}"            # table cell whose data are still missing (the manuscript defines \TBD)
+NOFEAS = {"RSVNS"}          # not run with feasible initialization (one packing solve per random sample)
+NR = "n/r"                  # table cell: not run
 
 
 def _complete(x, methods, cases, runs):
@@ -1630,8 +1632,10 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         Sa = case_stats(xa, [a])
         return dict(loss=float(Sa[Sa.Qualified].Loss.mean()) if Sa.Qualified.any() else None,
                     feas=float(100 * xa.Feasible.mean()), n=int(len(xa)))
-    cr = _complete(X6, meth, cases6, 30); cf = _complete(F6, meth, cases6, 30)
-    fb["complete"]["random_6030"] = all(cr.values()); fb["complete"]["feasible_6030"] = all(cf.values())
+    cr = _complete(X6, meth, cases6, 30)
+    methF = [a for a in meth if a not in NOFEAS]
+    cf = _complete(F6, methF, cases6, 30); cf.update({a: False for a in meth if a in NOFEAS})
+    fb["complete"]["random_6030"] = all(cr.values()); fb["complete"]["feasible_6030"] = all(cf[a] for a in methF)
     ranks = {}
     for b in BUDGETS:
         Xb = sel(ALL[(ALL.Init == "random") & (ALL.Budget == b) & ALL.Algorithm.isin(meth)])
@@ -1649,11 +1653,11 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         f_ = loss_feas(F6, a) if cf[a] else None
         fb["random"][a] = r_; fb["feasible"][a] = f_
         c = [f3(r_["loss"]) if r_ else PEND, f"{r_['feas']:.1f}" if r_ else PEND,
-             f3(f_["loss"]) if f_ else PEND, f"{f_['feas']:.1f}" if f_ else PEND]
+             f3(f_["loss"]) if f_ else (NR if a in NOFEAS else PEND), f"{f_['feas']:.1f}" if f_ else (NR if a in NOFEAS else PEND)]
         c += [f"{ranks[b][a]:.2f}" if b in ranks else PEND for b in BUDGETS]
         rows.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
     if fb["complete"]["feasible_6030"]:
-        fb["rank_feasible_init"] = rank_matrix(case_stats(F6, meth), meth).mean(axis=0).to_dict()
+        fb["rank_feasible_init"] = rank_matrix(case_stats(F6[F6.Algorithm.isin(methF)], methF), methF).mean(axis=0).to_dict()
     pend = [k for k, v in fb["complete"].items() if not v]
     short = {"random_6030": "6k", "feasible_6030": "feas", "rank_6030": "6k", "rank_30030": "b30k", "rank_120030": "b120k"}
     foot = ["\\multicolumn{8}{l}{\\TBD{pending: %s}}" % ", ".join(dict.fromkeys(short[k] for k in pend))] if pend else None
@@ -1664,7 +1668,7 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         fb.setdefault("focus_position", {})[b] = 1 + o.index(FOCUS) if FOCUS in o else None
     summary["feasbudget"] = fb
     tabs["feasbudget"] = (
-        "\\begin{table}[!t]\n\\centering\n\\caption{Six Largest Benchmark Cases: Mean Wake Loss (\\%) and Feasible Runs (\\%) at 6,030 Calls with Random and Feasibility-Preserving Initialization, and Average Rank at 6,030, 30,030 and 120,030 Calls (Random Initialization; 30 Seeds)}\n"
+        "\\begin{table}[!t]\n\\centering\n\\caption{Six Largest Benchmark Cases: Mean Wake Loss (\\%) and Feasible Runs (\\%) at 6,030 Calls with Random and Feasibility-Preserving Initialization, and Average Rank at 6,030, 30,030 and 120,030 Calls (Random Initialization; 30 Seeds); n/r: Not Run}\n"
         "\\label{tab:feasbudget}\n\\scriptsize\\setlength{\\tabcolsep}{2.4pt}\n\\begin{tabular}{lccccccc}\n\\toprule\n"
         "& \\multicolumn{2}{c}{Random init.} & \\multicolumn{2}{c}{Feasible init.} & \\multicolumn{3}{c}{Avg.\\ rank} \\\\\n"
         "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\\cmidrule(lr){6-8}\n"
@@ -1690,6 +1694,8 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         hloss[a] = {}
         for tag, b, init, nrun in settings:
             y = H[(H.Algorithm == a) & (H.Budget == b) & (H.Init == init)]
+            if init == "feasible" and a in NOFEAS:
+                c.append(NR); hloss[a][tag] = None; continue
             if len(y) < nrun:
                 c.append(PEND); hloss[a][tag] = None; continue
             nf = int(y.Feasible.sum())
