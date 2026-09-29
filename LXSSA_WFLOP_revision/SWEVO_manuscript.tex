@@ -6,7 +6,11 @@
 % numbered references [1], [2], ... (natbib numbers; manual thebibliography in optA/swevo_back.tex);
 % sort&compress gives [1-3] ranges as the cite package does in the MPCE version
 \biboptions{sort&compress}
+% continuous line numbers for review, starting after the title page (switched on right after \end{frontmatter};
+% numbering the elsarticle title page itself pushes its footnotes into the footer)
 \usepackage{lineno}
+\usepackage{etoolbox}
+\AfterEndEnvironment{frontmatter}{\linenumbers}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -46,8 +50,6 @@
 \makeatletter\@ifundefined{proposition}{\newtheorem{proposition}{Proposition}}{}\makeatother
 
 \begin{document}
-% continuous line numbers for review (title page, abstract and nomenclature included)
-\linenumbers
 % front matter (title, authors, abstract, keywords) and the nomenclature
 \input{optA/swevo_front}
 \input{optA/02_intro}
