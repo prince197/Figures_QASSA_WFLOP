@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 19:05:02",
+ "generated": "2026-09-29 01:18:29",
  "script": "mpce_inference_extra.py",
  "n_cases": 68,
  "clusters": [
@@ -46,7 +46,7 @@
   "max_abs_diff_log10p_split": 0.0,
   "n_ablation_contrasts": 15,
   "n_split_tests": 6,
-  "summary_generated": "2026-09-28 18:59:17",
+  "summary_generated": "2026-09-29 01:17:39",
   "ok": true
  },
  "threshold": {
@@ -10808,5 +10808,5 @@
   "matches_summary": true
  },
  "figure_equiv_curve": "figures_mpce/equiv_curve.pdf",
- "seconds": 32.9
+ "seconds": 26.6
 }
