@@ -10,6 +10,13 @@
 % (analysis/mpce_tab_ablation.tex) fits on a page; \emergencystretch avoids overfull lines in the contribution list
 \usepackage[a4paper,margin=2.5cm]{geometry}
 \setlength{\emergencystretch}{1.5em}
+% elsarticle 3.3 puts a stray space after the title-page footer box ("Preprint submitted to ..."), which gives an
+% Overfull \hbox of about 2.6pt on page 1 in any document; absorb it (layout unchanged)
+\makeatletter
+\let\swevo@pprintTitle\ps@pprintTitle
+\def\ps@pprintTitle{\swevo@pprintTitle\let\swevo@oddfoot\@oddfoot
+  \def\@oddfoot{\hbox to\textwidth{\swevo@oddfoot\hss}}\let\@evenfoot\@oddfoot}
+\makeatother
 % continuous line numbers for review, starting after the title page (switched on right after \end{frontmatter};
 % numbering the elsarticle title page itself pushes its footnotes into the footer)
 \usepackage{lineno}
