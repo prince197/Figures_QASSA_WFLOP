@@ -1,0 +1,5 @@
+Protocol: equal budgets, random-sampling controls, equivalence tests at three levels
+Variance-unstable PSO setting w = 0.7, c1 = c2 = 2 puts PSO behind salp-swarm hybrids
+A salp-swarm first phase adds nothing beyond equal-cost random sampling in the farm
+On the benchmark, PSO-VNS ranks best; its edge over a well-configured PSO is small
+PSO-VNS reaches feasible layouts more reliably than PSO on a Horns Rev 1 block

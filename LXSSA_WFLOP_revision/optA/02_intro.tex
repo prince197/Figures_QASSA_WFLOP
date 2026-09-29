@@ -15,7 +15,7 @@ Our contributions are:
 % CHECK-EXTRA [X39]/[X41]: equivalence and minimal margins at seed, case and cluster level
 \item \emph{Baseline configuration.} The PSO setting $w=0.7$, $c_1=c_2=2$ (run without velocity clamping) lies beyond the order-2 boundary (Proposition~\ref{prop:pso-stability}); in a sweep of $c_1=c_2$, feasibility starts to degrade at the boundary and falls progressively beyond it, and the setting reverses the order of PSO and the salp-swarm hybrids (Section~\ref{sec:psosetting}).
 % CHECK-THEORY [T01]/[T04]: order-2 violated (4 > 3.50); CHECK-CSWEEP [S02]-[S05]: onset in the step containing c*, accelerating ("falls progressively beyond it"); [S10]/[S11]: clamping |v| largely rescues (Section psosetting)
-% CHECK-FINAL [C27]: Table I pool: SSA-VNS and LX-SSA-VNS ahead of PSO with the old setting, PSO first with constriction
+% CHECK-FINAL [C27]: tab:baseline pool: SSA-VNS and LX-SSA-VNS ahead of PSO with the old setting, PSO first with constriction
 \item \emph{Component analysis.} Against random sampling in the farm (RSD-VNS), salp-swarm first phases add nothing and LX-SSA as published (at twice the evaluations per iteration) is worse, whereas a PSO phase gives a clear gain; at 6,030 evaluations the VNS phase acts essentially as one compass-search descent (Section~\ref{sec:ablation}).
 % CHECK-FINAL [C53]/[C54]: SSA-VNS vs RSD-VNS no gain; CHECK-EXTRA [X53]: gain > m ruled out (seed, case); CHECK-FINAL [C55]: LX-SSA-VNS worse; CHECK-EXTRA [X34]; CHECK-FINAL [C56]/[C14]: PSO phase beats RSD-VNS and RS-VNS
 % CHECK-DIAG [D08]-[D10], [D20]: first descent \NDDescentSharePSOVNS% of the Phase-2 gain; cycles \NDCycleEvalsPctPSOVNS% of Phase-2 evaluations for \NDCycleSharePSOVNS% of the gain

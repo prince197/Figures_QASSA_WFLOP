@@ -1,0 +1,49 @@
+\documentclass[11pt]{letter}
+\usepackage[a4paper,top=0.6in,bottom=0.6in,left=0.85in,right=0.85in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{url}
+% Visible placeholder for information the authors still have to supply
+\newcommand{\TBD}[1]{\textcolor{red}{[TBD: #1]}}
+% Result numbers come from the same generated macro files as the manuscript (never typed by hand)
+\input{analysis/mpce_numbers.tex}
+\input{analysis/mpce_numbers_extra.tex}
+\input{analysis/mpce_numbers_dir.tex}
+\input{analysis/mpce_numbers_csweep.tex}
+% Journal of submission (retargeted from Cover_letter_PSO_VNS.tex, the MPCE letter).
+\newcommand{\Journal}{Swarm and Evolutionary Computation}
+\newcommand{\JournalEditor}{The Editors-in-Chief}
+\setlength{\parskip}{0.3em}
+\longindentation=0pt
+\indentedwidth=\textwidth
+\signature{Prince Solanki \TBD{confirm corresponding author}, on behalf of all authors\\
+Department of Mathematics, School of Sciences, IILM University, Greater Noida, Uttar Pradesh, India; prince@iilm.edu}
+\address{}
+\date{\TBD{date of submission}}
+\begin{document}
+\pagestyle{empty}
+\begin{letter}{\JournalEditor\\\Journal}
+\vspace{-3.2em}
+\opening{Dear Editors-in-Chief,}
+
+We submit the manuscript \textit{``Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization''} by Prince Solanki, Pulkit Dwivedi, Vanita Garg and Vinay Shukla for consideration as a research article in \textit{\Journal}.
+
+% SWEVO scope paragraph: benchmarking methodology for swarm and evolutionary algorithms; the wind farm is the application.
+\textbf{What the paper contributes to swarm and evolutionary computation.} Comparisons of swarm and evolutionary algorithms are often hard to trust because baselines, budgets, feasibility and statistics are handled differently, and hybrids are rarely checked against simple controls. The main contribution is a benchmarking methodology, applied to wind farm layout optimization: (i)~baseline configuration, with the order-2 (variance) stability theory of PSO used to identify a divergent setting and a coefficient sweep that locates where it fails; (ii)~equal budgets that count every objective and gradient evaluation, seed-paired runs, feasibility-aware ranking and Holm-corrected tests; (iii)~component analysis of two-phase hybrids with equal-cost random-sampling controls and the local method alone; (iv)~equivalence testing at three inference levels (seeds, cases and farm clusters), with the minimal equivalence margins reported; (v)~supporting theory (PSO stability, budget accounting of the random-sampling control, practical equivalence, the local search of VNS); (vi)~diagnostics from instrumented reruns that explain the rankings; and (vii)~more than 200 automated checks that tie every number and claim of the text to the published data. We apply it to eight methods on the discretized Kusiak--Song benchmark (68 cases, $15^\circ$ rose, 6,030 evaluations from random starts), a Horns Rev~1 block and IEA37 Case Study~1, and derive six recommendations for comparing metaheuristics. Three findings follow.
+% Check count (final build): mpce_check_final 62, mpce_check_extra 57, mpce_check_diag 22, mpce_check_dir 41,
+% mpce_check_csweep 15, make_theory_figures --check 57 (all PASS); update the phrase if the counts change.
+% Findings M1-M3 follow the wording of the abstract (optA/01_front.tex); CHECK comments are in the abstract.
+(M1)~The particle swarm optimization (PSO) setting $w=0.7$, $c_1=c_2=2$ lies beyond the order-2 (variance) convergence boundary; in a sweep of $c_1=c_2$, feasibility starts to degrade there and falls progressively beyond it. With it, PSO ranks behind both salp-swarm hybrids in the eight-method pool of an earlier comparison; with the constriction setting, it ranks first there.
+(M2)~A salp-swarm (SSA) first phase adds nothing beyond equal-cost random sampling in the farm (a gain above \NEqMargin{} percentage points (pp) of wake loss is ruled out across seeds and cases), the Laplacian SSA as published is worse, and a PSO phase gives a clear gain; at this budget the second phase, variable neighborhood search (VNS), acts essentially as one compass-search descent.
+(M3)~PSO followed by VNS (PSO-VNS) has the best average rank with $15^\circ$, $5^\circ$ and $1^\circ$ direction bins, also under a Gaussian wake at $1^\circ$, but its average advantage over a well-configured PSO is small: within $\pm\NEqMargin$~pp across seeds and cases, not farm clusters, under the $15^\circ$ rose, and a significant \NFPairMeanOne~pp under a $1^\circ$ rose; case-level differences go both ways. PSO-VNS reaches feasibility more reliably (Horns Rev~1 block: \NHRFeasPSOVNS{} vs \NHRFeasPSO{} runs, McNemar $p=\NXHRMcNemarP$). It is a consistent reference method, not a superior optimizer.
+
+\textbf{Fit to the journal.} The paper addresses questions central to the journal: how to configure a swarm baseline so that it is convergent, how to show that a component of a hybrid swarm or evolutionary algorithm contributes more than random sampling of equal cost, and how to state that two algorithms perform alike at a chosen inference level rather than only failing to find a difference. The protocol, the controls and the automated claim checks are not specific to wind farms and can be reused for other constrained benchmarks.
+
+\textbf{Scope and limitations.} The results hold for discretized wind roses, a top-hat Jensen wake, circular farms, a $4D$ spacing and a prescribed number of turbines, with random starts and 6,030 evaluations unless stated. From feasible starts, VNS alone ranks first on the six largest cases; with $1^\circ$ bins none of the optimized Horns Rev~1 layouts exceeds the installed block, so the Horns Rev~1 result is a feasibility result; the pool lacks CMA-ES and L-SHADE, and all energy values are gross.
+
+\textbf{Declarations.} The manuscript is original, has not been published and is not under consideration for publication elsewhere; all authors have approved its submission. The authors declare no competing interests \TBD{confirm}. The source code of all methods, the per-run results and the analysis scripts are openly available at \TBD{Zenodo DOI}. The use of generative AI in the preparation of the manuscript is declared in the accompanying declarations file. Suggested reviewers (optional): \TBD{names, affiliations and e-mail addresses, or delete this sentence}.
+
+\closing{Sincerely,}
+\end{letter}
+\end{document}

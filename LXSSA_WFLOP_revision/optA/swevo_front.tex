@@ -1,0 +1,82 @@
+% Front matter of SWEVO_manuscript.tex (elsarticle), from optA/01_front.tex (the IEEEtran version for MPCE).
+% Authors, affiliations and e-mail addresses as in the \thanks lines of optA/01_front.tex. The funding statement
+% of the MPCE version is in the back matter (optA/swevo_back.tex); highlights are a separate file (SWEVO_highlights.txt).
+\begin{frontmatter}
+
+\title{Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization}
+
+\author[iilm]{Prince Solanki\corref{cor1}\fnref{fnprev}}
+\ead{prince@ma.iitr.ac.in}
+\ead{prince@iilm.edu}
+\cortext[cor1]{Corresponding author. \TBD{confirm corresponding author}}
+\fntext[fnprev]{Previously with the Department of Mathematics, Indian Institute of Technology Roorkee, Roorkee, India.}
+
+\author[bennettcse]{Pulkit Dwivedi}
+\ead{pdwivedi19900@gmail.com}
+\ead{pulkit.dwivedi@bennett.edu.in}
+
+\author[amity]{Vanita Garg}
+\ead{vanitagarg16@gmail.com}
+
+\author[sjtu,bennettmath]{Vinay Shukla}
+\ead{vinayshukla4321@gmail.com}
+\ead{vnshukla01@sjtu.edu.cn}
+
+\affiliation[iilm]{organization={Department of Mathematics, School of Sciences, IILM University},
+            city={Greater Noida},
+            state={Uttar Pradesh},
+            country={India}}
+\affiliation[bennettcse]{organization={Department of Computer Science and Engineering, Bennett University},
+            city={Greater Noida},
+            state={Uttar Pradesh},
+            country={India}}
+\affiliation[amity]{organization={Amity University},
+            city={Noida},
+            state={Uttar Pradesh},
+            country={India}}
+\affiliation[sjtu]{organization={School of Mathematical Sciences, Shanghai Jiao Tong University},
+            city={Shanghai},
+            postcode={200240},
+            country={China}}
+\affiliation[bennettmath]{organization={Department of Mathematics, School of Computer Science Engineering and Technology, Bennett University},
+            city={Greater Noida},
+            state={Uttar Pradesh},
+            country={India}}
+
+% Abstract: same text as optA/01_front.tex (about 220 words, no citations); the CHECK comments are kept as comments.
+\begin{abstract}
+We compare eight wind farm layout optimizers on the discretized Kusiak--Song benchmark (68 cases, $15^\circ$ rose) with 6,030 evaluations from random starts, feasibility-aware ranking and equivalence tests. First, the particle swarm optimization (PSO) setting $w=0.7$, $c_1=c_2=2$ lies beyond the order-2 (variance) convergence boundary; in a sweep of $c_1=c_2$, feasibility starts to degrade there and falls progressively beyond it. With it, PSO ranks behind both salp-swarm hybrids in the eight-method pool of an earlier comparison; with the constriction setting, it ranks first there. Second, a salp-swarm (SSA) first phase adds nothing beyond equal-cost random sampling in the farm (a gain above \NEqMargin{} percentage points (pp) of wake loss is ruled out across seeds and cases), the Laplacian SSA as published is worse, and a PSO phase gives a clear gain; at this budget the second phase, variable neighborhood search (VNS), acts essentially as one compass-search descent. Third, PSO followed by VNS (PSO-VNS) has the best average rank with $15^\circ$, $5^\circ$ and $1^\circ$ direction bins, also under a Gaussian wake at $1^\circ$, but its average advantage over a well-configured PSO is small: within $\pm\NEqMargin$~pp across seeds and cases, not farm clusters, under the $15^\circ$ rose, and a significant \NFPairMeanOne~pp under a $1^\circ$ rose; case-level differences go both ways. PSO-VNS reaches feasibility more reliably (Horns Rev~1 block: \NHRFeasPSOVNS{} vs \NHRFeasPSO{} runs, McNemar $p=\NXHRMcNemarP$).
+% CHECK-FINAL [C27]: Table I pool = pool of Table friedman68 with LX-SSA-VNS instead of PSO-VNS ("eight-method pool of an earlier comparison"); old setting: SSA-VNS \NBaseOldSSAVNSRank, LX-SSA-VNS \NBaseOldLXBVRank < PSO \NBaseOldPSORank ("both"; C27 tests all()); constriction: PSO first in the same pool
+% CHECK-THEORY [T01]: c1+c2 = 4 > 3.50 (order-2 boundary); CHECK-CSWEEP [S02]-[S05]: feasibility >= 98 % for c <= 1.7, loss begins in the step containing c* = \NSBoundC, accelerating (onset, not a jump: "falls progressively beyond it"); [S09]/[S10]: velocity zeroing no rescue, step clamping largely rescues
+% CHECK-FINAL [C53]/[C54]: SSA-VNS vs RSD-VNS: W = 0, 95% CI of the mean contains 0 ("adds nothing"); CHECK-EXTRA [X53]: gain > margin ruled out at seed and case level only ("across seeds and cases")
+% CHECK-FINAL [C55]: LX-SSA-VNS worse than RSD-VNS; CHECK-EXTRA [X34] ("worse"); CHECK-FINAL [C56]/[C14]: PSO-VNS beats RSD-VNS and RS-VNS, whole 90% CI below -m ("clear gain")
+% CHECK-DIAG [D08]-[D10], [D20]: essentially one compass-search descent; cycles use \NDCycleEvalsPctPSOVNS% of Phase-2 evaluations for \NDCycleSharePSOVNS% of the gain
+% CHECK-FINAL [C01]: best average rank, 15 deg; CHECK-DIR [F06]: best at 5 and 1 deg; [F09]: Gaussian at 1 deg PSO-VNS first (at 15 deg PSO narrowly first, C22, so no "every evaluation" claim)
+% CHECK-EXTRA [X39]/[X41]: equivalent at +-m at seed and case level, not at cluster level (CR2 \NXEqClustPSOVNSvsPSOCI); CHECK-DIR [F10]: 1 deg: \NFPairMeanOne pp, 90% CI \NFPairCIOne, p < 0.05, not equivalent; CHECK-EXTRA [X43]: \NXHetBeyondPSOVNS/\NXHetBeyondPSO cases beyond +-m in each direction ("both ways")
+% CHECK-EXTRA [X52]: Horns Rev feasibility \NXHRMcNemarOnlyPSOVNS/\NXHRMcNemarOnlyPSO discordant seeds, McNemar p = \NXHRMcNemarP; CHECK-FINAL [C08]/[C20]
+\end{abstract}
+
+\begin{keyword}
+Benchmarking \sep equivalence testing \sep particle swarm optimization \sep random-sampling control \sep wake effect \sep wind farm layout optimization
+\end{keyword}
+
+\end{frontmatter}
+
+% Nomenclature (IEEEdescription in the MPCE version): compact two-column table after the front matter
+\section*{Nomenclature}
+\noindent
+\begin{tabular}{@{}>{$}l<{$}@{\quad}l@{}}
+B & Budget (number of evaluations)\\
+C_T,\ K & Thrust coefficient; Jensen wake-spreading constant\\
+D,\ R & Rotor diameter and rotor radius ($D=2R$)\\
+E_{\rm ideal} & Wake-free benchmark objective of one turbine\\
+F_p & Penalized wake loss (minimized)\\
+\ell_{\min} & Minimum spacing between turbines\\
+N,\ N_p & Number of turbines; population size\\
+N_\theta,\ N_s & Numbers of wind-direction and wind-speed bins\\
+r & Farm radius\\
+w,\ c_1,\ c_2 & Inertia weight and acceleration coefficients of PSO\\
+\mathbf X & Layout vector $(x_1,y_1,\ldots,x_N,y_N)$\\
+\theta & Wind direction (blowing towards, CCW from east)\\
+\omega & Fraction of the budget given to Phase~1
+\end{tabular}
