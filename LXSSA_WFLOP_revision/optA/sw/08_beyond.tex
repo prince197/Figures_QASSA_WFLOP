@@ -76,15 +76,16 @@ The model (Section~\ref{S-sec:S-hrmodel}) uses the Jensen wake with a hub-center
 % CHECK-DIR [F33] [F34]: rotor averaging does not explain the difference; with C_T at the local (waked) speed our model reproduces PyWake's NOJ with hub-centre test (momentum-theory induction) to 1e-6 GWh/yr; the old 662.5 constant (\NHRPyWakeDiff) is dropped [F36]
 % CHECK-DIR [F35]: installed 16-turbine block: PyWake NOJ 139.08 vs ours 139.82 GWh/yr (+0.53 %)
 
-The installed layout, a regular $7D$ grid, reaches \NHRInstalled~GWh/yr (wake loss \NHRInstalledLoss\%; Table~\ref{tab:hr-site}). At 6,030 evaluations from random starts, the robust result is feasibility: PSO-VNS is feasible in \NHRFeasPSOVNS{} runs, PSO in only \NHRFeasPSO{} (exact McNemar $p=\NXHRMcNemarP$; \NHRFeasFeasInitPSO{} with feasible starts) and DE in \NHRFeasDE. Fig.~\ref{fig:hr16} shows the median best feasible AEP over the run and the best layout of all methods at this budget, a PSO-VNS layout (\NHRBestPSOVNS~GWh/yr); like every run at this budget, it stays below the installed block.
+The installed layout, a regular $7D$ grid, reaches \NHRInstalled~GWh/yr (wake loss \NHRInstalledLoss\%; Table~\ref{tab:hr-site}). At 6,030 evaluations from random starts, the robust result is feasibility: PSO-VNS is feasible in \NHRFeasPSOVNS{} runs, PSO in only \NHRFeasPSO{} (exact McNemar $p=\NXHRMcNemarP$; \NHRFeasFeasInitPSO{} with feasible starts) and DE in \NHRFeasDE. The best layout of all methods at this budget, a PSO-VNS layout (\NHRBestPSOVNS~GWh/yr; Fig.~\ref{fig:layouts-sites}, right), stays below the installed block, like every run at this budget; the convergence curves are in Fig.~\ref{S-fig:S-hr16}.
 % CHECK-EXTRA [X52]: HR feasibility PSO-VNS 30/30 vs PSO 19/30, 11 discordant seeds all favour PSO-VNS, exact McNemar p = 9.8e-4
 % CHECK-FINAL [C20]: PSO feasible in fewer than 30 of 30 random-start runs ("only"); [C31]: 6,030 PSO-VNS mean AEP below the installed block; no 6,030 random-start run above the installed block with 5-deg bins (Table F-hr; 16 runs above at 5 deg over all budgets, 0 at 1 deg: [F21])
-\begin{figure}[!htbp]
-\centering
-\pipefig{0.75\textwidth}{figures_mpce/hr16.pdf}{6cm}
-\caption{Horns Rev~1 16-turbine block (5\textdegree{} bins, 6,030 evaluations, random initialization): median best feasible AEP versus evaluations (left) and the best layout of all methods (right).}
-\label{fig:hr16}
-\end{figure}
+% Over the page budget (+0.35 pages), kept in the supplement (Fig. S-fig:S-hr16):
+% \begin{figure}[!htbp]
+% \centering
+% \pipefig{0.75\textwidth}{figures_mpce/hr16.pdf}{6cm}
+% \caption{Horns Rev~1 16-turbine block (5\textdegree{} bins, 6,030 evaluations, random initialization): median best feasible AEP versus evaluations (left) and the best layout of all methods (right).}
+% \label{fig:hr16}
+% \end{figure}
 
 We also re-evaluated every final layout with 1\textdegree{} bins and with PyWake's NOJ at the same bins (Table~\ref{S-tab:F-hr}). The AEP advantage of PSO-VNS over PSO at 6,030 evaluations on the \NFHRPairSixKOneN{} jointly feasible seeds (\NFHRPairSixKFive~GWh/yr, $p=\NFHRPairSixKFiveP$) vanishes with 1\textdegree{} bins (\NFHRPairSixKOne, $p=\NFHRPairSixKOneP$) and under PyWake. At 30,030 evaluations, PSO-VNS has the highest mean AEP under all three evaluations (5\textdegree{} bins: \NHRMeanThirtyKPSOVNS~GWh/yr) and beats PSO on the \NFHRPairThirtyKOneN{} jointly feasible seeds also with 1\textdegree{} bins (\NFHRPairThirtyKOne~GWh/yr, $p=\NFHRPairThirtyKOneP$) and under PyWake; at 120,030 evaluations (10 seeds), \NHRBestHundredTwentyK{} has the highest mean AEP. The finer rose costs the installed block \NFHRInstDrop~GWh/yr and the optimized layouts \NFHRMeanDrop~GWh/yr on average, the VNS-based methods most: like those of the benchmark (Section~\ref{sec:direction}), the optimized layouts exploit the gaps between the coarse direction bins. With 1\textdegree{} bins, \NFHRAboveOneTotal{} of the \NFHRNFeas{} feasible optimized layouts (all methods and budgets) exceed the installed block (\NFHRAboveFiveTotal{} with 5\textdegree{} bins; under PyWake \NFHRAbovePyWakeTotal, a DE run at 120,030), although the looser spacing $4D$ (installed: $7D$) enlarges their feasible set. The block is evaluated without the other 64 turbines, and cables, foundations, loads and navigation are not modeled: the comparison tests the optimizers, not the installed design.
 % CHECK-DIR [F24]: 6,030 PSO-VNS - PSO AEP on 19 jointly feasible seeds: significant only with 5-deg bins; with 1-deg bins and PyWake NOJ PSO has the (n.s.) higher mean

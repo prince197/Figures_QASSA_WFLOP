@@ -27,7 +27,7 @@ PSO denotes \eqref{eq:pso-v}, \eqref{eq:pso-x} with these coefficients, fixed a 
 \For{$t=1,\ldots,T$ and $i=1,\ldots,N_p$}
     \State Draw $\boldsymbol\rho_1,\boldsymbol\rho_2\sim U(0,1)^n$; update $\mathbf V^i$ by \eqref{eq:pso-v} \Comment{no velocity clamping}
     \State $\mathbf X^i\gets\operatorname{clip}(\mathbf X^i+\mathbf V^i,-r,r)$ \Comment{box repair; $\mathbf V^i$ is kept}
-    \State Evaluate $F_p(\mathbf X^i)$; if better, replace $\mathbf P^i$ and then $\mathbf G$ \Comment{strict improvement}
+    \State Evaluate $F_p(\mathbf X^i)$; replace $\mathbf P^i$ and $\mathbf G$ if it is strictly lower than theirs
 \EndFor
 \State \Return $\mathbf G$
 \end{algorithmic}
@@ -75,7 +75,7 @@ The order-1 condition involves the \emph{mean} $(c_1+c_2)/2$ of $\varphi_t$; the
 \end{figure}
 % CHECK-THEORY [T01]-[T06], [T12]: Proposition prop:pso-stability (full statement of S-prop:S-pso-stability, whose full proof stays in the supplement; order-1 via E[phi]=(c1+c2)/2; Poli's bound exact for c1=c2, analytic region = numerical region, T06); 24(1-0.7^2)/(7-3.5)=3.497; 24(1-0.7298^2)/(7-5*0.7298)=3.348; 4(1+0.7)=6.8; 2*1.49618=2.99; spectral radius of the second-moment matrix 1.124 (old) and 0.944 (constriction) in Table S-th-settings; c* = 3.497/2 = \NSBoundC
 % CHECK-THEORY [T05]: SD factor 1.04 = sqrt(V_inf/(p-g)^2) = sqrt(1.0874) (constriction); constant-coefficient misclassification 2(1+0.7) = 3.4 (S-th-pso note); Lemma S-lem:S-clip (b): clipped coordinate stays at the bound while v' >= 0
-In a sweep of $c_1=c_2=c$ at $w=0.7$ (Fig.~\ref{S-fig:S-csweep}, Table~\ref{S-tab:S-csweep}), $\ge\NSFeasCOneSeven\%$ of the final layouts are feasible up to $c=1.7$; beyond $c^*$, feasibility falls progressively (to \NSFeasCTwoZero\% at $c=2$), so the boundary marks approximately where this PSO starts to fail. Clamping velocities to $\NSVmaxFrac(ub_m-lb_m)$ largely rescues the old setting (\NSFeasVMax\% feasible), zeroing clipped ones does not (\NSFeasVZero\%): it fails mainly through large steps. Its swarm contracts much less (Section~\ref{sec:psosetting}); \NDStoredSpacingOnlyOld{} of its \NDStoredInfeasOld{} infeasible final layouts violate only the spacing, and \NDStoredTangentOld{} of the other \NDStoredAnyBoundOld{} have a turbine pinned at the box near a tangent point (Section~\ref{sec:constraints}). DE's $F=0.5$ exceeds Zaharie's critical value (0.14 at $\mathrm{CR}=0.9$)~\cite{Zaharie2002}, so its weak results are not due to premature variance loss.
+In a sweep of $c_1=c_2=c$ at $w=0.7$ (Fig.~\ref{fig:S-csweep}, Table~\ref{tab:S-csweep}), $\ge\NSFeasCOneSeven\%$ of the final layouts are feasible up to $c=1.7$; beyond $c^*$, feasibility falls progressively (to \NSFeasCTwoZero\% at $c=2$), so the boundary marks approximately where this PSO starts to fail. Clamping velocities to $\NSVmaxFrac(ub_m-lb_m)$ largely rescues the old setting (\NSFeasVMax\% feasible), zeroing clipped ones does not (\NSFeasVZero\%): it fails mainly through large steps. Its swarm contracts much less (Section~\ref{sec:psosetting}); \NDStoredSpacingOnlyOld{} of its \NDStoredInfeasOld{} infeasible final layouts violate only the spacing, and \NDStoredTangentOld{} of the other \NDStoredAnyBoundOld{} have a turbine pinned at the box near a tangent point (Section~\ref{sec:constraints}). DE's $F=0.5$ exceeds Zaharie's critical value (0.14 at $\mathrm{CR}=0.9$)~\cite{Zaharie2002}, so its weak results are not due to premature variance loss.
 % verified (Zaharie): critical F = sqrt((1-CR/2)/N_p) = sqrt((1-0.45)/30)=0.135 (N_p = 30, CR = 0.9, F = 0.5: Section setup); F above the critical value = no variance collapse (R3-10, R1-15); Cleghorn2018 cited for c1 = c2 only (R3-14)
 % CHECK-CSWEEP [S01]: c = 2.0 reproduces the stored old-setting runs; [S02]: >= 98 % feasible (min \NSFeasCOneSeven, at c = 1.7) for every c <= 1.7; [S03]-[S05]: beyond c* = \NSBoundC feasibility falls monotonically (\NSFeasCOneEight > \NSFeasCOneNine > \NSFeasCTwoZero at c = 1.8, 1.9, 2.0), onset in the step containing c*, progressive, no jump ("marks approximately where ... starts to fail"); [S10]/[S11]: vmax = \NSVmaxFrac (ub-lb) >= 90 % feasible, but still worse than constriction ("largely"); [S09]: zeroing clipped velocity components no rescue (\NSFeasVZero %) -> "mainly through large steps"
 % CHECK-DIAG [D03]: old-setting final spread and |V| \NDSpreadRatio x / \NDVelRatio x the constriction values ("contracts much less"); [D06]: \NDStoredInfeasOld infeasible finals (1e-6 m rule) of \NDStoredRunsOld, \NDStoredSpacingOnlyOld spacing only (boundary only \NDStoredBoundOnlyOld, both \NDStoredBothOld); [D21]: \NDStoredTangentOld of \NDStoredAnyBoundOld boundary-violating finals have an outside turbine with a coordinate on the box bound
@@ -87,29 +87,27 @@ The SSA~\cite{Mirjalili2017} (Algorithm~\ref{alg:S-ssa}) keeps the best solution
 \begin{equation}\label{eq:leader}
 X_m^i = H_m\pm\xi_1\big((ub_m-lb_m)\xi_2+lb_m\big),
 \end{equation}
-with either sign with probability $1/2$, $\xi_2\sim U(0,1)$ and $\xi_1=2\exp[-(4t/T)^2]$ decreasing with the iteration $t$ out of $T$; with $lb_m=-r$, $ub_m=r$, a leader thus samples $H_m+U(-\xi_1r,\xi_1r)$ independently in every coordinate, and $\xi_1\le0.037$ for $t\ge T/2$. A follower $i>N_p/2$ moves to the midpoint of its current position and the \emph{new} position of the preceding salp (already updated in the same iteration). The leaders thus perturb $\mathbf H$ uniformly with a shrinking radius, and the followers only average~\cite{Castelli2022}. LX-SSA~\cite{Solanki2023} gives each follower a second candidate $Y_m^i=X_m^i+\gamma(H_m-X_m^i)$ with one Laplace step~\cite{Deep2007} for all coordinates,
+with either sign with probability $1/2$, $\xi_2\sim U(0,1)$ and $\xi_1=2\exp[-(4t/T)^2]$ decreasing with the iteration $t$ out of $T$: a leader samples $H_m+U(-\xi_1r,\xi_1r)$ in every coordinate, with $\xi_1\le0.037$ for $t\ge T/2$. A follower $i>N_p/2$ moves to the midpoint of its position and the \emph{new} position of the preceding salp. The leaders thus perturb $\mathbf H$ uniformly with a shrinking radius, and the followers only average~\cite{Castelli2022}. LX-SSA~\cite{Solanki2023} gives each follower a second candidate $Y_m^i=X_m^i+\gamma(H_m-X_m^i)$ with one Laplace step~\cite{Deep2007} for all coordinates,
 \begin{equation}
 \gamma=\phi-\chi\,\mathrm{sgn}\bigl(z-\tfrac12\bigr)\ln\bigl(1-2\lvert z-\tfrac12\rvert\bigr),\quad z\sim U(0,1),
 \label{eq:laplace}
 \end{equation}
-$\phi=0$, $\chi=1$, and keeps the better candidate. As published, it evaluates both candidates of each follower and then re-evaluates the kept ones with the new population. With the $N_p$ candidate evaluations of the $N_p/2$ followers, an LX-SSA iteration therefore costs $2N_p$ evaluations and an SSA iteration $N_p$: at 6,030 evaluations, stand-alone SSA runs for $T=200$ and LX-SSA for $T=100$ iterations, and in the hybrids with $\omega=0.5$, Phase~1 runs for $T=100$ (SSA) and $T=50$ (LX-SSA) iterations, 3,030 evaluations each, with $\xi_1$ decreasing over these $T$ iterations. Comparing the two thus tests LX-SSA as published, not the Laplace step alone. Both use the code of the previous study, stand-alone and inside the hybrids.
+$\phi=0$, $\chi=1$, and keeps the better candidate. As published, it evaluates both candidates of each follower and then re-evaluates the kept ones with the new population, so an iteration costs $2N_p$ evaluations (SSA: $N_p$): at 6,030 evaluations, SSA runs for $T=200$ and LX-SSA for $T=100$ iterations, and in the hybrids ($\omega=0.5$) for $T=100$ and 50, 3,030 evaluations each, with $\xi_1$ decreasing over these $T$. Comparing the two tests LX-SSA as published, not the Laplace step alone; both use the code of the previous study.
 % CHECK-THEORY [T11]: SSA xi_1(T/2) = 2 exp(-4) = 0.0366 ("xi_1 <= 0.037 for t >= T/2"); leader step xi_1((ub-lb) xi_2 + lb) = xi_1 r (2 xi_2 - 1) (S-th-feas note)
 % verified: analysis/authors_optimizers.py SSA/LXSSA: leaders = pop_size // 2 = 15; follower = (pop[i] + new_pop[i-1])/2; LX: one scalar gamma per follower, candidate = pop[i] + gamma (food - pop[i]); both clipped and evaluated, then whole population evaluated (2 N_p per iteration)
 
 \begin{algorithm}[!t]
 \caption{SSA and LX-SSA (lines marked LX: LX-SSA only); evaluations per line in brackets}
 \label{alg:S-ssa}
+\small
 \begin{algorithmic}[1]
 \State Draw and evaluate $N_p$ salps; sort them by $F_p$ and set the best as food source $\mathbf H$. \Comment{[$N_p$]}
 \For{$t=1$ to $T$}
     \State Update $\xi_1=2\exp[-(4t/T)^2]$.
-    \For{salp $i=1,\ldots,N_p$}
-        \If{$i\le N_p/2$}
-            \State Update leader $i$ using \eqref{eq:leader} (new position $\tilde{\mathbf X}^i$).
-        \Else
-            \State Form the follower candidate $\mathbf Z^i=\tfrac{1}{2}(\mathbf X^i+\tilde{\mathbf X}^{i-1})$ and set $\tilde{\mathbf X}^i\gets\mathbf Z^i$.
-            \State LX: form $\mathbf Y^i$ using \eqref{eq:laplace}, box-repair $\mathbf Y^i$ and $\mathbf Z^i$, evaluate both and set $\tilde{\mathbf X}^i$ to the better one. \Comment{[2 per follower]}
-        \EndIf
+    \State Leaders $i\le N_p/2$: new position $\tilde{\mathbf X}^i$ by \eqref{eq:leader}.
+    \For{followers $i=N_p/2+1,\ldots,N_p$}
+        \State $\tilde{\mathbf X}^i\gets\mathbf Z^i=\tfrac{1}{2}(\mathbf X^i+\tilde{\mathbf X}^{i-1})$
+        \State LX: form $\mathbf Y^i$ by \eqref{eq:laplace}, box-repair $\mathbf Y^i$ and $\mathbf Z^i$, evaluate both, $\tilde{\mathbf X}^i\gets$ the better \Comment{[2 per follower]}
     \EndFor
     \State Box-repair $\tilde{\mathbf X}$, set $\mathbf X\gets\tilde{\mathbf X}$, evaluate $F_p$ for all salps, sort them, and update $\mathbf H$. \Comment{[$N_p$]}
 \EndFor
@@ -119,29 +117,23 @@ $\phi=0$, $\chi=1$, and keeps the better candidate. As published, it evaluates b
 
 \subsection{Basic Variable Neighborhood Search}
 \label{sec:vns}
-The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ nested $\ell_\infty$ neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$, of the whole layout. Shaking draws a uniform point of $\mathcal N_k(\mathbf X)$ (by rejection), clipped to the box, and a best-improvement local search improves it; if the result is better than $\mathbf X$, it becomes the incumbent and $k$ returns to 1, otherwise the next, larger neighborhood is tried. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. One sweep costs $2n$ evaluations (60 for $N=15$). A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$ with $\bar h=h_0/2^5=0.0015625\,r$ improves (Proposition~\ref{S-prop:S-ls}): a coordinate-wise optimality at one step length, not a local minimum in the usual sense. VNS alone starts from the best layout of the seeded initial population. The settings are the defaults of the framework, not tuned; every call counts against the budget, and a run returns the best layout evaluated.
+The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ nested $\ell_\infty$ neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$, of the whole layout. Shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it; a better result becomes the incumbent and resets $k$ to 1, otherwise the next neighborhood is tried. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}), a coordinate-wise optimality at one step length, not a local minimum. VNS alone starts from the best initial layout; a run returns the best layout evaluated.
 % CHECK-THEORY [T12]: compass search final step h0/2^5 = 0.0015625 r (Proposition S-prop:S-ls); verified: analysis/original_vns.py (k_max = 5, rho_k = 0.1 k r, h0 = 0.05 r, h_min = 1e-3 r; move to the best of the 2 dim moves if it improves the current point, else halve h; shaking by rejection in the l_inf shell, then clip)
 
 \begin{algorithm}[!t]
-\caption{Basic VNS from an incumbent $\mathbf X$ (Phase~2 of all hybrids; stand-alone VNS starts from the best initial layout)}
+\caption{Basic VNS from an incumbent $\mathbf X$ ($k_{\max}=5$, $\delta_k=0.1kr$, $h_0=0.05r$, $h_{\min}=10^{-3}r$); stops when the budget is used up and returns the best layout evaluated}
 \label{alg:vns}
+\small
 \begin{algorithmic}[1]
-\Require $k_{\max}=5$, $\delta_k=0.1\,k\,r$, $h_0=0.05\,r$, $h_{\min}=10^{-3}r$; the run stops when the budget $B$ is used up
 \State $\mathbf X\gets\textsc{LocalSearch}(\mathbf X)$; $k\gets1$
 \Loop
-    \State Draw $\mathbf d\sim U[-\delta_k,\delta_k]^n$ until $\lVert\mathbf d\rVert_\infty>\delta_{k-1}$; $\mathbf X'\gets\operatorname{clip}(\mathbf X+\mathbf d)$; evaluate $F_p(\mathbf X')$ \Comment{shaking}
-    \State $\mathbf X'\gets\textsc{LocalSearch}(\mathbf X')$
-    \State \textbf{if} $F_p(\mathbf X')<F_p(\mathbf X)$ \textbf{then} $\mathbf X\gets\mathbf X'$, $k\gets1$ \textbf{else} $k\gets k\bmod k_{\max}+1$
+    \State Draw $\mathbf d\sim U[-\delta_k,\delta_k]^n$ until $\lVert\mathbf d\rVert_\infty>\delta_{k-1}$; evaluate $\mathbf X'=\operatorname{clip}(\mathbf X+\mathbf d)$ \Comment{shaking}
+    \State $\mathbf X'\gets\textsc{LocalSearch}(\mathbf X')$; \textbf{if} $F_p(\mathbf X')<F_p(\mathbf X)$ \textbf{then} $\mathbf X\gets\mathbf X'$, $k\gets1$ \textbf{else} $k\gets k\bmod k_{\max}+1$
 \EndLoop
 \Function{LocalSearch}{$\mathbf y$} \Comment{compass search, best improvement}
-    \State $h\gets h_0$
-    \While{$h\ge h_{\min}$}
-        \State Evaluate $\operatorname{clip}(\mathbf y\pm h\,\mathbf e_m)$, $m=1,\ldots,n$, and let $\mathbf y'$ be the best of these $2n$ points
-        \State \textbf{if} $F_p(\mathbf y')<F_p(\mathbf y)$ \textbf{then} $\mathbf y\gets\mathbf y'$ \textbf{else} $h\gets h/2$
-    \EndWhile
+    \State $h\gets h_0$; \textbf{while} $h\ge h_{\min}$: evaluate the $2n$ points $\operatorname{clip}(\mathbf y\pm h\,\mathbf e_m)$; if the best, $\mathbf y'$, has $F_p(\mathbf y')<F_p(\mathbf y)$, then $\mathbf y\gets\mathbf y'$, else $h\gets h/2$
     \State \Return $\mathbf y$
 \EndFunction
-\State \Return best layout evaluated (when the budget is used up)
 \end{algorithmic}
 \end{algorithm}
 
@@ -153,17 +145,12 @@ The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{
 All hybrids follow one sequential (relay) template. For a budget of $B$ evaluations and a split $\omega\in(0,1)$, Phase~1 starts from the seeded initial population, runs a population method for about $\omega B$ evaluations and passes its best layout to Phase~2, the basic VNS (Algorithm~\ref{alg:vns}), which applies the local search to it and then iterates until $B$ evaluations are used. Only Phase~1 differs: PSO in \emph{PSO-VNS}; SSA or LX-SSA in \emph{SSA-VNS} and \emph{LX-SSA-VNS} (with $\xi_1$ compressed to the Phase-1 iterations); and, in the controls, $\operatorname{round}(\omega B)$ layouts: the initial population, then layouts drawn uniformly in the farm disc (\emph{RSD-VNS}) or in its bounding square (\emph{RS-VNS}). VNS alone is the limiting case in which Phase~1 is the initial population. PSO and SSA run for $T_1=\operatorname{round}((\omega B-N_p)/N_p)$ Phase-1 iterations, LX-SSA for $\operatorname{round}((\omega B-N_p)/(2N_p))$. A swarm phase is useful only if it gives VNS a better start than random sampling with about the same number of evaluations (at $\omega=0.5$, 3,015 for the controls and $N_p(T_1+1)=3{,}030$ for the swarms); the component analysis (Section~\ref{sec:ablation}) tests this for each Phase-1 choice against RSD-VNS, with RS-VNS as a weak minimum bar, as the following result shows.
 
 \begin{proposition}\label{prop:S-box}
-Let the $2N$ coordinates be independent and uniform in $[-r,r]$, and let $P_N$ be the probability that the layout is feasible (all turbines in the disc $\mathcal D$ of radius $r$ and all pairwise distances $\ge s$). Then (a) all $N$ turbines lie in $\mathcal D$ with probability $(\pi/4)^N$; (b) $P_N\le(\pi/4)^N\prod_{k=1}^{N-1}\max\bigl\{0,\ 1-\max\{A(s),\,k\,A(s/2)\}/(\pi r^2)\bigr\}$, where, for $0<\rho\le2r$,
-\begin{equation}
-A(\rho)=r^2\arccos\Bigl(1-\frac{\rho^2}{2r^2}\Bigr)+\rho^2\arccos\frac{\rho}{2r}-\frac{\rho}{2}\sqrt{4r^2-\rho^2}
-\label{eq:S-th-lens}
-\end{equation}
-is the area of the part of $\mathcal D$ covered by a disc of radius $\rho$ centred on the boundary of $\mathcal D$; (c) among $M$ such layouts, the expected number of feasible ones is $MP_N$.
+Let the $2N$ coordinates be independent and uniform in $[-r,r]$, and let $P_N$ be the probability that the layout is feasible (all turbines in the disc $\mathcal D$ of radius $r$ and all pairwise distances $\ge s$). Then (a) all $N$ turbines lie in $\mathcal D$ with probability $(\pi/4)^N$; (b) $P_N\le(\pi/4)^N\prod_{k=1}^{N-1}\max\bigl\{0,\ 1-\max\{A(s),\,k\,A(s/2)\}/(\pi r^2)\bigr\}$, where $A(\rho)$ is the area of the part of $\mathcal D$ covered by a disc of radius $\rho$ centred on the boundary of $\mathcal D$ (closed form: \eqref{S-eq:S-th-lens}); (c) among $M$ such layouts, the expected number of feasible ones is $MP_N$.
 \end{proposition}
 \begin{proof}
-(a) The turbines are independent and uniform in the square, and each lies in $\mathcal D$ with probability $\pi r^2/(2r)^2$. (b) Conditional on all turbines in $\mathcal D$, the positions $\mathbf p_1,\ldots,\mathbf p_N$ are independent and uniform in $\mathcal D$. Given that $\mathbf p_1,\ldots,\mathbf p_k$ are pairwise at least $s$ apart, $\mathbf p_{k+1}$ must avoid $U_k=\mathcal D\cap\bigcup_{j\le k}B(\mathbf p_j,s)$. The area of $B(\mathbf c,\rho)\cap \mathcal D$ for $\mathbf c\in \mathcal D$ is nonincreasing in $\lVert\mathbf c\rVert$ (its derivative with respect to the distance of the centres is minus the length of the common chord), hence at least $A(\rho)$, its value at $\lVert\mathbf c\rVert=r$; so $\lvert U_k\rvert\ge A(s)$, and since the discs $B(\mathbf p_j,s/2)\subset B(\mathbf p_j,s)$ are pairwise disjoint, also $\lvert U_k\rvert\ge kA(s/2)$. The conditional probability that $\mathbf p_{k+1}$ keeps the spacing is thus at most $1-\max\{A(s),kA(s/2)\}/(\pi r^2)$, and the chain rule gives (b). (c) Linearity of expectation.
+(a) The turbines are independent and uniform in the square, each in $\mathcal D$ with probability $\pi r^2/(2r)^2$. (b) Given (a), the positions $\mathbf p_1,\ldots,\mathbf p_N$ are independent and uniform in $\mathcal D$. If $\mathbf p_1,\ldots,\mathbf p_k$ are pairwise at least $s$ apart, $\mathbf p_{k+1}$ must avoid $U_k=\mathcal D\cap\bigcup_{j\le k}B(\mathbf p_j,s)$. The area of $B(\mathbf c,\rho)\cap \mathcal D$, $\mathbf c\in \mathcal D$, is nonincreasing in $\lVert\mathbf c\rVert$ (its derivative is minus the length of the common chord), hence $\ge A(\rho)$; so $\lvert U_k\rvert\ge A(s)$, and, as the discs $B(\mathbf p_j,s/2)\subset B(\mathbf p_j,s)$ are disjoint, $\lvert U_k\rvert\ge kA(s/2)$. The chain rule over $k$ gives (b). (c) Linearity of expectation.
 \end{proof}
-The bound (b) is rigorous but loose. Monte Carlo estimates show that for the largest benchmark cases ($N=12$ and 15) a square sample is feasible with probability below $10^{-6}$ (for $N=10$, none of $10^7$ samples is feasible), so the 3,015 samples of RS-VNS contain a feasible layout with probability of order $10^{-3}$ or less (Table~\ref{S-tab:S-th-box}), and RS-VNS hands VNS the least-violating sample rather than one selected for low wake loss. The spacing, not the square, is the main cause: the Monte Carlo values lie orders of magnitude below $(\pi/4)^N$; \NRSRunsNoFeasSample{} RS-VNS runs have no feasible sample, and sampling in the disc gives one in only \NRsSquareExplains{} of them.
+The bound (b) is rigorous but loose; Monte Carlo estimates put $P_N$ below $10^{-6}$ for the largest benchmark cases ($N=12$, 15; for $N=10$, no feasible layout among $10^7$), so the expected number of feasible layouts among the 3,015 samples of RS-VNS is about $10^{-3}$ or less (Table~\ref{S-tab:S-th-box}), and RS-VNS hands VNS the least-violating sample, not one selected for low wake loss. The spacing, not the square, dominates: $P_N$ lies orders of magnitude below $(\pi/4)^N$; \NRSRunsNoFeasSample{} RS-VNS runs have no feasible sample, and disc sampling gives one in only \NRsSquareExplains{} of them.
 % CHECK-THEORY [T07]-[T10]: Proposition prop:S-box (= S-prop:S-box, restored in the main text with its proof; R1-6 had moved it to the supplement): (pi/4)^N, rigorous spacing bound (lens area nonincreasing, T10), Monte Carlo P_N < 1e-6 for N = 12, 15 (N = 10: 0 of 1e7), expected feasible of 3,015 <= 1.0e-3 (Table S-tab:S-th-box)
 % CHECK-DIAG [D17]: RS-VNS Phase-1 replay agrees with the runs and with (pi/4)^N; \NDRsRunsNoFeasSample (= \NRSRunsNoFeasSample) runs without any feasible Phase-1 sample
 % CHECK-FINAL [C60]: spacing binding (R3-6): of the \NRSRunsNoFeasSample RS-VNS runs without a feasible sample, disc sampling (RSD-VNS, same runs) rescues \NRsSquareExplains < \NRsSpacingDominates that stay without one ("mainly because of the spacing"); [C61]: controls switch at 3,015, swarms at 3,030; RSD-VNS definition: mpce_experiments.RSDVNS (first 30 = common initial population, then polar-uniform disc samples)
