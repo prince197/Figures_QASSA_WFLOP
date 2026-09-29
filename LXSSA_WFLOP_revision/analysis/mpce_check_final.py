@@ -113,7 +113,9 @@ CONDITIONS = [
      "split.n_lower_loss_than_50, split.wtl_50_vs_75, split.wtl_50_vs_25, split.avg_rank",
      lambda s: (lambda p: p["n_lower_loss_than_50"]["PSOBV75"] >= 10 and p["wtl_50_vs_75"]["W"] == 0 and p["wtl_50_vs_25"]["L"] == 0
                 and p["avg_rank"]["PSOBV75"] < p["avg_rank"]["PSOBV"] < p["avg_rank"]["PSOBV25"])(g(s, "split"))),
-    ("C19", "Horns Rev 16 (6,030, random starts): PSO-VNS has the highest mean AEP and is significantly better than every other method",
+    ("C19", "Horns Rev 16 (6,030, random starts, the paper's 5-deg bins): PSO-VNS has the highest mean AEP and is significantly "
+            "better than every other method in the run-level test (DATA condition; D19: the AEP edge vanishes with 1-deg bins "
+            "and PyWake, see mpce_check_dir.py F24/F25, so the text states the 6,030 result as a feasibility result)",
      "hr16.methods.*.mean/p_holm",
      lambda s: (lambda h: all(h["PSOBV"]["mean"] > v["mean"] for a, v in h.items() if a != "PSOBV" and v.get("mean") is not None)
                 and all(v["p_holm"] < 0.05 for a, v in h.items() if a != "PSOBV"))(g(s, "hr16", "methods"))),
@@ -148,10 +150,13 @@ CONDITIONS = [
      "feasbudget.rank.{6030,30030,120030}",
      lambda s: all((lambda r: all(r["PSOBV"] < v for a, v in r.items() if a != "PSOBV"))(g(s, "feasbudget", "rank", b))
                    for b in ("6030", "30030", "120030"))),
-    ("C30", "Horns Rev 1 at 30,030 evaluations: PSO-VNS has the highest mean AEP and at least one of its runs exceeds the installed layout",
-     "hr16.loss_by_setting.*.30030R.mean_aep/runs_above_installed",
-     lambda s: (lambda L: all(L["PSOBV"]["30030R"]["mean_aep"] > v["30030R"]["mean_aep"] for a, v in L.items() if a != "PSOBV" and "30030R" in v)
-                and L["PSOBV"]["30030R"]["runs_above_installed"] >= 1)(g(s, "hr16", "loss_by_setting"))),
+    ("C30", "Horns Rev 1 at 30,030 evaluations (5-deg bins): PSO-VNS has the highest mean AEP (reworded, D16/D19: the former "
+            "second part 'at least one of its runs exceeds the installed layout' is dropped -- no run does with 1-deg bins, F21 -- "
+            "and is no longer evaluated; see C62; survival at 1 deg / PyWake: F26)",
+     "hr16.loss_by_setting.*.30030R.mean_aep",
+     lambda s: (lambda L: all(L["PSOBV"]["30030R"]["mean_aep"] > v["30030R"]["mean_aep"] for a, v in L.items()
+                              if a != "PSOBV" and v and v.get("30030R") and v["30030R"].get("mean_aep") is not None))(
+         g(s, "hr16", "loss_by_setting"))),
 ]
 
 
@@ -171,7 +176,8 @@ def _hr_mean(s, a, tag):
 
 
 CONDITIONS += [
-    ("C31", "Horns Rev 1, 6,030 evaluations: the PSO-VNS mean AEP is below the installed block (the mean is never claimed to exceed it)",
+    ("C31", "Horns Rev 1, 6,030 evaluations (5-deg bins): the PSO-VNS mean AEP is below the installed block (DATA condition; "
+            "neither the mean nor any run is claimed to exceed it, C62)",
      "hr16.methods.PSOBV.mean, hr16.installed_aep",
      lambda s: g(s, "hr16", "methods", "PSOBV", "mean") < g(s, "hr16", "installed_aep")),
     ("C32", "PSO-VNS vs PSO (D2): not significant over all 68 cases (case-mean p >= 0.05); Data Set II, N >= 10: PSO-VNS lower "
