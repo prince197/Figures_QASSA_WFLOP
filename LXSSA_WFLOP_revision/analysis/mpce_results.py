@@ -2498,14 +2498,15 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
                 ("120030R", 120030, "random", 10)]
     hl, hloss = [], {}
     ideal = hsum.get("ideal_aep", np.nan)
-    hl.append(f"Installed layout & {inst:.2f} & -- & -- & {100 * (1 - inst / ideal):.2f} & -- & -- & -- \\\\" if np.isfinite(ideal) else
-              f"Installed layout & {inst:.2f} & -- & -- & {PEND} & -- & -- & -- \\\\")
+    hl.append(f"Installed layout & {inst:.2f} & -- & {100 * (1 - inst / ideal):.2f} & -- & -- & -- \\\\" if np.isfinite(ideal) else
+              f"Installed layout & {inst:.2f} & -- & {PEND} & -- & -- & -- \\\\")
     hl.append("\\midrule")
     for a in meth:
         m6 = (hsum.get("methods") or {}).get(a)
+        # R4-10 (lead): the run-level p_Holm (infeasible runs ranked last) mixes feasibility with AEP; the main table
+        # no longer shows it (still in summary["hr16"]["methods"] and in the supplement table tab:hr-site-full)
         c = [f"{m6['mean']:.2f}" if m6 and m6.get("feasible") else ("--" if m6 else PEND),
-             f"{m6['feasible']}/{m6['runs']}" if m6 else PEND,
-             "--" if a == FOCUS else (fmt_p(m6["p_holm"], 2) if m6 and m6.get("p_holm") is not None else PEND)]
+             f"{m6['feasible']}/{m6['runs']}" if m6 else PEND]
         hloss[a] = {}
         for tag, b, init, nrun in settings:
             y = H[(H.Algorithm == a) & (H.Budget == b) & (H.Init == init)]
@@ -2527,16 +2528,15 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         hsum["loss_by_setting"] = hloss
     tabs["hr16"] = (
         "\\begin{table}[!t]\n\\centering\n\\caption{Horns Rev~1 16-Turbine Block (5\\textdegree{} Direction Bins): AEP, Feasibility and AEP Loss}\n"
-        "\\label{tab:hr-site}\n\\scriptsize\\setlength{\\tabcolsep}{2.2pt}\n\\begin{tabular}{lccccccc}\n\\toprule\n"
-        "& \\multicolumn{3}{c}{6,030 calls, R} & \\multicolumn{4}{c}{Loss (\\%)} \\\\\n\\cmidrule(lr){2-4}\\cmidrule(lr){5-8}\n"
-        "Layout / method & AEP & Feas. & $p_{\\rm Holm}$ & 6k R & 6k F & 30k & 120k \\\\\n\\midrule\n" + "\n".join(hl) +
+        "\\label{tab:hr-site}\n\\scriptsize\\setlength{\\tabcolsep}{3pt}\n\\begin{tabular}{lcccccc}\n\\toprule\n"
+        "& \\multicolumn{2}{c}{6,030 calls, R} & \\multicolumn{4}{c}{Loss (\\%)} \\\\\n\\cmidrule(lr){2-3}\\cmidrule(lr){4-7}\n"
+        "Layout / method & AEP & Feas. & 6k R & 6k F & 30k & 120k \\\\\n\\midrule\n" + "\n".join(hl) +
         "\n\\bottomrule\n\\end{tabular}\n" +
         tnote("Wake-free AEP %.2f GWh/yr. AEP: mean (GWh/yr) over the feasible runs of 30 seeds at 6,030 calls, random "
-              "initialization (R); Feas.: feasible runs; $p_{\\rm Holm}$: run-level Wilcoxon signed-rank $p$ of %s vs.\\ each "
-              "method (infeasible runs ranked last), Holm-adjusted over the %d comparisons. Loss: mean AEP loss (\\%%) at "
-              "6,030 calls with random (R) and feasibility-preserving (F) initialization and at 30,030 and 120,030 calls "
-              "(R; 10 seeds at 120,030); superscript: feasible runs when not all are feasible; n/r: not run."
-              % (ideal, LAB[FOCUS], len(meth) - 1)) + "\\end{table}\n")
+              "initialization (R); Feas.: feasible runs. Loss: mean AEP loss (\\%%) of the feasible runs at 6,030 calls with "
+              "random (R) and feasibility-preserving (F) initialization and at 30,030 and 120,030 calls (R; 10 seeds at "
+              "120,030); superscript: feasible runs when not all are feasible; n/r: not run. Run-level tests: supplementary "
+              "material." % ideal) + "\\end{table}\n")
 
     # ---------------- IEA37 compact table (best feasible run of each method)
     isum = summary.get("iea37") or {}
