@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-29 01:18:58",
+ "generated": "2026-09-29 01:28:59",
  "eq_margin_pp": 0.05,
  "benchmark": {
   "sub_bins": [
@@ -9349,7 +9349,7 @@
  ],
  "log": [
   "[1] Benchmark: 22440 runs (21716 feasible), 68 cases",
-  "  benchmark: 20528 distinct feasible layouts re-evaluated in 54 s",
+  "  benchmark: 20528 distinct feasible layouts re-evaluated in 57 s",
   "  [rec ] best PSO-VNS, ranks PSO-VNS 1.82, PSO 1.97, SSA-VNS 3.45, VNS 4.40; PSO-VNS-PSO -0.0180 CI90 [-0.0407, +0.0040] eq=True p=0.296; SLSQP gap -0.435; DSII N>=10 -0.210 (10/10); sign changes 0",
   "  [J1  ] best PSO-VNS, ranks PSO-VNS 1.80, PSO 1.96, SSA-VNS 3.49, VNS 4.33; PSO-VNS-PSO -0.0179 CI90 [-0.0406, +0.0041] eq=True p=0.296; SLSQP gap -0.438; DSII N>=10 -0.209 (10/10); sign changes 0",
   "  [J3  ] best PSO-VNS, ranks PSO-VNS 1.90, PSO 2.26, SSA-VNS 4.09, MS-SLSQP 4.35; PSO-VNS-PSO -0.0537 CI90 [-0.0736, -0.0354] eq=False p=2.02e-05; SLSQP gap -0.204; DSII N>=10 -0.189 (10/10); sign changes 24",
