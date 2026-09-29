@@ -1,5 +1,5 @@
-PSO setting w = 0.7, c1 = c2 = 2 is variance-unstable and changes method rankings
-Controlled protocol: equal budgets, seed-paired runs, feasibility-aware ranking
-Salp-swarm phases add little beyond random sampling; the Laplace step hurts
-Constriction PSO followed by basic VNS is the most consistent layout optimizer
-Limits stated: no clear gain over PSO overall; gap to published IEA37 layouts
+Variance-unstable PSO setting w = 0.7, c1 = c2 = 2 puts PSO behind salp-swarm hybrids
+Protocol: equal budgets, random-sampling controls, equivalence tests at three levels
+Salp-swarm first phases add nothing beyond equal-cost random sampling in the farm
+On the benchmark, PSO-VNS ranks best; its edge over a well-configured PSO is small
+PSO-VNS reaches feasible layouts more reliably than PSO on a Horns Rev 1 block
