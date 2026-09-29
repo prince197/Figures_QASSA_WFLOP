@@ -13,7 +13,7 @@ Files (new; each agent owns only the files named in its task):
   inside the abstract body are fine as comments), keywords (\begin{keyword} … \sep …, 1–7), highlights not in the
   manuscript (separate file), nomenclature as a compact table or description list (not IEEEdescription).
 - optA/swevo_back.tex — CRediT authorship statement (\TBD roles), Declaration of competing interest, Data availability,
-  Declaration of generative AI and AI-assisted technologies in the writing process (Elsevier policy; wording given by
+  Declaration of generative AI and AI-assisted technologies in the manuscript preparation process (Elsevier policy; wording given by
   the lead — see below), Acknowledgments/Funding (\TBD), references: the same \bibitem list as optA/11_back.tex
   (keep keys and order; numbered style [1]; no biographies).
 - SWEVO_supplement.tex — copy of MPCE_PSO_VNS_supplement.tex retargeted (xr prefix M- → SWEVO_manuscript; no
