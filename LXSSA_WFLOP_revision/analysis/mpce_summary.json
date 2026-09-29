@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 18:59:17",
+ "generated": "2026-09-29 01:03:32",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -2145,13 +2145,13 @@
     "T": 66,
     "W": 2,
     "dloss_pp": -0.06306204787105701,
-    "isolates": "Laplace step in the hybrid"
+    "isolates": "LX-SSA as published (hybrid)"
    },
    "LXSSA-SSA": {
     "T": 64,
     "L": 4,
     "dloss_pp": 0.16633563370444476,
-    "isolates": "Laplace step alone"
+    "isolates": "LX-SSA as published (alone)"
    }
   },
   "case_mean": {
@@ -3914,10 +3914,14 @@
   "installed80_aep": 666.7458749693837,
   "ideal80_aep": 744.0358905988484,
   "installed80_loss_pct": 10.387941846092474,
-  "pywake_aep": 662.5,
-  "pywake_loss_pct": 10.96,
-  "rel_diff_pct": 0.6408867878315183,
-  "note": "installed 80-turbine Horns Rev 1 farm, hornsrev_model.py (current binning) vs the PyWake Jensen reference value quoted in hornsrev_site_text.tex (662.5 GWh/yr, 10.96 %)"
+  "pywake_aep": 661.3880911,
+  "pywake_loss_pct": 11.10803934,
+  "pywake_ideal_aep": 744.0358906,
+  "pywake_version": "2.6.20",
+  "rel_diff_pct": 0.8100816965834534,
+  "loss_diff_pp": -0.7200974939075255,
+  "ours_matches_pywake_check": true,
+  "note": "installed 80-turbine Horns Rev 1 farm, hornsrev_model.py (current binning) vs PyWake 2.6.20 NOJ(k=0.04) at identical bins (ours_5deg_2.5, pywake_check.csv)"
  },
  "hr16": {
   "installed_aep": 139.82057589954573,
@@ -6819,12 +6823,18 @@
     "base": 366941.57116,
     "best_feasible": 418924.40636,
     "best_feasible_by": "par4",
+    "best_projected": 421451.0722591635,
+    "best_projected_by": "par12",
+    "best_projected_excess_m": 3.5181552724918674,
     "n_feasible": 9
    },
    "36": {
     "base": 737883.09851,
     "best_feasible": 863676.29932,
     "best_feasible_by": "par4",
+    "best_projected": 882382.7751851722,
+    "best_projected_by": "par12",
+    "best_projected_excess_m": 0.004860894092871604,
     "n_feasible": 8
    }
   },
@@ -8019,7 +8029,7 @@
   "  PSO-VNS: best split counts {'PSOBV75': 7, 'PSOBV90': 4, 'PSOBV': 1}; significant vs 25%: 5, vs 75%: 4; 75% vs 100% (PSO): 9/3/0; 90% vs 75%: 0/12/0, 50% vs 90%: 0/8/4; avg ranks PSOBV25 4.75, PSOBV 3.25, PSOBV75 1.42, PSOBV90 1.83, PSOC 3.75; mean loss PSOBV25 2.7964, PSOBV 2.6430, PSOBV75 2.5430, PSOBV90 2.5535, PSOC 2.6927",
   "  SKIPPED: no split runs for SSA-VNS (SSABV25 / SSABV75 not in the data) -- mpce_ssasplit not present (experiment dropped)",
   "\n[4] Horns Rev 1, 16 turbines",
-  "  80-turbine installed AEP 666.75 GWh/yr vs PyWake 662.5 -> +0.64%",
+  "  80-turbine installed AEP 666.75 GWh/yr vs PyWake 2.6.20 NOJ 661.39 (identical bins) -> +0.81% AEP, -0.72 pp wake loss",
   "  mean AEP: PSO-VNS 138.29(30), SSA-VNS 137.59(30), LX-SSA-VNS 137.41(30), RS-VNS 137.58(28), VNS 137.35(30), PSO 137.79(19), SSA 136.25(30), LX-SSA 136.00(28), DE nan(0), MS-SLSQP 136.31(30); installed 139.82",
   "\n[5] Feasible initialization",
   "  per method (loss random -> feasible): VNS 5.343->4.253, DE 9.461->5.948, LX-SSA-VNS 5.210->4.390, LX-SSA 6.691->5.454, PSO-VNS 4.511->4.372, PSO 4.641->5.948, MS-SLSQP 5.076->4.823, SSA 6.182->5.358, SSA-VNS 5.087->4.387",
@@ -8045,6 +8055,6 @@
   "  feasbudget: pending []; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}, 30030: {'PSOBV': 1.1666666666666667, 'SSABV': 4.166666666666667, 'LXBV': 5.666666666666667, 'RSVNS': 6.333333333333333, 'BVNS': 4.833333333333333, 'PSOC': 2.5, 'SSA': 8.666666666666666, 'LXSSA': 9.833333333333334, 'DE': 5.166666666666667, 'SLSQP': 6.666666666666667}, 120030: {'PSOBV': 2.1666666666666665, 'SSABV': 4.166666666666667, 'LXBV': 5.833333333333333, 'RSVNS': 4.666666666666667, 'BVNS': 3.1666666666666665, 'PSOC': 5.833333333333333, 'SSA': 8.833333333333334, 'LXSSA': 10.0, 'DE': 3.3333333333333335, 'SLSQP': 7.0}}",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 9 tables, 14 figures, mpce_summary.json in 56 s"
+  "\nwrote 9 tables, 14 figures, mpce_summary.json in 50 s"
  ]
 }
