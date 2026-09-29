@@ -76,7 +76,7 @@ Section~\ref{sec:psosetting} tests this empirically: in a sweep of $c_1=c_2=c$ a
 \subsection{Salp Swarm Algorithm and Its Laplacian Variant}
 \label{sec:ssa}
 \label{sec:S-ssa}
-The SSA~\cite{Mirjalili2017} (Algorithm~\ref{alg:S-ssa}) keeps the best solution found so far as the food source $\mathbf H$ and splits the population, sorted by $F_p$, into leaders and followers. A leader $i\le N_p/2$ updates each coordinate by
+The SSA~\cite{Mirjalili2017} (Algorithm~\ref{S-alg:S-ssa}) keeps the best solution found so far as the food source $\mathbf H$ and splits the population, sorted by $F_p$, into leaders and followers. A leader $i\le N_p/2$ updates each coordinate by
 \begin{equation}\label{eq:leader}
 X_m^i = H_m\pm\xi_1\big((ub_m-lb_m)\xi_2+lb_m\big),
 \end{equation}
@@ -89,24 +89,25 @@ $\phi=0$, $\chi=1$, and keeps the better candidate. As published, it evaluates b
 % CHECK-THEORY [T11]: SSA xi_1(T/2) = 2 exp(-4) = 0.0366 ("xi_1 <= 0.037 for t >= T/2"); leader step xi_1((ub-lb) xi_2 + lb) = xi_1 r (2 xi_2 - 1) (S-th-feas note)
 % verified: analysis/authors_optimizers.py SSA/LXSSA: leaders = pop_size // 2 = 15; follower = (pop[i] + new_pop[i-1])/2; LX: one scalar gamma per follower, candidate = pop[i] + gamma (food - pop[i]); both clipped and evaluated, then whole population evaluated (2 N_p per iteration)
 
-\begin{algorithm}[!t]
-\caption{SSA and LX-SSA (LX: LX-SSA only; evaluations in brackets)}
-\label{alg:S-ssa}
-\small
-\begin{algorithmic}[1]
-\State Draw and evaluate $N_p$ salps; sort them by $F_p$ and set the best as food source $\mathbf H$. \Comment{[$N_p$]}
-\For{$t=1$ to $T$}
-    \State Update $\xi_1=2\exp[-(4t/T)^2]$.
-    \State Leaders $i\le N_p/2$: new position $\tilde{\mathbf X}^i$ by \eqref{eq:leader}.
-    \For{followers $i=N_p/2+1,\ldots,N_p$}
-        \State $\tilde{\mathbf X}^i\gets\mathbf Z^i=\tfrac{1}{2}(\mathbf X^i+\tilde{\mathbf X}^{i-1})$
-        \State LX: form $\mathbf Y^i$ by \eqref{eq:laplace}, box-repair $\mathbf Y^i$ and $\mathbf Z^i$, evaluate both, $\tilde{\mathbf X}^i\gets$ the better \Comment{[2 per follower]}
-    \EndFor
-    \State Box-repair $\tilde{\mathbf X}$, set $\mathbf X\gets\tilde{\mathbf X}$, evaluate $F_p$ for all salps, sort them, and update $\mathbf H$. \Comment{[$N_p$]}
-\EndFor
-\State \Return $\mathbf H$.
-\end{algorithmic}
-\end{algorithm}
+% Page budget: the SSA/LX-SSA pseudocode stays in the supplementary material (Algorithm S-alg:S-ssa); main-text version was:
+% \begin{algorithm}[!t]
+% \caption{SSA and LX-SSA (LX: LX-SSA only; evaluations in brackets)}
+% \label{alg:S-ssa}
+% \small
+% \begin{algorithmic}[1]
+% \State Draw and evaluate $N_p$ salps; sort them by $F_p$ and set the best as food source $\mathbf H$. \Comment{[$N_p$]}
+% \For{$t=1$ to $T$}
+%     \State Update $\xi_1=2\exp[-(4t/T)^2]$.
+%     \State Leaders $i\le N_p/2$: new position $\tilde{\mathbf X}^i$ by \eqref{eq:leader}.
+%     \For{followers $i=N_p/2+1,\ldots,N_p$}
+%         \State $\tilde{\mathbf X}^i\gets\mathbf Z^i=\tfrac{1}{2}(\mathbf X^i+\tilde{\mathbf X}^{i-1})$
+%         \State LX: form $\mathbf Y^i$ by \eqref{eq:laplace}, box-repair $\mathbf Y^i$ and $\mathbf Z^i$, evaluate both, $\tilde{\mathbf X}^i\gets$ the better \Comment{[2 per follower]}
+%     \EndFor
+%     \State Box-repair $\tilde{\mathbf X}$, set $\mathbf X\gets\tilde{\mathbf X}$, evaluate $F_p$ for all salps, sort them, and update $\mathbf H$. \Comment{[$N_p$]}
+% \EndFor
+% \State \Return $\mathbf H$.
+% \end{algorithmic}
+% \end{algorithm}
 
 \subsection{Basic Variable Neighborhood Search}
 \label{sec:vns}
@@ -183,7 +184,7 @@ Table~\ref{tab:params} lists the settings of all methods, the published defaults
 Method & Iterations & Coefficients and operators \\
 \midrule
 PSO & $T=200$ & Algorithm~\ref{alg:pso}; $w=0.7298$, $c_1=c_2=1.49618$ (old setting: $w=0.7$, $c_1=c_2=2$); $\mathbf V^i_0=\mathbf 0$, no $V_{\max}$; clipped coordinate keeps its velocity; asynchronous $\mathbf P^i$, $\mathbf G$ \\
-SSA & $T=200$ & Algorithm~\ref{alg:S-ssa}; 15 leaders, 15 followers; $\xi_1=2\exp[-(4t/T)^2]$ \\
+SSA & $T=200$ & Algorithm~\ref{S-alg:S-ssa}; 15 leaders, 15 followers; $\xi_1=2\exp[-(4t/T)^2]$ \\
 LX-SSA & $T=100$ & as SSA, plus a Laplace candidate per follower, $\phi=0$, $\chi=1$~\eqref{eq:laplace}; both candidates evaluated \\
 DE/rand/1/bin & $T=200$ & $F=0.5$, $\mathrm{CR}=0.9$; mutant clipped before crossover; asynchronous one-to-one replacement \\
 VNS & 30 initial, then 6,000 & Algorithm~\ref{alg:vns} from the best initial layout; $k_{\max}=5$, $\delta_k=0.1kr$, $h_0=0.05r$, $h_{\min}=10^{-3}r$ \\
