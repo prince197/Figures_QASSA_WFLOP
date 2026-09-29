@@ -21,3 +21,13 @@ prop:S-frozen -> main (parts (a) and (b) only), optA/sw/08_beyond.tex (new main 
 tab:robust-final -> main, optA/sw/09_robust.tex (label unchanged; \input{analysis/mpce_tab_robust_final.tex}; the supplement must no longer \input it in sec:S-robust-tables and should drop the sentence "Table tab:robust-final (moved here from the main text) ...", citing M-tab:robust-final instead; its full Table tab:robust stays)
 tab:F-bench -> main, optA/sw/09_robust.tex (label unchanged; captured from analysis/mpce_supp_direction.tex in optA/sw/08_beyond.tex; the supplement's \input of mpce_supp_direction.tex must skip it)
 (note, not moved: over the +3-page budget) tab:F-equiv, tab:F-hr, tab:F-pywake, tab:F-iea-gap, fig:S-hr16, fig:S-layouts-sites and fig:S-iea37-conv stay in the supplement and are cited from 08/09 as S-...; optA/sw/08_beyond.tex also captures analysis/mpce_supp_direction.tex (global) and defines r@M-tab:friedman68 / r@M-tab:hr-site as aliases so that the M- references inside captured captions resolve in the main text
+fig:S-farm -> main, optA/sw/03_model.tex (panel (a) of the three-panel figure fig:model; the labels fig:S-farm, fig:S-wake, fig:S-halfcone are kept there as aliases of fig:model, so all three resolve to the same figure number: supplement refs "Figs. S-farm--S-halfcone" should become "Fig.~\ref{M-fig:model}")
+fig:S-wake -> main, optA/sw/03_model.tex (panel (b) of fig:model; alias label kept)
+fig:S-halfcone -> main, optA/sw/03_model.tex (panel (c) of fig:model; alias label kept)
+sec:S-power -> main, optA/sw/03_model.tex (label on subsection sec:powermodel; the discrete expected-power formula and the AEP conversion are now in the main text)
+eq:S-power -> main, optA/sw/03_model.tex
+sec:S-ssa -> main, optA/sw/04_methods.tex (label on subsection sec:ssa; evaluation counts now in the main text)
+alg:S-ssa -> main, optA/sw/04_methods.tex
+fig:S-th-stability -> main, optA/sw/04_methods.tex
+prop:S-box -> main, optA/sw/04_methods.tex (statement and proof; NOTE: eq:S-th-lens (closed form of A(rho)) and tab:S-th-box stay in the supplement and are referenced from the main text as S-eq:S-th-lens / S-tab:S-th-box -- keep them)
+prop:S-pso-stability -> main (statement in full, as prop:pso-stability with eq:pso-o2, eq:poli), optA/sw/04_methods.tex; the supplement KEEPS the full proof (cited from main as S-sec:S-th-pso): restate there as "Proof of Proposition~\ref{M-prop:pso-stability}" or keep the duplicate statement. Still cited from main and to be kept in the supplement: S-prop:S-settings, S-lem:S-clip, S-prop:S-ls, S-prop:S-prefix, S-sec:S-slsqp, S-tab:S-wind (NOT moved)
