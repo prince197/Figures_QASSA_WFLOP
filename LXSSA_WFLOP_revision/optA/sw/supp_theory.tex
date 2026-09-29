@@ -1,0 +1,246 @@
+% ============================================================================================================
+% Supplement section "Theoretical Details" (Phase 6, W4). \input by the lead into MPCE_PSO_VNS_supplement.tex.
+% SWEVO copy (\input by SWEVO_supplement.tex; the MPCE supplement keeps optA/supp_theory.tex): the items that the
+% SWEVO main text places are not repeated here and are cited with the prefix M- (optA/sw/moved.md): the figure
+% fig:S-th-stability, the statement and proof of prop:S-box (the closed form eq:S-th-lens and tab:S-th-box stay) and
+% def:S-equiv. prop:S-pso-stability is kept in full (its proof is cited from the main text as S-sec:S-th-pso).
+% Labels: sec:S-theory, sec:S-th-*, prop:S-*, lem:S-*, def:S-*, tab:S-th-*, fig:S-th-stability, eq:S-th-*.
+% Every number typed here is mathematics/geometry (no run data); all of them are recomputed and compared with
+% this file by `python analysis/make_theory_figures.py --check` (checks T01-T13). Run data enter only through
+% \N... macros (\NEqMargin). Code references are to analysis/authors_optimizers.py (PSO, DE, SSA),
+% analysis/hybrid_lxssa_bvns.py (two-phase template), analysis/rs_vns.py and analysis/original_vns.py.
+% ============================================================================================================
+\makeatletter
+\@ifundefined{thS}{\newtheorem{thS}{Proposition}\renewcommand{\thethS}{S\arabic{thS}}}{}
+\@ifundefined{lemS}{\newtheorem{lemS}[thS]{Lemma}}{}
+\@ifundefined{defS}{\newtheorem{defS}[thS]{Definition}}{}
+\@ifundefined{thSproof}{\newenvironment{thSproof}{\par\smallskip\noindent\emph{Proof.}\ }{\hfill$\square$\par\smallskip}}{}
+\makeatother
+
+\section{Theoretical Details}
+\label{sec:S-theory}
+This section states and proves the theoretical facts used in the main text: the stability conditions of the implemented PSO update and where the two PSO settings lie (Section~\ref{sec:S-th-pso}), the budget accounting of the two-phase hybrids and the strength of the random-sampling control (Section~\ref{sec:S-th-budget}), what can and cannot be proven about PSO and DE from feasible starts (Section~\ref{sec:S-th-feas}), the practical-equivalence statements (Section~\ref{sec:S-th-equiv}) and the property of the VNS local search (Section~\ref{sec:S-th-vns}). All statements refer to the code in \texttt{analysis/}; all numbers of this section are recomputed and checked by \texttt{analysis/make\_theory\_figures.py}.
+
+% ------------------------------------------------------------------------------------------------------------
+\subsection{Stability of the Implemented PSO Update}
+\label{sec:S-th-pso}
+In the code, a move of particle $i$ updates every coordinate $m$ by
+\begin{equation}
+v\leftarrow w\,v+c_1\rho_1\,(p-x)+c_2\rho_2\,(g-x),\qquad x\leftarrow \min\bigl(\max(x+v,-r),\,r\bigr),
+\label{eq:S-th-upd}
+\end{equation}
+where $x=X^i_m$, $v=V^i_m$, $p=P^i_m$, $g=G_m$, and $\rho_1,\rho_2$ are independent $U(0,1)$ numbers drawn anew for every coordinate and every move; $v$ is not changed when $x$ is clipped. We use two assumptions: (A1) \emph{stagnation}: $p$ and $g$ are fixed; (A2) \emph{no active bound}: the clipping never acts, so $v_t=x_t-x_{t-1}$. Under (A1)--(A2), with $\varphi_{k,t}=c_k\rho_{k,t}$ and $\varphi_t=\varphi_{1,t}+\varphi_{2,t}$, each coordinate follows, independently of the others,
+\begin{equation}
+x_{t+1}=(1+w-\varphi_t)\,x_t-w\,x_{t-1}+\varphi_{1,t}\,p+\varphi_{2,t}\,g .
+\label{eq:S-th-rec}
+\end{equation}
+The coefficient $\varphi_t$ is random, with mean $\mu=(c_1+c_2)/2$ and variance $\sigma^2=(c_1^2+c_2^2)/12$. We call the update \emph{order-1 stable} if, for all initial values $(x_0,x_1)$, $\mathrm E\,x_t$ converges to a limit that does not depend on them, and \emph{order-2 stable} if, in addition, $\mathrm E\,x_t^2$ does~\cite{Poli2009}. Proposition~\ref{prop:S-pso-stability} restates Proposition~\ref{M-prop:pso-stability} of the main text, which gives only a proof sketch; the full proof follows.
+
+\begin{thS}[Stability of the implemented update]
+\label{prop:S-pso-stability}
+Let $c_1,c_2\ge0$, $c_1+c_2>0$, and assume (A1)--(A2).
+\begin{enumerate}
+\item[(a)] $\mathrm E\,x_t\to x^*=(c_1p+c_2g)/(c_1+c_2)$ for all initial values if and only if $\lvert w\rvert<1$ and $0<\mu<2(1+w)$, i.e.,
+\begin{equation}
+\lvert w\rvert<1\quad\text{and}\quad c_1+c_2<4(1+w).
+\label{eq:S-th-o1}
+\end{equation}
+\item[(b)] The update is order-2 stable if and only if $\lvert w\rvert<1$ and
+\begin{equation}
+\chi(1):=2\mu(1-w^2)-(1-w)\mu^2-(1+w)\sigma^2>0 .
+\label{eq:S-th-o2}
+\end{equation}
+For $c_1=c_2$, \eqref{eq:S-th-o2} is Poli's condition~\eqref{M-eq:poli}, $c_1+c_2<24(1-w^2)/(7-5w)$~\cite{Poli2009}; for $c_1\ne c_2$ it is stricter than~\eqref{M-eq:poli}, since $\sigma^2$ grows when $c_1+c_2$ is kept and $c_1\ne c_2$.
+\item[(c)] Under (b), $\operatorname{Var}x_t\to V_\infty=(1+w)\,q/\chi(1)$ with $q=c_1^2c_2^2(p-g)^2/[6(c_1+c_2)^2]$; for $c_1=c_2=c$,
+\begin{equation}
+V_\infty=\frac{c\,(1+w)}{4\,[12(1-w^2)-c\,(7-5w)]}\,(p-g)^2 ,
+\label{eq:S-th-vinf}
+\end{equation}
+as in~\cite{Poli2009}. The limit is zero if and only if $p=g$.
+\end{enumerate}
+\end{thS}
+
+\begin{thSproof}
+(a) Since $\rho_{1,t},\rho_{2,t}$ are independent of $(x_t,x_{t-1})$, the deviation $e_t=\mathrm E\,x_t-x^*$ satisfies $e_{t+1}=m\,e_t-w\,e_{t-1}$ with $m=1+w-\mu$ (the constant terms cancel because $\mathrm E\varphi_{1,t}\,(p-x^*)+\mathrm E\varphi_{2,t}\,(g-x^*)=0$). Its characteristic polynomial $\lambda^2-m\lambda+w$ has both roots strictly inside the unit circle if and only if $\lvert w\rvert<1$ and $\lvert m\rvert<1+w$ (Schur--Cohn conditions for a real monic quadratic), i.e., $0<\mu<2(1+w)$; otherwise an initial value exciting a root of modulus $\ge1$ keeps $e_t$ away from zero.
+
+(b) Let $y_t=x_t-x^*$. Then $y_{t+1}=(1+w-\varphi_t)y_t-wy_{t-1}+\eta_t$ with $\eta_t=\varphi_{1,t}(p-x^*)+\varphi_{2,t}(g-x^*)$, $\mathrm E\eta_t=0$, and $(\varphi_t,\eta_t)$ is independent of $(y_t,y_{t-1})$. Hence $z_t=(\mathrm Ey_t^2,\ \mathrm Ey_ty_{t-1},\ \mathrm Ey_{t-1}^2)^{\mathsf T}$ satisfies $z_{t+1}=Mz_t+b_t$ with
+\begin{equation*}
+M=\begin{pmatrix} a & -2wm & w^2\\ m & -w & 0\\ 1&0&0\end{pmatrix},\qquad a=\mathrm E(1+w-\varphi_t)^2=m^2+\sigma^2,
+\end{equation*}
+and $b_t=(q-2\operatorname{Cov}(\varphi_t,\eta_t)\,\mathrm Ey_t,\,0,\,0)^{\mathsf T}$, $q=\mathrm E\eta_t^2$. Order-2 stability is equivalent to a spectral radius of $M$ below one (and $\lvert w\rvert<1$). Sufficiency: $\mathrm Ey_t$ obeys the mean recursion of (a), which does not involve $\eta_t$, so it equals the mean of the process with $p=g$ (where $\eta_t=0$ and $z_t=M^tz_0\to0$) and $(\mathrm Ey_t)^2\le\mathrm Ey_t^2\to0$ there; hence $b_t\to(q,0,0)^{\mathsf T}$ and $z_t\to(I-M)^{-1}(q,0,0)^{\mathsf T}$, independent of the initial values. Necessity: order-2 stability includes order-1 stability, so $\lvert w\rvert<1$ by (a) and $\mathrm Ey_t\to0$; hence $\mathrm Ey_t^2=\mathrm Ex_t^2-2x^*\mathrm Ex_t+x^{*2}$ converges to a limit that does not depend on the initial values. The second row of $M$ is the recursion $\mathrm Ey_{t+1}y_t=m\,\mathrm Ey_t^2-w\,\mathrm Ey_ty_{t-1}$ (the term $\mathrm E\eta_t\,\mathrm Ey_t$ vanishes), which, with $\lvert w\rvert<1$, makes $\mathrm Ey_ty_{t-1}$ converge whenever $\mathrm Ey_t^2$ does (also if $wm=0$), and the third component of $z_t$ is the first one delayed by one step; so the whole vector $z_t$ converges to a limit that does not depend on the initial values. Now, for the initial values $(\lambda y_0,\lambda y_1)$, $\mathrm Ey_t$ is proportional to $\lambda$, so $z_t=\lambda^2M^tz_0+\lambda u_t+v_t$ with $u_t,v_t$ independent of $\lambda$; if $z_t$ has the same limit for three values of $\lambda$, then $M^tz_0\to0$, and since the vectors $z_0=(y_1^2,y_1y_0,y_0^2)$ span $\mathbb R^3$, $M^t\to0$. The characteristic polynomial of $M$ is $\chi(\lambda)=\lambda^3+a_2\lambda^2+a_1\lambda+a_0$ with $a_2=w-a$, $a_1=2wm^2-aw-w^2$, $a_0=-w^3$. By Jury's criterion, all roots lie strictly inside the unit circle if and only if (i) $\chi(1)>0$, (ii) $\chi(-1)<0$, (iii) $\lvert a_0\rvert<1$ and (iv) $\lvert a_0^2-1\rvert>\lvert a_0a_2-a_1\rvert$. Direct expansion gives
+$\chi(1)=(1+w)(1-w^2)-(1+w)\sigma^2-(1-w)m^2$, which equals~\eqref{eq:S-th-o2}, and
+$\chi(-1)=-(1-w)(1-w^2+\sigma^2)-(1+w)m^2<0$ for $\lvert w\rvert<1$; (iii) is $\lvert w\rvert<1$. For (iv), $a_0a_2-a_1=w\,X$ with $X=\sigma^2(1+w^2)-(1-w^2)m^2+w(1-w^2)$. If (i) holds, then $(1-w)m^2<(1+w)(1-w^2)$, i.e., $m^2<(1+w)^2$, and $\sigma^2<1-w^2$; therefore $-(1-w^2)(1+w+w^2)<X<(1-w^2)(1+w+w^2)$, and $\lvert wX\rvert<\lvert w\rvert(1+w+w^2)(1-w^2)\le(1+w^2+w^4)(1-w^2)=1-w^6$, because $1+w^2+w^4-\lvert w\rvert(1+w+w^2)$ equals $(1-w)(1-w^3)$ for $w\ge0$ and $1-u+2u^2-u^3+u^4>0$ for $w=-u<0$. So (iv) follows from (i), and order-2 stability holds if and only if $\lvert w\rvert<1$ and $\chi(1)>0$. For $c_1=c_2=c$: $\mu=c$, $\sigma^2=c^2/6$ and $\chi(1)=c\,[12(1-w^2)-c(7-5w)]/6$, which is positive if and only if $2c<24(1-w^2)/(7-5w)$. For fixed $c_1+c_2$, $\sigma^2$ is smallest at $c_1=c_2$, which gives the last statement of (b). (The general condition restates, in our notation, the second-moment analysis of~\cite{Poli2009} for $c_1\ne c_2$; we do not claim it as new.)
+
+(c) In the limit $\mathrm Ey_t\to0$, so $b_t\to(q,0,0)^{\mathsf T}$ and $z_t\to z_\infty$ with $z_\infty=Mz_\infty+(q,0,0)^{\mathsf T}$. The second row gives $\mathrm Ey_ty_{t-1}\to m V_\infty/(1+w)$, and the first row then gives $V_\infty\,\chi(1)/(1+w)=q$. With $p-x^*=c_2(p-g)/(c_1+c_2)$ and $g-x^*=-c_1(p-g)/(c_1+c_2)$, $q=[c_2^2\operatorname{Var}\varphi_1+c_1^2\operatorname{Var}\varphi_2](p-g)^2/(c_1+c_2)^2=c_1^2c_2^2(p-g)^2/[6(c_1+c_2)^2]$, which is $c^2(p-g)^2/24$ for $c_1=c_2=c$ and gives~\eqref{eq:S-th-vinf}.
+\end{thSproof}
+
+\emph{Which $\varphi$ enters the order-1 condition.} For constant coefficients, the classical condition is $0<\varphi<2(1+w)$ with $\varphi=c_1+c_2$. In the implemented update the coefficients are $c_k\rho_k$ with $\rho_k\sim U(0,1)$, and the order-1 condition involves their mean, $\mathrm E\varphi_t=(c_1+c_2)/2$; hence $c_1+c_2<4(1+w)$. Inserting $c_1+c_2$ into the constant-coefficient condition would give $c_1+c_2<3.4$ at $w=0.7$ and wrongly classify the old setting as order-1 unstable. The analytic order-2 region of Proposition~\ref{prop:S-pso-stability}(b) agrees with the numerically computed spectral radius of $M$ at 200{,}000 random points $(w,c_1,c_2)\in(-1,1)\times[0,6]^2$ and on a $601\times601$ grid for $c_1=c_2$ (points within $10^{-3}$ of the boundary excluded; no disagreement).
+
+\begin{table}[!htbp]
+\centering
+\caption{Stability of the two PSO settings under stagnation and without active bounds (Proposition~\ref{prop:S-pso-stability}). $\rho_1$: spectral radius of the mean recursion; $\rho_2$: spectral radius of the second-moment matrix $M$ (order-2 stable iff $\rho_2<1$); $V_\infty/(p-g)^2$: limit variance factor~\eqref{eq:S-th-vinf}.}
+\label{tab:S-th-settings}
+\begin{tabular}{lcccccccc}
+\toprule
+Setting & $w$ & $c_1+c_2$ & $4(1+w)$ & $\frac{24(1-w^2)}{7-5w}$ & margin & $\rho_1$ & $\rho_2$ & $V_\infty/(p-g)^2$\\
+\midrule
+Old & 0.7 & 4 & 6.8 & 3.50 & $-0.50$ & 0.84 & 1.12 & unbounded\\
+Constriction & 0.7298 & 2.99 & 6.92 & 3.35 & $+0.36$ & 0.85 & 0.94 & 1.09\\
+\bottomrule
+\end{tabular}
+\\[2pt]{\footnotesize Margin: order-2 bound minus $c_1+c_2$. Constriction: $c_1+c_2=2.99236$ is 10.6\% below the bound 3.3475; old: $c_1+c_2=4$ is 14.4\% above the bound 3.4971.}
+\end{table}
+% verified by make_theory_figures.py (T01-T05): old 6.8/3.4971/rho1 0.8367/rho2 1.1237; constriction 6.9192/3.3475/0.8543/0.9442, V 1.0874 (SD 1.0428)
+
+\begin{thS}[The two settings]
+\label{prop:S-settings}
+Under (A1)--(A2), both settings are order-1 stable. The constriction setting is order-2 stable ($c_1+c_2=2.99<3.35$, $\rho_2=0.94$); each coordinate of a particle with $p\ne g$ has, in the limit, mean $(p+g)/2$ and standard deviation $1.04\,\lvert p-g\rvert$ ($V_\infty=1.09\,(p-g)^2$). The old setting is not order-2 stable ($4>3.50$): $\mathrm E\,x_t^2$ is unbounded for every initial value if $p\ne g$, and for every initial value with $(x_0,x_1)\ne(x^*,x^*)$ if $p=g$; a positive weighted sum of the second moments grows at least by the factor $\rho_2=1.12$ per iteration.
+\end{thS}
+\begin{thSproof}
+The numbers follow from Proposition~\ref{prop:S-pso-stability} (Table~\ref{tab:S-th-settings}). For the old setting, the dominant eigenvalue $\rho_2=1.12$ of $M$ is real and has a left eigenvector $u$ with positive components ($u\approx(0.90,0.21,0.39)$). Since $c_1=c_2$, $\operatorname{Cov}(\varphi_t,\eta_t)=0$ and $b_t=(q,0,0)^{\mathsf T}$, so $u^{\mathsf T}z_{t+1}=\rho_2\,u^{\mathsf T}z_t+u_1q\ge\rho_2\,u^{\mathsf T}z_t$. For a nonzero $z_0=(\alpha,\beta,\gamma)$ with $\alpha,\gamma\ge0$, $\lvert\beta\rvert\le\sqrt{\alpha\gamma}\le(\alpha+\gamma)/2$ gives $u^{\mathsf T}z_0>0$; if $z_0=0$ and $p\ne g$, then $u^{\mathsf T}z_1=u_1q>0$. Hence $u^{\mathsf T}z_{t+1}\ge\rho_2^{\,t}\,u^{\mathsf T}z_1\to\infty$ (with $u^{\mathsf T}z_1>0$ in both cases). Since $\lvert\mathrm Ey_ty_{t-1}\rvert\le(\mathrm Ey_t^2+\mathrm Ey_{t-1}^2)/2$, $u^{\mathsf T}z_t\le(u_1+u_2/2)\,\mathrm Ey_t^2+(u_3+u_2/2)\,\mathrm Ey_{t-1}^2$, so the sequence $\mathrm Ey_t^2$ is unbounded, and so is $\mathrm Ex_t^2=\mathrm Ey_t^2+2x^*\mathrm Ey_t+x^{*2}$, because $\mathrm Ey_t\to0$ (order-1 stability). We show unboundedness only; that the second moments themselves grow asymptotically by the factor $\rho_2$ per iteration is not needed here.
+\end{thSproof}
+
+\emph{What the conditions do not cover.} (i) \emph{Stagnation.} In a run, $\mathbf P^i$ and $\mathbf G$ change. For $c_1=c_2$, Cleghorn and Engelbrecht~\cite{Cleghorn2018} obtain the same region under the weaker non-stagnate distribution assumption; we do not claim that their region extends to $c_1\ne c_2$, where the condition under stagnation is stricter (Proposition~\ref{prop:S-pso-stability}(b)). No stability result says how good $\mathbf G$ is: order-2 stability means that each particle samples a distribution of bounded variance around $(c_1\mathbf P^i+c_2\mathbf G)/(c_1+c_2)$, whose variance vanishes only if $\mathbf P^i=\mathbf G$ (Proposition~\ref{prop:S-pso-stability}(c)); it implies neither convergence to a point nor local optimality. (ii) \emph{Bounds.} The code clips the position to $[-r,r]$ and keeps the velocity, so after a clip $v_t\ne x_t-x_{t-1}$, and~\eqref{eq:S-th-rec} and both results no longer describe the trajectory. (iii) \emph{Causality.} That the old setting violates the order-2 condition does not imply that this causes its poor results; the coefficient sweep of Section~\ref{sec:S-csweep} shows that the loss of feasibility begins near the boundary and grows progressively beyond it, and that velocity clamping restores much of it. What the code implies at a bound is the following.
+
+\begin{lemS}[Boundary handling of the PSO code]
+\label{lem:S-clip}
+(a) If a move leaves a coordinate of turbine $k$ at $\pm r$, then $x_k^2+y_k^2\ge r^2$, with equality only if its other coordinate is exactly zero; so the evaluated layout violates the boundary constraint of the circular farm unless that coordinate is zero. (b) If a coordinate is at $r$ after a move and its kept velocity is $v\ge0$, the next velocity is $v'=wv+\varphi_1(p-r)+\varphi_2(g-r)\le wv$, and the coordinate is clipped to $r$ again as long as $v'\ge0$; the same holds at $-r$ with the signs reversed.
+\end{lemS}
+\begin{thSproof}
+(a) $x_k^2+y_k^2=r^2+y_k^2$ if $x_k=\pm r$ (and likewise for $y_k$). (b) $p$ and $g$ are evaluated, hence clipped, positions, so $p-r\le0$ and $g-r\le0$; the position update gives $\min(r+v',r)=r$ for $v'\ge0$.
+\end{thSproof}
+Thus, in the implementation, the unbounded second moments of the old setting cannot materialize as growing positions; a coordinate that reaches the bound stays there while its velocity points outward, and by (a) every such evaluation is infeasible (almost surely). Lemma~\ref{lem:S-clip} does not say how often clipping occurs; that is an empirical question, answered by the diagnostics of Section~\ref{sec:S-diag-pso} (Fig.~\ref{fig:D-psodyn} and Table~\ref{tab:D-psodyn}).
+
+% ------------------------------------------------------------------------------------------------------------
+\subsection{Budget Accounting and the Random-Sampling Control}
+\label{sec:S-th-budget}
+An \emph{evaluation} is one call of the objective, counted by a wrapper that stops the run at the budget $B$ (for MS-SLSQP also the finite-difference calls). A population method with $N_p$ members uses $N_p$ evaluations for the initial population and $c$ per iteration, $c=N_p$ for PSO, SSA and DE and $c=2N_p$ for LX-SSA, so $T$ iterations cost $N_p+cT$ evaluations; stand-alone, $T=\lfloor(B-N_p)/c\rfloor$ (Section~\ref{sec:S-iter}). A two-phase hybrid with split $\omega$ uses $B_1=N_p+cT_1$ evaluations in Phase~1, $T_1=\operatorname{round}((\omega B-N_p)/c)$ with Python's rounding half to even (for PSO and SSA at $\omega=0.5$, $99.5$ is rounded to $T_1=100$), and $B_2=B-B_1$ in Phase~2; RS-VNS and RSD-VNS use $B_1=\operatorname{round}(\omega B)$, including the seeded initial population. At $B=6{,}030$ and $\omega=0.5$, $B_1=3{,}030$ for the swarms and $3{,}015$ for the two random-sampling controls, a difference of 15 evaluations (0.25\% of $B$).
+
+\begin{thS}[Prefix and monotonicity]
+\label{prop:S-prefix}
+For every seed: (a) Phase~1 of PSO-VNS evaluates exactly the first $B_1$ layouts of the stand-alone PSO run; (b) the final $F_p$ of PSO-VNS is at most the best $F_p$ of these $B_1$ evaluations; (c) (a) does not hold for SSA-VNS and LX-SSA-VNS.
+\end{thS}
+\begin{thSproof}
+(a) Both runs seed the global generator once and then draw, in the same order, the initial population and the vectors $\boldsymbol\rho_1,\boldsymbol\rho_2$ of every move; the PSO update does not depend on the number of iterations, so the first $T_1$ iterations coincide. (b) Phase~2 starts with $\mathbf G$ as its best evaluated point, replaces it only by strictly better evaluated points and returns the best one. (c) The SSA coefficient $\xi_1=2\exp[-(4t/T)^2]$ depends on $t/T$, and the hybrid uses $T=T_1$ instead of the stand-alone iteration count.
+\end{thSproof}
+
+\emph{Why equal budgets matter.} Let $L_A(b)$ be the best $F_p$ found by method $A$ within $b$ evaluations. For a fixed seed, $L_A(b)$ is nonincreasing in $b$, so any comparison at unequal budgets mixes the effect of the method with that of the budget: counting only Phase-2 evaluations, or counting an LX-SSA iteration as $N_p$ instead of $2N_p$ evaluations, would give one method more evaluations and an advantage by monotonicity alone. At the same $B$, Proposition~\ref{prop:S-prefix} makes PSO-VNS versus PSO a clean contrast: both continue from the identical state after $B_1$ evaluations, PSO with its whole swarm and VNS from $\mathbf G$ alone, for the same $B_2$ evaluations. It guarantees $L_{\text{PSO-VNS}}(B)\le L_{\text{PSO}}(B_1)$ but not $L_{\text{PSO-VNS}}(B)\le L_{\text{PSO}}(B)$; which of the two continuations is better is an empirical question. Likewise, the contrast between a hybrid and RS-VNS isolates Phase~1 (a search method versus uniform sampling with about the same number of evaluations, followed by the same Phase~2). How weak this control is follows from Proposition~\ref{M-prop:S-box} of the main text, which bounds the probability $P_N$ that a layout drawn uniformly in the bounding square is feasible. Its bound (b) uses the area $A(\rho)$ of the part of the farm disc $D$ (radius $r$) covered by a disc of radius $\rho$ centred on the boundary of $D$; for $0<\rho\le2r$,
+\begin{equation}
+A(\rho)=r^2\arccos\Bigl(1-\frac{\rho^2}{2r^2}\Bigr)+\rho^2\arccos\frac{\rho}{2r}-\frac{\rho}{2}\sqrt{4r^2-\rho^2} .
+\label{eq:S-th-lens}
+\end{equation}
+
+\begin{table}[!htbp]
+\centering
+\caption{Probability $P_N$ that a layout drawn uniformly in the bounding square $[-r,r]^{2N}$ is feasible (Proposition~\ref{M-prop:S-box} of the main text): all turbines in the farm, $(\pi/4)^N$; rigorous upper bound (b); Monte Carlo estimate from $10^7$ layouts per row (fixed seed; turbines drawn uniformly in the disc, multiplied by $(\pi/4)^N$; 95\% Clopper--Pearson interval); expected number of feasible layouts among the 3{,}015 uniform layouts of the Phase~1 of RS-VNS at $B=6{,}030$ (including the initial population). Rows $N=10$, 12, 15: largest benchmark cases ($s=8R=308$~m); $N=16$, 36: IEA37 Case Study~1 ($s=2D=260$~m); $N=20$: hypothetical.}
+\label{tab:S-th-box}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{rrrcccc}
+\toprule
+$N$ & $r$ (m) & $s$ (m) & $(\pi/4)^N$ & bound on $P_N$ & $P_N$ (Monte Carlo) [95\% CI] & expected feasible of 3{,}015\\
+\midrule
+2 & 500 & 308 & $0.62$ & $0.52$ & $0.44$ $[0.44,\,0.44]$ & 1{,}337 \\
+10 & 500 & 308 & $0.089$ & $6.5\cdot10^{-3}$ & $0$ $[0,\,3.3\cdot10^{-8}]$ & $<9.9\cdot10^{-5}$ \\
+12 & 750 & 308 & $0.055$ & $0.012$ & $9.4\cdot10^{-8}$ $[5.5\cdot10^{-8},\,1.5\cdot10^{-7}]$ & $2.8\cdot10^{-4}$ \\
+15 & 1{,}000 & 308 & $0.027$ & $7.0\cdot10^{-3}$ & $3.5\cdot10^{-7}$ $[2.9\cdot10^{-7},\,4.1\cdot10^{-7}]$ & $1.0\cdot10^{-3}$ \\
+16 & 1{,}300 & 260 & $0.021$ & $0.011$ & $1.5\cdot10^{-4}$ $[1.5\cdot10^{-4},\,1.5\cdot10^{-4}]$ & $0.45$ \\
+20 & 1{,}000 & 308 & $8.0\cdot10^{-3}$ & $7.0\cdot10^{-4}$ & $0$ $[0,\,2.9\cdot10^{-9}]$ & $<8.9\cdot10^{-6}$ \\
+36 & 2{,}000 & 260 & $1.7\cdot10^{-4}$ & $4.3\cdot10^{-5}$ & $1.8\cdot10^{-9}$ $[1.5\cdot10^{-9},\,2.2\cdot10^{-9}]$ & $5.4\cdot10^{-6}$ \\
+\bottomrule
+\end{tabular}
+\\[2pt]{\footnotesize For $N=2$ the exact value, from the distance distribution of two uniform points in a disc, is $P_2=0.443$. ``$<$'': upper end of the 95\% interval (no feasible layout among the $10^7$).}
+\end{table}
+
+The bound (b) is rigorous but loose; the Monte Carlo estimates show that for the largest benchmark cases a uniform layout in the square is feasible with probability below $10^{-6}$, so the expected number of feasible layouts in the Phase~1 of RS-VNS is about $10^{-3}$ or less (Table~\ref{tab:S-th-box}). Since any violation above $4.6\cdot10^{-8}$ makes $F_p$ exceed every wake loss (Section~\ref{sec:S-tol} and Lemma~\ref{lem:S-feas-improve}), and $F_p=L+\mathrm{Pen}$ with $0\le L\le NE_{\rm ideal}+\varepsilon$ ($\varepsilon$: the small contribution of the negative part of the power curve just above cut-in), the Phase-1 result of RS-VNS in these cases is almost surely the sampled layout with the smallest $F_p$, which is decided by the penalty: $F_p(\mathbf X)<F_p(\mathbf Y)$ whenever $\mathrm{Pen}(\mathbf Y)-\mathrm{Pen}(\mathbf X)>NE_{\rm ideal}$. RS-VNS thus hands VNS the least-violating of its samples, not a layout selected for low wake loss, and ``better than RS-VNS'' is a minimum bar. The factor $(\pi/4)^N$ explains only a small part of this weakness: the Monte Carlo column of Table~\ref{tab:S-th-box} lies orders of magnitude below $(\pi/4)^N$, so the spacing constraint dominates, and in the runs, disc sampling gives a feasible sample to only a minority of the RS-VNS runs without one (Section~\ref{sec:S-ablation}).
+
+% ------------------------------------------------------------------------------------------------------------
+\subsection{Feasible Starts: What Is Proven and What Is Observed}
+\label{sec:S-th-feas}
+With the feasibility-preserving initialization (Algorithm~\ref{alg:S-feasinit}), all $N_p$ initial layouts are feasible, and $\mathbf G$ is the best of them. From feasible starts, in all runs of the study (six largest cases and Horns Rev~1, 30 seeds each), $\mathbf G$ never moved (Section~\ref{M-sec:feasinit}). The following facts follow from the code; the stall itself does not, and is an empirical finding. Lemma~\ref{lem:S-feas-improve} and parts (a) and (b) of Proposition~\ref{prop:S-frozen} are stated, with short proofs, as Lemma~\ref{M-lem:feas-improve} and Proposition~\ref{M-prop:feasible-start} of the main text; they are given here in full, together with part (c) and the move structure of DE (Proposition~\ref{prop:S-de}).
+
+\begin{lemS}[Improvement needs a feasible trial]
+\label{lem:S-feas-improve}
+If $\mathbf G$ is feasible, a trial $\mathbf X$ replaces it only if $L(\mathbf X)+\mathrm{Pen}(\mathbf X)<L(\mathbf G)$; since every violated constraint adds more than $1$ and a violation $g$ adds $(1+\mu g)^2$, every violation of $\mathbf X$ must be below $(\sqrt{L(\mathbf G)}-1)/\mu$, i.e., below $4.6\cdot10^{-8}$ (m or m$^2$) in the benchmark cases, and $\mathbf X$ must have a lower wake loss than $\mathbf G$. So $\mathbf X$ need not be exactly feasible, but its violations must be far below the reporting tolerance of $10^{-6}$~m.
+\end{lemS}
+\begin{thSproof}
+Definition of $F_p$~\eqref{M-eq:penalty}, $\mathrm{Pen}\ge0$ and $L\ge0$; for the benchmark cases $L(\mathbf G)\le NE_{\rm ideal}+\varepsilon$ with $N\le15$ and $E_{\rm ideal}\le14{,}045.74$ (Data Set~I), so $L(\mathbf G)<2.11\cdot10^5$, $\sqrt{L(\mathbf G)}<459.1$, and with $\mu=10^{10}$ the bound is below $4.6\cdot10^{-8}$. % CHECK (manual): (sqrt(15 x 14045.74) - 1)/1e10 = 4.58e-8
+\end{thSproof}
+
+\begin{thS}[PSO from feasible starts]
+\label{prop:S-frozen}
+Let all initial layouts be feasible and let $i^*$ be the particle with the best initial layout, so that $\mathbf X^{i^*}=\mathbf P^{i^*}=\mathbf G$ and $\mathbf V^{i^*}=\mathbf 0$.
+\begin{enumerate}
+\item[(a)] As long as $\mathbf G$ does not change, particle $i^*$ keeps $\mathbf V^{i^*}=\mathbf 0$ and $\mathbf X^{i^*}=\mathbf G$: it re-evaluates $\mathbf G$ once per iteration (200 of the 6{,}030 evaluations if $\mathbf G$ never changes) and evaluates no other point.
+\item[(b)] The first move of every other particle is $\mathbf X^i\leftarrow\mathbf X^i+c_2\boldsymbol\rho_2\circ(\mathbf G-\mathbf X^i)$, clipped to the box: every coordinate moves a random fraction in $[0,c_2]=[0,1.50]$ of the way to the same coordinate of $\mathbf G$, i.e., turbine $k$ of layout $i$ is moved toward turbine $k$ of $\mathbf G$, although the numbering of the turbines in two independently packed layouts is arbitrary.
+\item[(c)] If no evaluation improves any $\mathbf P^i$, the swarm is in exact stagnation, and, as long as no coordinate is clipped, Propositions~\ref{prop:S-pso-stability}(c) and~\ref{prop:S-settings} apply: every coordinate of particle $i\ne i^*$ is sampled, in the limit, with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the samples do not concentrate at $\mathbf G$.
+\end{enumerate}
+\end{thS}
+\begin{thSproof}
+(a) By induction: with $\mathbf V=\mathbf 0$ and $\mathbf P^{i^*}=\mathbf X^{i^*}=\mathbf G$, \eqref{M-eq:pso-v} gives $\mathbf V=\mathbf0$, the position stays $\mathbf G$ (inside the box), and its value equals $F_p(\mathbf G)$, which is not a strict improvement, so neither $\mathbf P^{i^*}$ nor $\mathbf G$ changes. (b) $\mathbf V=\mathbf 0$ and $\mathbf P^i=\mathbf X^i$ at the start. (c) Stagnation is (A1), and no clipping is (A2).
+\end{thSproof}
+Part (c) is illustrative only: with the typical distance of the feasible starts to $\mathbf G$ (median matched RMS turbine distance \NDFsInitRms~m, Table~\ref{tab:D-feasstart}), a standard deviation of $1.04\,\lvert P^i_m-G_m\rvert$ would place many samples outside the box, so (A2) fails and this limit is not reached in the runs.
+
+\begin{thS}[Move structure of DE/rand/1/bin]
+\label{prop:S-de}
+In the DE of the code, the trial of member $i$ takes coordinate $j$ from the mutant $\mathbf x_{r_1}+F(\mathbf x_{r_2}-\mathbf x_{r_3})$ ($r_1,r_2,r_3\ne i$ distinct; clipped to the box) if $j=j_{\rm rand}$ or $U_j<\mathrm{CR}$, and from $\mathbf x_i$ otherwise. The number $K$ of mutant coordinates is $1+\mathrm{Bin}(n-1,\mathrm{CR})$, with mean $1+\mathrm{CR}(n-1)$, e.g., 27.1 of the $n=30$ coordinates for $N=15$ ($\mathrm{CR}=0.9$). A turbine whose two coordinates both come from the mutant is placed at $\mathbf x_{r_1,k}+F(\mathbf x_{r_2,k}-\mathbf x_{r_3,k})$, a combination of the $k$th turbines of three other layouts. If no trial is accepted, the population keeps its initial layouts and every mutant comes from the fixed set of $N_p(N_p-1)(N_p-2)$ vectors $\mathbf x_a+F(\mathbf x_b-\mathbf x_c)$.
+\end{thS}
+\begin{thSproof}
+The binomial crossover loop and the one-to-one replacement of the code.
+\end{thSproof}
+
+For comparison, the SSA leaders sample $H_m+U(-\xi_1r,\xi_1r)$ independently for every coordinate (the code's step $\xi_1((ub-lb)\xi_2+lb)=\xi_1r(2\xi_2-1)$ with a random sign), with $\xi_1(t)=2\exp[-(4t/T)^2]\le0.037$ for $t\ge T/2$ ($0.0366$ at $t=T/2$); the VNS local search changes one coordinate of the incumbent by $\pm h$, and its shaking perturbs all coordinates of the incumbent. These moves perturb one layout and keep the numbering of its turbines, whereas the moves of Propositions~\ref{prop:S-frozen}(b) and~\ref{prop:S-de} combine coordinates of different, independently numbered layouts. That these combined moves almost never yield a feasible layout with lower wake loss, which by Lemma~\ref{lem:S-feas-improve} is the only way to move $\mathbf G$, is the plausible mechanism of the stall, but it is not proven here; the diagnostics measure it (share of feasible trials, violation type, personal-best updates, accepted DE trials; Section~\ref{sec:S-diag-feas} and Table~\ref{tab:D-feasstart}).
+
+% ------------------------------------------------------------------------------------------------------------
+\subsection{Practical Equivalence}
+\label{sec:S-th-equiv}
+Practical equivalence is defined in Definition~\ref{M-def:S-equiv} of the main text. In the notation of this section, with $d_c=\bar L_{A,c}-\bar L_{B,c}$ (pp of wake loss) the difference of the case means of methods $A$ and $B$ in case $c$, over the $n$ cases in which both methods have at least 15 of 30 feasible runs, and $\Delta$ their mean, $A$ and $B$ are practically equivalent at margin $\delta$ (the margin $m$ of the main text) if the two one-sided tests (TOST) reject both $H_0^-\colon\Delta\le-\delta$ and $H_0^+\colon\Delta\ge\delta$ at $\alpha=0.05$, i.e., reject $H_0\colon\lvert\Delta\rvert\ge\delta$ in favour of $H_1\colon\lvert\Delta\rvert<\delta$; the margin is $\delta=\NEqMargin$~pp, a convention fixed after the primary analysis.
+Because $H_0=H_0^-\cup H_0^+$ is rejected only if both parts are, TOST has size at most $\alpha$ without a multiplicity correction (intersection--union principle).
+
+\begin{lemS}[Confidence-interval form]
+\label{lem:S-tost-ci}
+With the $t$ statistic, TOST at level $\alpha$ rejects $H_0$ if and only if the $(1-2\alpha)$ confidence interval $\bar d\pm t_{1-\alpha,n-1}\,\mathrm{se}$ lies inside $(-\delta,\delta)$; for $\alpha=0.05$ this is the 90\% interval. Equivalence then holds for every margin larger than $\delta_{\min}=\max(\lvert\text{lower end}\rvert,\lvert\text{upper end}\rvert)$ and for none smaller.
+\end{lemS}
+\begin{thSproof}
+$H_0^-$ is rejected iff $(\bar d+\delta)/\mathrm{se}>t_{1-\alpha,n-1}$, i.e., iff the lower end exceeds $-\delta$; $H_0^+$ is rejected iff the upper end is below $\delta$. Both ends do not depend on $\delta$, which gives the statement on $\delta_{\min}$.
+\end{thSproof}
+The pipeline uses the percentile-bootstrap analogue (\texttt{analysis/mpce\_results.py}, function \texttt{tost}): equivalence holds if the 90\% percentile interval of the $10{,}000$ bootstrap means (cases resampled with replacement) lies inside $(-\delta,\delta)$, the reported $p$ value is the larger of the two one-sided bootstrap tail shares (with the add-one correction; an inversion of the percentile interval rather than a $p$ value calibrated at the null boundary), and $\delta_{\min}$ is reported for every pair, so readers can apply their own margin. With $10{,}000$ resamples, the interval rule and the rule $p\le0.05$ can differ only in the boundary case in which exactly 500 bootstrap means lie at or beyond one of the margins (interpolation of the 5\% quantile). As the cases are not independent (Section~\ref{sec:S-stats}), the interval describes this benchmark, not a population of farms.
+
+\emph{Levels of inference.} The same interval rule is applied at three levels, which answer different questions (Definition~\ref{M-def:S-equiv} and Table~\ref{M-tab:X-equiv-levels} of the main text): at the \emph{seed level}, the 68 cases are fixed and only the run-to-run variability is resampled (the runs within every case), which describes the fixed benchmark; at the \emph{case level}, the cases are resampled as if exchangeable (Table~\ref{M-tab:equivalence} of the main text); at the \emph{cluster level}, a cluster-robust interval over the six (data set, radius) clusters describes generalization to new farms. The minimal margin grows from level to level, so an equivalence statement must name its level; for PSO-VNS vs.\ PSO equivalence at $\pm\NEqMargin$~pp holds at the seed and case levels but is not shown at the cluster level (Section~\ref{sec:S-ablation}).
+
+\emph{One-sided statements.} ``$A$ gives no gain larger than $\delta$ over $B$'' (non-superiority of $A$) needs only one of the two tests of TOST: it holds at level $\alpha$ if the lower end of the $(1-2\alpha)$ interval of $\Delta=\bar L_A-\bar L_B$ lies above $-\delta$, whatever its upper end. This is the form in which we state that the SSA phase adds nothing of practical size beyond sampling in the disc (SSA-VNS vs.\ RSD-VNS), where two-sided equivalence is not shown.
+
+\emph{Non-significance is not equivalence.} A test of $\Delta=0$ that does not reject only says that zero lies in its confidence interval; the interval can still extend far beyond $\pm\delta$, for example when the differences vary much between cases or there are few of them. Conversely, a difference can be significant and practically negligible. The two questions give four outcomes:
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+& 90\% CI inside $(-\delta,\delta)$ & 90\% CI not inside $(-\delta,\delta)$\\
+\midrule
+95\% CI contains 0 & equivalent, no significant difference & inconclusive\\
+95\% CI excludes 0 & significant but practically equivalent & significant, not equivalent\\
+\bottomrule
+\end{tabular}
+\end{center}
+Only the left column supports statements such as ``as good as''; a non-significant result in the right column (``inconclusive'') does not, and ``no gain larger than $\delta$'' needs the one-sided form below. (The case-mean Wilcoxon test concerns a median-type location of the $d_c$, the TOST interval their mean; the table applies to each test with its own interval.)
+
+\emph{Bayesian signed-rank test with a region of practical equivalence (ROPE).} The Bayesian test of the pipeline~\cite{Benavoli2017} (function \texttt{bayes\_signrank}) places a Dirichlet-process prior (strength 0.5, pseudo-observation at 0) on the distribution of the $d_c$ and, for every posterior sample, computes the probabilities $\theta_A$, $\theta_{\rm rope}$, $\theta_B$ that the average of two case differences, $(d_c+d_{c'})/2$, lies below $-\delta$, inside $[-\delta,\delta]$ or above $\delta$. The reported $P(\text{rope})$ is the posterior probability that $\theta_{\rm rope}$ is the largest of the three (likewise $P(A\text{ better})$, $P(B\text{ better})$). It is thus (i) a posterior probability given the prior and the exchangeability of the cases, not an error rate; (ii) a statement about the typical pairwise-averaged case difference, not about the mean $\Delta$ of TOST, so the two can disagree, e.g., when most cases differ little but a few differ much; and (iii) a Monte Carlo share, so a reported value of 1.00 means that $\theta_{\rm rope}$ was largest in (almost) every posterior sample, not certainty. We therefore report it as the posterior probability that practical equivalence is the most probable of the three outcomes, together with the posterior means of $\theta_A$, $\theta_{\rm rope}$ and $\theta_B$ (Table~\ref{tab:X-bayes}); like the case-level TOST, it treats the cases as exchangeable.
+
+% ------------------------------------------------------------------------------------------------------------
+\subsection{The Local Search of VNS}
+\label{sec:S-th-vns}
+The local search of VNS (Section~\ref{M-sec:vns}) is a compass search: from $\mathbf y$ with step $h$ it evaluates the $2n$ points $\operatorname{clip}(\mathbf y\pm h\mathbf e_m)$, moves to the best one if it strictly improves $F_p$, and halves $h$ otherwise, starting at $h_0=0.05r$ and stopping when $h<h_{\min}=10^{-3}r$. Shaking draws a point uniformly in the $\ell_\infty$ shell $\delta_{k-1}<\lVert\mathbf X'-\mathbf X\rVert_\infty\le\delta_k$, $\delta_k=0.1kr$ (by rejection), and then clips it to the box; the clipped point is therefore neither uniform on the shell nor necessarily in it.
+
+\begin{thS}[Coordinate-wise local minimality]
+\label{prop:S-ls}
+Unless the budget ends first, the local search stops after finitely many evaluations at a point $\mathbf y$ with $F_p(\mathbf y)\le F_p(\mathbf y_0)$ and
+\begin{equation}
+F_p\bigl(\operatorname{clip}(\mathbf y\pm\bar h\,\mathbf e_m)\bigr)\ge F_p(\mathbf y)\quad\text{for all }m=1,\ldots,n,\qquad \bar h=h_0/2^5=0.0015625\,r .
+\label{eq:S-th-ls}
+\end{equation}
+In PSO-VNS, if $B_2$ suffices for the first descent, the Phase-2 incumbent therefore satisfies~\eqref{eq:S-th-ls} and $F_p\le F_p(\mathbf G)$, and so does every later incumbent, since each results from a completed descent.
+\end{thS}
+\begin{thSproof}
+For a fixed $h$, every accepted move strictly decreases $F_p$, so no point is visited twice, and every coordinate of a visited point lies in the finite set $\{a+kh\colon k\in\mathbb Z\}\cap[-r,r]$ with $a$ the value of that coordinate at the start of this $h$, $-r$ or $r$; hence each $h$ ends after finitely many moves, and there are six values of $h$. The loop ends only by halving the step to below $h_{\min}$, which happens only after a complete sweep with no strict improvement at the current step $\bar h$; $\bar h=h_0/2^5$ because $0.05/2^5=0.0015625\ge10^{-3}>0.05/2^6$.
+\end{thSproof}
+Condition~\eqref{eq:S-th-ls} is a coordinate-wise optimality at one step length: $\bar h$ is 0.78~m for $r=500$~m and 1.56~m for $r=1000$~m. It does not imply optimality for smaller or larger steps, for moves of several coordinates, or a local minimum in the usual sense; $F_p$ is discontinuous (top-hat wake), so no stationarity statement is available either. It does not require a converged PSO start; the start only sets $F_p(\mathbf y_0)$. If the budget ends during a descent, the returned layout (the best one evaluated) has $F_p$ no larger than the incumbent but no such certificate. At $B=6{,}030$ this is the rule, not the exception, for the larger cases: for $N\ge12$ the first descent of PSO-VNS is unfinished in \NDDescentUnfinishedLargePSOVNS{} of the instrumented runs (Table~\ref{tab:D-vns}), so Proposition~\ref{prop:S-ls} gives no certificate for the largest layouts; with best-improvement polling, one move costs $2n$ evaluations. % CHECK-DIAG [D09]
