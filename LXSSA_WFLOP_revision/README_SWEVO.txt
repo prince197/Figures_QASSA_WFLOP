@@ -24,6 +24,10 @@ Compiled documents (root):
   SWEVO_cover_letter.tex / .pdf   cover letter to the Editors-in-Chief
   SWEVO_declarations.tex / .pdf   convenience draft: competing interest, CRediT, funding, data, generative AI
   SWEVO_highlights.txt            3-5 highlights, one per line, each <= 85 characters incl. spaces (plain text)
+  SWEVO_manuscript_full.tex       the SAME main manuscript as ONE LaTeX file (every \input, number macro and
+                                  generated table inlined; analysis/flatten_swevo.py). It needs only figures_mpce/,
+                                  figures_final/ and SWEVO_supplement.aux (or xref/, see 2b) and gives the identical
+                                  40-page PDF. Regenerate it after any edit of the modular files.
 Sources read by the .tex files:
   optA/swevo_front.tex            title, authors, affiliations, abstract, keywords, nomenclature (SWEVO only)
   optA/sw/*.tex                   sections of the SWEVO version (02_intro ... 10_limits_concl; capture.tex
