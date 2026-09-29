@@ -161,6 +161,7 @@ PSO-VNS (Algorithm~\ref{alg:hybrid}) is not a new PSO variant: its Phase~1 is th
 \begin{algorithm}[!t]
 \caption{PSO-VNS for a prescribed turbine count $N$}
 \label{alg:hybrid}
+\small
 \begin{algorithmic}[1]
 \Require budget $B$, split $\omega$, $N_p$, $w$, $c_1$, $c_2$, radius $r$, $k_{\max}$
 \State Draw and evaluate $N_p$ particles $\mathbf X^i$; $\mathbf V^i\gets\mathbf 0$; $\mathbf P^i\gets\mathbf X^i$; $\mathbf G\gets\arg\min_i F_p(\mathbf P^i)$ \Comment{Phase 1}
@@ -182,28 +183,26 @@ PSO-VNS uses $N_p=30$, the coefficients \eqref{eq:constriction} and the VNS sett
 % CHECK-DIAG [D09]: N >= 12: first descent unfinished in \NDDescentUnfinishedLargePSOVNS of \NDRunsLargePSOVNS runs, median run without shaking ("neighborhoods matter only for small N")
 % verified (R3-16): Python round(99.5) = 100 (half to even); omega = 0.25/0.75/0.9 give 49/150/180
 
-\subsection{Settings of All Methods}
-\label{sec:params}
-Table~\ref{tab:params} lists the settings of all methods of this study. Every method uses $N_p=30$ where applicable, the same seeded initial population, the same box repair and, except MS-SLSQP, the same objective $F_p$; the coefficients are the published defaults of each method (PSO~\cite{Clerc2002}, SSA~\cite{Mirjalili2017}, LX-SSA~\cite{Solanki2023}, DE~\cite{Storn1997}, VNS~\cite{Mladenovic2008}), not tuned on the benchmark. DE/rand/1/bin clips the mutant to the box before the binomial crossover and replaces a member as soon as its trial is better (asynchronous one-to-one selection). MS-SLSQP (SciPy's SLSQP~\cite{Kraft1988}) minimizes the wake loss under the explicit constraints of~\eqref{eq:wflop}, scaled as $(\ell_{ij}^2-\ell_{\min}^2)/\ell_{\min}^2\ge0$ and $(r^2-x_i^2-y_i^2)/r^2\ge0$, with forward-difference gradients (step 1~m, every call counted); it starts from the 30 initial layouts in increasing order of $F_p$ and then from new random layouts until the budget is used, and returns the best evaluated layout whose scaled constraints are all $\ge-10^{-9}$ (details: Section~\ref{S-sec:S-slsqp}). For the larger budgets of Section~\ref{sec:budget} (30,030 and 120,030 evaluations), the iteration counts scale as $(B-N_p)/N_p$ ($2N_p$ in the denominator for LX-SSA), and the split rule of Section~\ref{sec:template} applies unchanged.
+Table~\ref{tab:params} lists the settings of all methods. All use the same seeded initial population and box repair and, except MS-SLSQP, the same objective $F_p$; the coefficients are the published defaults (PSO~\cite{Clerc2002}, SSA~\cite{Mirjalili2017}, LX-SSA~\cite{Solanki2023}, DE~\cite{Storn1997}, VNS~\cite{Mladenovic2008}), not tuned on the benchmark. MS-SLSQP (SciPy's SLSQP~\cite{Kraft1988}) minimizes $L$ under the constraints of~\eqref{eq:wflop}, scaled to $(\ell_{ij}^2-\ell_{\min}^2)/\ell_{\min}^2\ge0$ and $(r^2-x_i^2-y_i^2)/r^2\ge0$, and returns the best evaluated layout whose scaled constraints are all $\ge-10^{-9}$ (Section~\ref{S-sec:S-slsqp}). For the budgets of 30,030 and 120,030 evaluations (Section~\ref{sec:budget}), the iteration counts scale as $(B-N_p)/N_p$ ($(B-N_p)/(2N_p)$ for LX-SSA), and the split rule of Section~\ref{sec:template} applies.
 \begin{table}[!t]
 \centering
-\caption{Settings of all methods (benchmark budget $B=6{,}030$ evaluations, including the initial population and, for MS-SLSQP, the finite-difference calls; $N_p=30$; box repair by clipping to $[-r,r]$).}
+\caption{Settings of all methods at the benchmark budget $B=6{,}030$ evaluations (including the initial population and, for MS-SLSQP, the finite-difference calls); $N_p=30$; box repair by clipping to $[-r,r]$.}
 \label{tab:params}
-\footnotesize\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.15\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.62\textwidth}@{}}
+\scriptsize\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.13\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.66\textwidth}@{}}
 \toprule
 Method & Iterations (evaluations) & Coefficients and operators \\
 \midrule
-PSO & $T=200$ ($30+30\cdot200$) & global best, inertia-weight form (Algorithm~\ref{alg:pso}); $w=0.7298$, $c_1=c_2=1.49618$~\eqref{eq:constriction}; $\mathbf V^i_0=\mathbf 0$, no $V_{\max}$; clipped coordinate keeps its velocity; asynchronous $\mathbf P^i$, $\mathbf G$ updates \\
+PSO & $T=200$ ($30+30\cdot200$) & Algorithm~\ref{alg:pso}; $w=0.7298$, $c_1=c_2=1.49618$~\eqref{eq:constriction}; $\mathbf V^i_0=\mathbf 0$, no $V_{\max}$; clipped coordinate keeps its velocity; asynchronous $\mathbf P^i$, $\mathbf G$ \\
 PSO, old setting & $T=200$ & as PSO, with $w=0.7$, $c_1=c_2=2$ (Section~\ref{sec:psosetting}) \\
-SSA & $T=200$ ($30+30\cdot200$) & 15 leaders, 15 followers (Algorithm~\ref{alg:S-ssa}); $\xi_1=2\exp[-(4t/T)^2]$ \\
-LX-SSA & $T=100$ ($30+60\cdot100$) & as SSA, plus Laplace candidate per follower, $\phi=0$, $\chi=1$~\eqref{eq:laplace}; both candidates evaluated \\
+SSA & $T=200$ ($30+30\cdot200$) & Algorithm~\ref{alg:S-ssa}; 15 leaders, 15 followers; $\xi_1=2\exp[-(4t/T)^2]$ \\
+LX-SSA & $T=100$ ($30+60\cdot100$) & as SSA, plus a Laplace candidate per follower, $\phi=0$, $\chi=1$~\eqref{eq:laplace}; both candidates evaluated \\
 DE/rand/1/bin & $T=200$ ($30+30\cdot200$) & $F=0.5$, $\mathrm{CR}=0.9$; mutant clipped before crossover; asynchronous one-to-one replacement \\
-VNS & 30 initial, then 6,000 & from the best initial layout (Algorithm~\ref{alg:vns}); $k_{\max}=5$, $\delta_k=0.1kr$; compass search $h_0=0.05r$, $h_{\min}=10^{-3}r$ \\
-MS-SLSQP & $\le200$ per start & SciPy SLSQP, $\mathrm{ftol}=10^{-9}$, forward differences (step 1~m); scaled explicit constraints; starts: initial layouts by increasing $F_p$, then random layouts \\
-PSO-VNS & $T_1=100$ (3,030) + 3,000 & $\omega=0.5$; Phase~1 PSO as above, Phase~2 VNS as above (Algorithm~\ref{alg:hybrid}) \\
+VNS & 30 initial, then 6,000 & Algorithm~\ref{alg:vns} from the best initial layout; $k_{\max}=5$, $\delta_k=0.1kr$, $h_0=0.05r$, $h_{\min}=10^{-3}r$ \\
+MS-SLSQP & $\le200$ per start & SLSQP, $\mathrm{ftol}=10^{-9}$, forward differences (step 1~m); starts: initial layouts by increasing $F_p$, then random layouts \\
+PSO-VNS & $T_1=100$ (3,030) + 3,000 & $\omega=0.5$; Phase~1 PSO, Phase~2 VNS, settings as above (Algorithm~\ref{alg:hybrid}) \\
 SSA-VNS, LX-SSA-VNS & $T_1=100$ / 50 (3,030) + 3,000 & $\omega=0.5$; Phase~1 SSA / LX-SSA with $\xi_1$ over $T_1$; Phase~2 VNS \\
-RS-VNS, RSD-VNS & 3,015 samples + 3,015 & $\omega=0.5$; initial population, then uniform layouts in the square / in the disc; Phase~2 VNS \\
+RS-VNS, RSD-VNS & 3,015 samples + 3,015 & $\omega=0.5$; initial population, then uniform layouts in the square / disc; Phase~2 VNS \\
 \bottomrule
 \end{tabular}
 \end{table}

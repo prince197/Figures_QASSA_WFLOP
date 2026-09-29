@@ -79,6 +79,12 @@ The model (Section~\ref{S-sec:S-hrmodel}) uses the Jensen wake with a hub-center
 The installed layout, a regular $7D$ grid, reaches \NHRInstalled~GWh/yr (wake loss \NHRInstalledLoss\%; Table~\ref{tab:hr-site}). At 6,030 evaluations from random starts, the robust result is feasibility: PSO-VNS is feasible in \NHRFeasPSOVNS{} runs, PSO in only \NHRFeasPSO{} (exact McNemar $p=\NXHRMcNemarP$; \NHRFeasFeasInitPSO{} with feasible starts) and DE in \NHRFeasDE. The best layout of all methods at this budget, a PSO-VNS layout (\NHRBestPSOVNS~GWh/yr; Fig.~\ref{fig:layouts-sites}, right), stays below the installed block, like every run at this budget; the convergence curves are in Fig.~\ref{S-fig:S-hr16}.
 % CHECK-EXTRA [X52]: HR feasibility PSO-VNS 30/30 vs PSO 19/30, 11 discordant seeds all favour PSO-VNS, exact McNemar p = 9.8e-4
 % CHECK-FINAL [C20]: PSO feasible in fewer than 30 of 30 random-start runs ("only"); [C31]: 6,030 PSO-VNS mean AEP below the installed block; no 6,030 random-start run above the installed block with 5-deg bins (Table F-hr; 16 runs above at 5 deg over all budgets, 0 at 1 deg: [F21])
+\begin{figure}[!htbp]
+\centering
+\pipefig{\textwidth}{figures_mpce/layouts_iea37_hr16.pdf}{5cm}
+\caption{Best layouts. Left and middle: IEA37 Case Study~1, 16 and 36 turbines, best feasible published layout (strict convention) and best PSO-VNS layout at 30,030 evaluations. Right: Horns Rev~1 16-turbine block (5\textdegree{} bins), installed layout ($7D$ grid) and best PSO-VNS layout at 6,030 evaluations (minimum spacing $4D$).}
+\label{fig:layouts-sites}
+\end{figure}
 % Over the page budget (+0.35 pages), kept in the supplement (Fig. S-fig:S-hr16):
 % \begin{figure}[!htbp]
 % \centering
@@ -109,12 +115,6 @@ Table~\ref{tab:F-iea-gap} gives all gaps. At 6,030 evaluations they are larger (
 % CHECK-DIR [F43] [F44]: gaps of Table F-iea-gap (generated macros \NFIEAGap..., \NFIEAMeanGap...); CHECK-FINAL [C40]: gap larger for 36 turbines
 % verified (manual): budget effect on the best PSO-VNS gap (projected) 2.50 / 4.50 pp vs convention effect (30,030) 0.60 / 2.03 pp
 \SuppTable{tab:F-iea-gap}
-\begin{figure}[!htbp]
-\centering
-\pipefig{\textwidth}{figures_mpce/layouts_iea37_hr16.pdf}{5cm}
-\caption{Best layouts. Left and middle: IEA37 Case Study~1, 16 and 36 turbines, best feasible published layout (strict convention) and best PSO-VNS layout at 30,030 evaluations. Right: Horns Rev~1 16-turbine block (5\textdegree{} bins), installed layout ($7D$ grid) and best PSO-VNS layout at 6,030 evaluations (minimum spacing $4D$).}
-\label{fig:layouts-sites}
-\end{figure}
 
 \subsection{Computational Cost and Published Results}
 \label{sec:literature}
