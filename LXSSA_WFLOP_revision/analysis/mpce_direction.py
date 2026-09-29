@@ -424,7 +424,15 @@ def hr_block(M, ALL, log):
                n_runs=int(len(X)), n_feasible=int(X.Feasible.sum()))
     rec = X[X.Feasible]
     dev = (rec["5deg_2.5"] - rec.Objective).abs().max()
+    sdev = rec["5deg_2.5"] - rec.Objective
     out["reproduction_max_abs_dev_gwh"] = float(dev)
+    out["reproduction"] = dict(
+        note="stored run coordinates are rounded to 0.01 m; layouts on a wake-cone edge re-evaluate lower than the recorded AEP. "
+             "All 5-deg vs 1-deg comparisons use the re-evaluated values of the same (rounded) coordinates.",
+        median_abs_dev_gwh=float(sdev.abs().median()), max_abs_dev_gwh=float(sdev.abs().max()),
+        n_abs_dev_gt_0_01=int((sdev.abs() > 0.01).sum()), n_higher_than_recorded_gt_0_01=int((sdev > 0.01).sum()),
+        mean_signed_dev_gwh=float(sdev.mean()),
+        runs_above_installed_recorded=int((rec.Objective > inst["5deg_2.5"]).sum()))
     out["installed_reproduces_hornsrev_model"] = bool(abs(inst["5deg_2.5"] - H.aep_gwh(xyi)) < 1e-9)
     # PyWake NOJ values of the same runs (optional; pywake_check.py --layouts)
     pwf = os.path.join(HERE, "pywake_check_hr16runs.csv")
@@ -450,6 +458,7 @@ def hr_block(M, ALL, log):
                 e[f"mean_{c}"] = float(f[c].mean()) if len(f) else None
                 e[f"best_{c}"] = float(f[c].max()) if len(f) else None
                 e[f"above_{c}"] = int((f[c] > inst[ikey[c]]).sum())
+            e["mean_recorded"] = float(f.Objective.mean()) if len(f) else None
             e["mean_drop_gwh"] = float((f["5deg_2.5"] - f[HR_PRIMARY]).mean()) if len(f) else None
             meth[f"{bud}_{ini}_{a}"] = e
     out["methods"] = meth
@@ -872,10 +881,13 @@ def write_supp(BM, HR, PW, IP, fn, stamp):
                    "(centres 0.5$^\\circ$, 1.5$^\\circ$, \\ldots; each 30$^\\circ$ sector keeps its Weibull $A$, $k$ and spreads its frequency "
                    "uniformly over its 30 bins; 1~m/s speed bins unchanged)" + (" and with PyWake's NOJ model ($k=0.04$) at the same 1$^\\circ$ bins" if has_pw else "")
                    + ". Mean AEP (GWh/yr) of the feasible runs and number of feasible runs whose AEP exceeds that of the installed block "
-                   "under the same model. R/F: random / feasibility-preserving initialization; 6k, 30k, 120k: evaluations (10 seeds at 120k).",
+                   "under the same model. R/F: random / feasibility-preserving initialization; 6k, 30k, 120k: evaluations (10 seeds at 120k). "
+                   "5$^\\circ$: the paper's model re-evaluated on the stored coordinates (rounded to 1~cm; this lowers the AEP of "
+                   f"{h['reproduction']['n_abs_dev_gt_0_01']} of the {h['n_feasible']} feasible runs by more than 0.01~GWh/yr, at most "
+                   f"{h['reproduction']['max_abs_dev_gwh']:.2f}, so a few 5$^\\circ$ means differ slightly from Table~\\ref{{M-tab:hr-site}}).",
                    "tab:F-hr", "llc" + "c" * (3 if has_pw else 2) + "c" * (3 if has_pw else 2),
                    "& & & \\multicolumn{%d}{c}{Mean AEP (GWh/yr)} & \\multicolumn{%d}{c}{Runs above installed} \\\\\n"
-                   "\\cmidrule(lr){4-%d}\\cmidrule(lr){%d-%d}\nSetting & Method & Feas. & 5$^\\circ$ (paper) & 1$^\\circ$%s & 5$^\\circ$ & 1$^\\circ$%s"
+                   "\\cmidrule(lr){4-%d}\\cmidrule(lr){%d-%d}\nSetting & Method & Feas. & 5$^\\circ$ & 1$^\\circ$%s & 5$^\\circ$ & 1$^\\circ$%s"
                    % ((3, 3, 6, 7, 9, pwh, " & PyWake") if has_pw else (2, 2, 5, 6, 7, "", "")), lines, sep="2pt"))
     # ---- tab:F-hrpair
     lines = []

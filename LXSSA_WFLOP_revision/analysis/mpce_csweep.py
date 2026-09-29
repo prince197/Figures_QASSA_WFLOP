@@ -81,7 +81,17 @@ def verify(D):
     return dict(old_runs_compared=int(len(common)), old_runs_identical=int(same.sum()), old_runs_stored=int(len(b)))
 
 
+def feas_same_across_datasets(D):
+    """Whether every run is feasible in data set I iff the seed-paired run of the same geometry is feasible in data
+    set II (the penalty dominates the objective while a layout is infeasible, so feasibility depends on the geometry)."""
+    X = D.pivot_table(index=["Algorithm", "Radius", "Turbines", "Seed"], columns="Dataset", values="Feasible").dropna()
+    return bool((X[1] == X[2]).all()), int(len(X))
+
+
 def mcnemar(D, a, b):
+    # if feasibility is identical in the two data sets, each geometry-seed pair is counted once (data set I only)
+    if FEAS_SAME[0]:
+        D = D[D.Dataset == 1]
     X = D[D.Algorithm.isin([a, b])].pivot_table(index=CASE + ["Seed"], columns="Algorithm", values="Feasible").dropna()
     fa, fb = X[a].astype(bool), X[b].astype(bool)
     n10, n01 = int((fa & ~fb).sum()), int((~fa & fb).sum())
@@ -101,7 +111,11 @@ def loss_test(S, a, b):
                 b_better=int((d > 0).sum()), p=p)
 
 
+FEAS_SAME = [False, 0]
+
+
 def analyse(D):
+    FEAS_SAME[:] = feas_same_across_datasets(D)
     g = D.groupby(CASE + ["Algorithm"])
     S = pd.DataFrame({"N": g.size(), "NFeas": g.Feasible.sum()})
     S["Loss"] = D[D.Feasible].groupby(CASE + ["Algorithm"]).LossPct.mean()
@@ -115,9 +129,11 @@ def analyse(D):
         S.loc[idx, "Rank"] = rank_rule(s.Mean.values, s.NFeas.values, s.N.values)
     # cases in which every setting has >= 15 feasible runs (common basis for the loss comparison)
     Qall = S.pivot_table(index=CASE, columns="Algorithm", values="Qualified").reindex(columns=ALL).fillna(False).astype(bool)
-    common = Qall[Qall.all(1)].index
+    common = Qall[Qall.all(axis=1)].index
     Lq = S.pivot_table(index=CASE, columns="Algorithm", values="Loss")
-    out = dict(c_star=C_STAR, c_star_order1=2 * (1 + W), n_cases=len(SPLITCASES), seeds=int(D.Seed.nunique()),
+    out = dict(feas_identical_across_datasets=FEAS_SAME[0], feas_pairs_compared_across_datasets=FEAS_SAME[1],
+               mcnemar_pairs_basis="data set I only (180 geometry-seed pairs)" if FEAS_SAME[0] else "all 360 case-seed pairs",
+               c_star=C_STAR, c_star_order1=2 * (1 + W), n_cases=len(SPLITCASES), seeds=int(D.Seed.nunique()),
                common_loss_cases=[list(map(int, c)) for c in common], n_common_loss_cases=int(len(common)))
     st = {}
     for a in ALL:
@@ -128,6 +144,7 @@ def analyse(D):
                      loss_common=float(Lq.loc[common, a].mean()) if len(common) else None,
                      loss_qualified=float(s[s.Qualified].Loss.mean()) if s.Qualified.any() else None,
                      loss_any_feasible=float(s.Loss.mean()) if s.Loss.notna().any() else None,
+                     loss_all12=float(s.Loss.mean()) if bool(s.Qualified.all()) and len(s) == len(SPLITCASES) else None,
                      avg_rank=float(s.Rank.mean()),
                      spread_rel_median=float(d.SpreadRel.median()) if d.SpreadRel.notna().any() else None,
                      clip_pct_mean=float(d.ClipPct.mean()) if d.ClipPct.notna().any() else None,
@@ -161,6 +178,23 @@ def analyse(D):
             c50 = C_SWEEP[i] + (f[i] - 50) / (f[i] - f[i + 1]) * (C_SWEEP[i + 1] - C_SWEEP[i])
             break
     out["c50"] = c50
+    fl = [st[a]["feas_pct_n_ge10"] for a in SWEEP]
+    c50l = None
+    for i in range(len(fl) - 1):
+        if fl[i] >= 50 > fl[i + 1]:
+            c50l = C_SWEEP[i] + (fl[i] - 50) / (fl[i] - fl[i + 1]) * (C_SWEEP[i + 1] - C_SWEEP[i])
+            break
+    out["c50_n_ge10"] = c50l
+    # step sizes of the other responses along the sweep (per 0.1 in c): is anything discontinuous at c*?
+    resp = {}
+    for key, fac in (("loss_common", 1.0), ("spread_rel_median", 100.0), ("feas_eval_late_pct_mean", 1.0),
+                     ("clip_pct_mean", 1.0), ("feas_pct_n_ge10", 1.0), ("avg_rank", 1.0)):
+        v = [st[a][key] * fac for a in SWEEP]
+        resp[key] = [dict(c_from=C_SWEEP[i], c_to=C_SWEEP[i + 1], change_per_0p1=(v[i + 1] - v[i]) / (C_SWEEP[i + 1] - C_SWEEP[i]) * 0.1,
+                          contains_c_star=bool(C_SWEEP[i] < C_STAR < C_SWEEP[i + 1])) for i in range(len(v) - 1)]
+    out["response_steps"] = resp
+    out["spread_ratio_c17_over_c14"] = st["PSOW07C17"]["spread_rel_median"] / st["PSOW07C14"]["spread_rel_median"]
+    out["spread_ratio_c20_over_c17"] = st["PSOW07C20"]["spread_rel_median"] / st["PSOW07C17"]["spread_rel_median"]
     out["feas_monotone_nonincreasing"] = bool(all(f[i] >= f[i + 1] for i in range(len(f) - 1)))
     out["feas_all_100_below"] = bool(all(st[a]["feas_pct"] == 100 for a in below))
     # loss minimum along the sweep (common cases)
@@ -196,6 +230,8 @@ def macros(out, ver):
         M[f"NSFeasN{k}"] = str(s["feasible"])
         M[f"NSQual{k}"] = str(s["cases_qualified"])
         M[f"NSLoss{k}"] = fmt(s["loss_common"], 2)
+        if s["loss_all12"] is not None:
+            M[f"NSLossAll{k}"] = fmt(s["loss_all12"], 2)
         M[f"NSRank{k}"] = fmt(s["avg_rank"], 2)
         M[f"NSFeasLarge{k}"] = fmt(s["feas_pct_n_ge10"], 1)
         if s["spread_rel_median"] is not None:
@@ -208,17 +244,21 @@ def macros(out, ver):
     ld = out["largest_drop"]
     M["NSDropFrom"] = f"{ld['c_from']:.1f}"; M["NSDropTo"] = f"{ld['c_to']:.1f}"; M["NSDropPP"] = fmt(ld["drop_pp"], 1)
     M["NSCFifty"] = fmt(out["c50"], 2)
+    M["NSCFiftyLarge"] = fmt(out["c50_n_ge10"], 2)
     M["NSLossMinC"] = fmt(out["loss_min_c"], 1)
     for key, name in (("PSOOLD_VZERO_vs_PSOW07C20", "VZeroOld"), ("PSOOLD_VMAX_vs_PSOW07C20", "VMaxOld"),
-                      ("PSOOLD_VMAX_vs_PSOC", "VMaxConstr"), ("PSOW07C17_vs_PSOW07C18", "SevenEight")):
+                      ("PSOOLD_VMAX_vs_PSOC", "VMaxConstr"), ("PSOW07C17_vs_PSOW07C18", "SevenEight"),
+                      ("PSOW07C16_vs_PSOW07C17", "SixSeven"), ("PSOOLD_VMAX_vs_PSOW07C17", "VMaxSeven"),
+                      ("PSOOLD_VMAX_vs_PSOW07C18", "VMaxEight"), ("PSOW07C14_vs_PSOC", "FourConstr"),
+                      ("PSOW07C18_vs_PSOW07C19", "EightNine")):
         p = out["paired"][key]
         M[f"NSMcN{name}A"] = str(p["feas"]["a_only"]); M[f"NSMcN{name}B"] = str(p["feas"]["b_only"])
-        M[f"NSMcP{name}"] = fmt(p["feas"]["p"], 3) if p["feas"]["p"] >= 0.001 else "<0.001"
+        M[f"NSMcP{name}"] = fmt(p["feas"]["p"], 3) if p["feas"]["p"] >= 0.001 else "\\ensuremath{<}0.001"
         if p["loss"].get("cases"):
             M[f"NSLossDiff{name}"] = fmt(p["loss"]["mean_diff_pp"], 2)
             M[f"NSLossCases{name}"] = str(p["loss"]["cases"])
             M[f"NSLossBetter{name}"] = str(p["loss"]["a_better"])
-            M[f"NSLossP{name}"] = fmt(p["loss"]["p"], 3) if p["loss"]["p"] >= 0.001 else "<0.001"
+            M[f"NSLossP{name}"] = fmt(p["loss"]["p"], 3) if p["loss"]["p"] >= 0.001 else "\\ensuremath{<}0.001"
     M["NSCPUHours"] = fmt(out["cpu_hours_csweep"], 1)
     M["NSOldIdentical"] = str(ver["old_runs_identical"]); M["NSOldCompared"] = str(ver["old_runs_compared"])
     L = ["% generated by mpce_csweep.py from mpce_summary_csweep.json -- do not edit by hand"]
@@ -237,8 +277,8 @@ def supp_tex(out, S):
          "\\includegraphics[width=\\textwidth]{figures_mpce/csweep.pdf}",
          "\\caption{Stand-alone PSO with $w=0.7$ and $c_1=c_2=c$ on the 12 split cases $\\times$ 30 seeds (6{,}030 "
          "evaluations, random starts; line with circles), the old setting ($c=2$) with two other bound-handling rules "
-         "(clipped velocity components set to zero; velocity clamping $|v|\\le v_{\\max}=0.2\\,(u-l)$), and the "
-         "constriction setting ($w=0.7298$, $c=1.49618$). The dashed vertical line is the order-2 stability boundary "
+         "(clipped velocity components set to zero; velocity clamping $|v|\\le v_{\\max}=0.2\\,(u-l)$; drawn slightly to the right of $c=2$), and the "
+         "constriction setting ($w=0.7298$, $c=1.49618$; stored runs of the main comparison, spread not logged). The dashed vertical line is the order-2 stability boundary "
          f"$c^\\ast=12(1-w^2)/(7-5w)={cs:.4f}$ of Proposition~\\ref{{prop:S-pso-stability}} (stagnation, no bounds). "
          "Left: feasible final layouts (\\% of 360 runs). Middle: mean wake loss of the feasible runs, averaged over the "
          f"{out['n_common_loss_cases']} cases in which every setting has at least 15 feasible runs. Right: median final "
@@ -249,29 +289,34 @@ def supp_tex(out, S):
          "\\caption{PSO coefficient sweep and bound handling (12 split cases $\\times$ 30 seeds, 6{,}030 evaluations, random "
          "starts). Feasible: final layouts feasible (\\% of 360 runs); $N\\ge10$: the same for the 180 runs with "
          "$N=10, 12, 15$; qualified: cases with at least 15 of 30 feasible runs; $L$: mean wake loss (\\%) of the feasible "
-         f"runs, averaged over the {out['n_common_loss_cases']} cases in which every setting is qualified; rank: average "
+         f"runs, averaged over the {out['n_common_loss_cases']} cases in which every setting is qualified; $L_{{12}}$: the same over "
+         "all 12 cases (only for settings qualified in all 12); rank: average "
          "rank over the 12 cases among the ten settings (feasibility-aware rule of the main comparison: settings with fewer "
          "than 15 feasible runs rank below all qualified ones); spread: median final swarm spread relative to the radius "
          "(\\%); clipped: coordinates leaving the box per iteration (\\%, iterations 1--200); feasible evals: particle "
          "evaluations with a feasible layout in iterations 101--200 (\\%). The row $c=2.0$ reproduces the stored runs of "
          "the old setting bit for bit; the constriction row is the stored PSO data of the main comparison (dynamics not "
-         "logged). Order-2 stable (Proposition~\\ref{prop:S-pso-stability}) for $c<\\NSBoundC$ at $w=0.7$.}",
+         "logged). Order-2: whether $(w,c)$ satisfies the order-2 condition of Proposition~\\ref{prop:S-pso-stability} "
+         "($c<\\NSBoundC$ at $w=0.7$), which assumes no velocity clamping. For every setting and seed, the final layout "
+         "is feasible in Data Set~I if and only if it is feasible in Data Set~II (same geometry; the penalty dominates "
+         "while a layout is infeasible), so the feasibility columns rest on 6 geometries $\\times$ 30 seeds.}",
          "\\label{tab:S-csweep}", "\\scriptsize\\setlength{\\tabcolsep}{3.5pt}",
-         "\\begin{tabular}{llccccccccc}", "\\toprule",
-         "Setting & Bound handling & Order-2 & Feasible (\\%) & $N\\ge10$ (\\%) & Qualified & $L$ (\\%) & Rank & Spread (\\%) "
-         "& Clipped (\\%) & Feasible evals (\\%) \\\\", "\\midrule"]
+         "\\resizebox{\\ifdim\\width>\\textwidth\\textwidth\\else\\width\\fi}{!}{%",
+         "\\begin{tabular}{cclcccccccccc}", "\\toprule",
+         "$w$ & $c$ & Bound handling & Order-2 & Feasible (\\%) & $N\\ge10$ (\\%) & Qualified & $L$ (\\%) & $L_{12}$ (\\%) & Rank "
+         "& Spread (\\%) & Clipped (\\%) & Feas.\\ evals (\\%) \\\\", "\\midrule"]
     bh = dict(clip="clip, keep $v$", vzero="clip, $v\\gets0$", vmax="$|v|\\le v_{\\max}$, clip")
     for a in SWEEP + VAR + [REF]:
         s = st[a]
         if a == "PSOOLD_VZERO":
             L.append("\\midrule")
-        name = (f"$w=0.7$, $c={s['c']:.1f}$" if a in SWEEP else "$w=0.7$, $c=2.0$" if a in VAR else "$w=0.7298$, $c=1.496$")
+        name = (f"0.7 & {s['c']:.1f}" if a in SWEEP else "0.7 & 2.0" if a in VAR else "0.7298 & 1.496")
         stable = "yes" if (2 * s["c"] < 24 * (1 - s["w"] ** 2) / (7 - 5 * s["w"])) else "no"
         sp = fmt(100 * s["spread_rel_median"], 1) if s["spread_rel_median"] is not None else "--"
         L.append(f"{name} & {bh[s['bound']]} & {stable} & {fmt(s['feas_pct'])} & {fmt(s['feas_pct_n_ge10'])} & "
-                 f"{s['cases_qualified']} & {fmt(s['loss_common'], 2)} & {fmt(s['avg_rank'], 2)} & {sp} & "
+                 f"{s['cases_qualified']} & {fmt(s['loss_common'], 2)} & {fmt(s['loss_all12'], 2)} & {fmt(s['avg_rank'], 2)} & {sp} & "
                  f"{fmt(s['clip_pct_mean'])} & {fmt(s['feas_eval_late_pct_mean'])} \\\\")
-    L += ["\\bottomrule", "\\end{tabular}", "\\end{table*}", ""]
+    L += ["\\bottomrule", "\\end{tabular}}", "\\end{table*}", ""]
     open(os.path.join(HERE, "mpce_supp_csweep.tex"), "w").write("\n".join(L))
 
 
@@ -279,6 +324,7 @@ def figure(out, D):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    import matplotlib.ticker
     INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
     # validated categorical slots (dataviz validator, --pairs all, light: CVD dE >= 9.2, normal dE >= 16.3);
     # identity also carried by marker shape and direct labels
@@ -288,9 +334,9 @@ def figure(out, D):
                          "grid.linewidth": 0.5, "axes.spines.top": False, "axes.spines.right": False,
                          "legend.frameon": False, "lines.linewidth": 1.4, "pdf.fonttype": 42})
     st = out["settings"]
-    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.35))
+    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.5))
     spec = [("feas_pct", "feasible final layouts (%)", False, 1.0),
-            ("loss_common", f"mean wake loss, feasible runs (%)", False, 1.0),
+            ("loss_common", f"mean wake loss (%)\n(feasible runs, {out['n_common_loss_cases']} common cases)", False, 1.0),
             ("spread_rel_median", "final swarm spread / r (%)", True, 100.0)]
     xs = np.array(C_SWEEP)
     handles = {}
@@ -298,7 +344,7 @@ def figure(out, D):
         ax.axvline(out["c_star"], color=MUTED, ls=(0, (4, 2)), lw=0.9, zorder=1)
         y = np.array([st[a][key] if st[a][key] is not None else np.nan for a in SWEEP], float) * sc
         h, = ax.plot(xs, y, color=COL["sweep"], marker="o", ms=4.5, lw=1.6, mec="white", mew=0.8, zorder=3,
-                     label="$w=0.7$, $c_1=c_2=c$ (clip, keep $v$)")
+                     label="$w=0.7$, $c_1=c_2=c$; clip, keep $v$ ($c=2$: old setting)")
         handles["sweep"] = h
         for a, col, mk, dx, lab in (("PSOOLD_VZERO", COL["vzero"], "s", 0.035, "$c=2$, clipped $v$ set to 0"),
                                     ("PSOOLD_VMAX", COL["vmax"], "D", 0.07, "$c=2$, $|v|\\leq 0.2\\,(u-l)$"),
@@ -311,16 +357,17 @@ def figure(out, D):
             handles[a] = h
         if logy:
             ax.set_yscale("log")
+            ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:g}"))
         ax.set_xlabel("$c$ ($c_1=c_2$)"); ax.set_ylabel(yl)
         ax.set_xlim(1.12, 2.13)
         ax.set_xticks([1.2, 1.4, 1.6, 1.8, 2.0])
     axes[0].set_ylim(-3, 103)
-    axes[0].text(out["c_star"] - 0.02, 8, f"order-2\nboundary\n$c^*={out['c_star']:.3f}$", ha="right", va="bottom",
+    axes[0].text(out["c_star"] - 0.02, 8, f"order-2\nboundary\n$c^*={out['c_star']:.4f}$", ha="right", va="bottom",
                  fontsize=6.8, color=MUTED)
-    fig.tight_layout(w_pad=1.2, rect=(0, 0, 1, 0.86))
+    fig.tight_layout(w_pad=1.2, rect=(0, 0, 1, 0.80))
     order = ["sweep", "PSOOLD_VZERO", "PSOOLD_VMAX", "PSOC"]
     fig.legend([handles[k] for k in order if k in handles], [handles[k].get_label() for k in order if k in handles],
-               loc="upper center", ncol=4, fontsize=7, bbox_to_anchor=(0.5, 1.0), handletextpad=0.4, columnspacing=1.2)
+               loc="upper center", ncol=2, fontsize=7, bbox_to_anchor=(0.5, 1.0), handletextpad=0.4, columnspacing=1.2)
     d = os.path.join(HERE, "..", "figures_mpce")
     fig.savefig(os.path.join(d, "csweep.pdf"), bbox_inches="tight")
     fig.savefig(os.path.join(d, "csweep.png"), dpi=170, bbox_inches="tight")
@@ -339,15 +386,17 @@ def main():
     figure(out, D)
     st = out["settings"]
     print(f"order-2 boundary c* = {out['c_star']:.5f}; verification {ver}")
-    print(f"{'setting':14s} {'feas%':>6s} {'N>=10':>6s} {'qual':>4s} {'Lcommon':>8s} {'Lqual':>7s} {'rank':>5s} {'spread%':>8s} {'clip%':>6s} {'feasEv%':>7s}")
+    print(f"{'setting':14s} {'feas%':>6s} {'N>=10':>6s} {'qual':>4s} {'Lcommon':>8s} {'L12':>7s} {'rank':>5s} {'spread%':>8s} {'clip%':>6s} {'feasEv%':>7s}")
     for a in ALL:
         s = st[a]
         print(f"{a:14s} {s['feas_pct']:6.1f} {s['feas_pct_n_ge10']:6.1f} {s['cases_qualified']:4d} {fmt(s['loss_common'], 3):>8s} "
-              f"{fmt(s['loss_qualified'], 3):>7s} {s['avg_rank']:5.2f} {fmt(None if s['spread_rel_median'] is None else 100 * s['spread_rel_median']):>8s} "
+              f"{fmt(s['loss_all12'], 3):>7s} {s['avg_rank']:5.2f} {fmt(None if s['spread_rel_median'] is None else 100 * s['spread_rel_median']):>8s} "
               f"{fmt(s['clip_pct_mean']):>6s} {fmt(s['feas_eval_late_pct_mean']):>7s}")
     for s in out["steps"]:
         print(f"  {s['c_from']:.1f}->{s['c_to']:.1f}: drop {s['drop_pp']:.1f} pp ({s['drop_pp_per_0p1']:.1f} per 0.1){'  <- c*' if s['contains_c_star'] else ''}")
-    print("c50", out["c50"], "loss min c", out["loss_min_c"], "common cases", out["n_common_loss_cases"], "rank order", out["rank_order"])
+    for k, v in out["response_steps"].items():
+        print(" ", k, " ".join(f"{x['c_from']:.1f}-{x['c_to']:.1f}:{x['change_per_0p1']:+.3f}" for x in v))
+    print("c50", out["c50"], "c50 N>=10", out["c50_n_ge10"], "loss min c", out["loss_min_c"], "common cases", out["n_common_loss_cases"], "rank order", out["rank_order"])
     for k, v in out["paired"].items():
         print(" ", k, v)
     print("CPU h", out["cpu_hours_csweep"], "; macros", len(M))

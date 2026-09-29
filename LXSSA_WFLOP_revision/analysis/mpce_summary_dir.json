@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-28 19:04:22",
+ "generated": "2026-09-29 00:51:06",
  "eq_margin_pp": 0.05,
  "benchmark": {
   "sub_bins": [
@@ -4626,6 +4626,15 @@
   "n_runs": 970,
   "n_feasible": 901,
   "reproduction_max_abs_dev_gwh": 0.5268024904204367,
+  "reproduction": {
+   "note": "stored run coordinates are rounded to 0.01 m; layouts on a wake-cone edge re-evaluate lower than the recorded AEP. All 5-deg vs 1-deg comparisons use the re-evaluated values of the same (rounded) coordinates.",
+   "median_abs_dev_gwh": 6.865575528536283e-06,
+   "max_abs_dev_gwh": 0.5268024904204367,
+   "n_abs_dev_gt_0_01": 99,
+   "n_higher_than_recorded_gt_0_01": 1,
+   "mean_signed_dev_gwh": -0.011871221632590459,
+   "runs_above_installed_recorded": 16
+  },
   "installed_reproduces_hornsrev_model": true,
   "methods": {
    "6030_random_PSOBV": {
@@ -4646,6 +4655,7 @@
     "mean_PyWakeNOJ_1deg": 137.21735636666668,
     "best_PyWakeNOJ_1deg": 138.472741,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.28774401113697,
     "mean_drop_gwh": 1.301677823731302
    },
    "6030_random_SSABV": {
@@ -4666,6 +4676,7 @@
     "mean_PyWakeNOJ_1deg": 136.3727115,
     "best_PyWakeNOJ_1deg": 138.177674,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.591637337408,
     "mean_drop_gwh": 1.4644845415292689
    },
    "6030_random_LXBV": {
@@ -4686,6 +4697,7 @@
     "mean_PyWakeNOJ_1deg": 136.2320771,
     "best_PyWakeNOJ_1deg": 137.670117,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.41113705070245,
     "mean_drop_gwh": 1.4306973880772924
    },
    "6030_random_RSVNS": {
@@ -4706,6 +4718,7 @@
     "mean_PyWakeNOJ_1deg": 136.50491453571428,
     "best_PyWakeNOJ_1deg": 137.543958,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.58420742892466,
     "mean_drop_gwh": 1.329896686218849
    },
    "6030_random_BVNS": {
@@ -4726,6 +4739,7 @@
     "mean_PyWakeNOJ_1deg": 136.19596583333333,
     "best_PyWakeNOJ_1deg": 137.453663,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.346937146525,
     "mean_drop_gwh": 1.4191115724491956
    },
    "6030_random_PSOC": {
@@ -4746,6 +4760,7 @@
     "mean_PyWakeNOJ_1deg": 137.3075835263158,
     "best_PyWakeNOJ_1deg": 138.466788,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.79162238840013,
     "mean_drop_gwh": 0.7542899304112325
    },
    "6030_random_SSA": {
@@ -4766,6 +4781,7 @@
     "mean_PyWakeNOJ_1deg": 135.74085376666665,
     "best_PyWakeNOJ_1deg": 137.326913,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.24881664375508,
     "mean_drop_gwh": 0.8648466495779682
    },
    "6030_random_LXSSA": {
@@ -4786,6 +4802,7 @@
     "mean_PyWakeNOJ_1deg": 135.62218982142858,
     "best_PyWakeNOJ_1deg": 136.860727,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 135.99643387470275,
     "mean_drop_gwh": 0.7293880738792028
    },
    "6030_random_DE": {
@@ -4806,6 +4823,7 @@
     "mean_PyWakeNOJ_1deg": null,
     "best_PyWakeNOJ_1deg": null,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": null,
     "mean_drop_gwh": null
    },
    "6030_random_SLSQP": {
@@ -4826,6 +4844,7 @@
     "mean_PyWakeNOJ_1deg": 136.20586353333334,
     "best_PyWakeNOJ_1deg": 137.512499,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.30809720681074,
     "mean_drop_gwh": 0.4715446695651044
    },
    "6030_feasible_PSOBV": {
@@ -4846,6 +4865,7 @@
     "mean_PyWakeNOJ_1deg": 137.2496839,
     "best_PyWakeNOJ_1deg": 138.401639,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.42957498851112,
     "mean_drop_gwh": 1.3969549246821136
    },
    "6030_feasible_SSABV": {
@@ -4866,6 +4886,7 @@
     "mean_PyWakeNOJ_1deg": 137.24703373333335,
     "best_PyWakeNOJ_1deg": 138.033739,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.42439143188292,
     "mean_drop_gwh": 1.39564884422284
    },
    "6030_feasible_LXBV": {
@@ -4886,6 +4907,7 @@
     "mean_PyWakeNOJ_1deg": 137.17512186666667,
     "best_PyWakeNOJ_1deg": 138.103724,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.35880999480088,
     "mean_drop_gwh": 1.416228490597906
    },
    "6030_feasible_BVNS": {
@@ -4906,6 +4928,7 @@
     "mean_PyWakeNOJ_1deg": 137.32164736666667,
     "best_PyWakeNOJ_1deg": 138.462984,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.52623491677844,
     "mean_drop_gwh": 1.4007372342643445
    },
    "6030_feasible_PSOC": {
@@ -4926,6 +4949,7 @@
     "mean_PyWakeNOJ_1deg": 136.64800436666667,
     "best_PyWakeNOJ_1deg": 137.661944,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.38701961485017,
     "mean_drop_gwh": 0.1332208705308915
    },
    "6030_feasible_SSA": {
@@ -4946,6 +4970,7 @@
     "mean_PyWakeNOJ_1deg": 136.66397050000003,
     "best_PyWakeNOJ_1deg": 137.652831,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.1579851569699,
     "mean_drop_gwh": 0.8273498855270437
    },
    "6030_feasible_LXSSA": {
@@ -4966,6 +4991,7 @@
     "mean_PyWakeNOJ_1deg": 136.68535706666668,
     "best_PyWakeNOJ_1deg": 137.711534,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.0680854039131,
     "mean_drop_gwh": 0.7039471165922625
    },
    "6030_feasible_DE": {
@@ -4986,6 +5012,7 @@
     "mean_PyWakeNOJ_1deg": 136.64800436666664,
     "best_PyWakeNOJ_1deg": 137.661944,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.38701961485015,
     "mean_drop_gwh": 0.1332208705308915
    },
    "6030_feasible_SLSQP": {
@@ -5006,6 +5033,7 @@
     "mean_PyWakeNOJ_1deg": 136.76791369999998,
     "best_PyWakeNOJ_1deg": 137.754991,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.90493563653447,
     "mean_drop_gwh": 0.484670857653137
    },
    "30030_random_PSOBV": {
@@ -5026,6 +5054,7 @@
     "mean_PyWakeNOJ_1deg": 137.84872986666667,
     "best_PyWakeNOJ_1deg": 139.07717,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 139.10811309618296,
     "mean_drop_gwh": 1.400568825504026
    },
    "30030_random_SSABV": {
@@ -5046,6 +5075,7 @@
     "mean_PyWakeNOJ_1deg": 136.84303446666667,
     "best_PyWakeNOJ_1deg": 137.958876,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.11483816926926,
     "mean_drop_gwh": 1.4491517690267888
    },
    "30030_random_LXBV": {
@@ -5066,6 +5096,7 @@
     "mean_PyWakeNOJ_1deg": 137.02840413333334,
     "best_PyWakeNOJ_1deg": 137.91015,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.28261653766918,
     "mean_drop_gwh": 1.4022360417371715
    },
    "30030_random_RSVNS": {
@@ -5086,6 +5117,7 @@
     "mean_PyWakeNOJ_1deg": 137.072752,
     "best_PyWakeNOJ_1deg": 137.81322,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.3353551816699,
     "mean_drop_gwh": 1.4487023161829076
    },
    "30030_random_BVNS": {
@@ -5106,6 +5138,7 @@
     "mean_PyWakeNOJ_1deg": 137.3651602,
     "best_PyWakeNOJ_1deg": 138.397207,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.61460233191292,
     "mean_drop_gwh": 1.4236471919973677
    },
    "30030_random_PSOC": {
@@ -5126,6 +5159,7 @@
     "mean_PyWakeNOJ_1deg": 137.6467900714286,
     "best_PyWakeNOJ_1deg": 138.804338,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.71945639033066,
     "mean_drop_gwh": 1.2381334382651292
    },
    "30030_random_SSA": {
@@ -5146,6 +5180,7 @@
     "mean_PyWakeNOJ_1deg": 135.81492506666666,
     "best_PyWakeNOJ_1deg": 137.513298,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.65414834859146,
     "mean_drop_gwh": 1.1485871426076149
    },
    "30030_random_LXSSA": {
@@ -5166,6 +5201,7 @@
     "mean_PyWakeNOJ_1deg": 135.49349236666666,
     "best_PyWakeNOJ_1deg": 136.844249,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.15693200092917,
     "mean_drop_gwh": 0.9699746457849575
    },
    "30030_random_DE": {
@@ -5186,6 +5222,7 @@
     "mean_PyWakeNOJ_1deg": 137.549986125,
     "best_PyWakeNOJ_1deg": 138.552425,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.78879771017125,
     "mean_drop_gwh": 0.4972249028178837
    },
    "30030_random_SLSQP": {
@@ -5206,6 +5243,7 @@
     "mean_PyWakeNOJ_1deg": 136.95731543333332,
     "best_PyWakeNOJ_1deg": 137.863974,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.17735413767065,
     "mean_drop_gwh": 0.5333367466040433
    },
    "120030_random_PSOBV": {
@@ -5226,6 +5264,7 @@
     "mean_PyWakeNOJ_1deg": 137.96292490000002,
     "best_PyWakeNOJ_1deg": 138.702707,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 139.2891866692719,
     "mean_drop_gwh": 1.358634481079767
    },
    "120030_random_SSABV": {
@@ -5246,6 +5285,7 @@
     "mean_PyWakeNOJ_1deg": 137.9375168,
     "best_PyWakeNOJ_1deg": 138.384175,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 139.1727765285629,
     "mean_drop_gwh": 1.3828090713848866
    },
    "120030_random_LXBV": {
@@ -5266,6 +5306,7 @@
     "mean_PyWakeNOJ_1deg": 137.9516124,
     "best_PyWakeNOJ_1deg": 138.6914,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 139.22428117599608,
     "mean_drop_gwh": 1.3898826501813688
    },
    "120030_random_RSVNS": {
@@ -5286,6 +5327,7 @@
     "mean_PyWakeNOJ_1deg": 138.13867539999995,
     "best_PyWakeNOJ_1deg": 138.887014,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 139.51175395479143,
     "mean_drop_gwh": 1.442355425038349
    },
    "120030_random_BVNS": {
@@ -5306,6 +5348,7 @@
     "mean_PyWakeNOJ_1deg": 138.14286909999998,
     "best_PyWakeNOJ_1deg": 138.544686,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 139.53751017670362,
     "mean_drop_gwh": 1.4752454741148084
    },
    "120030_random_PSOC": {
@@ -5326,6 +5369,7 @@
     "mean_PyWakeNOJ_1deg": 137.75666640000003,
     "best_PyWakeNOJ_1deg": 138.595699,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 138.93535822798088,
     "mean_drop_gwh": 1.0232764376498493
    },
    "120030_random_SSA": {
@@ -5346,6 +5390,7 @@
     "mean_PyWakeNOJ_1deg": 136.4360567,
     "best_PyWakeNOJ_1deg": 137.138532,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.46671293312306,
     "mean_drop_gwh": 1.1501976499226232
    },
    "120030_random_LXSSA": {
@@ -5366,6 +5411,7 @@
     "mean_PyWakeNOJ_1deg": 135.6682465,
     "best_PyWakeNOJ_1deg": 137.105476,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 136.4828801735324,
     "mean_drop_gwh": 1.0744255166609349
    },
    "120030_random_DE": {
@@ -5386,6 +5432,7 @@
     "mean_PyWakeNOJ_1deg": 138.3326276,
     "best_PyWakeNOJ_1deg": 139.225841,
     "above_PyWakeNOJ_1deg": 1,
+    "mean_recorded": 139.69689501731787,
     "mean_drop_gwh": 1.3631161969441166
    },
    "120030_random_SLSQP": {
@@ -5406,6 +5453,7 @@
     "mean_PyWakeNOJ_1deg": 137.65947320000004,
     "best_PyWakeNOJ_1deg": 138.32747,
     "above_PyWakeNOJ_1deg": 0,
+    "mean_recorded": 137.93057818411853,
     "mean_drop_gwh": 0.5454437664471186
    }
   },
@@ -9301,7 +9349,7 @@
  ],
  "log": [
   "[1] Benchmark: 22440 runs (21716 feasible), 68 cases",
-  "  benchmark: 20528 distinct feasible layouts re-evaluated in 67 s",
+  "  benchmark: 20528 distinct feasible layouts re-evaluated in 55 s",
   "  [rec ] best PSO-VNS, ranks PSO-VNS 1.82, PSO 1.97, SSA-VNS 3.45, VNS 4.40; PSO-VNS-PSO -0.0180 CI90 [-0.0407, +0.0040] eq=True p=0.296; SLSQP gap -0.435; DSII N>=10 -0.210 (10/10); sign changes 0",
   "  [J1  ] best PSO-VNS, ranks PSO-VNS 1.80, PSO 1.96, SSA-VNS 3.49, VNS 4.33; PSO-VNS-PSO -0.0179 CI90 [-0.0406, +0.0041] eq=True p=0.296; SLSQP gap -0.438; DSII N>=10 -0.209 (10/10); sign changes 0",
   "  [J3  ] best PSO-VNS, ranks PSO-VNS 1.90, PSO 2.26, SSA-VNS 4.09, MS-SLSQP 4.35; PSO-VNS-PSO -0.0537 CI90 [-0.0736, -0.0354] eq=False p=2.02e-05; SLSQP gap -0.204; DSII N>=10 -0.189 (10/10); sign changes 24",
@@ -9311,7 +9359,7 @@
   "  reproduction (S = 1 vs recorded objective): {'median_rel_dev': 1.13466677733904e-09, 'max_rel_dev': 0.00942228678398459, 'n_rel_dev_above_1e_4': 450, 'ideal_equal_all_subs': True, 'ideal_matches_recorded': True}",
   "  mean wake loss 15 -> 5 -> 1 deg: PSO-VNS 1.322/2.126/2.335, PSO 1.341/2.179/2.378, SSA-VNS 1.653/2.436/2.646, SSA 1.805/2.489/2.650, LX-SSA 1.959/2.628/2.784, DE 1.493/1.815/1.888, VNS 1.788/2.589/2.803, MS-SLSQP 1.758/2.330/2.470",
   "\n[2] Horns Rev 16",
-  "  Horns Rev: 970 runs x 4 bin settings in 9 s; installed 5deg_2.5 139.821, 1deg_0.5 139.503, 1deg_0 139.237, 5deg_0 139.268",
+  "  Horns Rev: 970 runs x 4 bin settings in 8 s; installed 5deg_2.5 139.821, 1deg_0.5 139.503, 1deg_0 139.237, 5deg_0 139.268",
   "  HR 6k R   : highest mean 5deg PSO-VNS 138.29, 1deg PSO 137.04 (2nd PSO-VNS 136.99)",
   "  HR 6k F   : highest mean 5deg VNS 138.52, 1deg VNS 137.12 (2nd PSO-VNS 137.03)",
   "  HR 30k R  : highest mean 5deg PSO-VNS 139.11, 1deg PSO-VNS 137.71 (2nd PSO 137.48)",
