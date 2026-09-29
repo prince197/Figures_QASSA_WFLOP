@@ -6,6 +6,10 @@
 % numbered references [1], [2], ... (natbib numbers; manual thebibliography in optA/swevo_back.tex);
 % sort&compress gives [1-3] ranges as the cite package does in the MPCE version
 \biboptions{sort&compress}
+% A4 text block slightly larger than the elsarticle preprint default, so that the tallest generated table
+% (analysis/mpce_tab_ablation.tex) fits on a page; \emergencystretch avoids overfull lines in the contribution list
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\setlength{\emergencystretch}{1.5em}
 % continuous line numbers for review, starting after the title page (switched on right after \end{frontmatter};
 % numbering the elsarticle title page itself pushes its footnotes into the footer)
 \usepackage{lineno}
