@@ -103,8 +103,9 @@ CONDITIONS = [
      lambda s: all(wtl(g(s, "ablation", "contrasts", k))[2] == 0 and wtl(g(s, "ablation", "contrasts", k))[0] >= 34 for k in ("PSOBV-SSABV", "PSOBV-LXBV"))
      and (lambda p: all(p["PSOBV"]["feasible_at_switch_pct"] > p[h]["feasible_at_switch_pct"] and p["PSOBV"]["mean_loss_at_switch_pct"] < p[h]["mean_loss_at_switch_pct"]
                         for h in ("SSABV", "LXBV")))(g(s, "ablation", "phase2_loss_reduction_pct"))),
-    ("C17", "Laplace step makes things worse (D1): LX-SSA never significantly better than SSA and LX-SSA-VNS never significantly "
-            "better than SSA-VNS (run level); on the case means SSA-VNS beats LX-SSA-VNS and SSA beats LX-SSA (p < 0.05)",
+    ("C17", "LX-SSA as published is worse (D1, D14; Table IV rows 'LX-SSA as published (hybrid)' / '(alone)'): LX-SSA never "
+            "significantly better than SSA and LX-SSA-VNS never significantly better than SSA-VNS (run level); on the case means "
+            "SSA-VNS beats LX-SSA-VNS and SSA beats LX-SSA (p < 0.05)",
      "ablation.contrasts.LXSSA-SSA.W, SSABV-LXBV.L, ablation.case_mean.SSABV-LXBV / LXSSA-SSA",
      lambda s: wtl(g(s, "ablation", "contrasts", "LXSSA-SSA"))[0] == 0 and wtl(g(s, "ablation", "contrasts", "SSABV-LXBV"))[2] == 0
      and g(s, "ablation", "case_mean", "SSABV-LXBV", "p") < 0.05 and g(s, "ablation", "case_mean", "SSABV-LXBV", "mean_dloss_pp") < 0
@@ -339,13 +340,16 @@ CONDITIONS += [
     ("C60", "RS-VNS weakness is mainly spacing, not the square (R3-6): paired over the same runs, fewer of the RS-VNS runs "
             "without a feasible Phase-1 sample are rescued by disc sampling (\\NRsSquareExplains) than stay without one "
             "under disc sampling too (\\NRsSpacingDominates); the counts add up to the RS-VNS total and the RSD-VNS total "
-            "(\\NRSRunsNoFeasSample, \\NRSDRunsNoFeasSample); both replays reproduce the stored curves",
-     "ablation.phase1_replay.square_vs_disc, ablation.phase1_replay.RSVNS/RSDVNS",
+            "(\\NRSRunsNoFeasSample, \\NRSDRunsNoFeasSample); both replays reproduce the stored curves; and every RS-VNS run "
+            "without a feasible sample does draw samples wholly inside the circle (\\NRsNoFeasInside = \\NRSRunsNoFeasSample), "
+            "so spacing, not the boundary, is binding in all of them",
+     "ablation.phase1_replay.square_vs_disc, ablation.phase1_replay.RSVNS/RSDVNS (incl. RSVNS.runs_no_feasible_but_inside_sample)",
      lambda s: (lambda rp: (lambda d: d["rs_none_rsd_some"] < d["rs_none_rsd_none"]
                             and d["rs_none_rsd_some"] + d["rs_none_rsd_none"] == rp["RSVNS"]["runs_no_feasible_sample"]
                             and d["rs_none_rsd_none"] + d["rs_some_rsd_none"] == rp["RSDVNS"]["runs_no_feasible_sample"]
-                            and rp["RSVNS"]["verification_ok"] and rp["RSDVNS"]["verification_ok"])(rp["square_vs_disc"]))(
-         g(s, "ablation", "phase1_replay"))),
+                            and rp["RSVNS"]["verification_ok"] and rp["RSDVNS"]["verification_ok"]
+                            and rp["RSVNS"]["runs_no_feasible_but_inside_sample"] == rp["RSVNS"]["runs_no_feasible_sample"])(
+         rp["square_vs_disc"]))(g(s, "ablation", "phase1_replay"))),
     ("C61", "switch point (R3-9): RS-VNS and RSD-VNS switch after round(0.5 x 6,030) = 3,015 Phase-1 evaluations, the swarm "
             "hybrids after 3,030; the RS-VNS / RSD-VNS runs infeasible at the switch (read at the last checkpoint before it, "
             "call 3,000) equal the replayed runs without a feasible sample among the first 3,000 samples, and for RS-VNS also "
