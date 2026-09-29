@@ -21,12 +21,7 @@ For a prescribed number $N$ of identical turbines with rotor radius $R$ (diamete
 
 \subsection{Wind Model and Direction Discretization}
 \label{sec:wind}
-In every direction the wind speed has the Weibull density
-\begin{equation}
-p_s(s;\zeta,\psi)=\frac{\zeta}{\psi}\Bigl(\frac{s}{\psi}\Bigr)^{\zeta-1}\exp\Bigl[-\Bigl(\frac{s}{\psi}\Bigr)^{\zeta}\Bigr],\qquad s\ge0 .
-\label{eq:weibull}
-\end{equation}
-The benchmark rose is piecewise constant: $N_\theta=24$ direction bins $[15(l-1),15l)^\circ$, $l=1,\ldots,24$, with probability $p_l$, shape $\zeta=2$ and scale $\psi_l$ (Table~\ref{S-tab:S-wind}). Data Set~I is nearly unidirectional ($\psi=13$~m/s in all bins; 80\% of the probability in bins 6 and 7, i.e., wind from 165$^\circ$ to 195$^\circ$), Data Set~II is a broad rose with scales from 2.6 to 10~m/s and its highest probability in bin~13. The Horns Rev~1 block uses a measured 12-sector Weibull rose evaluated in 5$^\circ$ bins, and IEA37 Case Study~1 16 directions at one speed (Section~\ref{sec:setup-beyond}).
+The wind speed in every direction has the Weibull density $p_s(s;\zeta,\psi)=(\zeta/\psi)(s/\psi)^{\zeta-1}\exp[-(s/\psi)^{\zeta}]$ ($s\ge0$). The benchmark rose is piecewise constant: $N_\theta=24$ direction bins $[15(l-1),15l)^\circ$, $l=1,\ldots,24$, with probability $p_l$, shape $\zeta=2$ and scale $\psi_l$ (Table~\ref{S-tab:S-wind}). Data Set~I is nearly unidirectional ($\psi=13$~m/s in all bins; 80\% of the probability in bins 6 and 7, i.e., wind from 165$^\circ$ to 195$^\circ$), Data Set~II is a broad rose with scales from 2.6 to 10~m/s and its highest probability in bin~13. The Horns Rev~1 block uses a measured 12-sector Weibull rose evaluated in 5$^\circ$ bins, and IEA37 Case Study~1 16 directions at one speed (Section~\ref{sec:setup-beyond}).
 % verified: analysis/wflop_model.py (DS1_W, DS1_PSI, DS2_PSI, DS2_W; k = 2); bins 6+7 of DS I: 0.2+0.6 = 0.8, towards 75-105 deg = from 165-195 deg
 
 \emph{Why the direction discretization matters.} The objective evaluates the wake only at the 24 bin centres $\bar\theta_l=15l-7.5^\circ$. A top-hat wake is narrow: by the half-cone geometry (Fig.~\ref{fig:model}c), turbine $j$ wakes a turbine $i$ at the distance $\rho\ge R/K$ only for directions within an interval of width $2[\alpha+\arcsin(R/(\rho\sqrt{1+K^2}))]$ around the direction from $j$ to $i$. With $K=0.075$ and $R=38.5$~m ($\alpha=4.29^\circ$, $R/K=513$~m), this width is below the bin spacing of 15$^\circ$ for $\rho>685$~m and tends to $2\alpha=8.6^\circ$. Such a pair can be placed so that no bin centre lies in its interval, and its wake then does not enter the objective; with bins of 5$^\circ$ or finer, every such interval contains a centre. Optimized layouts exploit these gaps: with 1$^\circ$ sub-bins that keep the Weibull parameters of their 15$^\circ$ bin, the mean wake loss of PSO-VNS rises from \NFLossPSOVNSFifteen\% to \NFLossPSOVNSOne\%, most for PSO and the VNS-based methods. All results thus hold for the discretized roses; Section~\ref{sec:robustness} reports which conclusions survive a 1$^\circ$ rose.
@@ -59,8 +54,8 @@ is evaluated, as in~\cite{Kusiak2010}, by a Riemann sum over direction bins $\th
 \begin{equation}
 \begin{split}
 E(P_i) ={}& \sum_{l=1}^{N_\theta} (\theta_l - \theta_{l-1})\, p_l \Bigg\{ P_{\text{rated}}\, W_i(s_{\text{rated}},\bar\theta_l)
-+\lambda_1 \sum_{q=1}^{N_s} \frac{s_{q-1} + s_q}{2}\left[W_i(s_{q-1},\bar\theta_l)-W_i(s_q,\bar\theta_l)\right]\\
-&+ \lambda_0 \left[W_i(s_{\text{cut-in}},\bar\theta_l)-W_i(s_{\text{rated}},\bar\theta_l)\right] \Bigg\}.
++\lambda_1 \sum_{q=1}^{N_s} \tfrac{s_{q-1} + s_q}{2}\bigl[W_i(s_{q-1},\bar\theta_l)-W_i(s_q,\bar\theta_l)\bigr]\\
+&\qquad+ \lambda_0 \bigl[W_i(s_{\text{cut-in}},\bar\theta_l)-W_i(s_{\text{rated}},\bar\theta_l)\bigr] \Bigg\}.
 \end{split}
 \label{eq:S-power}
 \end{equation}

@@ -6,3 +6,5 @@ fig:S-wakeloss -> main, optA/sw/06_results.tex (new main label fig:wakeloss)
 fig:S-equiv-curve -> main, optA/sw/06_results.tex (new main label fig:equiv-curve)
 tab:X-equiv-levels -> main, optA/sw/06_results.tex (label unchanged; captured from analysis/mpce_supp_inference.tex via \CaptureSuppTables + \SuppTable)
 tab:X-heterogeneity -> main, optA/sw/06_results.tex (label unchanged; captured from analysis/mpce_supp_inference.tex; notes wrapped as in the supplement)
+def:S-equiv -> main, optA/sw/05_setup.tex (label unchanged; Definition "Practical equivalence at three levels of inference" adapted from optA/supp_theory.tex sec:S-th-equiv; the supplement keeps Lemma lem:S-tost-ci, the four-outcome table and the Bayesian discussion, so it should cite M-def:S-equiv instead of defining it again)
+(note, no label moved) sec:S-stats content (ranking rule, run scores, zero handling, Holm families) is now stated in main sec:setup-stats (optA/sw/05_setup.tex); the supplement subsection may be shortened to a pointer to Section M-sec:setup-stats

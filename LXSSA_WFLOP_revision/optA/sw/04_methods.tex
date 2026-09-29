@@ -55,12 +55,7 @@ c_1+c_2<\frac{24\,(1-w^2)}{7-5w};
 \label{eq:poli}
 \end{equation}
 for $c_1\ne c_2$ with the same sum $c_1+c_2$, it is stricter.
-\item[(c)] Under (b), $\operatorname{Var}x_t\to V_\infty=(1+w)\,q/\chi(1)$ with $q=c_1^2c_2^2(p-g)^2/[6(c_1+c_2)^2]$; for $c_1=c_2=c$,
-\begin{equation}
-V_\infty=\frac{c\,(1+w)}{4\,[12(1-w^2)-c\,(7-5w)]}\,(p-g)^2 ,
-\label{eq:pso-vinf}
-\end{equation}
-which is zero if and only if $p=g$.
+\item[(c)] Under (b), $\operatorname{Var}x_t\to V_\infty=(1+w)\,q/\chi(1)$ with $q=c_1^2c_2^2(p-g)^2/[6(c_1+c_2)^2]$, for $c_1=c_2=c$ $V_\infty=c(1+w)(p-g)^2/(4[12(1-w^2)-c(7-5w)])$; $V_\infty=0$ if and only if $p=g$.
 \end{enumerate}
 \end{proposition}
 \begin{proof}[Proof sketch]
@@ -69,7 +64,7 @@ which is zero if and only if $p=g$.
 The order-1 condition involves the \emph{mean} $(c_1+c_2)/2$ of $\varphi_t$; the constant-coefficient condition $\varphi<2(1+w)$ with $\varphi=c_1+c_2$ would wrongly classify the old setting as order-1 unstable ($4>3.4$). For $c_1=c_2$, the region also holds under a weaker, non-stagnant assumption~\cite{Cleghorn2018}. The constriction setting is order-2 stable ($c_1+c_2=2.99<3.35$; spectral radius of $M$ 0.94): in the limit, a coordinate with $P^i_m\ne G_m$ is sampled with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the swarm keeps sampling around $\mathbf G$ unless $\mathbf P^i=\mathbf G$. The old setting is order-1 stable ($4<6.8$) but beyond the order-2 boundary ($4>3.50$; $c_1=c_2>c^*=\NSBoundC$ at $w=0.7$; spectral radius 1.12), so its second moments grow without bound under stagnation (Fig.~\ref{fig:S-th-stability}; Proposition~\ref{S-prop:S-settings}). Neither condition says how good $\mathbf G$ is, and clipping violates (A2): a clipped coordinate keeps its outward velocity and stays at the bound while it points outward (Lemma~\ref{S-lem:S-clip}), so in the code the unbounded moments appear as turbines pinned at the box, not as growing positions.
 \begin{figure}[!t]
 \centering
-\pipefig{0.46\textwidth}{figures_mpce/theory_stability.pdf}{6cm}
+\pipefig{0.42\textwidth}{figures_mpce/theory_stability.pdf}{6cm}
 \caption{Stability regions of the implemented PSO update under stagnation and without active bounds ($c_1=c_2$; Proposition~\ref{prop:pso-stability}). Light: order-1 stable only, $c_1+c_2<4(1+w)$; dark: order-1 and order-2 stable, $c_1+c_2<24(1-w^2)/(7-5w)$. The old setting ($w=0.7$, $c_1=c_2=2$) is order-1 but not order-2 stable; the constriction setting~\eqref{eq:constriction} is order-2 stable.}
 \label{fig:S-th-stability}
 \end{figure}
@@ -117,7 +112,7 @@ $\phi=0$, $\chi=1$, and keeps the better candidate. As published, it evaluates b
 
 \subsection{Basic Variable Neighborhood Search}
 \label{sec:vns}
-The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ nested $\ell_\infty$ neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$, of the whole layout. Shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it; a better result becomes the incumbent and resets $k$ to 1, otherwise the next neighborhood is tried. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}), a coordinate-wise optimality at one step length, not a local minimum. VNS alone starts from the best initial layout; a run returns the best layout evaluated.
+The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ nested $\ell_\infty$ neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$, of the whole layout: shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}), a coordinate-wise optimality at one step length, not a local minimum. VNS alone starts from the best initial layout; a run returns the best layout evaluated.
 % CHECK-THEORY [T12]: compass search final step h0/2^5 = 0.0015625 r (Proposition S-prop:S-ls); verified: analysis/original_vns.py (k_max = 5, rho_k = 0.1 k r, h0 = 0.05 r, h_min = 1e-3 r; move to the best of the 2 dim moves if it improves the current point, else halve h; shaking by rejection in the l_inf shell, then clip)
 
 \begin{algorithm}[!t]
@@ -164,14 +159,10 @@ PSO-VNS (Algorithm~\ref{alg:hybrid}) is not a new PSO variant: its Phase~1 is th
 \small
 \begin{algorithmic}[1]
 \Require budget $B$, split $\omega$, $N_p$, $w$, $c_1$, $c_2$, radius $r$, $k_{\max}$
-\State Draw and evaluate $N_p$ particles $\mathbf X^i$; $\mathbf V^i\gets\mathbf 0$; $\mathbf P^i\gets\mathbf X^i$; $\mathbf G\gets\arg\min_i F_p(\mathbf P^i)$ \Comment{Phase 1}
-\For{$t=1,\ldots,T_1$ and $i=1,\ldots,N_p$}
-    \State Move $\mathbf X^i$ by \eqref{eq:pso-v}, \eqref{eq:pso-x}; box repair; evaluate $F_p(\mathbf X^i)$; update $\mathbf P^i$, $\mathbf G$
-\EndFor
-\State $\mathbf X\gets\textsc{LocalSearch}(\mathbf G)$; $k\gets1$ \Comment{Phase 2}
+\State Run PSO (Algorithm~\ref{alg:pso}) for $T_1=\operatorname{round}((\omega B-N_p)/N_p)$ iterations; $\mathbf G\gets$ its global best \Comment{Phase 1}
+\State $\mathbf X\gets\textsc{LocalSearch}(\mathbf G)$; $k\gets1$ \Comment{Phase 2, Algorithm~\ref{alg:vns}}
 \While{fewer than $B$ evaluations have been used}
-    \State $\mathbf X'\gets\textsc{LocalSearch}(\text{uniform point of }\mathcal N_k(\mathbf X))$
-    \State \textbf{if} $F_p(\mathbf X')<F_p(\mathbf X)$ \textbf{then} $\mathbf X\gets \mathbf X'$, $k\gets1$ \textbf{else} $k\gets k\bmod k_{\max}+1$
+    \State $\mathbf X'\gets\textsc{LocalSearch}(\text{uniform point of }\mathcal N_k(\mathbf X))$; \textbf{if} $F_p(\mathbf X')<F_p(\mathbf X)$ \textbf{then} $\mathbf X\gets \mathbf X'$, $k\gets1$ \textbf{else} $k\gets k\bmod k_{\max}+1$
 \EndWhile
 \State \Return best layout evaluated
 \end{algorithmic}
@@ -183,7 +174,7 @@ PSO-VNS uses $N_p=30$, the coefficients \eqref{eq:constriction} and the VNS sett
 % CHECK-DIAG [D09]: N >= 12: first descent unfinished in \NDDescentUnfinishedLargePSOVNS of \NDRunsLargePSOVNS runs, median run without shaking ("neighborhoods matter only for small N")
 % verified (R3-16): Python round(99.5) = 100 (half to even); omega = 0.25/0.75/0.9 give 49/150/180
 
-Table~\ref{tab:params} lists the settings of all methods. All use the same seeded initial population and box repair and, except MS-SLSQP, the same objective $F_p$; the coefficients are the published defaults (PSO~\cite{Clerc2002}, SSA~\cite{Mirjalili2017}, LX-SSA~\cite{Solanki2023}, DE~\cite{Storn1997}, VNS~\cite{Mladenovic2008}), not tuned on the benchmark. MS-SLSQP (SciPy's SLSQP~\cite{Kraft1988}) minimizes $L$ under the constraints of~\eqref{eq:wflop}, scaled to $(\ell_{ij}^2-\ell_{\min}^2)/\ell_{\min}^2\ge0$ and $(r^2-x_i^2-y_i^2)/r^2\ge0$, and returns the best evaluated layout whose scaled constraints are all $\ge-10^{-9}$ (Section~\ref{S-sec:S-slsqp}). For the budgets of 30,030 and 120,030 evaluations (Section~\ref{sec:budget}), the iteration counts scale as $(B-N_p)/N_p$ ($(B-N_p)/(2N_p)$ for LX-SSA), and the split rule of Section~\ref{sec:template} applies.
+Table~\ref{tab:params} lists the settings of all methods. All use the same seeded initial population and box repair and, except MS-SLSQP, the same objective $F_p$; the coefficients are the published defaults (PSO~\cite{Clerc2002}, SSA~\cite{Mirjalili2017}, LX-SSA~\cite{Solanki2023}, DE~\cite{Storn1997}, VNS~\cite{Mladenovic2008}), not tuned on the benchmark. MS-SLSQP (SciPy's SLSQP~\cite{Kraft1988}) minimizes $L$ under the scaled constraints of~\eqref{eq:wflop} (Section~\ref{S-sec:S-slsqp}). For the budgets of 30,030 and 120,030 evaluations (Section~\ref{sec:budget}), the iteration counts scale as $(B-N_p)/N_p$ ($(B-N_p)/(2N_p)$ for LX-SSA), and the split rule of Section~\ref{sec:template} applies.
 \begin{table}[!t]
 \centering
 \caption{Settings of all methods at the benchmark budget $B=6{,}030$ evaluations (including the initial population and, for MS-SLSQP, the finite-difference calls); $N_p=30$; box repair by clipping to $[-r,r]$.}
