@@ -520,10 +520,13 @@ def build(s, allow_partial=False):
     P("NBudCloseGapOneTwentyK", lambda: ceil_num(fb["close_gap_pp"]["120030"]["max_gap"], 2), REQ_B120)  # rounded up ("within")
     P("NBudCloseListOneTwentyK", lambda: listing(LAB[a] for a in fb["close_gap_pp"]["120030"]["methods"]), REQ_B120)
     # Horns Rev: validation of the 80-turbine farm against PyWake, methods below PSO-VNS at 120,030
+    # R4-2 / D19: the reference is PyWake 2.6.20 NOJ(k=0.04) at bins IDENTICAL to ours (pywake_check.csv, row
+    # HR80 / ours_5deg_2.5 / NOJ_k0.04), no longer the stale constant 662.5; same value as \NFPyWakeDiffPct
     hv = s.get("hr_validation") or {}
-    P("NHRPyWakeDiff", lambda: num(abs(hv["rel_diff_pct"]), 2), ())                 # plain number (text adds \%)
+    P("NHRPyWakeDiff", lambda: num(abs(hv["rel_diff_pct"]), 2), ())                 # plain number (text adds \%); our AEP higher
     P("NHRPyWakeOurs", lambda: num(hv["installed80_aep"], 1), ())
     P("NHRPyWakeRef", lambda: num(hv["pywake_aep"], 1), ())
+    P("NHRPyWakeLossDiff", lambda: num(abs(hv["loss_diff_pp"]), 2), ())             # pp; our wake loss LOWER than PyWake's
     P("NHRLowerOneTwentyK", lambda: (lambda o: listing(LAB[a] for a in o) if o else "no other method")(
         [a for a in M10 if a != "PSOBV" and (lb.get(a) or {}).get("120030R") and lb[a]["120030R"]["loss"] is not None
          and lb[a]["120030R"]["loss"] < lb["PSOBV"]["120030R"]["loss"]]), hr_req(REQ_B120))

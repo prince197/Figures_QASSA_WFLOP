@@ -175,12 +175,31 @@ INSTALLED_HR16 = 139.821         # GWh/yr, installed 16-turbine block, fixed bin
 # old binning; while they are still loaded (no hrfix file yet), the installed AEP of the same (old) model is
 # used so that the comparison stays within one model. Recognized by the wake-free AEP stored with the runs.
 LEGACY_HR16 = dict(ideal=149.2632720953485, installed=139.51300511740232)
-# PyWake reference for the complete 80-turbine farm: 662.5 GWh/yr (wake loss 10.96 %) from PyWake's Jensen
-# (NOJ) model with the same settings, as quoted in hornsrev_site_text.tex / final_prose.py (PyWake is not
-# installed in this container, so the value is a constant). \NHRPyWakeDiff = relative difference of the
-# installed 80-turbine AEP of hornsrev_model.py from it.
-PYWAKE_HR80_AEP = 662.5
-PYWAKE_HR80_LOSS_PCT = 10.96
+# PyWake reference for the complete 80-turbine farm (R4-2, D19): read from pywake_check.csv (pywake_check.py,
+# PyWake 2.6.20 NOJ(Hornsrev1Site(), V80(), k=0.04) at direction/speed bins IDENTICAL to hornsrev_model.py, row
+# Farm=HR80, Bins=ours_5deg_2.5, Model=NOJ_k0.04). The former constant 662.5 GWh/yr (10.96 %, quoted from an older
+# text) is not reproduced by PyWake at any bin setting and is no longer used. \NHRPyWakeDiff = relative
+# difference (%) of the installed 80-turbine AEP of hornsrev_model.py from that PyWake value; pending if the file
+# is missing.
+PYWAKE_CHECK_CSV = "pywake_check.csv"
+PYWAKE_ROW = dict(Farm="HR80", Bins="ours_5deg_2.5", Model="NOJ_k0.04", Source="PyWake")
+
+
+def pywake_reference(data_dir=None):
+    """PyWake NOJ reference of the installed 80-turbine farm at our bins (dict) or None if pywake_check.csv is absent."""
+    for d in ([data_dir] if data_dir else []) + [HERE]:
+        fn = os.path.join(d, PYWAKE_CHECK_CSV)
+        if os.path.exists(fn):
+            P = pd.read_csv(fn)
+            r = P[np.logical_and.reduce([P[k].astype(str) == v for k, v in PYWAKE_ROW.items()])]
+            o = P[(P.Farm == PYWAKE_ROW["Farm"]) & (P.Bins == PYWAKE_ROW["Bins"]) & (P.Model == "paper_model") & (P.Source == "ours")]
+            if len(r):
+                r = r.iloc[0]
+                return dict(aep=float(r.AEP_GWh), loss_pct=float(r.WakeLossPct), ideal=float(r.IdealAEP_GWh),
+                            version=str(r.Version), settings=str(r.Settings), bins=PYWAKE_ROW["Bins"],
+                            p_max_abs_diff=float(r.PMaxAbsDiff),
+                            ours_csv_aep=float(o.AEP_GWh.iloc[0]) if len(o) else None, file=fn)
+    return None
 BOOT_N, BOOT_SEED = 10000, 20260928   # bootstrap over cases (percentile 95 % CI), fixed seed
 # Practical equivalence of case-mean wake losses (equivalence_block): one margin for EVERY case-mean comparison,
 # in percentage points (pp) of wake loss. It was chosen AFTER the primary analysis (post hoc, when "PSO-VNS is
@@ -859,8 +878,13 @@ def split_section(R6, base, tabs, key, label, primary=True, supp=None):
             foot.append("\\multicolumn{4}{l}{$\\omega=0.9$ vs.\\ $\\omega=0.75$: %s (W/T/L from the $\\omega=0.9$ side)}" % wtl_str(w90v75))
         foot = "\\\\\n".join(foot) if foot else None
         foot = [foot] if foot else None
-        tabs[key] = table("table", f"Budget Split of {LAB[base]}: Share $\\omega$ of the 6,030 Evaluations for {p1} (${chr(92)}omega={om[1:]}{'; $' + chr(92) + 'omega=1$: ' + p1 + ' Alone, Same Seeds' if has100 else ''}) on {len(SR)} Cases (Middle and Largest $N$ of Each Farm and Data Set, 30 Seeds): Mean Wake Loss, Average Rank Among the {nsh} Settings, and Cases in Which the Default $\\omega=0.5$ Is Significantly Better / Not Different / Worse (Run-Level Wilcoxon, Holm-Adjusted over the {ncw} Comparisons of Each Case)",
-                          label, "cccc", f"$\\omega$ & Mean loss (\\%) & Avg.\\ rank & $0.5$ vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt", foot=foot)
+        tabs[key] = table("table", f"Budget Split of {LAB[base]} ({len(SR)} Cases, 30 Seeds)",
+                          label, "cccc", f"$\\omega$ & Mean loss (\\%) & Avg.\\ rank & $0.5$ vs.\\ $\\omega$ (W/T/L)", cl, sep="4pt", foot=foot,
+                          note=f"$\\omega$: share of the 6,030 evaluations given to {p1} (${chr(92)}omega={om[1:]}"
+                               f"{'; $' + chr(92) + 'omega=1$: ' + p1 + ' alone, same seeds' if has100 else ''}); cases: middle and "
+                               f"largest $N$ of each farm and data set. Avg.\\ rank among the {nsh.lower()} settings. W/T/L: cases in "
+                               f"which the default $\\omega=0.5$ is significantly better / not different / worse (run-level "
+                               f"Wilcoxon, Holm-adjusted over the {ncw.lower()} comparisons of each case).")
         label = label + "-cases"
     heads = ["$\\omega=0.25$", "$0.5$", "$0.75$"] + (["$0.9$"] if has90 else []) + (["$1$"] if has100 else [])
     lab_p = {"25": "0.5/0.25", "75": "0.5/0.75", "90": "0.5/0.9", "100": "0.5/1", "75v100": "0.75/1", "90v75": "0.9/0.75"}
@@ -1099,14 +1123,21 @@ def common_seeds(ALL):
 
 
 # ------------------------------------------------------------------ LaTeX helpers
-def table(env, caption, label, spec, header, lines, size="\\scriptsize", sep="3pt", resize=False, pos="!t", foot=None):
+def tnote(text, width="\\columnwidth"):
+    """Table note below the tabular (R1-20: captions are short noun phrases; definitions, test families and case
+    sets go here, in scriptsize, instead of the all-caps IEEE caption)."""
+    return "\\par\\vspace{2pt}\\parbox{%s}{\\scriptsize %s}\n" % (width, text)
+
+
+def table(env, caption, label, spec, header, lines, size="\\scriptsize", sep="3pt", resize=False, pos="!t", foot=None, note=None):
     body = "\n".join(lines)
     ft = "" if not foot else "\n" + "\n".join(foot)
     tab = f"\\begin{{tabular}}{{{spec}}}\n\\toprule\n{header} \\\\\n\\midrule\n{body}\n\\bottomrule{ft}\n\\end{{tabular}}"
     if resize:
         tab = "\\resizebox{\\textwidth}{!}{%\n" + tab + "}"
+    nt = "" if not note else tnote(note, "\\textwidth" if env.endswith("*") else "\\columnwidth")
     return (f"\\begin{{{env}}}[{pos}]\n\\centering\n\\caption{{{caption}}}\n\\label{{{label}}}\n"
-            f"{size}\\setlength{{\\tabcolsep}}{{{sep}}}\n{tab}\n\\end{{{env}}}\n")
+            f"{size}\\setlength{{\\tabcolsep}}{{{sep}}}\n{tab}\n{nt}\\end{{{env}}}\n")
 
 
 # ------------------------------------------------------------------ main
@@ -1241,9 +1272,14 @@ def main(argv=None):
                  " & ".join(wtl_str(C[C.Baseline == b].Outcome.value_counts()) for b in others) + " \\\\")
     lines.append("$\\tilde r_{\\rm rb}$ & & & " + " & ".join(f"{C[C.Baseline == b].RB.median():+.2f}" for b in others) + " \\\\")
     nword = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine"}.get(len(others), str(len(others)))
-    tabs["wtl"] = table("table", "Pairwise Outcome of %s Against Each Method: Cases in Which %s Is Significantly Better / Not Different / Worse (Two-Sided Wilcoxon Signed-Rank Test, 30 Seed-Paired Runs, Holm-Adjusted over the %s Comparisons of %s in Each Case, a Different Family from Table~\\ref{tab:ablation}, $\\alpha=0.05$; an Infeasible Run Ranks Below Every Feasible Run); Last Row: Median Rank-Biserial Correlation (Positive = %s Better; Zero Differences Dropped, $r_{\\rm rb}=0$ if All Are Zero)" % (fl, fl, nword, fl, fl),
+    tabs["wtl"] = table("table", "Run-Level Outcome of %s Against Each Method (W/T/L over the %d Cases)" % (fl, C[CASE].drop_duplicates().shape[0]),
                         "tab:wtl", "llc" + "c" * len(others),
-                        "DS & $r$ (m) & Cases & " + " & ".join(HEAD2.get(b, LAB[b]) for b in others), lines, sep="1.6pt")
+                        "DS & $r$ (m) & Cases & " + " & ".join(HEAD2.get(b, LAB[b]) for b in others), lines, sep="1.6pt",
+                        note="W/T/L: cases in which %s is significantly better / not different / worse (two-sided Wilcoxon "
+                             "signed-rank test on 30 seed-paired runs, $\\alpha=0.05$, Holm-adjusted over the %s comparisons of "
+                             "%s in each case, a different family from Table~\\ref{tab:ablation}; an infeasible run ranks below "
+                             "every feasible run). $\\tilde r_{\\rm rb}$: median rank-biserial correlation (positive = %s "
+                             "better; zero differences dropped, $r_{\\rm rb}=0$ if all are zero)." % (fl, nword.lower(), fl, fl))
     # W/T/L and mean loss difference by farm size (N >= 10 vs N < 10), for the text
     big = C.Turbines >= 10
     Sq = S[S.Qualified].pivot_table(index=CASE, columns="Algorithm", values="Loss")
@@ -1330,19 +1366,23 @@ def main(argv=None):
             pz = fmt_p(FR["p_holm_vs_focus"][a], 2); pw = fmt_p(CW[a]["p_holm"], 2)
             dl = f"${CW[a]['mean_dloss_pp']:+.3f}$"
         lines.append(f"{LAB[a]} & {FR['avg_rank'][a]:.2f} & {FR['sole_best_count'][a]} & {feas_pct[a]:.1f} & {pz} & {pw} & {dl} \\\\")
+    qual_set = (lambda l_: (", ".join(l_) + ", otherwise %d" % FR["n_cases"]) if l_ else "all %d cases" % FR["n_cases"])(
+        [f"{CW[b]['n_both_qualified']} for {LAB[b]}" for b in others if CW[b]["n_both_qualified"] < FR["n_cases"]])
     tabs["friedman68"] = table(
-        "table", "Case-Level Analysis over the %d Benchmark Cases. Avg.\\ Rank: Average Rank of the Mean Feasible Objective (1 = Best; Methods with Fewer Than 15 Feasible Runs in a Case Ranked Last); ``Best'': Cases in Which the Method Alone Ranks First; ``Feas.'': Feasible Runs (\\%%); $p_z$: Holm-Adjusted $p$ of the Average-Rank Test Against %s. Because Mean-Rank Tests Depend on the Pool of Methods~\\cite{Benavoli2016}, $p_W$ and $\\overline{\\Delta L}$ Give the Two-Sided Wilcoxon Signed-Rank Test on the %d Per-Case Mean Wake Losses (Holm-Adjusted over the %d Methods) and the Mean Wake-Loss Difference over the Cases in Which Both Methods Have at Least 15 Feasible Runs (%s; Percentage Points, %s Minus Method; Negative = %s Better)"
-        % (FR["n_cases"], fl, FR["n_cases"], len(others),
-           (lambda l_: (", ".join(l_) if l_ else "All %d Cases" % FR["n_cases"]))(
-               [f"{CW[b]['n_both_qualified']} for {LAB[b]}" for b in others if CW[b]["n_both_qualified"] < FR["n_cases"]])
-           + (", Otherwise %d" % FR["n_cases"] if any(CW[b]["n_both_qualified"] < FR["n_cases"] for b in others) else ""), fl, fl),
+        "table", "Case-Level Analysis of the %s Methods over the %d Benchmark Cases" % (
+            {7: "Seven", 8: "Eight", 9: "Nine"}.get(len(MAINP), str(len(MAINP))), FR["n_cases"]),
         "tab:friedman68", "lcccccc",
-        "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines,
-        foot=["\\multicolumn{7}{l}{Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$;}\\\\"
-              % (FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"], 2).strip("$")),
-              "\\multicolumn{7}{l}{Iman--Davenport $F_F=%.1f$ (%d, %d d.f.), $p=%s$}"
-              % (FR["iman_davenport"], len(MAINP) - 1,
-                 (len(MAINP) - 1) * (FR["n_cases"] - 1), fmt_p(FR["iman_davenport_p"], 2).strip("$"))], sep="2pt")
+        "Method & Avg.\\ rank & Best & Feas. & $p_z$ & $p_W$ & $\\overline{\\Delta L}$", lines, sep="2pt",
+        note="Avg.\\ rank: average rank of the mean feasible objective (1 = best; fewer than 15 feasible runs in a case = "
+             "ranked last); Best: cases in which the method alone ranks first; Feas.: feasible runs (\\%%); $p_z$: Holm-adjusted "
+             "$p$ of the average-rank test against %s. Because mean-rank tests depend on the pool~\\cite{Benavoli2016}, "
+             "$p_W$ gives the two-sided Wilcoxon signed-rank test on the %d per-case mean wake losses (Holm-adjusted over the "
+             "%d methods) and $\\overline{\\Delta L}$ the mean wake-loss difference (pp, %s minus method; negative = %s better) "
+             "over the cases in which both methods have at least 15 feasible runs (%s). Friedman $\\chi^2_F=%.1f$ (%d d.f.), "
+             "$p=%s$; Iman--Davenport $F_F=%.1f$ (%d, %d d.f.), $p=%s$."
+             % (fl, FR["n_cases"], len(others), fl, fl, qual_set, FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"], 2).strip("$"),
+                FR["iman_davenport"], len(MAINP) - 1, (len(MAINP) - 1) * (FR["n_cases"] - 1),
+                fmt_p(FR["iman_davenport_p"], 2).strip("$")))
 
     # --- further numbers quoted in the text (all written to summary["main"])
     ref = PHASE1.get(FOCUS)                      # phase-1 method of the focus hybrid (PSO for PSO-VNS)
@@ -1597,8 +1637,8 @@ def main(argv=None):
     CONTR += [(h, "RSDVNS", f"{LAB[PHASE1[h]]} vs.\\ disc sampling") for h in HYBRIDS if h != H0]
     CONTR += [("RSDVNS", "RSVNS", "disc vs.\\ square sampling")]
     CONTR += [(H0, h, f"{LAB[P1]} vs.\\ {LAB[PHASE1[h]]} as Phase~1") for h in HYBRIDS if h != H0]
-    CONTR += [("SSABV", "LXBV", "Laplace step in the hybrid")] if H0 != "LXBV" else []
-    CONTR += [("LXSSA", "SSA", "Laplace step alone")]
+    CONTR += [("SSABV", "LXBV", "LX-SSA as published (hybrid)")] if H0 != "LXBV" else []   # R1-2 / D14: not "Laplace step"
+    CONTR += [("LXSSA", "SSA", "LX-SSA as published (alone)")]
     CONTR = list(dict.fromkeys(CONTR))
     CONTR = [c for c in CONTR if c[0] in ablp and c[1] in ablp]
     arows = []
@@ -1646,16 +1686,26 @@ def main(argv=None):
     nw = {6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve", 13: "Thirteen", 14: "Fourteen",
           15: "Fifteen", 16: "Sixteen"}
     ncw = nw.get(len(CONTR), len(CONTR))
+    nq = [CM[f"{a}-{b}"]["n_both_qualified"] for a, b, _ in CONTR]
+    nqs = (f"{min(nq)}" if min(nq) == max(nq) else f"{min(nq)}--{max(nq)}") + " of %d per contrast" % FA["n_cases"]
+    anote = ("Top: average rank among the %s variants (Friedman $\\chi^2_F=%.1f$, %d d.f., $p=%s$) and feasible runs. "
+             "Bottom: planned contrasts. W/T/L: cases in which the first variant is significantly better / not different / "
+             "worse (run-level Wilcoxon, $\\alpha=0.05$, Holm-adjusted over the %s contrasts of each case, a different family "
+             "from Table~\\ref{tab:wtl}); $p_W$: Wilcoxon test on the %d per-case mean wake losses, Holm-adjusted over the %s "
+             "contrasts; $\\overline{\\Delta L}$: mean difference of the case-mean wake losses (pp; negative = first variant "
+             "better) over the cases in which both variants have at least 15 feasible runs (%s)."
+             % (nw.get(len(ablp), len(ablp)).lower(), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), ncw.lower(),
+                FA["n_cases"], ncw.lower(), nqs))
     tabs["ablation"] = (r"""\begin{table}[!t]
 \centering
-\caption{Component Analysis over the 68 Benchmark Cases (30 Seed-Paired Runs, 6,030 Calls). Top: Average Rank Among the %s Variants (Friedman $\chi^2_F=%.1f$, %d d.f., $p=%s$) and Feasible Runs. Bottom: Planned Contrasts; W/T/L: Cases in Which the First Variant Is Significantly Better / Not Different / Worse (Run-Level Wilcoxon, Holm-Adjusted over the %s Contrasts of Each Case, a Different Family from Table~\ref{tab:wtl}, $\alpha=0.05$); $p_W$: Wilcoxon Test on the 68 Per-Case Mean Wake Losses, Holm-Adjusted over the %s Contrasts; $\overline{\Delta L}$: Mean Difference of the Case-Mean Wake Losses (Percentage Points; Negative = First Variant Better)}
+\caption{Component Analysis over the %d Benchmark Cases (6,030 Calls, 30 Seed-Paired Runs)}
 \label{tab:ablation}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{lcccc}
 \toprule
 Variant & Phase 1 & Phase 2 & Avg.\ rank & Feas.\ (\%%) \\
 \midrule
-""" % (nw.get(len(ablp), len(ablp)), FA["chi2"], len(ablp) - 1, fmt_p(FA["p"]).strip("$"), ncw, ncw) + "\n".join(rows1) + r"""
+""" % FA["n_cases"] + "\n".join(rows1) + r"""
 \bottomrule
 \end{tabular}
 
@@ -1667,7 +1717,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
 """ + "\n".join(rows2) + r"""
 \bottomrule
 \end{tabular}
-\end{table}
+""" + tnote(anote) + r"""\end{table}
 """)
     # per-case component analysis (supplement): mean loss of the two variants that have no per-case table
     # elsewhere (LX-SSA-VNS, RS-VNS) and the run-level outcome of every contrast (+ / 0 / -)
@@ -1796,13 +1846,23 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         ideal_model = float(hr.aep_gwh(np.zeros((16, 2)), with_wake=False))
         xy80 = hr.site(80)[0]
         a80, i80 = float(hr.aep_gwh(xy80)), float(hr.aep_gwh(xy80, with_wake=False))
+        pwr = pywake_reference(args.data_dir)
         summary["hr_validation"] = dict(
             installed80_aep=a80, ideal80_aep=i80, installed80_loss_pct=100 * (1 - a80 / i80),
-            pywake_aep=PYWAKE_HR80_AEP, pywake_loss_pct=PYWAKE_HR80_LOSS_PCT,
-            rel_diff_pct=100 * (a80 / PYWAKE_HR80_AEP - 1),
-            note="installed 80-turbine Horns Rev 1 farm, hornsrev_model.py (current binning) vs the PyWake Jensen "
-                 "reference value quoted in hornsrev_site_text.tex (662.5 GWh/yr, 10.96 %)")
-        log(f"  80-turbine installed AEP {a80:.2f} GWh/yr vs PyWake {PYWAKE_HR80_AEP} -> {summary['hr_validation']['rel_diff_pct']:+.2f}%")
+            pywake_aep=pwr["aep"] if pwr else None, pywake_loss_pct=pwr["loss_pct"] if pwr else None,
+            pywake_ideal_aep=pwr["ideal"] if pwr else None, pywake_version=pwr["version"] if pwr else None,
+            rel_diff_pct=100 * (a80 / pwr["aep"] - 1) if pwr else None,
+            loss_diff_pp=(100 * (1 - a80 / i80) - pwr["loss_pct"]) if pwr else None,
+            ours_matches_pywake_check=(abs(pwr["ours_csv_aep"] - a80) < 1e-6) if pwr and pwr["ours_csv_aep"] is not None else None,
+            note=("installed 80-turbine Horns Rev 1 farm, hornsrev_model.py (current binning) vs PyWake %s NOJ(k=0.04) at "
+                  "identical bins (%s, pywake_check.csv)" % (pwr["version"], pwr["bins"])) if pwr else
+                 "pywake_check.csv missing: no PyWake reference (run pywake_check.py with py_wake==2.6.20)")
+        if pwr:
+            log(f"  80-turbine installed AEP {a80:.2f} GWh/yr vs PyWake {pwr['version']} NOJ {pwr['aep']:.2f} (identical bins) -> "
+                f"{summary['hr_validation']['rel_diff_pct']:+.2f}% AEP, {summary['hr_validation']['loss_diff_pp']:+.2f} pp wake loss"
+                + ("" if summary["hr_validation"]["ours_matches_pywake_check"] else "  WARNING: our AEP differs from pywake_check.csv"))
+        else:
+            log("  pywake_check.csv missing: \\NHRPyWakeDiff pending")
     except Exception as e:                                  # pragma: no cover
         hr, inst, ideal_model = None, INSTALLED_HR16, None
         log(f"  hornsrev_model unavailable ({e}); installed AEP = {INSTALLED_HR16}")
@@ -2420,12 +2480,15 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         fb.setdefault("focus_position", {})[b] = 1 + o.index(FOCUS) if FOCUS in o else None
     summary["feasbudget"] = fb
     tabs["feasbudget"] = (
-        "\\begin{table}[!t]\n\\centering\n\\caption{Six Largest Benchmark Cases: Mean Wake Loss (\\%) and Feasible Runs (\\%) at 6,030 Calls with Random and Feasibility-Preserving Initialization, and Average Rank at 6,030, 30,030 and 120,030 Calls (Random Initialization; 30 Seeds); n/r: Not Run}\n"
+        "\\begin{table}[!t]\n\\centering\n\\caption{Initialization and Budget on the Six Largest Benchmark Cases (30 Seeds)}\n"
         "\\label{tab:feasbudget}\n\\scriptsize\\setlength{\\tabcolsep}{2.4pt}\n\\begin{tabular}{lccccccc}\n\\toprule\n"
         "& \\multicolumn{2}{c}{Random init.} & \\multicolumn{2}{c}{Feasible init.} & \\multicolumn{3}{c}{Avg.\\ rank} \\\\\n"
         "\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\\cmidrule(lr){6-8}\n"
         "Method & Loss & Feas. & Loss & Feas. & 6,030 & 30,030 & 120,030 \\\\\n\\midrule\n" + "\n".join(rows) +
-        "\n\\bottomrule\n" + ("\n".join(foot) + "\n" if foot else "") + "\\end{tabular}\n\\end{table}\n")
+        "\n\\bottomrule\n" + ("\n".join(foot) + "\n" if foot else "") + "\\end{tabular}\n" +
+        tnote("Loss: mean wake loss (\\%) of the feasible runs; Feas.: feasible runs (\\%); both at 6,030 calls with random "
+              "and feasibility-preserving initialization. Avg.\\ rank at 6,030, 30,030 and 120,030 calls, random "
+              "initialization. n/r: not run.") + "\\end{table}\n")
     log(f"  feasbudget: pending {pend}; ranks {ranks}")
 
     # ---------------- Horns Rev 16 (ten methods; loss at 6k random / 6k feasible / 30k / 120k)
@@ -2463,12 +2526,17 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
     if hsum:
         hsum["loss_by_setting"] = hloss
     tabs["hr16"] = (
-        "\\begin{table}[!t]\n\\centering\n\\caption{Horns Rev~1 16-Turbine Block (Wake-Free AEP %.2f GWh/yr): Mean AEP (GWh/yr) over the Feasible Runs of 30 Seeds at 6,030 Calls, Feasible Runs, Holm-Adjusted Wilcoxon $p$ of %s vs.\\ Each Method, and Mean AEP Loss (\\%%) at 6,030 Calls with Random (R) and Feasibility-Preserving (F) Initialization and at 30,030 and 120,030 Calls (R; 10 Seeds at 120,030); Superscript: Feasible Runs When Not All Runs Are Feasible}\n"
-        % (ideal, LAB[FOCUS]) +
+        "\\begin{table}[!t]\n\\centering\n\\caption{Horns Rev~1 16-Turbine Block (5\\textdegree{} Direction Bins): AEP, Feasibility and AEP Loss}\n"
         "\\label{tab:hr-site}\n\\scriptsize\\setlength{\\tabcolsep}{2.2pt}\n\\begin{tabular}{lccccccc}\n\\toprule\n"
         "& \\multicolumn{3}{c}{6,030 calls, R} & \\multicolumn{4}{c}{Loss (\\%)} \\\\\n\\cmidrule(lr){2-4}\\cmidrule(lr){5-8}\n"
         "Layout / method & AEP & Feas. & $p_{\\rm Holm}$ & 6k R & 6k F & 30k & 120k \\\\\n\\midrule\n" + "\n".join(hl) +
-        "\n\\bottomrule\n\\end{tabular}\n\\end{table}\n")
+        "\n\\bottomrule\n\\end{tabular}\n" +
+        tnote("Wake-free AEP %.2f GWh/yr. AEP: mean (GWh/yr) over the feasible runs of 30 seeds at 6,030 calls, random "
+              "initialization (R); Feas.: feasible runs; $p_{\\rm Holm}$: run-level Wilcoxon signed-rank $p$ of %s vs.\\ each "
+              "method (infeasible runs ranked last), Holm-adjusted over the %d comparisons. Loss: mean AEP loss (\\%%) at "
+              "6,030 calls with random (R) and feasibility-preserving (F) initialization and at 30,030 and 120,030 calls "
+              "(R; 10 seeds at 120,030); superscript: feasible runs when not all are feasible; n/r: not run."
+              % (ideal, LAB[FOCUS], len(meth) - 1)) + "\\end{table}\n")
 
     # ---------------- IEA37 compact table (best feasible run of each method)
     isum = summary.get("iea37") or {}
@@ -2485,7 +2553,26 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
                        feasible_aeps=sorted(map(float, pf.AEP)) if pf is not None else [])
     num = lambda v: PEND if v is None or not np.isfinite(v) else f"{v:,.1f}".replace(",", "{,}")
     il.append("Example layout & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\" % (num(pubv[16]["base"]), num(pubv[36]["base"])))
-    il.append("Best feasible published$^{a}$ & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\" % (num(pubv[16]["best_feasible"]), num(pubv[36]["best_feasible"])))
+    il.append("Best published, strict$^{a}$ & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\" % (num(pubv[16]["best_feasible"]), num(pubv[36]["best_feasible"])))
+    # R4-5 / D19: second convention -- published layouts projected radially onto the boundary (iea37_projected.py ->
+    # iea37_projected.json, read only; the \NF... macros of mpce_numbers_dir.tex come from the same file). Without
+    # the file the table keeps the strict row only and says so in the note.
+    proj = None
+    try:
+        J = json.load(open(os.path.join(HERE, "iea37_projected.json")))
+        proj = {n: J["scenarios"][str(n)] for n in (16, 36)}
+        for n in (16, 36):
+            if abs(proj[n]["strict"]["best_aep"] - pubv[n]["best_feasible"]) > 0.5:
+                log(f"  WARNING: iea37_projected.json strict best ({proj[n]['strict']['best_aep']:.1f}) differs from the published file "
+                    f"({pubv[n]['best_feasible']:.1f}) for {n} turbines")
+            pubv[n]["best_projected"] = float(proj[n]["projected"]["best_aep"])
+            pubv[n]["best_projected_by"] = str(proj[n]["projected"]["best_by"])
+            pubv[n]["best_projected_excess_m"] = float(proj[n]["projected"]["best_max_excess_m"])
+        il.append("Best published, projected$^{b}$ & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\"
+                  % (num(pubv[16]["best_projected"]), num(pubv[36]["best_projected"])))
+    except (OSError, KeyError, ValueError) as e:
+        log(f"  IEA37: projected published layouts not available ({e}); strict convention only")
+        proj = None
     il.append("\\midrule")
     for a in MAIN8:
         c = []
@@ -2505,16 +2592,26 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         il.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
     summary["iea37_compact"] = dict(published={str(k): {kk: vv for kk, vv in v.items() if kk != "feasible_aeps"} | dict(n_feasible=len(v["feasible_aeps"]))
                                                for k, v in pubv.items()}, methods=ib)
-    who = {pubv[16]["best_feasible_by"], pubv[36]["best_feasible_by"]}
-    whot = ("Participant~%s in both scenarios" % next(iter(who)).replace("par", "")) if len(who) == 1 else \
-        "Participants %s (16) and %s (36)" % (pubv[16]["best_feasible_by"].replace("par", ""), pubv[36]["best_feasible_by"].replace("par", ""))
+    def whof(key):
+        w_ = {pubv[16][key], pubv[36][key]}
+        return (("participant~%s in both scenarios" % next(iter(w_)).replace("par", "")) if len(w_) == 1 else
+                "participants~%s (16) and %s (36)" % (pubv[16][key].replace("par", ""), pubv[36][key].replace("par", "")))
+    def dist(m):
+        return f"{m:.1f}~m" if m >= 0.1 else f"{1000 * m:.1f}~mm"
+    inote = ("AEP of the best feasible run of each method (30 seeds; --: no feasible run). $^{a}$Best published layout with "
+             "every turbine within 1~mm of the boundary (%s). " % whof("best_feasible_by"))
+    if proj is not None:
+        inote += ("$^{b}$Best published layout after projecting the turbines outside the boundary radially onto it, "
+                  "spacing re-checked (%s; up to %s and %s outside before projection)."
+                  % (whof("best_projected_by"), dist(pubv[16]["best_projected_excess_m"]), dist(pubv[36]["best_projected_excess_m"])))
+    else:
+        inote += "Layouts that place turbines outside the boundary by more than 1~mm are not counted."
     tabs["iea37"] = (
-        "\\begin{table}[!t]\n\\centering\n\\caption{IEA37 Case Study~1, 16- and 36-Turbine Scenarios: AEP in MWh of the Best Run of Each Method at 6,030 and 30,030 Calls (30 Seeds), Compared with the Example Layout and the Best Feasible Published Layout~\\cite{Baker2019,IEA37repo}}\n"
+        "\\begin{table}[!t]\n\\centering\n\\caption{IEA37 Case Study~1: AEP (MWh) of the Best Run of Each Method and of Published Layouts~\\cite{Baker2019,IEA37repo}}\n"
         "\\label{tab:iea37}\n\\scriptsize\\setlength{\\tabcolsep}{2.5pt}\n\\begin{tabular}{lcccc}\n\\toprule\n"
         "& \\multicolumn{2}{c}{16 turbines ($r=1300$~m)} & \\multicolumn{2}{c}{36 turbines ($r=2000$~m)} \\\\\n\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\n"
         "Method / source & 6,030 & 30,030 & 6,030 & 30,030 \\\\\n\\midrule\n" + "\n".join(il) + "\n\\bottomrule\n"
-        "\\multicolumn{5}{p{0.92\\columnwidth}}{$^{a}$" + whot + " (SNOPT with wake expansion continuation \\TBD{verify against Baker et al.\\ (2019)}). A higher submitted AEP places turbines up to 3.5~m outside the boundary and is not counted.}\n"
-        "\\end{tabular}\n\\end{table}\n")
+        "\\end{tabular}\n" + tnote(inote) + "\\end{table}\n")
 
     # ---------------- robustness, single column
     rb = summary.get("robustness")
@@ -2531,11 +2628,14 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
             rl.append(f"{name} & {d1:+.1f} & {d2:+.1f} & {ar[FOCUS]:.2f} & {LAB[best]} & " +
                       ("-- & --" if col == "Objective" else f"{v['tau']:.2f} & {v['same_best_pct']:.0f}") + " \\\\")
         tabs["robust_final"] = (
-            "\\begin{table}[!t]\n\\centering\n\\caption{Robustness to the Benchmark Model: All Feasible Final Layouts Re-Evaluated (Not Re-Optimized). $\\Delta$: Mean Relative Change of the Objective (\\%); Rank: Average Rank of " + LAB[FOCUS] +
-            " over the 68 Cases; Best: Best-Ranked Method; $\\bar\\tau$: Mean Kendall Correlation Between the Benchmark and Alternative Orderings Within a Case; Same: Cases (\\%) with Unchanged Best Method. The Ranks of All Methods Are Given in Table~\\ref{tab:robust}}\n"
+            "\\begin{table}[!t]\n\\centering\n\\caption{Robustness to the Benchmark Model: Final Layouts Re-Evaluated, Not Re-Optimized}\n"
             "\\label{tab:robust-final}\n\\scriptsize\\setlength{\\tabcolsep}{2.4pt}\n\\begin{tabular}{lcccccc}\n\\toprule\n"
             "& \\multicolumn{2}{c}{$\\Delta$ (\\%)} & & & & \\\\\n\\cmidrule(lr){2-3}\nModel & DS I & DS II & Rank & Best & $\\bar\\tau$ & Same \\\\\n\\midrule\n" +
-            "\n".join(rl) + "\n\\bottomrule\n\\end{tabular}\n\\end{table}\n")
+            "\n".join(rl) + "\n\\bottomrule\n\\end{tabular}\n" +
+            tnote("All feasible final layouts of the %d cases. $\\Delta$: mean relative change of the objective (\\%%); Rank: "
+                  "average rank of %s; Best: best-ranked method; $\\bar\\tau$: mean Kendall correlation between the benchmark "
+                  "and the alternative ordering within a case; Same: cases (\\%%) with unchanged best method. Ranks of all "
+                  "methods: supplementary material." % (68, LAB[FOCUS])) + "\\end{table}\n")
 
     # ---------------- combined layout figure: IEA37 16 / 36 (best focus layout at the largest budget) + Horns Rev 16
     fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.75))
@@ -2644,12 +2744,12 @@ def baseline_setting(R6, PO, tabs):
     for h in BASE_HYB:
         lines.append(f"{LAB[h]} vs.\\ PSO (W/T/L) & {wtl_str(o['wtl_vs_pso'][h])} & {wtl_str(c['wtl_vs_pso'][h])} \\\\")
     tabs["baseline"] = table(
-        "table", "Effect of the PSO Setting on the Method Pool of the Old-Setting Comparison (the Pool of Table~\\ref{tab:friedman68} with LX-SSA-VNS Instead of PSO-VNS; %d Cases, 6,030 Evaluations): "
-        "Average Rank (1 = Best) with the Old ($w=0.7$, $c_1=c_2=2$) and the Constriction Setting, and Run-Level W/T/L of "
-        "the Salp-Swarm Hybrids against PSO" % o["n_cases"],
+        "table", "Effect of the PSO Setting on an Eight-Method Pool (the Methods of Table~\\ref{tab:friedman68} with "
+        "LX-SSA-VNS Instead of PSO-VNS; %d Cases, 6,030 Evaluations)" % o["n_cases"],
         "tab:baseline", "lcc",
         "& \\multicolumn{2}{c}{PSO setting} \\\\\n\\cmidrule(lr){2-3}\nMethod & Old & Constriction", lines,
-        foot=["\\multicolumn{3}{p{0.95\\columnwidth}}{Ranks: feasibility-aware rule (fewer than 15 of 30 feasible runs "
+        foot=["\\multicolumn{3}{p{0.95\\columnwidth}}{Old: $w=0.7$, $c_1=c_2=2$; constriction: Clerc--Kennedy setting~\\cite{Clerc2002}. "
+              "Average rank: 1 = best, feasibility-aware rule (fewer than 15 of 30 feasible runs "
               "in a case = ranked last); bold: best average rank. W/T/L: cases in which the hybrid is significantly "
               "better / not different / worse than PSO (two-sided Wilcoxon signed-rank test, 30 seed-paired runs, "
               "Holm-adjusted over the seven comparisons of the hybrid in each case, $\\alpha=0.05$).}"], sep="4pt",
