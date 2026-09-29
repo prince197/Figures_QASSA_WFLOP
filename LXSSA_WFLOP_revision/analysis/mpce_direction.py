@@ -911,7 +911,7 @@ def write_supp(BM, HR, PW, IP, fn, stamp):
                                  f"{r.IdealAEP_GWh:.2f} & {r.WakeLossPct:.2f} \\\\")
             if farm == "HR80":
                 lines.append("\\midrule")
-        v = PW.iloc[0]
+        v = PW[PW.Source == "PyWake"].iloc[0]
         T.append(table("table", f"Horns Rev~1 wake model against PyWake {v.Version} (NOJ, $k=0.04$, V80 curves and Weibull climate of "
                        f"PyWake's Hornsrev1Site) at identical direction and speed bins (the bin probabilities agree to "
                        f"{sci(float(PW[PW.Source == 'PyWake'].PMaxAbsDiff.max()))}). AEP and wake-free AEP in GWh/yr, wake loss in \\%. PyWake's NOJ "
@@ -925,7 +925,7 @@ def write_supp(BM, HR, PW, IP, fn, stamp):
             for p in IP["participants"]:
                 if p["turbines"] != n:
                     continue
-                lines.append(f"{n} & {p['participant'].replace('par', '')} & {p['aep_published']:,.1f} & {p['max_excess_m']:.4f} & "
+                lines.append(f"{n} & {p['participant'].replace('par', '')} & {p['aep_published']:,.1f} & {max(p['max_excess_m'], 0.0):.4f} & "
                              f"{p['min_spacing_m']:.1f} & {'yes' if p['feasible_strict'] else 'no'} & "
                              f"{tnum(p['aep_projected'], 1) if p['projected_ok'] else '--'} & "
                              f"{p['min_spacing_projected_m']:.1f} & {'yes' if p['feasible_projected'] else 'no'} \\\\".replace(",", "{,}"))
@@ -935,7 +935,7 @@ def write_supp(BM, HR, PW, IP, fn, stamp):
                        "feasibility at the published 1~mm tolerance (strict), and after projecting every turbine outside the circle radially "
                        "onto it (AEP recomputed with our calculator, which reproduces the official one; spacing re-checked against 2$D$ = "
                        "260~m with a $10^{-6}$~m tolerance). Layouts violating the spacing cannot be repaired by the projection.",
-                       "tab:F-iea", "ccccccccc", "$N$ & Part. & AEP publ.\\ (MWh) & Excess (m) & Min.\\ spacing (m) & Feas.\\ strict & "
+                       "tab:F-iea", "ccccccccc", "$N$ & Part. & AEP publ.\\ (MWh) & Outside (m) & Min.\\ spacing (m) & Feas.\\ strict & "
                        "AEP projected & Spacing proj.\\ (m) & Feas.\\ projected", lines, sep="2.5pt"))
         lines = []
         for n in (16, 36):
