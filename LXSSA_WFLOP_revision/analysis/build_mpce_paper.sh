@@ -31,6 +31,8 @@ CHK=""
 python3 mpce_check_extra.py > check_extra.log 2>&1 || CHK="$CHK mpce_check_extra.py"
 tail -n 1 check_extra.log
 python3 mpce_check_diag.py > check_diag.log 2>&1 || CHK="$CHK mpce_check_diag.py"
+python3 mpce_direction.py --procs 2 > direction.log 2>&1 && python3 mpce_check_dir.py > check_dir.log 2>&1 || CHK="$CHK mpce_check_dir.py"
+python3 mpce_csweep.py > csweep.log 2>&1 && python3 mpce_check_csweep.py > check_csweep.log 2>&1 || CHK="$CHK mpce_check_csweep.py"
 tail -n 1 check_diag.log
 python3 mpce_check_final.py > check_final.log 2>&1 || CHK="$CHK mpce_check_final.py"
 grep "summary:" check_final.log

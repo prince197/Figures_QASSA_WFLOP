@@ -126,3 +126,25 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
 - D18 (analysis fixes): RS/RSD switch at 3,015 (feasible at switch 64.2 / 75.7 %). Old-setting infeasible finals: 286 (1e-6 m rule): 224 spacing-only, 10 boundary-only, 52 both; 60 of 62 boundary violations = turbine pinned at a box tangent point (penalty-scaling effect). VNS cycles: 21.5 % of Phase-2 evaluations pooled (median run 4.7 %) for 0.5 % of the gain (2.5 % incl. cut-off cycle) → use these, not "shaking 0.02 %". RS-VNS weakness: spacing binding in all 730 runs; disc sampling rescues only 242; 488 infeasible either way (C60). Fix [NEW, D2]/[NEW, D3] tags → [C32]/[C45].
 - D19 (direction resolution, 41/41 F checks): with 1° sub-bins wake losses rise ~1 pp (layouts exploit 15° bin gaps); PSO-VNS still ranks first at 15°, 5° and 1° and under the Gaussian wake at 1° (the "PSO first under Gaussian" was a 15° effect); order beyond the top two changes (MS-SLSQP 3rd). PSO-VNS − PSO: 15° equivalent (case level), 1° −0.043 pp, CI [−0.062, −0.025]: PSO-VNS slightly but significantly better, equivalence not shown. DS II N≥10 advantage survives (10/10). Component analysis at 1°: SSA-VNS and LX-SSA-VNS worse than RSD-VNS; PSO-VNS beats all controls. Horns Rev: 0 runs above installed at 1° (16 at 5°) → DELETE "runs exceed installed"; 6,030 = feasibility result (AEP edge vanishes at 1°/PyWake); 30,030: PSO-VNS highest mean AEP at 1° and under PyWake NOJ and beats PSO on jointly feasible seeds. PyWake 2.6.20 NOJ at identical bins: 661.39 vs ours 666.75 (+0.81 % AEP; wake loss 0.72 pp lower) — cause: C_T at free-stream speed (local C_T reproduces PyWake hub-centre NOJ exactly); drop the 662.5 constant and the rotor-averaging attribution. IEA37: projected participant-12 layouts feasible → gaps −1.93 % (16T) and −6.23 % (36T) for the best PSO-VNS at 30,030 (strict: −1.33/−4.20). Scope conclusions to discretized roses.
 - FINAL M3: "PSO-VNS has the best average rank under every evaluation we tried (15°, 5°, 1° direction bins; Jensen and Gaussian). Its average advantage over a well-configured PSO is small: under the benchmark's 15° rose within ±0.05 pp (equivalent across seeds and cases, not across farm clusters), under a 1° rose a small significant advantage (−0.04 pp). Case-level differences go both ways and follow a data set × density pattern (exploratory). PSO-VNS is more reliable in reaching feasibility (Horns Rev 30/30 vs 19/30, McNemar p 0.001)."
+- D20 (c-sweep, 15/15 S checks): feasibility ≥ 98.9 % for c ≤ 1.7 (stable side), 90.0 % at 1.8, 77.2 % at 1.9, 58.9 % at 2.0; degradation begins in the step containing c* = 1.7486 and accelerates — onset, not a jump; spread/loss grow smoothly (loss already rises 1.6→1.7). Velocity zeroing at the box: no rescue; velocity clamping |v| ≤ 0.2(u−l): 92.2 % feasible, ≈ c = 1.8, still worse than constriction in 12/12 cases → the deficit is mainly large steps, not bound handling. WORDING: "lies beyond the order-2 boundary, consistent with …"; "the boundary marks approximately where this PSO starts to fail"; never "causes"/"jump". State the old setting is run without velocity clamping.
+
+## FINAL TEXT ROUND (T1–T9) — rules
+- Apply decisions D13–D20 above and every applicable issue in optA/reviews2/R1_editor.md, R2_statistics.md,
+  R3_metaheuristics_theory.md, R4_windenergy.md, R5_claims_audit.md to your files. Numbers only via macros
+  (analysis/mpce_numbers*.tex: \N, \NX, \ND, \NF (direction/PyWake/IEA37-projected), \NS (c-sweep)); every claim
+  gets a CHECK tag: FINAL [Cnn] (mpce_check_final.py), EXTRA [Xnn] (mpce_check_extra.py), DIAG [Dnn]
+  (mpce_check_diag.py), DIR [Fnn] (mpce_check_dir.py), CSWEEP [Snn] (mpce_check_csweep.py), THEORY [Tnn].
+  Tags must contain an id (no "[NEW, …]").
+- TITLE (lead decision D21): "Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons
+  for Wind Farm Layout Optimization"; running head unchanged ("BASELINES AND CONTROLS IN METAHEURISTIC
+  COMPARISONS FOR WIND FARM LAYOUT OPTIMIZATION"). Keywords: Benchmarking; equivalence testing; particle swarm
+  optimization; random-sampling control; wake effect; wind farm layout optimization.
+- SCOPE everywhere: results are for the discretized Kusiak–Song benchmark (15° rose) and Horns Rev (5° bins), random
+  starts, 6,030 evaluations unless stated; direction resolution (1° re-evaluation) is a reported robustness dimension.
+- PAGE BUDGET: the main PDF must be ≤ 12 pages INCLUDING room for ~25 lines of real biographies/funding later.
+  Apply the editor's cuts (R1 table C1–C8): C1 shorter contributions (02), C2 Table IX → supplement (09),
+  C3 one Discussion paragraph (10), C4 delete duplicated diagnostics (04), C5 delete confusing sentence (06),
+  C6 Table V (split) → supplement (07, keep one sentence), C7 if needed (08). Moved tables: remove the \input
+  from the main file and tell the supplement agent (T8) via the lead report; T8 adds them.
+- Do not run pdflatex in the shared folder; compile privately with `sh optA/compile_copy.sh <scratch>/p7_<you>`.
+  No commit/push. Report changed sentences, CHECK ids, length change.
