@@ -5,6 +5,7 @@ Usage (from analysis/):
     python make_theory_figures.py --check    additionally verify that every number typed in optA/supp_theory.tex
                                              and optA/drafts/theory_main.tex equals the value computed here
                                              (checks T01...; exit code 1 on any FAIL)
+    python make_theory_figures.py --check --swevo   the same checks against the SWEVO methods section (optA/sw/04_methods.tex)
     python make_theory_figures.py --fast     smaller Monte Carlo (for a quick look; --check needs the full run)
 
 Everything here is mathematics or geometry (no objective evaluations, no run data):
@@ -27,6 +28,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 FIG = os.path.join(ROOT, "figures_mpce")
 TEX = [os.path.join(ROOT, "optA", "supp_theory.tex"), os.path.join(ROOT, "optA", "04_methods.tex")]
+if "--swevo" in sys.argv:  # SWEVO version: its methods section is optA/sw/04_methods.tex
+    TEX[1] = os.path.join(ROOT, "optA", "sw", "04_methods.tex")
 FAST = "--fast" in sys.argv
 SEED = 20260928
 

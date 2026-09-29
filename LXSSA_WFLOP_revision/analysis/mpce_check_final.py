@@ -443,8 +443,12 @@ def main(argv=None):
     texs, T = [], None
     if os.path.exists(a.tex):
         import glob as _g
-        texs = [a.tex] + sorted(_g.glob(os.path.join(os.path.dirname(a.tex), "optA", "*.tex")))
-        sup = os.path.join(os.path.dirname(a.tex), "MPCE_PSO_VNS_supplement.tex")
+        d = os.path.dirname(a.tex)
+        texs = [a.tex] + sorted(_g.glob(os.path.join(d, "optA", "*.tex")))
+        sup = os.path.join(d, "MPCE_PSO_VNS_supplement.tex")
+        if os.path.basename(a.tex).startswith("SWEVO"):  # SWEVO version: its own section copies and supplement
+            texs += sorted(_g.glob(os.path.join(d, "optA", "sw", "*.tex")))
+            sup = os.path.join(d, "SWEVO_supplement.tex")
         texs += [sup] if os.path.exists(sup) else []
         T = {os.path.basename(f): [_uncommented(l) for l in open(f, encoding="utf-8", errors="replace")] for f in texs}
     res = {}

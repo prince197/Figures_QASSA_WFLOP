@@ -4,8 +4,15 @@ SWEVO submission package (Swarm and Evolutionary Computation, Elsevier)
 Manuscript: "Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm
 Layout Optimization" (P. Solanki, P. Dwivedi, V. Garg, V. Shukla).
 This is a new submission. The MPCE version (MPCE_PSO_VNS.tex, MPCE_PSO_VNS_supplement.tex,
-Cover_letter_PSO_VNS.tex) stays in the folder unchanged and still compiles; both versions share the section
-files optA/02_intro.tex ... optA/10_limits_concl.tex and the number macros in analysis/.
+Cover_letter_PSO_VNS.tex) stays in the folder unchanged and still compiles (12 pages); both versions share the
+number macros, generated tables and figures in analysis/ and figures_*/.
+The SWEVO manuscript is the extended version (40 pages including references, 12-pt review format): it has its
+own section files optA/sw/*.tex (Related Work; wind model and model figure; algorithm boxes; stability
+proposition; parameter and experimental-design tables; definition of practical equivalence at three levels;
+results with the coefficient sweep, equivalence levels and budget figure; feasibility lemma; recommendations
+table; threats to validity). Detailed tables stay in the supplement; the log of what moved between the two
+documents is optA/sw/moved.md (items moved back to the supplement to fit 40 pages are marked
+"% Page budget" in optA/sw/*.tex). The reference list is ordered by first citation (analysis/swevo_bib.py).
 Journal requirements (checklist, with what is verified and what is assumed): optA/swevo_requirements.md.
 
 
@@ -19,7 +26,8 @@ Compiled documents (root):
   SWEVO_highlights.txt            3-5 highlights, one per line, each <= 85 characters incl. spaces (plain text)
 Sources read by the .tex files:
   optA/swevo_front.tex            title, authors, affiliations, abstract, keywords, nomenclature (SWEVO only)
-  optA/02_intro.tex ... optA/10_limits_concl.tex   sections (shared with the MPCE version)
+  optA/sw/*.tex                   sections of the SWEVO version (02_intro ... 10_limits_concl; capture.tex
+                                  places generated supplement tables/figures in the main text)
   optA/swevo_back.tex             declarations (CRediT, competing interest, data, generative AI, funding/
                                   acknowledgments) and the reference list (SWEVO only)
   optA/supp_theory.tex            theory section of the supplement

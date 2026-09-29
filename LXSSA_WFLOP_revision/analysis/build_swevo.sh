@@ -32,4 +32,4 @@ for f in $DOCS; do
        "undefined refs: $(grep -c 'undefined' $f.log || true), overfull boxes: $(grep -c 'Overfull' $f.log || true)"
 done
 echo "pending: $(grep -c 'TBD{pending' analysis/mpce_numbers.tex) macros in analysis/mpce_numbers.tex (listed in its 2nd line);" \
-     "author placeholders in the SWEVO manuscript files: $(cat SWEVO_manuscript.tex optA/swevo_front.tex optA/0[2-9]*.tex optA/10_*.tex $(ls optA/swevo_back.tex 2>/dev/null) | grep -o 'TBD{[^p}]' | wc -l)"
+     "author placeholders in the SWEVO manuscript files: $(cat SWEVO_manuscript.tex optA/swevo_front.tex optA/sw/*.tex $(ls optA/swevo_back.tex 2>/dev/null) | grep -o 'TBD{[^p}]' | wc -l)"
