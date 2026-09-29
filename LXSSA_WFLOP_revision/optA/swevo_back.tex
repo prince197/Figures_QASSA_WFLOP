@@ -1,0 +1,223 @@
+% swevo_back.tex -- back matter of the SWEVO (Elsevier, elsarticle) version.
+% Built from optA/11_back.tex: Elsevier declarations in Elsevier order, then the same
+% thebibliography as 11_back.tex (same keys, same order; numbered style), without IEEE biographies.
+% Declarations are unnumbered (\section*), since elsarticle numbers sections.
+
+\section*{CRediT authorship contribution statement}
+% Proposed split -- all roles to be confirmed by the authors (CRediT taxonomy, https://credit.niso.org).
+\TBD{authors: confirm roles}
+
+\noindent\textbf{Prince Solanki:} Conceptualization, Methodology, Software, Formal analysis, Investigation, Writing -- original draft. \TBD{confirm}
+
+\noindent\textbf{Pulkit Dwivedi:} Validation, Writing -- review \& editing. \TBD{confirm}
+
+\noindent\textbf{Vanita Garg:} Validation, Writing -- review \& editing, Supervision. \TBD{confirm}
+
+\noindent\textbf{Vinay Shukla:} Validation, Writing -- review \& editing, Supervision. \TBD{confirm}
+
+\section*{Declaration of competing interest}
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper. \TBD{confirm}
+
+\section*{Data availability}
+The source code of all methods and of the benchmark evaluator, the per-run results of all studies (including the runs with the old PSO setting) and the analysis scripts are openly available at \TBD{Zenodo DOI}. Each run record gives the method, case, seed, final objective (AEP for Horns Rev~1), feasibility, final turbine coordinates and convergence curve, and the budget and initialization where these vary. The file \texttt{analysis/README\_reproduce.md} lists the script that produces each table, figure and number of this paper and of its supplementary material, and \texttt{analysis/requirements.txt} pins the software versions. The Horns Rev~1 and IEA37 input data are taken from~\cite{PyWake,IEA37repo}. The supplementary material gives the model details, the pseudocode of SSA and LX-SSA, the wind data, the per-case results, the coordinates of the best layouts and further figures.
+
+\section*{Declaration of generative AI and AI-assisted technologies in the writing process}
+During the preparation of this work the authors used Claude (Anthropic) to assist with code for the analyses, drafting and editing of the text, and consistency checks. After using this tool, the authors reviewed and edited the content as needed and take full responsibility for the content of the published article.
+\TBD{authors: confirm or edit this statement}
+
+\section*{Acknowledgments}
+% Funding: from the \thanks in optA/01_front.tex; Elsevier requires a funding statement even if there is none.
+\TBD{funding statement, e.g., ``This research did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors.''}
+\TBD{acknowledgment, or delete this sentence}
+
+\begin{thebibliography}{99}
+
+\bibitem{Srikakulapu2018}
+R. Srikakulapu and U. Vinatha, ``Optimized design of collector topology for offshore wind farm based on ant colony optimization with multiple travelling salesman problem,'' \textit{J. Mod. Power Syst. Clean Energy}, vol. 6, no. 6, pp. 1181--1192, Nov. 2018, doi: 10.1007/s40565-018-0386-4.
+
+\bibitem{Hou2019}
+P. Hou, J. Zhu, K. Ma, G. Yang, W. Hu, and Z. Chen, ``A review of offshore wind farm layout optimization and electrical system design methods,'' \textit{J. Mod. Power Syst. Clean Energy}, vol. 7, no. 5, pp. 975--986, Sep. 2019, doi: 10.1007/s40565-019-0550-5.
+
+\bibitem{Mosetti1994}
+G. Mosetti, C. Poloni, and B. Diviacco, ``Optimization of wind turbine positioning in large windfarms by means of a genetic algorithm,'' \textit{J. Wind Eng. Ind. Aerodyn.}, vol. 51, no. 1, pp. 105--116, Jan. 1994, doi: 10.1016/0167-6105(94)90080-9.
+
+\bibitem{Grady2005}
+S. A. Grady, M. Y. Hussaini, and M. M. Abdullah, ``Placement of wind turbines using genetic algorithms,'' \textit{Renew. Energy}, vol. 30, no. 2, pp. 259--270, Feb. 2005, doi: 10.1016/j.renene.2004.05.007.
+
+\bibitem{Kusiak2010}
+A. Kusiak and Z. Song, ``Design of wind farm layout for maximum wind energy capture,'' \textit{Renew. Energy}, vol. 35, no. 3, pp. 685--694, Mar. 2010, doi: 10.1016/j.renene.2009.08.019.
+
+\bibitem{Eroglu2012}
+Y. Ero\u{g}lu and S. U. Se\c{c}kiner, ``Design of wind farm layout using ant colony algorithm,'' \textit{Renew. Energy}, vol. 44, pp. 53--62, Aug. 2012, doi: 10.1016/j.renene.2011.12.013.
+
+\bibitem{Eroglu2013}
+Y. Ero\u{g}lu and S. U. Se\c{c}kiner, ``Wind farm layout optimization using particle filtering approach,'' \textit{Renew. Energy}, vol. 58, pp. 95--107, Oct. 2013, doi: 10.1016/j.renene.2013.02.019.
+
+\bibitem{Bansal2017}
+J. C. Bansal and P. Farswan, ``Wind farm layout using biogeography based optimization,'' \textit{Renew. Energy}, vol. 107, pp. 386--402, Jul. 2017, doi: 10.1016/j.renene.2017.01.064.
+
+\bibitem{Elkinton2008}
+C. N. Elkinton, J. F. Manwell, and J. G. McGowan, ``Algorithms for offshore wind farm layout optimization,'' \textit{Wind Eng.}, vol. 32, no. 1, pp. 67--84, Jan. 2008, doi: 10.1260/030952408784305877.
+
+\bibitem{Asaah2021}
+P. Asaah, L. Hao, and J. Ji, ``Optimal placement of wind turbines in wind farm layout using particle swarm optimization,'' \textit{J. Mod. Power Syst. Clean Energy}, vol. 9, no. 2, pp. 367--375, Mar. 2021, doi: 10.35833/MPCE.2019.000087.
+
+\bibitem{Ju2019}
+X. Ju and F. Liu, ``Wind farm layout optimization using self-informed genetic algorithm with information guided exploitation,'' \textit{Appl. Energy}, vol. 248, pp. 429--445, Aug. 2019, doi: 10.1016/j.apenergy.2019.04.084.
+
+\bibitem{Bai2022}
+F. Bai, X. Ju, S. Wang, W. Zhou, and F. Liu, ``Wind farm layout optimization using adaptive evolutionary algorithm with Monte Carlo tree search reinforcement learning,'' \textit{Energy Convers. Manage.}, vol. 252, Art. no. 115047, Jan. 2022, doi: 10.1016/j.enconman.2021.115047.
+
+\bibitem{Nagpal2021}
+S. V. Nagpal, M. V. Liu, and C. L. Anderson, ``A comparison of deterministic refinement techniques for wind farm layout optimization,'' \textit{Renew. Energy}, vol. 168, pp. 581--592, May 2021, doi: 10.1016/j.renene.2020.12.043.
+
+\bibitem{Cazzaro2022}
+D. Cazzaro and D. Pisinger, ``Variable neighborhood search for large offshore wind farm layout optimization,'' \textit{Comput. Oper. Res.}, vol. 138, Art. no. 105588, Feb. 2022, doi: 10.1016/j.cor.2021.105588.
+
+\bibitem{Quaeghebeur2021}
+E. Quaeghebeur, R. Bos, and M. B. Zaaijer, ``Wind farm layout optimization using pseudo-gradients,'' \textit{Wind Energy Sci.}, vol. 6, no. 3, pp. 815--839, Jun. 2021, doi: 10.5194/wes-6-815-2021.
+
+\bibitem{Tao2020}
+S. Tao, Q. Xu, A. Feij\'oo, G. Zheng, and J. Zhou, ``Wind farm layout optimization with a three-dimensional Gaussian wake model,'' \textit{Renew. Energy}, vol. 159, pp. 553--569, Oct. 2020, doi: 10.1016/j.renene.2020.06.003.
+
+\bibitem{Yang2023}
+K. Yang, X. Deng, Z. Ti, S. Yang, S. Huang, and Y. Wang, ``A data-driven layout optimization framework of large-scale wind farms based on machine learning,'' \textit{Renew. Energy}, vol. 218, Art. no. 119240, Dec. 2023, doi: 10.1016/j.renene.2023.119240.
+
+\bibitem{Wang2024}
+Z. Wang, Y. Tu, K. Zhang, Z. Han, Y. Cao, and D. Zhou, ``An optimization framework for wind farm layout design using CFD-based Kriging model,'' \textit{Ocean Eng.}, vol. 293, Art. no. 116644, Feb. 2024, doi: 10.1016/j.oceaneng.2023.116644.
+
+\bibitem{Li2025}
+P. Li, Y. Che, A. Hua, L. Wang, M. Zheng, and X. Guo, ``A data-physics hybrid-driven layout optimization framework for large-scale wind farms,'' \textit{Appl. Energy}, vol. 392, Art. no. 125908, Aug. 2025, doi: 10.1016/j.apenergy.2025.125908.
+
+\bibitem{Hooker1995}
+% VERIFY-REF (2026-09-28): Springer record 10.1007/BF02430364, CMU KiltHub, ResearchGate ("Journal of Heuristics 1(1): 33-42") -- author, title, vol. 1, no. 1, pp. 33-42, 1995, DOI confirmed
+J. N. Hooker, ``Testing heuristics: We have it all wrong,'' \textit{J. Heuristics}, vol. 1, no. 1, pp. 33--42, 1995, doi: 10.1007/BF02430364.
+
+\bibitem{Demsar2006}
+J. Dem\v{s}ar, ``Statistical comparisons of classifiers over multiple data sets,'' \textit{J. Mach. Learn. Res.}, vol. 7, pp. 1--30, Jan. 2006.
+
+\bibitem{Derrac2011}
+% VERIFY-REF (2026-09-28): ScienceDirect record S2210650211000034, author PDF on sci2s.ugr.es ("Swarm and Evolutionary Computation 1 (2011) 3-18"), dblp -- authors, title, vol. 1, no. 1, pp. 3-18, 2011, DOI confirmed
+J. Derrac, S. Garc\'{\i}a, D. Molina, and F. Herrera, ``A practical tutorial on the use of nonparametric statistical tests as a methodology for comparing evolutionary and swarm intelligence algorithms,'' \textit{Swarm Evol. Comput.}, vol. 1, no. 1, pp. 3--18, 2011, doi: 10.1016/j.swevo.2011.02.002.
+
+\bibitem{BartzBeielstein2020}
+T. Bartz-Beielstein \textit{et al.}, ``Benchmarking in optimization: Best practice and open issues,'' 2020, \textit{arXiv:2007.03488}.
+
+\bibitem{LaTorre2021}
+% VERIFY-REF (2026-09-28): ScienceDirect record S2210650221001358, arXiv:2004.09969, UPM and EHU repositories -- authors, title, Swarm Evol. Comput. vol. 67, art. 100973, Dec. 2021, DOI confirmed
+A. LaTorre, D. Molina, E. Osaba, J. Poyatos, J. Del Ser, and F. Herrera, ``A prescription of methodological guidelines for comparing bio-inspired optimization algorithms,'' \textit{Swarm Evol. Comput.}, vol. 67, Art. no. 100973, Dec. 2021, doi: 10.1016/j.swevo.2021.100973.
+
+\bibitem{Benavoli2017}
+% VERIFY-REF (2026-09-28): JMLR abstract page jmlr.org/papers/v18/16-305.html, arXiv:1606.04316, ACM DL 10.5555/3122009.3176821 -- authors, title, vol. 18, paper no. 77, pp. 1-36, 2017 confirmed (JMLR has no DOI)
+A. Benavoli, G. Corani, J. Dem\v{s}ar, and M. Zaffalon, ``Time for a change: A tutorial for comparing multiple classifiers through Bayesian analysis,'' \textit{J. Mach. Learn. Res.}, vol. 18, no. 77, pp. 1--36, 2017.
+
+\bibitem{Lakens2017}
+% VERIFY-REF (2026-09-28): SAGE record journals.sagepub.com/doi/10.1177/1948550617697177, TU Eindhoven research portal, CRAN TOSTER citation -- author, title, vol. 8, no. 4, pp. 355-362, 2017, DOI confirmed (source of the TOST procedure used for tab:equivalence)
+D. Lakens, ``Equivalence tests: A practical primer for $t$ tests, correlations, and meta-analyses,'' \textit{Soc. Psychol. Personal. Sci.}, vol. 8, no. 4, pp. 355--362, 2017, doi: 10.1177/1948550617697177.
+
+\bibitem{Mirjalili2017}
+S. Mirjalili, A. H. Gandomi, S. Z. Mirjalili, S. Saremi, H. Faris, and S. M. Mirjalili, ``Salp swarm algorithm: A bio-inspired optimizer for engineering design problems,'' \textit{Adv. Eng. Softw.}, vol. 114, pp. 163--191, Dec. 2017, doi: 10.1016/j.advengsoft.2017.07.002.
+
+\bibitem{Sorensen2015}
+K. S\"orensen, ``Metaheuristics---The metaphor exposed,'' \textit{Int. Trans. Oper. Res.}, vol. 22, no. 1, pp. 3--18, Jan. 2015, doi: 10.1111/itor.12001.
+
+\bibitem{CamachoVillalon2023}
+% VERIFY-REF (2026-09-28): Wiley Online Library record 10.1111/itor.13176, author page iridia.ulb.ac.be/~ccamacho -- authors, title, Int. Trans. Oper. Res. vol. 30, no. 6, pp. 2945-2971, 2023, DOI confirmed
+C. L. Camacho-Villal\'on, M. Dorigo, and T. St\"utzle, ``Exposing the grey wolf, moth-flame, whale, firefly, bat, and antlion algorithms: Six misleading optimization techniques inspired by bestial metaphors,'' \textit{Int. Trans. Oper. Res.}, vol. 30, no. 6, pp. 2945--2971, 2023, doi: 10.1111/itor.13176.
+
+\bibitem{Castelli2022}
+M. Castelli, L. Manzoni, L. Mariot, M. S. Nobile, and A. Tangherloni, ``Salp swarm optimization: A critical review,'' \textit{Expert Syst. Appl.}, vol. 189, Art. no. 116029, 2022, doi: 10.1016/j.eswa.2021.116029.
+
+\bibitem{Wilson2018}
+% VERIFY-REF (2026-09-28): ScienceDirect record S096014811830363X, OATAO Toulouse 22624, Nottingham and Lancaster repositories -- first author Dennis Wilson, co-authors incl. S. Rodrigues, C. Segura, I. Loshchilov, F. Hutter (more than six authors, hence et al.; full list not retrieved), title, Renew. Energy vol. 126, pp. 681-691, 2018, DOI confirmed (results of the GECCO 2015 WFLO competition)
+D. Wilson \textit{et al.}, ``Evolutionary computation for wind farm layout optimization,'' \textit{Renew. Energy}, vol. 126, pp. 681--691, 2018, doi: 10.1016/j.renene.2018.03.052.
+
+\bibitem{Baker2019}
+N. F. Baker, A. P. J. Stanley, J. J. Thomas, A. Ning, and K. Dykes, ``Best practices for wake model and optimization algorithm selection in wind farm layout optimization,'' in \textit{Proc. AIAA SciTech 2019 Forum}, San Diego, CA, USA, Jan. 2019, Paper AIAA 2019-0540, doi: 10.2514/6.2019-0540.
+
+\bibitem{Thomas2023}
+% VERIFY-REF (2026-09-28): Copernicus article page and PDF header ("Wind Energ. Sci., 8, 865-891, 2023"), OSTI 1975992, NASA ADS 2023WiEnS...8..865T -- 13 authors (J. J. Thomas, N. F. Baker, P. Malisani, E. Quaeghebeur, S. Sanchez Perez-Moreno, J. Jasa, C. Bay, F. Tilli, D. Bieniek, N. Robinson, A. P. J. Stanley, W. Holt, A. Ning), title, vol. 8, pp. 865-891, 2023, DOI confirmed; issue number not confirmed, omitted
+J. J. Thomas \textit{et al.}, ``A comparison of eight optimization methods applied to a wind farm layout optimization problem,'' \textit{Wind Energy Sci.}, vol. 8, pp. 865--891, 2023, doi: 10.5194/wes-8-865-2023.
+
+\bibitem{Azlan2021}
+% VERIFY-REF (2026-09-28): ScienceDirect record S1364032120303385, Monash research portal, IDEAS/RePEc v135y2021 -- authors, title, Renew. Sustain. Energy Rev. vol. 135, art. 110047, Jan. 2021, DOI confirmed
+F. Azlan, J. C. Kurnia, B. T. Tan, and M.-Z. Ismadi, ``Review on optimisation methods of wind farm array under three classical wind condition problems,'' \textit{Renew. Sustain. Energy Rev.}, vol. 135, Art. no. 110047, Jan. 2021, doi: 10.1016/j.rser.2020.110047.
+
+\bibitem{Kennedy1995}
+J. Kennedy and R. Eberhart, ``Particle swarm optimization,'' in \textit{Proc. IEEE Int. Conf. Neural Netw. (ICNN)}, Perth, WA, Australia, Nov. 1995, vol. 4, pp. 1942--1948, doi: 10.1109/ICNN.1995.488968.
+
+\bibitem{Poli2009}
+R. Poli, ``Mean and variance of the sampling distribution of particle swarm optimizers during stagnation,'' \textit{IEEE Trans. Evol. Comput.}, vol. 13, no. 4, pp. 712--721, Aug. 2009, doi: 10.1109/TEVC.2008.2011744.
+
+\bibitem{Bonyadi2017}
+% VERIFY-REF (2026-09-28): MIT Press record direct.mit.edu/evco/article/25/1/1/1040, PubMed 26953883, author PDF cs.adelaide.edu.au -- authors, title, Evol. Comput. vol. 25, no. 1, pp. 1-54, 2017, DOI 10.1162/EVCO_r_00180 confirmed
+M. R. Bonyadi and Z. Michalewicz, ``Particle swarm optimization for single objective continuous space problems: A review,'' \textit{Evol. Comput.}, vol. 25, no. 1, pp. 1--54, 2017, doi: 10.1162/EVCO\_r\_00180.
+
+\bibitem{Cleghorn2018}
+C. W. Cleghorn and A. P. Engelbrecht, ``Particle swarm stability: A theoretical extension using the non-stagnate distribution assumption,'' \textit{Swarm Intell.}, vol. 12, no. 1, pp. 1--22, 2018, doi: 10.1007/s11721-017-0141-x.
+
+\bibitem{Benavoli2016}
+A. Benavoli, G. Corani, and F. Mangili, ``Should we really use post-hoc tests based on mean-ranks?'' \textit{J. Mach. Learn. Res.}, vol. 17, no. 5, pp. 1--10, 2016.
+
+\bibitem{Mladenovic1997}
+N. Mladenovi\'c and P. Hansen, ``Variable neighborhood search,'' \textit{Comput. Oper. Res.}, vol. 24, no. 11, pp. 1097--1100, Nov. 1997, doi: 10.1016/S0305-0548(97)00031-2.
+
+\bibitem{Hansen2001}
+P. Hansen and N. Mladenovi\'c, ``Variable neighborhood search: Principles and applications,'' \textit{Eur. J. Oper. Res.}, vol. 130, no. 3, pp. 449--467, May 2001, doi: 10.1016/S0377-2217(00)00100-4.
+
+\bibitem{Solanki2023}
+% VERIFY-REF: authors, title, journal, year and DOI confirmed (web search, 2026-09-28); volume, issue and pages could not be retrieved (publisher site and Crossref blocked) -- first author to supply them
+P. Solanki and K. Deep, ``Laplacian salp swarm algorithm for continuous optimization,'' \textit{Int. J. Syst. Assur. Eng. Manage.}, \TBD{vol., no., pp.}, 2023, doi: 10.1007/s13198-023-01935-y.
+
+\bibitem{Jensen1983}
+N. O. Jensen, ``A note on wind generator interaction,'' Ris\o\ Nat. Lab., Roskilde, Denmark, Tech. Rep. Ris\o-M-2411, 1983.
+
+\bibitem{Katic1986}
+I. Kati\'c, J. H\o jstrup, and N. O. Jensen, ``A simple model for cluster efficiency,'' in \textit{Proc. Eur. Wind Energy Assoc. Conf. Exhib. (EWEC)}, Rome, Italy, Oct. 1986, vol. 1, pp. 407--410.
+
+\bibitem{Shi1998}
+Y. Shi and R. Eberhart, ``A modified particle swarm optimizer,'' in \textit{Proc. IEEE Int. Conf. Evol. Comput. (ICEC)}, Anchorage, AK, USA, May 1998, pp. 69--73, doi: 10.1109/ICEC.1998.699146.
+
+\bibitem{Clerc2002}
+M. Clerc and J. Kennedy, ``The particle swarm---Explosion, stability, and convergence in a multidimensional complex space,'' \textit{IEEE Trans. Evol. Comput.}, vol. 6, no. 1, pp. 58--73, Feb. 2002, doi: 10.1109/4235.985692.
+
+\bibitem{Zaharie2002}
+D. Zaharie, ``Critical values for the control parameters of differential evolution algorithms,'' in \textit{Proc. MENDEL 2002, 8th Int. Conf. Soft Comput.}, Brno, Czech Republic, 2002, pp. 62--67.
+
+\bibitem{Deep2007}
+K. Deep and M. Thakur, ``A new crossover operator for real coded genetic algorithms,'' \textit{Appl. Math. Comput.}, vol. 188, no. 1, pp. 895--911, May 2007, doi: 10.1016/j.amc.2006.10.047.
+
+\bibitem{Mladenovic2008}
+N. Mladenovi\'c, M. Dra\v{z}i\'c, V. Kova\v{c}evi\'c-Vuj\v{c}i\'c, and M. \v{C}angalovi\'c, ``General variable neighborhood search for the continuous optimization,'' \textit{Eur. J. Oper. Res.}, vol. 191, no. 3, pp. 753--770, Dec. 2008, doi: 10.1016/j.ejor.2006.12.064.
+
+\bibitem{Storn1997}
+R. Storn and K. Price, ``Differential evolution---A simple and efficient heuristic for global optimization over continuous spaces,'' \textit{J. Global Optim.}, vol. 11, no. 4, pp. 341--359, Dec. 1997, doi: 10.1023/A:1008202821328.
+
+\bibitem{Kraft1988}
+D. Kraft, ``A software package for sequential quadratic programming,'' DFVLR, Inst. f\"ur Dynamik der Flugsysteme, Oberpfaffenhofen, Germany, Tech. Rep. DFVLR-FB 88-28, 1988.
+
+\bibitem{Holm1979}
+S. Holm, ``A simple sequentially rejective multiple test procedure,'' \textit{Scand. J. Stat.}, vol. 6, no. 2, pp. 65--70, 1979.
+
+\bibitem{PyWake}
+% VERIFY-REF: release date of ver. 2.6.20 (30 Mar. 2026) and licence confirmed on PyPI (py-wake), 2026-09-28; access date = first use in analysis/hornsrev_model.py (git, 2026-09-25)
+DTU Wind Energy, ``PyWake: Open-source static wake modeling framework,'' Python package \texttt{py\_wake}, ver. 2.6.20 (Horns Rev~1 site data in \texttt{py\_wake/examples/data/hornsrev1.py}), MIT License, 2026. Accessed: Sep. 25, 2026. [Online]. Available: \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}
+
+\bibitem{IEA37repo}
+% VERIFY-REF: commit 267f6e5 of 13 Nov. 2020 (latest commit) as used in analysis/iea37_model.py; the repository now redirects to the IEAWindSystems organization (checked 2026-09-28)
+N. F. Baker \textit{et al.}, ``IEA Wind Task 37 wind farm layout optimization case studies: Case files and submitted results,'' GitHub repository, commit 267f6e5, 2020. Accessed: Sep. 28, 2026. [Online]. Available: \url{https://github.com/IEAWindSystems/iea37-wflo-casestudies}
+
+\bibitem{Carrillo2013}
+C. Carrillo, A. F. Obando Monta\~no, J. Cidr\'as, and E. D\'{\i}az-Dorado, ``Review of power curve modelling for wind turbines,'' \textit{Renew. Sustain. Energy Rev.}, vol. 21, pp. 572--581, May 2013, doi: 10.1016/j.rser.2013.01.012.
+
+\bibitem{Bastankhah2014}
+M. Bastankhah and F. Port\'e-Agel, ``A new analytical model for wind-turbine wakes,'' \textit{Renew. Energy}, vol. 70, pp. 116--123, Oct. 2014, doi: 10.1016/j.renene.2014.01.029.
+
+\bibitem{Feng2015}
+% VERIFY-REF (2026-09-28): DTU Orbit record, IDEAS/RePEc v78y2015icp182-192 -- authors (Ju Feng, Wen Zhong Shen), title, Renew. Energy vol. 78, pp. 182-192, 2015, DOI confirmed
+J. Feng and W. Z. Shen, ``Solving the wind farm layout optimization problem using random search algorithm,'' \textit{Renew. Energy}, vol. 78, pp. 182--192, 2015, doi: 10.1016/j.renene.2015.01.005.
+
+\bibitem{HansenOstermeier2001}
+N. Hansen and A. Ostermeier, ``Completely derandomized self-adaptation in evolution strategies,'' \textit{Evol. Comput.}, vol. 9, no. 2, pp. 159--195, 2001, doi: 10.1162/106365601750190398.
+
+\end{thebibliography}
