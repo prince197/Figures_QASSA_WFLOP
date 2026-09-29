@@ -364,36 +364,67 @@ CONDITIONS += [
 ]
 
 
+# Text conditions: evaluated on the manuscript text (comments stripped), not on the summary. D16/D19: with 1-deg
+# bins (F21) and under PyWake no optimized Horns Rev run exceeds the installed block, so the paper must not claim
+# runs above the installed layout: none of the \NHR...Above... macros (runs_above_installed) may be used.
+ABOVE_MACRO = re.compile(r"\\NHR[A-Za-z]*Above[A-Za-z]*")
+
+
+def _uncommented(line):
+    """Line without its LaTeX comment (first % not preceded by a backslash)."""
+    m = re.search(r"(?<!\\)%", line)
+    return line[:m.start()] if m else line
+
+
+def _above_uses(T):
+    return sorted({f"{fn}: {m}" for fn, lines in T.items() for ln in lines
+                   if not re.search(r"\\(?:provide|new|renew)command", ln) for m in ABOVE_MACRO.findall(ln)})
+
+
+TEXT_CONDITIONS = [
+    ("C62", "Horns Rev (D16/D19): no claim of optimized runs above the installed layout -- no \\NHR...Above... macro "
+            "(runs_above_installed) is used in the text of the manuscript, optA/*.tex or the supplement",
+     "manuscript text (comments stripped)", lambda T: not _above_uses(T)),
+]
+
+
 # ------------------------------------------------------------------ reference scan of the CHECK- comments
-KIND_LETTER = {"FINAL": "C", "EXTRA": "X", "DIAG": "D", "THEORY": "T"}
+KIND_LETTER = {"FINAL": "C", "EXTRA": "X", "DIAG": "D", "THEORY": "T", "DIR": "F", "CSWEEP": "S"}
 KIND_SOURCE = {"EXTRA": ("mpce_check_extra.py", r"\(\s*\"(X\d+)\""), "DIAG": ("mpce_check_diag.py", r"\(\s*\"(D\d+)\""),
-               "THEORY": ("make_theory_figures.py", r"(?:has|append)\(\s*\(?\s*\"(T\d+)\"")}
+               "THEORY": ("make_theory_figures.py", r"(?:has|append)\(\s*\(?\s*\"(T\d+)\""),
+               "DIR": ("mpce_check_dir.py", r"\(\s*\"(F\d+)\""), "CSWEEP": ("mpce_check_csweep.py", r"\(\s*\"(S\d+)\"")}
+MALFORMED = []
 
 
 def scan_refs(files):
-    """{kind: {id: set(files)}} of the ids referenced by the % CHECK-<kind> comments of the given .tex files."""
+    """{kind: {id: set(files)}} of the ids referenced by the % CHECK-<kind> comments of the given .tex files.
+    Malformed tags (unknown kind, or no id of the kind's letter such as "CHECK-FINAL [NEW, D2]") go to MALFORMED."""
     refs = {k: {} for k in KIND_LETTER}
     for fn in files:
-        for line in open(fn, encoding="utf-8", errors="replace"):
+        for no, line in enumerate(open(fn, encoding="utf-8", errors="replace"), 1):
             if "CHECK-" not in line or "%" not in line:
                 continue
             com = line[line.index("%"):]
-            parts = re.split(r"CHECK-(FINAL|EXTRA|DIAG|THEORY)", com)
+            parts = re.split(r"CHECK-([A-Za-z]*)", com)
             for kind, scope in zip(parts[1::2], parts[2::2]):
+                where = f"{os.path.basename(fn)}:{no}: CHECK-{kind}{scope.rstrip()[:60]}"
+                if kind not in KIND_LETTER:
+                    MALFORMED.append(f"{where}  (unknown kind 'CHECK-{kind}'; known: "
+                                     + ", ".join("CHECK-" + k for k in KIND_LETTER) + ")")
+                    continue
                 L = KIND_LETTER[kind]
+                if re.match(r"\s*:?\s*\[[A-Z]nn\]", scope):          # documentation of the convention ("[Cnn]")
+                    continue
                 ids = set()
-                for m in re.finditer(r"\[(%s)(\d{2,3})[^\]]*\]\s*(?:--|-|\u2013|\u2014)\s*\[%s(\d{2,3})" % (L, L), scope):
+                for m in re.finditer(r"\[(%s)(\d{2,3})[^\]]*\]\s*(?:--|-|–|—)\s*\[%s(\d{2,3})" % (L, L), scope):
                     ids |= {f"{L}{i:02d}" for i in range(int(m.group(2)), int(m.group(3)) + 1)}
                 for br in re.findall(r"\[([^\]]*)\]", scope):
                     ids |= set(re.findall(r"\b(%s\d{2,3})\b" % L, br))
                 for i in ids:
                     refs[kind].setdefault(i, set()).add(os.path.basename(fn))
-                if not ids and not re.match(r"\s*\[[A-Z]nn\]", scope):   # R5-12: a tag without a parsable id (e.g. "CHECK-FINAL [NEW, D2]") is reported, not ignored
-                    MALFORMED.append(f"{os.path.basename(fn)}: CHECK-{kind}{scope.strip()[:60]}")
+                if not ids:                                           # R5-12: reported and counted as an error
+                    MALFORMED.append(f"{where}  (no [{L}nn] id)")
     return refs
-
-
-MALFORMED = []
 
 
 def defined_ids(kind):
@@ -408,6 +439,14 @@ def main(argv=None):
     ap.add_argument("--tex", default=os.path.join(HERE, "..", "MPCE_PSO_VNS.tex"))
     a = ap.parse_args(argv)
     s = json.load(open(a.summary))
+    del MALFORMED[:]
+    texs, T = [], None
+    if os.path.exists(a.tex):
+        import glob as _g
+        texs = [a.tex] + sorted(_g.glob(os.path.join(os.path.dirname(a.tex), "optA", "*.tex")))
+        sup = os.path.join(os.path.dirname(a.tex), "MPCE_PSO_VNS_supplement.tex")
+        texs += [sup] if os.path.exists(sup) else []
+        T = {os.path.basename(f): [_uncommented(l) for l in open(f, encoding="utf-8", errors="replace")] for f in texs}
     res = {}
     print(f"CHECK-FINAL conditions (summary generated {s.get('generated', '?')})")
     for cid, text, keys, fn in CONDITIONS:
@@ -417,36 +456,44 @@ def main(argv=None):
             r = "PENDING"
         res[cid] = r
         print(f"  [{cid}] {r:7s} {text}\n            keys: {keys}")
-    used = set()
+    for cid, text, keys, fn in TEXT_CONDITIONS:
+        r = "PENDING" if T is None else ("PASS" if fn(T) else "FAIL")
+        res[cid] = r
+        print(f"  [{cid}] {r:7s} {text}\n            keys: {keys}")
+        if cid == "C62" and r == "FAIL":
+            for u in _above_uses(T):
+                print(f"            used: {u}")
+    errors = 0
     refs = None
-    if os.path.exists(a.tex):
-        import glob as _g
-        texs = [a.tex] + sorted(_g.glob(os.path.join(os.path.dirname(a.tex), "optA", "*.tex")))
-        sup = os.path.join(os.path.dirname(a.tex), "MPCE_PSO_VNS_supplement.tex")
-        texs += [sup] if os.path.exists(sup) else []
+    if texs:
         refs = scan_refs(texs)
         used = set(refs["FINAL"])
         for cid in sorted(used - set(res)):
             print(f"  [{cid}] UNDEFINED: used in the manuscript but not defined in mpce_check_final.py")
-        for cid in sorted(set(res) - used):
+            errors += 1
+        for cid in sorted(set(res) - used - {c[0] for c in TEXT_CONDITIONS}):
             print(f"  [{cid}] (not referenced in the manuscript)")
         for m in MALFORMED:
-            print(f"  WARNING: CHECK comment without a parsable id (not evaluated): {m}")
+            print(f"  ERROR: malformed CHECK tag (not evaluated): {m}")
+        errors += len(MALFORMED)
     n = {k: sum(v == k for v in res.values()) for k in ("PASS", "FAIL", "PENDING")}
-    print(f"  summary: {n['PASS']} PASS, {n['FAIL']} FAIL, {n['PENDING']} PENDING")
     if refs is not None:
         print("  referenced checks of the other scripts (not evaluated here; run the script named):")
-        for kind in ("EXTRA", "DIAG", "THEORY"):
+        for kind in ("EXTRA", "DIAG", "DIR", "CSWEEP", "THEORY"):
             ids = sorted(refs[kind])
             dfn = defined_ids(kind)
             und = [i for i in ids if dfn is not None and i not in dfn]
+            errors += len(und)
             print(f"    CHECK-{kind:6s} ({KIND_SOURCE[kind][0]}): {len(ids)} ids referenced: {', '.join(ids) if ids else 'none'}"
                   + (f"; UNDEFINED in {KIND_SOURCE[kind][0]}: {', '.join(und)}" if und else "")
-                  + (f"; defined but not referenced: {', '.join(sorted(dfn - set(ids)))}" if dfn else ""))
+                  + (f"; defined but not referenced: {', '.join(sorted(dfn - set(ids)))}" if dfn else "")
+                  + ("" if dfn is not None else f"; {KIND_SOURCE[kind][0]} not found"))
     fb = [f for f in s.get("fallbacks", []) if "->" in f]
     for f in fb:
         print(f"  NOTE (data): {f}")
-    return 1 if n["FAIL"] else 0
+    print(f"  summary: {n['PASS']} PASS, {n['FAIL']} FAIL, {n['PENDING']} PENDING, {errors} TAG ERRORS "
+          f"({len(MALFORMED)} malformed, {errors - len(MALFORMED)} undefined ids)")
+    return 1 if n["FAIL"] or errors else 0
 
 
 if __name__ == "__main__":
