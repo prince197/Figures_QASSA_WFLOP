@@ -148,3 +148,4 @@ Phase B (lead): integrate drafts into optA/*.tex and the supplement, adversarial
   from the main file and tell the supplement agent (T8) via the lead report; T8 adds them.
 - Do not run pdflatex in the shared folder; compile privately with `sh optA/compile_copy.sh <scratch>/p7_<you>`.
   No commit/push. Report changed sentences, CHECK ids, length change.
+- D22: M3 wording correction — "best average rank with 15°, 5° and 1° direction bins, also under a Gaussian wake at 1°" (PSO narrowly first under the Gaussian wake at 15°). C27 → all().
