@@ -57,21 +57,28 @@
 % #1 width, #2 file (with extension), #3 placeholder height
 \newcommand{\pipefig}[3]{\IfFileExists{#2}{\includegraphics[width=#1]{#2}}%
 {\fbox{\parbox[c][#3][c]{\dimexpr#1-2\fboxsep-2\fboxrule\relax}{\centering\TBD{figure {\ttfamily\detokenize{#2}} not yet generated}}}}}
+% Extended SWEVO version: theorem environments and placement of generated tables by label
+\usepackage{amsthm}
+\usepackage{environ}
+\newtheorem{lemma}{Lemma}\newtheorem{definition}{Definition}\newtheorem{remark}{Remark}
+\input{optA/sw/capture}
+\CaptureSuppTables{analysis/mpce_supplementary.tex}
 % Proposition environment used in optA/04_methods.tex (which also defines it, guarded, for the IEEEtran version)
 \makeatletter\@ifundefined{proposition}{\newtheorem{proposition}{Proposition}}{}\makeatother
 
 \begin{document}
 % front matter (title, authors, abstract, keywords) and the nomenclature
 \input{optA/swevo_front}
-\input{optA/02_intro}
-\input{optA/03_model}
-\input{optA/04_methods}
-\input{optA/05_setup}
-\input{optA/06_results}
-\input{optA/07_ablation}
-\input{optA/08_beyond}
-\input{optA/09_robust}
-\input{optA/10_limits_concl}
+\input{optA/sw/02_intro}
+\IfFileExists{optA/sw/02b_related.tex}{\input{optA/sw/02b_related}}{}
+\input{optA/sw/03_model}
+\input{optA/sw/04_methods}
+\input{optA/sw/05_setup}
+\input{optA/sw/06_results}
+\input{optA/sw/07_ablation}
+\input{optA/sw/08_beyond}
+\input{optA/sw/09_robust}
+\input{optA/sw/10_limits_concl}
 % CRediT, competing interests, data availability, generative-AI declaration, acknowledgments/funding, references
 \input{optA/swevo_back}
 \end{document}

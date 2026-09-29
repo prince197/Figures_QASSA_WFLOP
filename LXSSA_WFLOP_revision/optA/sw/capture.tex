@@ -1,0 +1,37 @@
+% Capture of generated supplementary tables so that the SWEVO main text can place some of them (\SuppTable{<label>}).
+% Copied from SWEVO_supplement.tex (same macro names; no numbering changes).
+\makeatletter
+\newcount\supp@n
+\def\supp@labels{}
+\long\def\supp@getlabel#1\label#2#3\supp@stop{\def\supp@thislabel{#2}}
+\newcommand{\supp@store}{%
+  \global\advance\supp@n\@ne
+  \expandafter\supp@getlabel\BODY\label{supp-unlabelled-\the\supp@n}\supp@stop
+  \expandafter\global\expandafter\let\csname supp@body@\supp@thislabel\endcsname\BODY
+  \xdef\supp@labels{\unexpanded\expandafter{\supp@labels}\noexpand\do{\supp@thislabel}}}
+\newcommand{\CaptureSuppTables}[1]{\begingroup
+  \RenewEnviron{table}[1][]{\supp@store}\RenewEnviron{table*}[1][]{\supp@store}%
+  \input{#1}\endgroup}
+\newcommand{\SuppTable}[1]{%
+  \@ifundefined{supp@body@#1}{\par\noindent\TBD{generated table \detokenize{#1} not found}\par}{%
+    \@ifundefined{supp@used@#1}{\global\@namedef{supp@used@#1}{}%
+      \begin{table}[!htbp]\@nameuse{supp@body@#1}\end{table}}{}}}
+\newcommand{\SuppTableOpt}[1]{\@ifundefined{supp@body@#1}{}{\SuppTable{#1}}}
+\newcommand{\IfSuppTable}[3]{\@ifundefined{supp@body@#1}{#3}{#2}}
+\newcommand{\SuppOmit}[1]{\global\@namedef{supp@used@#1}{}}
+% \SuppTableNote{<label>}{<text>}: append a note below a captured table (inside its float); no-op if absent
+\newcommand{\SuppTableNote}[2]{\@ifundefined{supp@body@#1}{}{%
+  \expandafter\g@addto@macro\csname supp@body@#1\endcsname{\par\smallskip{\footnotesize\raggedright #2\par}}}}
+\newif\ifsupp@left
+\newcommand{\IfSuppTablesLeft}[1]{\global\supp@leftfalse
+  \def\do##1{\@ifundefined{supp@used@##1}{\global\supp@lefttrue}{}}\supp@labels
+  \ifsupp@left #1\fi}
+\newcommand{\SuppRemainingTables}{\def\do##1{\SuppTable{##1}}\supp@labels}
+% \SuppTableAddLabel{<label>}{<alias>}: give a captured table a second label (e.g. the name under which a table moved
+% from the main text refers to it); no-op if the table is absent
+\newcommand{\SuppTableAddLabel}[2]{\@ifundefined{supp@body@#1}{}{%
+  \expandafter\g@addto@macro\csname supp@body@#1\endcsname{\label{#2}}}}
+\makeatother
+
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
