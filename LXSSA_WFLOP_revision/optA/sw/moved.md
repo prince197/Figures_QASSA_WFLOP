@@ -1,0 +1,8 @@
+fig:S-csweep -> main, optA/sw/06_results.tex (label unchanged; the whole generated file analysis/mpce_supp_csweep.tex is \input in the main text, so the supplement must no longer \input it; refer to it as M-fig:S-csweep)
+tab:S-csweep -> main, optA/sw/06_results.tex (label unchanged; same \input of analysis/mpce_supp_csweep.tex)
+fig:D-psodyn -> main, optA/sw/06_results.tex (label unchanged; captured from analysis/mpce_supp_diag.tex and placed as figure*; tab:D-psodyn, tab:D-vns, tab:D-feasstart, tab:D-rsreplay stay in the supplement: the supplement's \input of mpce_supp_diag.tex must skip only this figure)
+fig:S-ranks -> main, optA/sw/06_results.tex (new main label fig:ranks)
+fig:S-wakeloss -> main, optA/sw/06_results.tex (new main label fig:wakeloss)
+fig:S-equiv-curve -> main, optA/sw/06_results.tex (new main label fig:equiv-curve)
+tab:X-equiv-levels -> main, optA/sw/06_results.tex (label unchanged; captured from analysis/mpce_supp_inference.tex via \CaptureSuppTables + \SuppTable)
+tab:X-heterogeneity -> main, optA/sw/06_results.tex (label unchanged; captured from analysis/mpce_supp_inference.tex; notes wrapped as in the supplement)
