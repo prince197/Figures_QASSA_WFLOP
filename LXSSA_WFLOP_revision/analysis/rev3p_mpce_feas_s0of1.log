@@ -1,0 +1,31 @@
+mpce_feas_s0of1: 273 keys, 273 to run, procs=1
+  10/273 41s last mpce_feasx_s2of8.csv:209 MISMATCH
+  20/273 81s last mpce_feasx_s6of8.csv:179 MISMATCH
+  30/273 125s last mpce_feasx_s5of8.csv:58 MISMATCH
+  40/273 169s last mpce_feasx_s2of8.csv:57 MISMATCH
+  50/273 208s last mpce_feasx_s4of8.csv:14 match
+  60/273 256s last mpce_feasx_s4of8.csv:20 match
+  70/273 285s last mpce_feasx_s4of8.csv:101 match
+  80/273 323s last mpce_feasx_s3of8.csv:23 MISMATCH
+  90/273 349s last mpce_feasx_s6of8.csv:23 MISMATCH
+  100/273 381s last mpce_feasx_s3of8.csv:182 match
+  110/273 401s last mpce_feasx_s2of8.csv:92 match
+  120/273 444s last mpce_feasx_s3of8.csv:18 match
+  130/273 476s last mpce_feasx_s6of8.csv:19 match
+  140/273 507s last mpce_feasx_s3of8.csv:10 match
+  150/273 551s last mpce_feasx_s5of8.csv:13 match
+  160/273 584s last mpce_feasx_s2of8.csv:194 match
+  170/273 607s last mpce_feasx_s2of8.csv:9 match
+  180/273 638s last mpce_feasx_s6of8.csv:16 match
+  190/273 655s last mpce_feasx_s1of8.csv:108 match
+  200/273 675s last mpce_feasx_s4of8.csv:73 match
+  210/273 695s last mpce_feasx_s5of8.csv:96 match
+  220/273 717s last mpce_feasx_s2of8.csv:133 match
+  230/273 737s last mpce_feasx_s6of8.csv:194 MISMATCH
+  240/273 758s last mpce_feasx_s7of8.csv:46 match
+  250/273 779s last mpce_feasx_s1of8.csv:74 match
+  260/273 799s last mpce_feasx_s6of8.csv:76 match
+  270/273 820s last mpce_feasx_s6of8.csv:161 match
+  273/273 828s last mpce_feasx_s0of8.csv:136 match
+mpce_feas_s0of1: done in 828s
+wrote /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/rev3_fullprec_mpce_feas_s0of1.csv: 273 of 273 records
