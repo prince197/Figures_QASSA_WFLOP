@@ -64,9 +64,9 @@ Lillgrund); objective, feasibility label and minimum spacing are stored at full 
 The audit of all 56,540 stored records (`rev3_precision_audit.json`) confirms 50,826 labels from the rounded
 coordinates, contradicts none and leaves 5,714 undecidable within the rounding bound. These are rerun
 deterministically with the 17-digit writer (`record_io.encode_coordinates`; `rev3_precision_rerun.py`, side files
-`rev3_fullprec_*.csv`; 1,649 locally, 4,065 on cloud workers): 1,160 + B_c bit-identical, 412 + F_c float noise,
-1,572 + C_c labels confirmed, 0 + X_c changed; 77 + U_c SLSQP-based records not reproducible (labels stay
-undecidable) [TBD: C4 — enter the cloud counts B_c, F_c, C_c, X_c, U_c]. New runs store 17 significant digits.
+`rev3_fullprec_*.csv`; 1,649 locally, 4,065 on cloud workers): 3,691 bit-identical, 1,103 float noise,
+4,794 labels confirmed, 0 changed; 920 SLSQP-based records not reproducible (labels stay
+undecidable). New runs store 17 significant digits.
 The re-evaluations use the rounded coordinates: 905 of 51,810 feasible audited records replay more than 0.05 pp off
 their stored objective, 233 of the 21,716 re-evaluated benchmark layouts (ranking effect: manuscript Section 9.6).
 

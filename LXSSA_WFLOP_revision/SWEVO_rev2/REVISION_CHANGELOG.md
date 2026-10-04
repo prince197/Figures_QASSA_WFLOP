@@ -61,8 +61,7 @@ with coordinates written to 17 significant digits:
 - 1,200 runs of direct 1-degree optimization;
 - 1,200 seed-paired 15-degree control runs.
 
-The deterministic full-precision reruns of the stored records come on top of these (C4, count
-`\TBD{C4 rerun count}`). All other revision-3 results are re-analyses of stored records. The supplementary tables
+The deterministic full-precision reruns of the stored records come on top of these (C4, 5,714 records). All other revision-3 results are re-analyses of stored records. The supplementary tables
 `tab:S-r3-*` come from `analysis/rev3_*_tables.tex`. Section numbers below refer to the revision-3 build.
 
 ## Reviewer items
@@ -96,7 +95,7 @@ The deterministic full-precision reruns of the stored records come on top of the
 - **A7.** SWEVO guide check: abstract ≤ 250 words, highlights, keywords, declarations and reference order. The
   length limit and the live guide could not be verified (`rev3_refs_report.md` Section 6).
 - **A8.** `AUTHOR_CONFIRMATION.md` items 1 and 3 are resolved. Item 2 is resolved by audit and rerun, with the
-  final count `\TBD{C4 rerun count}`.
+  final count 5,714 records.
 - **B1–B7, C1–C3.** See the reviewer items above. All outcomes are reported, including unfavourable ones: the
   constraint-handling sensitivity, the Lillgrund 1-degree result, the 15.0% case-level size of the SSA-VNS
   non-superiority test before calibration, and the non-robust seed-level equivalence of SSA-VNS vs RSD-VNS.
@@ -105,10 +104,9 @@ The deterministic full-precision reruns of the stored records come on top of the
   - 0 contradicted;
   - 5,714 undecidable within the rounding bound.
 
-  These undecidable records are rerun deterministically at full precision. Result (template of
-  `analysis/rev3_precision_notes.md`): 1,160 + B_c bit-identical, 412 + F_c float noise, 1,572 + C_c confirmed,
-  0 + X_c changed, 77 + U_c SLSQP-based undecided; the cloud counts are marked
-  `\TBD{C4: enter the cloud counts $B_c$, $F_c$, $C_c$, $X_c$, $U_c$}`. The revision-2 statement that the Horns Rev 1
+  These undecidable records are rerun deterministically at full precision. Result (1,649 local and 4,065
+  cloud reruns, 35 shards): 3,691 bit-identical, 1,103 float noise, 4,794 labels confirmed, 0 changed, 920 SLSQP-based
+  records not bit-reproducible across CPU/BLAS builds (labels stay undecidable). The revision-2 statement that the Horns Rev 1
   boundary could not be audited is withdrawn; `hornsrev_model.py` is present.
 - **D.** See R2. Remaining: the public deposit, the DOI and the licence choice (author action).
 - **E1–E4.** See R10. Documents rebuilt with `latex_source/analysis/build_swevo.sh`.
@@ -121,7 +119,7 @@ The deterministic full-precision reruns of the stored records come on top of the
 - **A2, A3, A5, A6, A10:** closed by revision 3, at the scope stated above.
 - **A11:** closed apart from author confirmation and the DOI.
 - **A12:** open only for the authors' final read of the rebuilt PDFs and any further shortening.
-- **Still open, author action only:** confirmations, the public DOI, the final C4 rerun count.
+- **Still open, author action only:** confirmations, the public DOI.
 
 ## Fixes after the adversarial review (`analysis/rev3_review_report.md`, 4 October 2026)
 

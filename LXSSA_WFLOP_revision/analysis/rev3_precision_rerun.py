@@ -587,8 +587,9 @@ rounded coordinates and convergence curve identical to the stored record; noise:
 ($\le10^{-9}$ relative in the objective); near: rounded coordinates, label and objective ($\le10^{-9}$ relative)
 reproduced but convergence curve or minimum spacing not (SLSQP-based methods; platform dependent), not used to
 decide labels. Strict: label decided from the full-precision layout (bit-identical
-rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open: class (ii)/(iii) labels not yet
-decided (reruns pending, see \texttt{rev3\_precision\_plan.json}). Replay: maximum $|$objective recomputed from
+rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open: class (iii) labels the reruns could not
+decide; all belong to SLSQP-based runs (MS-SLSQP, exact-gradient MS-SLSQP and PSO-SLSQP), whose reruns are not
+bit-reproducible across CPU/BLAS builds (near, or a different trajectory). Replay: maximum $|$objective recomputed from
 the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
 $^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Superseded, not used in the manuscript.
 Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}

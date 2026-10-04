@@ -27,8 +27,7 @@ every open value; each one prints in red.
 
    The undecidable records are rerun deterministically with the 17-digit writer (`analysis/rev3_precision_rerun.py`;
    prespecified in `rev3_precision_manifest.md`). No coordinates were inferred by projecting the rounded layouts.
-   **Open:** the lead enters the cloud counts in place of `\TBD{C4: enter the cloud counts $B_c$, $F_c$, $C_c$, $X_c$, $U_c$}`
-   and `\TBD{C4 rerun count}` (Data availability).
+   **Resolved:** all 5,714 undecidable records rerun (3,691 bit-identical, 1,103 float noise; 4,794 labels confirmed, 0 changed; 920 SLSQP-based records not bit-reproducible across platforms, labels undecidable).
 3. **Complete benchmark reliability analysis. — RESOLVED (revision 3).** The all-run endpoint (feasible beats
    infeasible, then the objective) is applied to all 68 benchmark cases (`tab:S-r3-allrun`):
    - PSO-VNS vs PSO: 950/348/742 of 2,040 seed pairs, score 0.551, 95% CI [0.516, 0.587];
