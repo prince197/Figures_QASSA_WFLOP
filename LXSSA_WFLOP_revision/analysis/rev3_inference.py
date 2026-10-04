@@ -525,7 +525,8 @@ def tables(R):
                 r = NS[f"{pk(a, b)}|{lev}|{side}"]
                 cells.append(f"{100 * r['rate_eq_ci']:.2f} [{100 * r['ci95_eq_ci'][0]:.2f}, {100 * r['ci95_eq_ci'][1]:.2f}]")
             r0 = NS[f"{pk(a, b)}|{lev}|minus"]; r1 = NS[f"{pk(a, b)}|{lev}|plus"]
-            cells.append(f"{r0['p_calibrated_binding']:.3f} / {r1['p_calibrated_binding']:.3f}")
+            pc = lambda p: "$<$0.001" if p < 0.001 else f"{p:.3f}"
+            cells.append(f"{pc(r0['p_calibrated_binding'])} / {pc(r1['p_calibrated_binding'])}")
             th = lambda v: f"{v:,}".replace(",", "{,}")
             L2.append(f"{plab(a, b)} & {lev} & {th(r0['reps'])} & {th(r0['inner_resamples'])} & {cells[0]} & {cells[1]} & {cells[2]} \\\\")
     out += ["\\begin{table}[!htbp]", "\\centering",
@@ -554,8 +555,9 @@ def tables(R):
     for key in X.EQ_PAIRS:
         a, b = key.split("-"); r = S4[key]
         pst = r.get("per_seed_t")
-        L.append(f"{plab(a, b)} & {f3(r['mean'], True)} & {ci(r['indep']['ci90'])} & {r['indep']['min_margin']:.3f} & "
-                 f"{'yes' if r['indep']['eq'] else 'no'} & {ci(r['joint']['ci90'])} & {r['joint']['min_margin']:.3f} & "
+        up = lambda v: f"{math.ceil(v * 1000 - 1e-9) / 1000:.3f}"
+        L.append(f"{plab(a, b)} & {f3(r['mean'], True)} & {ci(r['indep']['ci90'])} & {up(r['indep']['min_margin'])} & "
+                 f"{'yes' if r['indep']['eq'] else 'no'} & {ci(r['joint']['ci90'])} & {up(r['joint']['min_margin'])} & "
                  f"{'yes' if r['joint']['eq'] else 'no'} & " + (f"{ci(pst['ci90'])}" if pst else "--") + " \\\\")
         if key == "RSDVNS-RSVNS":
             L.append("\\midrule")
@@ -570,7 +572,7 @@ def tables(R):
             "pairs resampled independently in every case (Table~\\ref{tab:X-equiv-levels}); joint: one seed-index vector drawn "
             "for all cases, so every case uses the same resampled seeds (seed $k$ seeds the same random stream, hence the same "
             "initial population draws, in every case). Per-seed $t$: 90\\% $t_{29}$ interval of the 30 per-seed benchmark "
-            "averages (pairs with all runs feasible). $m_{\\min}$: smallest margin for equivalence; Eq.: 90\\% interval inside "
+            "averages (pairs with all runs feasible). $m_{\\min}$: smallest margin for equivalence (rounded up); Eq.: 90\\% interval inside "
             "$\\pm m$. Cross-case dependence of the seed effects (permutation of seeds within cases, 20{,}000 permutations): "
             + dd + ".}",
             "\\label{tab:S-r3-syncseed}", "\\scriptsize\\setlength{\\tabcolsep}{2pt}",
