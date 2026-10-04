@@ -1,0 +1,1 @@
+Original_ZIP_Readiness_Audit.pdf assesses the uploaded archive before edits. Revision_Implementation_Report.pdf and ../REVISION_CHANGELOG.md describe the current revision; unresolved findings remain open.

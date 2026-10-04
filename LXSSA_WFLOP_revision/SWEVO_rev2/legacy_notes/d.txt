@@ -1,0 +1,99 @@
+3,16c3,15
+<             Prince Solankia,1,∗, Pulkit Dwivedib , Vanita Gargc , Vinay Shuklad,e
+<            a
+<               Department of Mathematics, School of Computer Science & Engineering, IILM
+<                                  University, Gurugram, Haryana, India
+<      b
+<        Department of Computer Science and Engineering, Bennett University, Greater Noida, Uttar
+<                                              Pradesh, India
+<                              c
+<                                Amity University, Noida, Uttar Pradesh, India
+<        d
+<          School of Mathematical Sciences, Shanghai Jiao Tong University, Shanghai, 200240, China
+<    e
+<      Department of Mathematics, School of Computer Science Engineering and Technology, Bennett
+<                             University, Greater Noida, Uttar Pradesh, India
+---
+>                Prince Solankia,1,∗, Pulkit Dwivedib , Vanita Gargc , Vinay Shuklad,e
+> a
+>     Department of Mathematics, School of Sciences, IILM University, Greater Noida, Uttar Pradesh, India
+>         b
+>           Department of Computer Science and Engineering, Bennett University, Greater Noida, Uttar
+>                                                 Pradesh, India
+>                                 c
+>                                   Amity University, Noida, Uttar Pradesh, India
+>           d
+>             School of Mathematical Sciences, Shanghai Jiao Tong University, Shanghai, 200240, China
+>       e
+>         Department of Mathematics, School of Computer Science Engineering and Technology, Bennett
+>                                University, Greater Noida, Uttar Pradesh, India
+36,37c35,36
+< under the 15◦ rose, and a significant −0.043 pp under a 1◦ rose; case-level differences go
+< both ways. PSO-VNS reaches feasibility more reliably (Horns Rev 1 block: 30/30 vs.
+---
+> under the 15◦ rose, and a significant −0.043 pp under a 1◦ rose; case-level differences
+> go both ways. PSO-VNS reaches feasibility more reliably (Horns Rev 1 block: 30/30 vs
+43,44c42,43
+<   ∗
+<      Corresponding author.
+---
+>      ∗
+>      Corresponding author. [TBD: confirm corresponding author]
+56c55
+< Preprint submitted to Swarm and Evolutionary Computation                         September 29, 2026
+---
+> Preprint submitted to Swarm and Evolutionary Computation                            September 29, 2026
+368,369c367,368
+< 248   1.322% to 2.335%, and the rise is largest for PSO and the VNS-based methods. All results
+< 249   thus hold for the discretized roses; Section 10 reports which conclusions survive a 1◦ rose.
+---
+> 248   1.322% to 2.335%, most for PSO and the VNS-based methods. All results thus hold for
+> 249   the discretized roses; Section 10 reports which conclusions survive a 1◦ rose.
+802c801
+<        Old PSO           68           PSO, w = 0.7, c1 = c2 = 2           6,030 (r)                      1–30      2,040      7.1
+---
+>        Old PSO           68           PSO, w = 0.7, c1 = c2 = 2           6,030 (r)                      1–30      2040       7.1
+914,917c913,916
+< 545   only PSO-VNS vs. PSO on the cases with N ≥ 10 (both data sets) and PSO-VNS
+< 546   (ω = 0.5) vs. PSO-VNS (ω = 0.9) nonsignificant (Tables S16–S21); Section 10 adds a 1◦
+< 547   direction resolution. As the cases are not independent, all p values of the case-level tests
+< 548   describe this benchmark, not a population of farms.
+---
+> 545   only PSO-VNS vs. PSO, N ≥ 10, both data sets and PSO-VNS (ω = 0.5) vs. PSO-VNS
+> 546   (ω = 0.9) nonsignificant (Tables S16–S21); Section 10 adds a 1◦ direction resolution. As
+> 547   the cases are not independent, all p values of the case-level tests describe this benchmark,
+> 548   not a population of farms.
+1496,1499c1495,1498
+< 753   is feasible. The 730 runs without a feasible sample (including all runs of 14 cases) start
+< 754   VNS from the least-penalized sample; paired by seed, 242 of them would get a feasible
+< 755   sample in the disc and 488 none. RS-VNS is thus weak mainly because of the spacing,
+< 756   only in part because of the square, and beating it is only a minimum bar.
+---
+> 753   is feasible. The 730 runs without a feasible sample (all runs of 14 cases) start VNS from
+> 754   the least-penalized sample; paired by seed, 242 of them would get a feasible sample in
+> 755   the disc and 488 none. RS-VNS is thus weak mainly because of the spacing, only in part
+> 756   because of the square, and beating it is only a minimum bar.
+1614,1617c1613,1616
+< 809   vs. 2.543%; W/T/L of ω = 0.75: 9/3/0), so the best split is interior; these results hold
+< 810   in all six farm clusters. ω = 0.9 differs from ω = 0.75 in no case (0/12/0, case means
+< 811   p = 0.15); its mean loss (2.553%) is slightly higher, but below those of ω = 0.5 and plain
+< 812   PSO. We keep ω = 0.5, which may slightly understate PSO-VNS.
+---
+> 809   vs. 2.543%; W/T/L 9/3/0), so the best split is interior; these results hold in all six farm
+> 810   clusters. ω = 0.9 differs from ω = 0.75 in no case (0/12/0, case means p = 0.15); its
+> 811   mean loss (2.553%) is slightly higher, but below those of ω = 0.5 and plain PSO. We keep
+> 812   ω = 0.5, which may slightly understate PSO-VNS.
+1792c1791
+< 879   and ours 666.75 GWh/yr (0.81% more; wake loss 11.11% vs. 10.39%; Table S44); with CT
+---
+> 879   and ours 666.75 GWh/yr (0.81% more; wake loss 10.39% vs 11.11%; Table S44); with CT
+2026,2029c2025,2028
+< 1053   evaluations lie 1.93% (16 turbines) and 6.23% (36 turbines) below the best feasible pub-
+< 1054   lished layouts in AEP; they came from the participants’ own optimizers, some gradient-
+< 1055   based, with budgets not reported comparably [4, 17]. The methods compared here, at
+< 1056   these budgets, are reference points for comparing optimizers, not design tools.
+---
+> 1053   evaluations lie −1.93% (16 turbines) and −6.23% (36 turbines) below the best feasi-
+> 1054   ble published layouts in AEP; they came from the participants’ own optimizers, some
+> 1055   gradient-based, with budgets not reported comparably [4, 17]. The methods compared
+> 1056   here, at these budgets, are reference points for comparing optimizers, not design tools.

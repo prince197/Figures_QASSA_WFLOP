@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "float_roundtrips": 2006,
+  "raw_csv_files_verified": 140,
+  "checks": [
+    "nonfinite/malformed coordinates rejected",
+    "exact sign-test reference values",
+    "Holm reference family",
+    "Wilson boundary symmetry",
+    "PSO stability settings and degenerate-coefficient counterexample"
+  ],
+  "pso_settings": [
+    {
+      "w": 0.7,
+      "c1": 2,
+      "c2": 2,
+      "spectral_radius": 1.1236524527034943
+    },
+    {
+      "w": 0.7298,
+      "c1": 1.49618,
+      "c2": 1.49618,
+      "spectral_radius": 0.944178681511814
+    },
+    {
+      "w": 0,
+      "c1": 0,
+      "c2": 1,
+      "spectral_radius": 0.3333333333333333
+    }
+  ],
+  "limitations": [
+    "No optimizer reruns: required original modules absent."
+  ]
+}

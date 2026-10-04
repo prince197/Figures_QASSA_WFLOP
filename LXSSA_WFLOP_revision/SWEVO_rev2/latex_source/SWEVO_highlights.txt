@@ -1,0 +1,5 @@
+Baseline configuration changes PSO comparisons on a wind farm benchmark.
+Sampling controls limit SSA phase gains at 4D and 5D, but not at 6D.
+Conditional quality rankings differ from all-run reliability.
+GA changes conclusions beyond the original eight-method pool.
+Analytic objective and constraint derivatives strengthen SLSQP on IEA37.

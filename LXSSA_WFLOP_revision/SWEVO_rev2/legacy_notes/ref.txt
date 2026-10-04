@@ -1,0 +1,2359 @@
+  Baseline Configuration and Random-Sampling Controls in
+Metaheuristic Comparisons for Wind Farm Layout Optimization
+            Prince Solankia,1,∗, Pulkit Dwivedib , Vanita Gargc , Vinay Shuklad,e
+           a
+              Department of Mathematics, School of Computer Science & Engineering, IILM
+                                 University, Gurugram, Haryana, India
+     b
+       Department of Computer Science and Engineering, Bennett University, Greater Noida, Uttar
+                                             Pradesh, India
+                             c
+                               Amity University, Noida, Uttar Pradesh, India
+       d
+         School of Mathematical Sciences, Shanghai Jiao Tong University, Shanghai, 200240, China
+   e
+     Department of Mathematics, School of Computer Science Engineering and Technology, Bennett
+                            University, Greater Noida, Uttar Pradesh, India
+
+
+
+
+Abstract
+We compare eight wind farm layout optimizers on the discretized Kusiak–Song benchmark
+(68 cases, 15◦ rose) with 6,030 evaluations from random starts, feasibility-aware ranking
+and equivalence tests. First, the particle swarm optimization (PSO) setting w = 0.7,
+c1 = c2 = 2 lies beyond the order-2 (variance) stability boundary; in a sweep of c1 = c2 ,
+feasibility starts to degrade there and falls progressively beyond it. With it, PSO ranks
+behind both salp-swarm hybrids in the eight-method pool of an earlier comparison; with
+the constriction setting, it ranks first there. Second, a salp-swarm (SSA) first phase
+adds nothing beyond equal-cost random sampling in the farm (a gain above 0.05 per-
+centage points (pp) of wake loss is ruled out across seeds and cases), the Laplacian SSA
+as published is worse, and a PSO phase gives a clear gain; at this budget the second
+phase, variable neighborhood search (VNS), acts essentially as one compass-search de-
+scent. Third, PSO followed by VNS (PSO-VNS) has the best average rank with 15◦ , 5◦
+and 1◦ direction bins, also under a Gaussian wake at 1◦ , but its average advantage over a
+well-configured PSO is small: within ±0.05 pp across seeds and cases, not farm clusters,
+under the 15◦ rose, and a significant −0.043 pp under a 1◦ rose; case-level differences go
+both ways. PSO-VNS reaches feasibility more reliably (Horns Rev 1 block: 30/30 vs.
+19/30 runs, McNemar p = 9.8 × 10−4 ).
+Keywords: Benchmarking, equivalence testing, particle swarm optimization,
+random-sampling control, wake effect, wind farm layout optimization
+
+
+  ∗
+     Corresponding author.
+     Email addresses: prince@ma.iitr.ac.in (Prince Solanki), prince@iilm.edu (Prince Solanki),
+pdwivedi19900@gmail.com (Pulkit Dwivedi), pulkit.dwivedi@bennett.edu.in (Pulkit Dwivedi),
+vanitagarg16@gmail.com (Vanita Garg), vinayshukla4321@gmail.com (Vinay Shukla),
+vnshukla01@sjtu.edu.cn (Vinay Shukla)
+   1
+     Previously with the Department of Mathematics, Indian Institute of Technology Roorkee, Roorkee,
+India.
+
+
+
+
+Preprint submitted to Swarm and Evolutionary Computation                         September 29, 2026
+ 1   Nomenclature
+     B            Budget (number of evaluations)
+     CT , K       Thrust coefficient; Jensen wake-spreading constant
+     D, R         Rotor diameter and rotor radius (D = 2R)
+     Eideal       Wake-free benchmark objective of one turbine
+     Fp           Penalized wake loss (minimized)
+     ℓmin         Minimum spacing between turbines
+ 2   N, Np        Number of turbines; population size
+     Nθ , Ns      Numbers of wind-direction and wind-speed bins
+     r            Farm radius
+     w, c1 , c2   Inertia weight and acceleration coefficients of PSO
+     X            Layout vector (x1 , y1 , . . . , xN , yN )
+     θ            Wind direction (blowing towards, CCW from east)
+     ω            Fraction of the budget given to Phase 1
+
+ 3   1. Introduction
+ 4       The positions of the turbines in a wind farm are fixed at the planning stage and
+ 5   determine, for its lifetime, how much of the available wind energy it converts. An upstream
+ 6   turbine leaves behind a wake of slower and more turbulent air that reduces the power of
+ 7   the turbines downstream, so the layout sets the wake loss and thereby the gross energy
+ 8   yield, and shapes the collector system and grid connection [1, 2]. As the wake loss is
+ 9   a share of the wake-free energy, a difference of a few tenths of a percentage point is,
+10   within a given wake model, a lifetime energy difference of that size. The wind farm layout
+11   optimization problem (WFLOP) places a given number of turbines in a site to minimize
+12   the wake loss subject to boundary and minimum-spacing constraints; we address only this
+13   wake-loss part of layout design, for farms of up to 36 turbines.
+14       For swarm and evolutionary computation, the continuous WFLOP is also a represen-
+15   tative constrained benchmark. Its 2N coordinates are continuous, the objective is multi-
+16   modal and, with a top-hat wake, discontinuous; the constraints are a site boundary and
+17   N (N − 1)/2 pairwise spacing constraints, so the feasible region is nonconvex and becomes
+18   a small part of the bounding box as N grows; one evaluation is cheap enough for thou-
+19   sands of runs; and standard instances with published results exist, from the Kusiak–Song
+20   cases [3] to the IEA Wind Task 37 case studies [4]. These properties, which it shares with
+21   many engineering design problems, have made it a common test bed for new metaheuris-
+22   tics [5], including swarm methods such as particle swarm optimization (PSO) [6, 7] and,
+23   more recently, metaphor-based algorithms such as the salp swarm algorithm (SSA) [8, 9].
+24   What such studies can show depends on how the comparison is run.
+25       A new algorithm is usually justified by a comparison with baselines, and its claimed
+26   advantage is only as reliable as that comparison. Guidelines for experiments with meta-
+27   heuristics [10–13] and critiques of metaphor-based algorithms [14, 15] both point to the
+28   same weak spots: baselines run with poor or unreported settings, budgets that are not
+29   equal, constraint violations that are ignored in the ranking, and statistics that confuse the
+30   absence of a significant difference with equivalence. In the WFLOP, the GECCO layout
+31   competition [16] and the IEA Wind Task 37 studies [4, 17] compared optimizers on a
+32   common objective, and reviews list many metaheuristics tested under differing budgets
+33   and settings [5]; these studies compare methods as submitted or as published, not how
+34   the configuration of a baseline or the choice of control changes which method appears best
+
+
+                                                  2
+35   (Section 2). Four issues matter here. First, the PSO setting w = 0.7, c1 = c2 = 2 (iner-
+36   tia weight and acceleration coefficients), which keeps the acceleration coefficients of the
+37   original PSO [18] and was used in our own earlier comparison, lies in the order-1 (mean)
+38   convergence region but outside the smaller order-2 (variance) region [19–21]. Second, bud-
+39   gets counted in iterations, or without the gradient evaluations of gradient-based solvers,
+40   are not equal. Third, infeasible layouts returned by penalty-based metaheuristics must
+41   be ranked consistently. Fourth, mean values without paired tests and multiplicity correc-
+42   tion [22] may mislead, and a nonsignificant difference is not evidence of equivalence [23].
+43   For two-phase hybrids, a further question is whether the first phase contributes more than
+44   a random start would.
+45       Our thesis is that the conclusions of such comparisons depend strongly on how the
+46   baselines are configured and how the comparison is controlled. Under a controlled proto-
+47   col on the discretized Kusiak–Song benchmark at 6,030 evaluations from random starts,
+48   a simple two-phase design, PSO followed by the basic variable neighborhood search
+49   (VNS) [24, 25] (PSO-VNS), and a well-configured PSO rank first and second of eight
+50   methods and differ little on average, whereas salp-swarm first phases add nothing beyond
+51   random sampling in the farm and the Laplacian SSA (LX-SSA) [26], proposed earlier by
+52   two of the authors, is worse as published. PSO-VNS is a sequential hybrid in the memetic
+53   sense [27], not a new PSO variant. Our contributions are:
+54     1. Protocol. Established practice [11–13] applied to the continuous WFLOP (equal
+55        budgets counting gradient evaluations, seed-paired runs, Holm-corrected tests, pub-
+56        lic code and data), with three elements not reported for this problem to our knowl-
+57        edge: feasibility-aware ranking, equal-cost random-sampling controls for hybrids,
+58        and an equivalence analysis [23, 28] at the seed, case and cluster level with a post
+59        hoc margin of ±0.05 percentage points (pp) of wake loss; applied to 68 benchmark
+60        cases, a Horns Rev 1 block and IEA37 Case Study 1 (Sections 6 and 9). The proto-
+61        col is not specific to the WFLOP and carries over to other constrained continuous
+62        problems solved by penalty-based swarm and evolutionary methods.
+63     2. Baseline configuration. The PSO setting w = 0.7, c1 = c2 = 2 (run without velocity
+64        clamping) lies beyond the order-2 boundary (Proposition 1); in a sweep of c1 = c2 ,
+65        feasibility starts to degrade at the boundary and falls progressively beyond it, and
+66        the setting reverses the order of PSO and the salp-swarm hybrids (Section 7.1). A
+67        stability condition from PSO theory thus serves as a practical check of a baseline
+68        before a comparison is run.
+69     3. Component analysis. Against random sampling in the farm (RSD-VNS), salp-swarm
+70        first phases add nothing and LX-SSA as published (at twice the evaluations per
+71        iteration) is worse, whereas a PSO phase gives a clear gain; at 6,030 evaluations the
+72        VNS phase acts essentially as one compass-search descent (Section 8). A control
+73        that samples the bounding square instead of the farm is too weak: against it, the
+74        SSA phase shows a small gain that disappears against sampling in the farm, so the
+75        choice of control itself changes the verdict on a first phase.
+76     4. PSO-VNS versus PSO. PSO-VNS has the best average rank with 15◦ , 5◦ and 1◦
+77        direction bins, also under a Gaussian wake at 1◦ , but its average advantage over a
+78        well-configured PSO is small (equivalent at ±0.05 pp across seeds and cases, not
+79        clusters, with the 15◦ rose; −0.043 pp, significant, with a 1◦ rose), and case-level
+80        differences go both ways. We report where it gains (Horns Rev 1 feasibility, larger
+81        Data Set II layouts) and where it does not (feasible starts, IEA37), and derive rec-
+82        ommendations (Sections 7.2–11). Because the PSO phase of PSO-VNS reproduces
+
+                                                 3
+ 83         a PSO run exactly for a given seed, this comparison isolates the contribution of the
+ 84         local-search phase.
+ 85       Organization of the paper. Section 2 reviews related work. Section 3 states the wake,
+ 86   power and constraint model; Section 4 describes PSO and its stability conditions, the
+ 87   SSA, LX-SSA and the basic VNS; and Section 5 the two-phase template, PSO-VNS and
+ 88   the random-sampling controls. Section 6 gives the evaluation protocol. Section 7 reports
+ 89   the effect of the baseline setting and the overall comparison, Section 8 the component
+ 90   analysis, Section 9 tests beyond the benchmark (larger budgets, feasible starts, Horns
+ 91   Rev 1, IEA37) and Section 10 the sensitivity to the modeling assumptions. Section 11
+ 92   discusses the findings and gives recommendations for benchmarking, Section 12 discusses
+ 93   threats to validity and Section 13 concludes.
+
+ 94   2. Related Work
+ 95       We review five strands of work and state, for each, what is new here; no new optimizer
+ 96   is proposed.
+
+ 97   2.1. Wind Farm Layout Optimization with Metaheuristics
+ 98       Discrete and continuous formulations. Early studies placed turbines in the cells of
+ 99   a square grid and optimized the cell occupation with genetic algorithms (GAs) [29, 30];
+100   binary PSO with time-varying acceleration coefficients was applied to the same kind of
+101   grid [6]. A grid makes the problem combinatorial but restricts the layouts that can be
+102   found. Kusiak and Song [3] formulated a continuous model with turbine coordinates in a
+103   circular farm, a discretized wind rose, a Jensen wake [31, 32] and explicit boundary and
+104   spacing constraints. This model, with two wind data sets [3, 33] and several farm radii,
+105   has become a common reference for metaheuristics and defines the benchmark used here
+106   (Section 6). On it, or on close variants, ant colony optimization and particle filtering [34,
+107   35], biogeography-based optimization [33] and random search inside the feasible space [36]
+108   have been proposed, and GA, PSO, differential evolution (DE) and simulated annealing
+109   were compared on offshore layouts [37]; PSO has reduced wake losses in [7].
+110       Newer metaheuristics and hybrids. Later work used self-informed GAs [38], an adap-
+111   tive evolutionary algorithm combined with Monte Carlo tree search [39], deterministic
+112   refinement techniques [40] and VNS for large offshore farms [41]. Metaphor-based algo-
+113   rithms have also been applied; for example, the water cycle algorithm was compared with
+114   the SSA and the grey wolf optimizer on turbine placement [9], and the Laplacian SSA of
+115   two of the authors [26] was combined with VNS in an earlier comparison that motivated
+116   this study. Reviews list many such methods, often evaluated on the same classical wind
+117   scenarios but with differing budgets, settings and constraint handling [5].
+118       Common benchmarks. The GECCO layout competitions provided a common evalu-
+119   ation interface, and the top entries of the 2015 edition were compared in [16]. The IEA
+120   Wind Task 37 case studies fixed a simplified Gaussian wake, site boundaries and wind
+121   roses [4, 42], and eight methods, gradient-based, gradient-free and hybrid, each run by
+122   researchers experienced with it, reached different layouts of similar energy yield on a com-
+123   mon problem [17]. Both efforts compare methods as submitted : each team chose its own
+124   settings and effort, so the results show what experts achieve with their methods, not how
+125   a given choice of baseline setting or control changes a ranking.
+126       Gradient-based and model-based alternatives. Gradient-based optimization with exact
+127   gradients reduces the cost of layout optimization considerably compared with finite differ-
+128   ences [43]; pseudo-gradients offer a cheap alternative to exact gradients [44], and reduced
+
+                                                   4
+129   parameterizations of the layout cut the number of design variables [45]. Gaussian wake
+130   models [46, 47] make the objective smoother than the top-hat Jensen wake, and surrogate
+131   models extend layout optimization to larger farms and higher-fidelity flow models [48–50].
+132       Position of this study. We use the Kusiak–Song benchmark in its continuous form
+133   (discretized only in the wind directions), and test beyond it on a Horns Rev 1 block and
+134   IEA37 Case Study 1 (Section 9). Unlike studies that propose a new method, we fix the
+135   methods and vary the configuration and the controls; unlike competitions, every method
+136   is run by the same code under one budget in objective evaluations, which for the gradient-
+137   based baseline (multistart sequential least-squares programming, MS-SLSQP) includes its
+138   finite-difference gradients. We do not test gradient-based methods on the smooth models
+139   and with the exact gradients for which they are designed [17, 43].
+
+140   2.2. Benchmarking Methodology for Metaheuristics
+141       Hooker [10] distinguished competitive testing, which tells which algorithm wins, from
+142   controlled experiments, which tell why. Later guidelines turned this into practice: equal
+143   budgets counted in function evaluations, reported and justified settings of all methods,
+144   well-chosen reference algorithms and component analyses of new proposals [12, 13]. Plat-
+145   forms such as COCO [51] standardize budgets, instances and performance measures for
+146   continuous black-box optimizers, but for artificial test functions; a constrained engineer-
+147   ing problem such as the WFLOP must additionally decide how infeasible final solutions
+148   enter the comparison.
+149       For the statistics, Demšar [52] and Derrac et al. [11] recommended nonparametric
+150   tests over multiple problems: the Friedman test with post hoc comparisons of average
+151   ranks and pairwise Wilcoxon signed-rank tests, with a multiplicity correction such as
+152   Holm’s [53]. Benavoli et al. showed that post hoc tests based on mean ranks depend on
+153   the other methods in the pool [22], which is why our primary tests use case means, and
+154   advocated Bayesian analyses with a region of practical equivalence [28]; Carrasco et al. [54]
+155   reviewed these classical and newer trends for swarm and evolutionary algorithms and gave
+156   practical guidelines. Campelo and Takahashi [55] derived the numbers of instances and
+157   runs needed for a given power and accuracy. Equivalence testing with two one-sided tests
+158   (TOST) asks whether a difference lies within a margin of practical irrelevance [23], and so
+159   avoids reading a nonsignificant difference as evidence that two algorithms perform equally.
+160       Position of this study. We apply this practice to the WFLOP and add three elements
+161   that we have not found reported for this problem: feasibility-aware ranking of penalty-
+162   based methods, equal-cost random-sampling controls for the first phase of hybrids, and
+163   equivalence analyses (TOST and a Bayesian signed-rank test) at three levels of gener-
+164   alization, over seeds, over cases and over farm clusters (Section 6). We did not size
+165   the experiment by a power analysis as in [55]; instead, for each equivalence statement,
+166   we report the smallest margin at which it holds, so that a reader can apply a different
+167   margin.
+
+168   2.3. Critiques of Metaphor-Based Algorithms
+169       Sörensen [14] argued that many “novel” metaheuristics hide known search operators
+170   behind a new metaphor and are justified by comparisons with weak baselines; a group of
+171   editors and researchers later called for action on the proliferation of such methods [15].
+172   Camacho-Villalón et al. [56] showed for six popular metaphor-based algorithms that their
+173   search rules reuse known ideas under new names and are presented in a misleading way.
+174   For the SSA [8], the critical review of Castelli et al. [57] analyzed the update rules and the
+
+
+                                                    5
+175   evidence for its performance; in the form used here, the leaders perturb the best solution
+176   uniformly with a shrinking radius and the followers only average (Section 4.2).
+177       Position of this study. These critiques rest mostly on the update equations or on
+178   artificial test functions. We add a component-level test on an applied constrained problem:
+179   whether a salp-swarm first phase does better than random sampling of equal cost in the
+180   farm. It does not (Section 8). This is also a self-critique, as LX-SSA [26] was proposed
+181   by two of the authors; the test assesses LX-SSA as published, including its cost of 2Np
+182   evaluations per iteration, and does not separate its Laplace step from that cost.
+
+183   2.4. PSO Parameterization and Stability Theory
+184       The original PSO [18] used acceleration coefficients c1 = c2 = 2 and velocity clamp-
+185   ing; the inertia weight [58] and the constriction factor of Clerc and Kennedy [59] were
+186   introduced to control the swarm’s divergence, and the constriction setting is equivalent
+187   to an inertia-weight PSO with w ≈ 0.73 and c1 = c2 ≈ 1.50. Analyses of the particle
+188   dynamics [60, 61] derived the parameter regions in which a deterministic simplification
+189   of a particle converges and related the parameters to the exploration behavior. Poli [19]
+190   derived the mean and variance of the sampling distribution under stagnation and thereby
+191   the order-1 and order-2 stability regions; Cleghorn and Engelbrecht [21] showed that,
+192   for c1 = c2 , the order-2 region also holds under a weaker, non-stagnant assumption; and
+193   Bonyadi and Michalewicz [20] reviewed these results together with the many PSO variants
+194   and their parameter choices.
+195       Position of this study. These results are well known in PSO theory but rarely used
+196   when PSO serves as a baseline in applied comparisons. We use the order-2 condition as
+197   a check of a baseline setting: the setting w = 0.7, c1 = c2 = 2 is order-1 but not order-2
+198   stable (Proposition 1), a sweep of c1 = c2 shows that feasibility on the benchmark begins
+199   to degrade near the boundary, and the setting changes the ranking of PSO against the
+200   salp-swarm hybrids (Section 7.1). The link between a stability region of the unconstrained
+201   dynamics and the feasibility of the returned solutions in a constrained problem is, to our
+202   knowledge, not reported for the WFLOP.
+
+203   2.5. Hybrid Swarm–Local-Search Designs
+204       Combining a population-based global search with a local search is the idea of memetic
+205   algorithms; Krasnogor and Smith [62] gave a taxonomy and discussed design issues such
+206   as the choice of the local search and its integration into the evolutionary cycle, and Neri
+207   and Cotta [27] reviewed memetic computing for discrete, continuous and constrained
+208   problems. VNS [24, 25] changes neighborhoods systematically around an incumbent and
+209   has a continuous form [63]; in the WFLOP, it has been used for large offshore farms [41],
+210   and deterministic refinement techniques for layouts have been compared in [40]. The
+211   simplest of these designs is the sequential (relay) hybrid, which runs the global method
+212   for part of the budget and passes its best solution to the local method.
+213       Position of this study. PSO-VNS is such a sequential hybrid, built from a standard
+214   PSO and the basic VNS without new operators. What is new is its evaluation: the
+215   first phase is compared with equal-cost random sampling in the farm and in its bounding
+216   square, and with the local search alone, so that the contribution of each phase is measured
+217   rather than assumed; and the second phase is instrumented, which shows that at 6,030
+218   evaluations the VNS acts essentially as one compass-search descent, so the comparison
+219   measures the value of a start for a local search (Section 8).
+
+
+
+                                                  6
+                             90° N
+
+
+
+
+                                                                                                                    turbine i is waked by j if βij < α = arctan K
+                                                                                      sup
+                                  θ                                 sup
+      180°                                              0°                                  sdown                               turbine j
+        W                                               E
+                                                                                                                          α             R
+                                                                               wake                 2(R + Kd)   A                                                    2(R + Kd)
+                                       r                                  2R                                                    βij
+                                                                                                                                                         turbine i
+
+                             270° S
+             turbine          radius 2D (half the 4D spacing)                         d                                  R/K                      d
+                  wind direction θ (from east, counter-clockwise)
+
+
+                              (a)                                                (b)                                                         (c)
+
+      Figure 1: Model geometry. (a) Circular farm of radius r and wind direction θ; the points show, for
+      illustration, a 12-turbine layout (r = 750 m) of an earlier version of this study; discs of radius 2D touch
+      at the spacing ℓmin = 4D. (b) Jensen top-hat wake behind a rotor of radius R: width 2(R + Kd) at the
+      downstream distance d, uniform speed sdown < sup . (c) Wake half cone of turbine j (K exaggerated):
+      virtual vertex A at R/K upstream of the rotor, half-angle α = arctan K; turbine i is waked by j if
+      βij < α.
+
+
+220   3. Problem Modeling
+221        For a prescribed number N of identical turbines with rotor radius R (diameter D =
+222   2R), the n = 2N coordinates of the layout X = (x1 , y1 , . . . , xN , yN ) are optimized to
+223   maximize the expected farm power, i.e., to minimize the wake loss, under the Jensen wake
+224   model [31, 32] and the power curve of [3]. The wind direction θ has the probability density
+225   pθ ; it is the direction towards which the wind blows, counter-clockwise from east (Fig. 1a);
+226   the meteorological directions θmet of Horns Rev 1 and IEA37 (wind from, clockwise from
+227   north) are converted by θ = 270◦ − θmet . Two constraints apply (Section 3.4): the turbine
+228   distances ℓij = ∥(xi − xj , yi − yj )∥2 are at least ℓmin = 4D = 8R [3, 33], and the farm is a
+229   disc of radius r = 500, 750 or 1000 m.
+
+230   3.1. Wind Model and Direction Discretization
+231       For each direction, the wind speed s has the Weibull density ps (s; ζ, ψ) = (ζ/ψ)
+232   (s/ψ)ζ−1 exp[−(s/ψ)ζ ] with shape ζ(θ) and scale ψ(θ). The benchmark rose is piecewise
+233   constant: Nθ = 24 direction bins [15(l − 1), 15l)◦ , l = 1, . . . , 24, with probability pl , shape
+234   ζ = 2 and scale ψl (Table S1). Data Set I is nearly unidirectional (ψ = 13 m/s in all bins;
+235   80% of the probability in bins 6 and 7, i.e., wind from 165◦ to 195◦ ); Data Set II is a
+236   broad rose with scales from 2.6 to 10 m/s and its highest probability in bin 13. The Horns
+237   Rev 1 block uses a measured 12-sector Weibull rose evaluated in 5◦ bins, and IEA37 Case
+238   Study 1 uses 16 directions at one speed (Section 6.3).
+239       Why the direction discretization matters. The objective evaluates the wake only at
+240   the 24 bin centers θ̄l = (15l − 7.5)◦ . A top-hat wake is narrow: by the half-cone geometry
+241   (Fig. 1c), turbine j wakes a turbine i at√ the distance ρ ≥ R/K only for directions within
+242   an interval of width 2[α + arcsin(R/(ρ 1 + K 2 ))] around the direction from j to i. With
+243   K = 0.075 and R = 38.5 m (α = 4.29◦ , R/K = 513 m), this width is below the bin
+244   spacing of 15◦ for ρ > 685 m and tends to 2α = 8.6◦ . If no bin center lies in this interval,
+245   the wake of the pair does not enter the objective (with bins of 5◦ or finer, every such
+246   interval contains a center). Optimized layouts exploit these gaps: with 1◦ sub-bins that
+247   keep the Weibull parameters of their 15◦ bin, the mean wake loss of PSO-VNS rises from
+248   1.322% to 2.335%, and the rise is largest for PSO and the VNS-based methods. All results
+249   thus hold for the discretized roses; Section 10 reports which conclusions survive a 1◦ rose.
+
+
+                                                                                             7
+250   3.2. Wake Effect Model
+251       In the Jensen model (Fig. 1b,c), the wake of turbine j is a half cone with half-angle
+252   α = arctan K (wake-spreading constant K), and its virtual vertex lies R/K upstream of
+253   the rotor. With uij = (xi − xj ) cos θ + (yi − yj ) sin θ + R/K and the lateralq offset vij =
+                                                                               −1
+254   −(xi −xj ) sin θ+(yi −yj ) cos θ, turbine i lies in the wake if βij = cos uij / u2ij + vij2 < α.
+255   Its downstream distance is dij = |uij − R/K|, and with the thrust coefficient CT the
+256   velocity deficit is                                       √
+                                                sdown       1 − 1 − CT
+                                    ∆ij = 1 −           =                  .                       (1)
+                                                 sup       (1 + Kdij /R)2
+257   The numerator is the deficit behind the rotor from actuator-disc momentum theory, and
+258   the factor R2 /(R + Kdij )2 spreads it over the growing wake (Fig. 1b); with CT = 0.8 and
+259   K = 0.075, a turbine ℓmin = 308 m directly behind another loses 21.6% of the wind speed,
+260   one 770 m (10D) behind 8.8%. As in [3], this top-hat wake is tested at the hub center only,
+261   so the deficit jumps at the cone edge, and it also reaches a turbine less than R/K upstream
+262   of j near its axis (between A and the rotor in Fig. 1c; non-physical, kept for comparability
+263   with the published results). The deficits are combined by the root-sum-square rule,
+                                              P                   1/2
+                                                                2
+                                     ∆i (θ) =     j̸=i, βij <α ∆ij      .                      (2)
+
+264   As CT is constant (which overstates the deficits above rated speed), the local wind speed
+265   in a direction bin is the free-stream speed times 1 − ∆i (θ), a Weibull variable with shape
+266   ζ(θ) and scale ψi (θ) = ψ(θ)[1 − ∆i (θ)]. The hub-center test makes the objective jump
+267   where a hub crosses a cone edge in an evaluated direction; hence the derivative-free local
+268   search of VNS (Section 4.3), and finite-difference gradients handicap MS-SLSQP.
+
+269   3.3. Power Model and Expected Energy
+270       The power curve of the Kusiak–Song benchmark [3] is f (s) = 0 for s < scut-in , f (s) =
+271   λ1 s + λ0 for scut-in ≤ s ≤ srated and f (s) = Prated above, with scut-in = 3.5 m/s, srated =
+272   14 m/s, Prated = 1500 kW, λ1 = 140.86 and λ0 = −500. We use it as published: it is
+273   slightly negative just above the cut-in speed (−7.0 kW at 3.5 m/s, zero at 3.55 m/s),
+274   jumps from 1472 to 1500 kW at the rated speed and has no cut-out speed. The expected
+275   power of turbine i,
+                                     Z 360        Z ∞
+                                                                              
+                            E(Pi ) =       pθ (θ)     f (s) ps s; ζ(θ), ψi (θ) ds dθ,            (3)
+                                          0             0
+
+276   is evaluated, as in [3], by a Riemann sum over direction bins θ0 = 0◦ , θ1 , . . . , θNθ = 360◦
+277   with probabilities pl , and over the speed range between scut-in and srated , divided into Ns
+278   bins s0 = scut-in , s1 , . . . , sNs = srated (benchmark: Nθ = 24 bins of 15◦ and Ns = 21 bins
+279   of 0.5 m/s). With the bin centers θ̄l = (θl−1 + θl )/2 and the Weibull survival function
+280   Wi (s, θ) = exp{−[s/ψi (θ)]ζ(θ) } of the local speed,
+                  Nθ
+                                         (                          Ns
+                 X                                                  X  sq−1 +sq                                      
+        E(Pi ) =     (θl − θl−1 ) pl Prated Wi (srated , θ̄l ) + λ1       2
+                                                                                 W i (s q−1 , θ̄l ) − Wi (s q , θ̄l )
+                   l=1                                                 q=1
+                                                                       )
+                                                                     
+                         + λ0 Wi (scut-in , θ̄l ) − Wi (srated , θ̄l ) .
+
+                                                                                                                   (4)
+
+                                                             8
+281   Like the earlier
+           ◦
+                  P studies, we keep the bin-width factorP (θl − θl−1 ) in degrees; with 24 bins
+282   of 15 and l pl = 1, the benchmark objective i E(Pi ) is thus 15 times the expected
+283   farm power in kW, and the gross (wake-only) annual energy production is AEP [MWh] =
+284   (objective/15) × 8.76. The wake-free benchmark objective of one turbine, Eideal , is (4)
+285   with ψi = ψ; for Data Set I, Eideal = 14,045.74, which corresponds to 936.38 kW (a
+286   capacity factor of 62%, far above real sites) or 8,202.7 MWh/yr.
+
+287   3.4. Optimization Problem and Constraint Handling
+          With the wake loss L(X) = N Eideal − N
+                                               P
+288
+                                                 i=1 E(Pi ), reported in percent of the wake-free
+289   value, 100 L/(N Eideal ), the problem is
+
+            min       L(X) s.t. ℓij ≥ ℓmin (1 ≤ i < j ≤ N ),                 x2i + yi2 ≤ r2 (1 ≤ i ≤ N ),   (5)
+         X∈[−r,r]2N
+
+290   which is equivalent to maximizing the expected farm power and hence the AEP: a prob-
+291   lem in 2N variables (2N ≤ 30 on the benchmark) with a discontinuous objective and
+292   N (N − 1)/2 nonconvex spacing constraints. After every position update, each coordinate
+293   is clipped to [−r, r] (box repair; the square, not the circle). The constraints are handled
+294   by a penalty on the violations gib = x2i + yi2 − r2 and gijs = ℓmin − ℓij ; all optimizers except
+295   MS-SLSQP minimize the penalized wake loss
+                                                      N           
+                                                       X                 X                     2
+                            Fp (X) = N Eideal −              E(Pi ) +               1 + µgib
+                                                       i=1              i: gib >0
+                                                                                                            (6)
+                                                                 s 2
+                                            X
+                                                                                      10
+                                                                  
+                                      +                1 + µgij ,         µ = 10 ,
+                                                s >0
+                                          i<j: gij
+
+
+296   whose first term is the wake loss L(X) reported in our tables. Any violation above about
+297   4.6 × 10−8 (m or m2 ) makes the penalty exceed any possible wake loss, so comparing Fp
+298   values is, up to smaller violations, a feasibility-first rule (feasible before infeasible, then
+299   wake loss or total penalty). The scaling (gib in m2 , gijs in m) favors infeasible layouts
+300   with turbines slightly too close, or with a turbine clipped to the box near a tangent point
+301   (±r, yi ), where gib = yi2 . MS-SLSQP minimizes the wake p loss under explicit constraints.
+302   A final layout counts as feasible if ℓij ≥ ℓmin and x2i + yi2 ≤ r hold within 10−6 m
+303   (Section 6), a looser tolerance than the penalty’s.
+
+304   4. Preliminaries: Phase-1 Methods and Basic VNS
+305      A population method keeps Np candidate vectors Xi ∈ Rn with components Xm   i
+                                                                                       and
+306   bounds lbm = −r, ubm = r; unless stated otherwise, one iteration costs Np objective
+307   evaluations. This section states the methods exactly as implemented (Algorithms 1–2);
+308   Table 1 collects all settings.
+
+309   4.1. PSO and Its Stability Conditions
+310       We use the canonical global-best PSO [18] in the inertia-weight form [58] (Algo-
+311   rithm 1). Particle i has a position Xi , a velocity Vi and a personal best Pi , the swarm
+312   keeps the global best G, and a particle moves by
+
+                         Vi ← w Vi + c1 ρ1 ◦ Pi − Xi + c2 ρ2 ◦ G − Xi ,
+                                                                         
+                                                                                             (7)
+                            Xi ← Xi + V i ,                                                                 (8)
+
+                                                             9
+      Algorithm 1 PSO as implemented (Np (T + 1) evaluations).
+       1: Draw (seeded) and evaluate Np layouts Xi ; Vi ← 0, Pi ← Xi , G ← arg mini Fp (Pi )
+       2: for t = 1, . . . , T and i = 1, . . . , Np do
+       3:    Draw ρ1 , ρ2 ∼ U (0, 1)n ; update Vi by (7)                       ▷ no velocity clamping
+       4:       i              i
+             X ← clip(X + V , −r, r)i                                         ▷ box repair; Vi is kept
+       5:                        i                i
+             Evaluate Fp (X ); replace P and G if it is strictly lower than theirs
+       6: end for
+       7: return G
+
+
+313   where ρ1 , ρ2 are vectors of independent U (0, 1) numbers, drawn anew for every move, and
+314   ◦ is the componentwise product. The constriction PSO of Clerc and Kennedy [59] with
+315   their standard choice φ1 = φ2 = 2.05 (constriction factor κ = 0.7298) is identical to (7)
+316   with
+                               w = 0.7298,     c1 = c2 = κφ1 = 1.49618.                      (9)
+317   PSO denotes (7) and (8) with these coefficients, fixed a priori from the literature, and
+318   the old setting the same algorithm with w = 0.7, c1 = c2 = 2, i.e., the acceleration
+319   coefficients of the original PSO [18] combined with an inertia weight. Both are run as
+320   implemented: velocities start at zero and are not clamped (no Vmax ), a coordinate clipped
+321   to the square (Section 3.4) keeps its velocity, and Pi , G are updated after each evaluation
+322   (asynchronous global best).
+                                                                             i
+323       Stability under stagnation. Consider one coordinate x = Xm           with v = Vmi , p = Pmi
+324   and g = Gm , and assume (A1) stagnation, p and g fixed, and (A2) no active bound, so
+325   that vt = xt − xt−1 . With φk,t = ck ρk,t and φt = φ1,t + φ2,t , every coordinate then follows
+326   the random linear recursion xt+1 = (1 + w − φt ) xt − w xt−1 + φ1,t p + φ2,t g, whose random
+327   coefficient φt has mean µ = (c1 + c2 )/2 and variance σ 2 = (c21 + c22 )/12. The update is
+328   order-1 (order-2 ) stable if E xt (and E x2t ) converges to a limit independent of (x0 , x1 ) [19].
+
+329   Proposition 1. Let c1 , c2 ≥ 0, c1 + c2 > 0, and assume (A1)–(A2).
+330    (a) E xt → x∗ = (c1 p + c2 g)/(c1 + c2 ) for all initial values if and only if |w| < 1 and
+331        0 < c1 + c2 < 4(1 + w).
+332    (b) The update is order-2 stable if and only if |w| < 1 and
+
+                               χ(1) := 2µ(1 − w2 ) − (1 − w)µ2 − (1 + w)σ 2 > 0.                    (10)
+
+333         For c1 = c2 , (10) is Poli’s condition [19]
+
+                                                           24 (1 − w2 )
+                                              c1 + c2 <                 ;                           (11)
+                                                             7 − 5w
+334        for c1 ̸= c2 with the same sum c1 + c2 , it is stricter.
+335    (c) Under (b), Var xt → V∞ = (1 + w) q/χ(1) with q = c21 c22 (p − g)2 /[6(c1 + c2 )2 ], for
+336        c1 = c2 = c, V∞ = c(1 + w)(p − g)2 /(4[12(1 − w2 ) − c(7 − 5w)]); V∞ = 0 if and only
+337        if p = g.
+
+338   Proof sketch. (a) et = E xt − x∗ obeys et+1 = (1 + w − µ) et − w et−1 ; both roots of
+339   λ2 − (1 + w − µ)λ + w lie strictly inside the unit circle if and only if |w| < 1 and
+340   |1 + w − µ| < 1 + w (Schur–Cohn), i.e., 0 < µ < 2(1 + w). (b) With yt = xt − x∗ ,
+341   zt = (Eyt2 , Eyt yt−1 , Eyt−1
+                                2
+                                    )T obeys zt+1 = M zt + bt with a 3 × 3 matrix M (w, µ, σ 2 ) and
+                     T
+342   bt → (q, 0, 0) , so order-2 stability means a spectral radius of M below one; by Jury’s
+
+                                                      10
+                8
+                    not order-1 stable
+                                   old setting
+                              w = 0.7, c1 + c2 = 4
+                6                    (order-2 bound 3.50)
+                                                                              order-1 only            Figure 2: Stability regions of the implemented PSO
+                                                                                                      update under stagnation and without active bounds
+      c1 + c2
+
+
+
+
+                4                                                                                     (c1 = c2 ; Proposition 1). Light: order-1 stable only,
+                                                 w)                                                   c1 + c2 < 4(1 + w); dark: order-1 and order-2 stable,
+                                             +
+                                         4(1
+                2               c2
+                                     =                                                                c1 + c2 < 24(1 − w2 )/(7 − 5w). The old setting (w = 0.7,
+                            +               order-1 and order-2           constriction
+                       c1                                                                             c1 = c2 = 2) is order-1 but not order-2 stable; the con-
+                                                              2    w = 0.7298, c1 + c2 = 2.99
+                                             c1 + c2 < 24(1 −w )
+                                                         7 − 5w                                       striction setting (9) is order-2 stable.
+                                                                     (order-2 bound 3.35)
+                0
+                −1.0                      −0.5               0.0            0.5                 1.0
+                                                      inertia weight w
+
+
+
+343   criterion for its characteristic polynomial χ, this holds iff |w| < 1 and χ(1) > 0. For
+344   c1 = c2 = c, χ(1) = c [12(1 − w2 ) − c(7 − 5w)]/6; for fixed c1 + c2 , σ 2 is smallest at
+345   c1 = c2 . (c) V∞ is the first component of the fixed point of z 7→ M z + (q, 0, 0)T . Full
+346   proof: Section S6.1.
+347       The order-1 condition involves the mean of φt (with φ = c1 +c2 , the constant-coefficient
+348   condition φ < 2(1 + w) would wrongly call the old setting unstable). For c1 = c2 , the
+349   region also holds under a weaker, non-stagnant assumption [21]. The constriction setting is
+350   order-2 stable (c1 + c2 = 2.99 < 3.35; spectral radius of M 0.94): in the limit, a coordinate
+351   with Pmi ̸= Gm is sampled with mean (Pmi +Gm )/2 and standard deviation 1.04 |Pmi −Gm |,
+352   so the swarm keeps sampling around G unless Pi = G. The old setting is order-1 stable
+353   (4 < 6.8) but beyond the order-2 boundary (4 > 3.50; c1 = c2 > c∗ = 1.7486 at w = 0.7;
+354   spectral radius 1.12), so its second moments grow without bound under stagnation (Fig. 2;
+355   Proposition S2). Neither condition says how good G is, and clipping violates (A2): a
+356   clipped coordinate stays at the bound while its kept velocity points outward (Lemma S3).
+357   Section 7.1 tests this empirically: in a sweep of c1 = c2 = c at w = 0.7, feasibility starts to
+358   fall near c∗ and falls progressively beyond it (to 58.9% at c = 2), so the boundary marks
+359   approximately where this PSO starts to fail, and velocity clamping largely rescues the old
+360   setting. DE’s F = 0.5 exceeds Zaharie’s critical value (0.14 at CR = 0.9) [64], so its weak
+361   results are not due to premature variance loss.
+
+362   4.2. Salp Swarm Algorithm and Its Laplacian Variant
+363       The SSA [8] (Algorithm S1) keeps the best solution found so far as the food source
+364   H and splits the population, sorted by Fp , into leaders and followers. A leader i ≤ Np /2
+365   updates each coordinate by
+                                 i
+                                                                    
+                               Xm  = Hm ± ξ1 (ubm − lbm )ξ2 + lbm ,                         (12)
+366   with either sign with probability 1/2, ξ2 ∼ U (0, 1) and ξ1 = 2 exp[−(4t/T )2 ] decreasing
+367   with the iteration t out of T : a leader samples Hm + U (−ξ1 r, ξ1 r) in every coordinate,
+368   with ξ1 ≤ 0.037 for t ≥ T /2. A follower i > Np /2 moves to the midpoint of its position
+369   and the new position of the preceding salp. The leaders thus perturb H uniformly with
+370   a shrinking radius, and the followers only average [57]. LX-SSA [26] gives each follower a
+371   second candidate Ymi = Xm i
+                                  + γ(Hm − Xm  i
+                                                 ) with one Laplace step [65] for all coordinates,
+                        γ = ϕ − χ sgn z − 21 ln 1 − 2|z − 12 | , z ∼ U (0, 1),
+                                                             
+                                                                                             (13)
+372   with ϕ = 0 and χ = 1, and keeps the better candidate. As published, it evaluates both
+373   candidates of each follower and then re-evaluates the kept ones with the new population,
+
+                                                                                                       11
+      Algorithm 2 Basic VNS from an incumbent X (until the budget is used; returns the
+      best layout evaluated).
+       1: X ← LocalSearch(X); k ← 1
+       2: loop
+       3:    Draw d ∼ U [−δk , δk ]n until ∥d∥∞ > δk−1 ; evaluate X′ = clip(X + d) ▷ shaking
+       4:      ′                       ′         ′                          ′
+             X ← LocalSearch(X ); if Fp (X ) < Fp (X) then X ← X , k ← 1 else k ← k mod
+          kmax + 1
+       5: end loop
+       6: function LocalSearch(y)                             ▷ compass search, best improvement
+       7:     h ← h0 ; while h ≥ hmin : evaluate the 2n points clip(y ± h em ); if the best, y′ , has
+          Fp (y′ ) < Fp (y), then y ← y′ , else h ← h/2
+       8:     return y
+       9: end function
+
+
+374   so an iteration costs 2Np evaluations (SSA: Np ) and LX-SSA runs half as many iterations
+375   as SSA (Table 1). Comparing the two tests LX-SSA as published, not the Laplace step
+376   alone; both use the code of the previous study.
+
+377   4.3. Basic Variable Neighborhood Search
+378       The basic VNS [24, 25], in the continuous form of [63] (Algorithm 2), improves one
+379   incumbent X with kmax = 5 ℓ∞ shell neighborhoods Nk (X) = {X′ : δk−1 < ∥X′ − X∥∞ ≤
+380   δk }, δk = 0.1 k r, of the whole layout: shaking draws a uniform point of Nk (X), clipped
+381   to the box, and a best-improvement local search improves it. As the top-hat wake makes
+382   Fp discontinuous, the local search is a compass search: it evaluates all 2n moves ±h em
+383   (em the mth unit vector; 60 evaluations for N = 15), moves to the best one if it strictly
+384   improves, and halves h (from h0 = 0.05r) when none does, until h < hmin = 10−3 r.
+385   A completed descent ends at a point that no move ±h̄ em , h̄ = h0 /25 = 0.0015625 r,
+386   improves (Proposition S9), a coordinate-wise optimality at one step length, not a local
+387   minimum.
+
+388   5. Two-Phase Swarm–VNS Design and PSO-VNS
+389   5.1. Two-Phase Template
+390       All hybrids follow one sequential (relay) template. For a budget of B evaluations and
+391   a split ω ∈ (0, 1), Phase 1 starts from the seeded initial population, runs a population
+392   method for about ωB evaluations and passes its best layout to Phase 2, the basic VNS
+393   (Algorithm 2), which applies the local search to it and then iterates until B evaluations
+394   are used. Only Phase 1 differs: PSO in PSO-VNS ; SSA or LX-SSA in SSA-VNS and LX-
+395   SSA-VNS (with ξ1 compressed to the Phase-1 iterations); and, in the controls, round(ωB)
+396   layouts: the initial population, then layouts drawn uniformly in the farm disc (RSD-VNS )
+397   or in its bounding square (RS-VNS ). VNS alone is the limiting case in which Phase 1
+398   is the initial population. Phase 1 runs for T1 = round((ωB − Np )/c) iterations of c
+399   evaluations (c = Np for PSO and SSA, 2Np for LX-SSA). A swarm phase is useful only
+400   if it gives VNS a better start than random sampling with about the same number of
+401   evaluations (at ω = 0.5, 3,015 for the controls and 3,030 for the swarms (Np (T1 + 1);
+402   LX-SSA: Np (2T1 + 1))); the component analysis (Section 8) tests this for each Phase-1
+403   choice against RSD-VNS, with RS-VNS as a weak minimum bar, as the following result
+404   shows.
+
+
+                                                    12
+      Algorithm 3 PSO-VNS for a prescribed turbine count N .
+      Require: budget B, split ω, Np , w, c1 , c2 , radius r, kmax
+       1: G ← PSO (Algorithm 1) with T = T1 = round((ωB − Np )/Np )                ▷ Phase 1
+       2: X ← LocalSearch(G); k ← 1                                  ▷ Phase 2 (Algorithm 2)
+       3: while fewer than B evaluations have been used do
+       4:    X′ ← LocalSearch(uniform point of Nk (X)); if Fp (X′ ) < Fp (X) then X ← X′ ,
+          k ← 1 else k ← k mod kmax + 1
+       5: end while
+       6: return best layout evaluated
+
+
+405   Proposition 2. Let the 2N coordinates be independent and uniform in [−r, r], and let
+406   PN be the probability that the layout is feasible (all turbines in the disc D of radius r and
+407   all pairwise distances ≥ s). Then (a) all N turbines lie in D with probability (π/4)N ; (b)
+                       N −1    
+      PN ≤ (π/4)N k=1 max 0, 1 − max{A(s), k A(s/2)}/(πr2 ) , where A(ρ) is the area of
+                     Q
+408
+
+409   the part of D covered by a disc of radius ρ centered on the boundary of D (closed form:
+410   (S8)); (c) among M such layouts, the expected number of feasible ones is M PN .
+
+411   Proof. (a) The turbines are independent and uniform in the square, each in D with prob-
+412   ability πr2 /(2r)2 . (b) Given (a), the positions p1 , . . . , pN are independent
+                                                                                    S and uniform in
+413   D. If p1 , . . . , pk are pairwise at least s apart, pk+1 must avoid Uk = D∩ j≤k B(pj , s). The
+414   area of B(c, ρ)∩D, c ∈ D, is nonincreasing in ∥c∥ (its derivative is minus the length of the
+415   common chord), hence ≥ A(ρ); so |Uk | ≥ A(s), and, as the discs B(pj , s/2) ⊂ B(pj , s) are
+416   disjoint, |Uk | ≥ kA(s/2). The chain rule over k gives (b). (c) Linearity of expectation.
+417       The bound (b) is loose; by Monte Carlo, PN < 10−6 for the largest cases (N = 12,
+418   15; N = 10: no feasible layout in 107 ), so the 3,015 samples of RS-VNS contain about
+419   10−3 or fewer feasible layouts in expectation (Table S48), and RS-VNS hands VNS the
+420   least-violating sample. The spacing dominates (PN ≪ (π/4)N ): 730 RS-VNS runs have
+421   no feasible sample, and disc sampling gives one in only 242 of them.
+
+422   5.2. PSO-VNS
+423       PSO-VNS (Algorithm 3) is not a new PSO variant: its Phase 1 is the plain PSO of
+424   Algorithm 1 and, as the coefficients do not depend on the iteration, reproduces exactly,
+425   for a given seed, the first Np (T1 +1) evaluations of a PSO run (Proposition S4); comparing
+426   PSO-VNS with PSO thus isolates the effect of Phase 2. This does not hold for SSA-VNS
+427   and LX-SSA-VNS, whose ξ1 depends on t/T1 .
+428       PSO-VNS adds one parameter to PSO and VNS, the split ω; with ω = 0.5 and
+429   B = 6,030, PSO runs for T1 = 100 iterations (99.5 rounded half to even) and VNS
+430   receives 3,000 evaluations (Table 1). None of these values was tuned; Section 8.4 studies
+431   ω. At this budget, PSO-VNS is essentially PSO plus one compass-search descent: the
+432   first descent is unfinished in 39 of 40 runs with N ≥ 12, and shake-and-search cycles take
+433   21.5% of the Phase-2 evaluations (pooled; median run 4.7%) for 0.5% of the Phase-2 gain
+434   (accepted cycles), so the neighborhoods matter only for small N .
+435       Table 1 lists the settings of all methods, the published defaults [8, 26, 59, 63, 66];
+436   MS-SLSQP (SciPy’s SLSQP [67]) minimizes L under the scaled constraints of (5) (Sec-
+437   tion S1.5). At 30,030 and 120,030 evaluations (Section 9.1), T and T1 follow the same
+438   rules.
+
+
+
+
+                                                    13
+      Table 1: Settings of all methods at the benchmark budget B = 6,030 evaluations (including the initial
+      population and, for MS-SLSQP, the finite-difference calls); Np = 30; box repair by clipping to [−r, r]. A
+      population method uses Np (T + 1) evaluations, LX-SSA Np (2T + 1).
+      Method          Iterations        Coefficients and operators
+      PSO             T = 200          Algorithm 1; w = 0.7298, c1 = c2 = 1.49618 (old setting: w = 0.7, c1 = c2 = 2);
+                                       V0i = 0, no Vmax ; clipped coordinate keeps its velocity; asynchronous Pi , G
+      SSA             T = 200          Algorithm S1; 15 leaders, 15 followers; ξ1 = 2 exp[−(4t/T )2 ]
+      LX-SSA          T = 100          as SSA, plus a Laplace candidate per follower, ϕ = 0, χ = 1 (13); both candidates
+                                       evaluated
+      DE/rand/1/bin   T = 200          F = 0.5, CR = 0.9; mutant clipped before crossover; asynchronous one-to-one
+                                       replacement
+      VNS             30 initial, then Algorithm 2 from the best initial layout; kmax = 5, δk = 0.1kr, h0 = 0.05r,
+                      6,000            hmin = 10−3 r
+      MS-SLSQP        ≤ 200 per start  SLSQP, ftol = 10−9 , forward differences (step 1 m); starts: initial layouts by
+                                       increasing Fp , then random layouts
+      PSO-VNS,        T1 = 100 / 100 / ω = 0.5; Phase 1 PSO / SSA / LX-SSA as above (ξ1 over T1 ), Phase 2 VNS
+      SSA-VNS,        50 (3,030), then (Algorithm 2)
+      LX-SSA-VNS      3,000
+      RS-VNS,         3,015 samples,   ω = 0.5; initial population, then uniform layouts in the square / disc; Phase 2 VNS
+      RSD-VNS         then 3,015
+
+
+
+439   6. Evaluation Protocol
+440   6.1. Cases and Methods
+441       The 68 cases combine the two Kusiak–Song wind data sets [3, 33] (Table S1) with
+442   circular farms of radii r = 500, 750 and 1000 m and N = 2, . . . , 10, 2, . . . , 12 and 2, . . . , 15
+443   turbines (R = 38.5 m, ℓmin = 4D = 308 m, CT = 0.8, K = 0.075).
+444       The main comparison includes eight methods (Np = 30 where applicable): PSO-
+445   VNS (Algorithm 3, ω = 0.5); PSO; SSA-VNS; SSA; LX-SSA; DE/rand/1/bin [66] (scale
+446   factor 0.5, crossover rate 0.9); VNS; and MS-SLSQP, a multistart sequential least-squares
+447   programming method (SciPy’s SLSQP [67], forward-difference gradients) that minimizes
+448   the wake loss under explicit constraints, restarting from the initial, then random layouts
+449   (Section S1); all others minimize Fp (6) over [−r, r]2N . The component analysis (Section 8)
+450   adds LX-SSA-VNS and two random-sampling controls (Section 5.1; RSD-VNS on the
+451   benchmark only): after the common initial population, RSD-VNS samples its Phase-1
+452   layouts uniformly in the farm disc and RS-VNS in the bounding square (3,015 layouts
+453   versus the hybrids’ 3,030 Phase-1 evaluations). A split study varies ω on twelve cases
+454   (Section 8.4). Table 2 lists all studies of the paper with their cases, methods, budgets,
+455   seeds and runs; the re-evaluations and diagnostics use stored layouts and runs.
+
+456   6.2. Comparison Design and Statistics
+457       Equal budgets and paired seeds. Unless stated otherwise, a run uses exactly B =
+458   6,030 objective evaluations, including the initial population and MS-SLSQP’s gradient
+459   evaluations. Each method uses seeds 1–30 and draws its initial population first, so runs
+460   with equal seeds share it and are paired.
+461       Feasibility-aware ranking. Let fa,c be the number of feasible runs of method a in case
+462   c (tolerance 10−6 m; Section S1.8) and L̄a,c the mean wake loss of these runs. Method a
+463   is qualified in case c if at least half of its runs are feasible (15 of 30, 5 of 10 for 10 seeds).
+464   Within a case, the qualified methods are ranked by the mean benchmark objective of
+465   their feasible runs (rounded to 10−6 , so that exact ties, e.g., at the wake-free optimum for
+466   N = 2, share their average rank), and the others below them, by their number of feasible
+467   runs. This limits, but does not remove, survivorship bias.
+
+
+                                                             14
+      Table 2: Experimental design. Budget: objective evaluations per run, all counted (initial population,
+      finite-difference evaluations of MS-SLSQP); r: random, f: feasibility-preserving initialization. Runs: new
+      optimization runs (“reused”: taken from another study). Ten methods: the eight of the main comparison,
+      LX-SSA-VNS and RS-VNS. Split cases: middle and largest N per farm and data set; six largest: largest
+      N per farm and data set. In total, 36,190 optimization runs.
+       Study             Cases            Methods                                    Budget (init.)      Seeds     Runs       Sec.
+       Main              68 benchmark PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, 6,030 (r)                      1–30      16,320     7.2
+       comparison                     DE, VNS, MS-SLSQP
+       Component         68           LX-SSA-VNS, RS-VNS, RSD-VNS (2,040 6,030 (r)                       1–30      6,120      8
+       analysis                       each); six reused
+       Old PSO           68           PSO, w = 0.7, c1 = c2 = 2           6,030 (r)                      1–30      2,040      7.1
+       setting
+       Budget split      12 split cases   PSO-VNS, ω = 0.25, 0.75, 0.9 (360 each);   6,030 (r)           1–30      1,080      8.4
+                                          ω = 0.5, 1 reused
+       Coefficient       12 split cases   PSO, w = 0.7, c1 = c2 = c = 1.2, 1.4,      6,030 (r)           1–30      3,240      7.1
+       sweep                              1.6–2.0 (step 0.1); c = 2 with v ← 0 or
+                                          |v| ≤ 0.2 (u − l) (360 each)
+       Budget scaling    six largest      ten methods (6,030 reused)                 30,030; 120,030     1–30      3,600      9.1
+                                                                                     (r)
+       Feasible starts   six largest      ten methods except RS-VNS                  6,030 (f)           1–30      1,620      9.2
+       Horns Rev 1       16 turbines      ten methods (f: except RS-VNS)             6,030 (r, f);       1–30;     970        9.3
+                                                                                     30,030, 120,030     1–10 at
+                                                                                     (r)                 120,030
+       IEA37 CS 1        16, 36           ten methods                                6,030; 30,030 (r)   1–30      1,200      9.4
+                         turbines
+       Re-evaluation     stored final     cubic power curve, Gaussian wake (main –                       –         –          10
+                         layouts          comparison); 5◦ and 1◦ bins: 21,716
+                                          layouts (11 methods), 970 Horns Rev 1
+                                          runs (also PyWake NOJ)
+       Diagnostics       6; 12; 7         instrumented: PSO (both settings);     as stored               10; 10;   522        S7
+                                          Phase 2 of PSO-VNS, SSA-VNS, RS-VNS;                           3         (reruns)
+                                          PSO, DE from feasible starts
+
+
+
+468       Tests. All tests are two-sided (α = 0.05), with Holm’s correction [53] within each
+469   family of comparisons. 1) Case ranks: the Friedman test on the case-by-method rank
+470   matrix with the Iman–Davenport F statistic, and post hoc z tests of    pthe average rank R̄a
+471   of every method against that of PSO-VNS, z = (R̄a − R̄PSO-VNS )/ k(k + 1)/(6n) for k
+472   methods and n cases [11, 13, 52]. 2) Case means (primary, as mean-rank post hoc tests
+473   depend on the pool [22]): for methods A and B, the case-mean difference is dc = L̄A,c −L̄B,c
+474   (percentage points, pp; negative: A better), and the Wilcoxon signed-rank test is applied
+475   to the dc of each compared pair (in the main comparison, PSO-VNS against each method);
+476   a case in which only one of the two methods is qualified counts as a maximal difference in
+477   its favor (larger than every observed difference; cases: 2 for SSA, 2 for LX-SSA and 18 for
+478   DE), and one in which neither is qualified is dropped (0 cases). The mean ∆L of the dc
+479   over the cases in which both are qualified carries a 95% percentile bootstrap CI (10,000
+480   resamples of the cases, fixed seed). As the estimate that belongs to the Wilcoxon test we
+481   also give, for key pairs, the Hodges–Lehmann estimate, the median of the Walsh averages
+482   (dc + dc′ )/2, c ≤ c′ , with the 95% CI from the exact inversion of the test (Table S28); it
+483   can differ from ∆L when a few cases with large differences dominate the mean. 3) Runs:
+484   per case, Wilcoxon signed-rank tests on the 30 seed-paired runs, scored feasibility first
+485   (infeasible runs below every feasible run and ordered by minimum spacing; differences
+486   |d| ≤ 10−9 dropped), with the rank-biserial correlation rrb and the counts of cases with a
+487   significant win, no significant difference and a significant loss (W/T/L, descriptive tallies).
+488   Holm families. A family is the set of comparisons of one table: for the rank post hoc
+489   tests, the k − 1 comparisons with PSO-VNS of one Friedman analysis; for the case means,
+490   the comparisons of PSO-VNS with the other seven methods of the main comparison, or
+
+
+                                                                  15
+491   the fifteen contrasts of the component analysis (Section 8); for the run-level tests, the
+492   comparisons of one table within one case. The main-comparison and the component-
+493   analysis tables are different families, so the same pair can have slightly different W/T/L
+494   tallies in the two; a single family over all 28 case-mean tests is examined in the robustness
+495   analysis below.
+496       Practical equivalence. A nonsignificant test does not show that two methods are
+497   equally good, and a significant difference can be negligible; we therefore test equivalence
+498   with two one-sided tests (TOST) [23].
+
+499   Definition 1 (Practical equivalence at three levels of inference). Let A and B be two
+500   methods,    dc their case-mean difference over the n cases in which both are qualified, ∆L =
+       1
+         P
+501
+      n    c dc , and m > 0 a margin. A and B are practically equivalent at margin m at a given
+502   level if both one-sided hypotheses H0− : ∆ ≤ −m and H0+ : ∆ ≥ m about the estimand ∆
+503   of that level are rejected at α = 0.05, i.e., if the 90% interval for ∆ lies inside (−m, m).
+504   The three levels are:
+505    (a) Seed level (the fixed benchmark). Estimand: the benchmark average of the expected
+506        case-mean differences of the given benchmark cases; only the run-to-run variability is
+507        random. Interval: percentile bootstrap that resamples the 30 seed-paired runs within
+508        every case (the same seeds for both methods; case means over the feasible resampled
+509        runs).
+510    (b) Case level (exchangeable cases). Estimand: the expected case-mean difference over a
+511        population of cases like the 68; the cases are treated as independent draws. Interval:
+512        percentile bootstrap over the cases.
+513    (c) Cluster level (new farms). Estimand: the expected difference over new (data set,
+514        radius) clusters; the 68 cases form six clusters with nested N . Interval: cluster-
+515        robust t interval with the bias-reduced CR2 variance and a t distribution with G−1 =
+516        5 degrees of freedom (G = 6 clusters), and a restricted wild-cluster bootstrap-t TOST
+517        (CR2-studentized, all 66 draws of Webb’s six-point weights enumerated); equivalence
+518        at this level requires both.
+519   The minimal margin of a level, mmin = max(|ℓ|, |u|) for the 90% interval [ℓ, u], is the
+520   smallest margin at which equivalence holds: it holds for every m > mmin and for none
+521   smaller.
+
+522       TOST has size at most α without a multiplicity correction (intersection–union prin-
+523   ciple; Section S6.4). The estimate ∆L is the same at every level, but the interval widens
+524   from the seed to the cluster level, so mmin grows and an equivalence statement must name
+525   its level (Section 7.3). “A gives no gain larger than m over B” (non-superiority) needs
+526   only one of the two tests: the lower end of the 90% interval must lie above −m. A re-
+527   sult that is neither equivalent nor significantly different is inconclusive and supports no
+528   statement of the kind “as good as”. The margin m = 0.05 pp (4.1 and 2.1 MWh/yr per
+529   turbine in Data Sets I and II) is a post hoc convention; the minimal margins mmin let
+530   readers apply their own.
+531       Bayesian signed-rank test. The Bayesian signed-rank test [28] places a Dirichlet-
+532   process prior (strength 0.5, pseudo-observation at 0) on the distribution of the dc and,
+533   for every posterior sample, computes the shares θA , θrope and θB of the Walsh averages
+534   (dc + dc′ )/2 below −m, inside the region of practical equivalence (ROPE) [−m, m] and
+535   above m. We report the posterior probability that equivalence is the most probable of
+536   the three outcomes, the share of the 50,000 posterior samples in which θrope is the largest
+
+                                                   16
+537   (Section 8.3 and Table S25). It is not the probability that ∆ lies within ±m; it concerns
+538   the typical pairwise-averaged case difference, so it can disagree with TOST, and it treats
+539   the cases as exchangeable.
+540       Robustness of inference. The 68 cases form six (data set, radius) clusters with nested
+541   N . Six qualification thresholds (1, 10, 15, 20, 25 and 30 feasible runs) change no verdict;
+542   cluster analyses (sign per cluster, cluster-robust t with CR1 variance and 5 degrees of
+543   freedom, cluster bootstrap, leave-one-out) qualify only the significant contrasts of the
+544   salp-swarm hybrids with the controls; one Holm family over all 28 case-mean tests makes
+545   only PSO-VNS vs. PSO on the cases with N ≥ 10 (both data sets) and PSO-VNS
+546   (ω = 0.5) vs. PSO-VNS (ω = 0.9) nonsignificant (Tables S16–S21); Section 10 adds a 1◦
+547   direction resolution. As the cases are not independent, all p values of the case-level tests
+548   describe this benchmark, not a population of farms.
+
+549   6.3. Tests Beyond the Benchmark
+550       Initialization and budget. The feasible initialization draws seeded layouts inside the
+551   site and separates the turbines with L-BFGS-B on a packing penalty, without objective
+552   evaluations (Section S1); all methods but RS-VNS use it at 6,030 evaluations. With
+553   random starts, all ten run at 6,030, 30,030 and 120,030 evaluations. Both studies use the
+554   six largest cases (largest N per farm and data set) and the Horns Rev 1 block, with 30
+555   seeds (10 for Horns Rev 1 at 120,030).
+556       Other sites and models. The Horns Rev 1 block is PyWake’s 16-turbine example [68]:
+557   V80 turbines (D = 80 m), the measured 12-sector wind climate, the parallelogram through
+558   the corner turbines as boundary (Section 9.3), ℓmin = 4D and the Jensen wake with
+559   K = 0.04 and CT at the free-stream speed. The 16- and 36-turbine scenarios of IEA37
+560   Case Study 1 [4, 42] (circular sites, radii 1300 and 2000 m, ℓmin = 2D, 16 directions at
+561   one speed, a simplified Bastankhah Gaussian wake) test optimizers rather than represent
+562   a site; the ten methods of the budget study run on them at 6,030 and 30,030 evaluations
+563   (30 seeds; Section 9.4 reports the eight of the main comparison).
+
+564   6.4. Verification and Reproducibility
+565       Automated claim checks. The results quoted in the text and the tables are macros and
+566   tables generated by the analysis scripts from the stored per-run results. Statements that
+567   depend on an outcome (a sign, a significance or equivalence verdict, an ordering, a count)
+568   are tied in the source to conditions that check scripts evaluate on the stored summaries;
+569   the build runs these scripts after regenerating the results. There are 62 conditions for the
+570   main results, 57 for the statistical robustness analyses, 22 for the diagnostics, 41 for the
+571   direction-resolution re-evaluation and 15 for the coefficient sweep, and 57 theory checks
+572   recompute every number stated in the propositions and proofs (Section S6) and confirm
+573   that it appears in the text. All pass for the version reported here.
+574       Instrumented diagnostics. The diagnostics (Table 2) rerun stored runs with instru-
+575   mented copies of the optimizers, which differ from the code of the paper only by logging
+576   lines that read the state and draw no random numbers. All instrumented runs reproduce
+577   the stored runs, with the same wake loss, coordinates, convergence curve and number of
+578   evaluations (522 of 522), and seed 1 of every case and method, rerun with the original,
+579   uninstrumented code in the same process, is bit-identical (62 of 62 runs). Likewise, the
+580   point c = 2.0 of the coefficient sweep reproduces the stored runs of the old setting bit for
+581   bit, and a replay of the random stream of Phase 1 of RS-VNS agrees with the stored runs
+582   (120 of 120).
+
+
+                                                  17
+      Table 3: Effect of the PSO setting on an eight-method pool (the methods of Table 4 with LX-SSA-VNS
+      instead of PSO-VNS; 68 cases, 6,030 evaluations).
+                                                                  PSO setting
+        Method                             Old                         Constriction
+        LX-SSA-VNS                         2.65                            3.41
+        SSA-VNS                            1.99                            2.77
+        LX-SSA                             5.65                            6.06
+        SSA                                4.81                            5.34
+        PSO                                5.04                            1.53
+        DE                                 6.99                            7.03
+        VNS                                3.59                            4.15
+        MS-SLSQP                           5.28                            5.71
+        PSO position                  5                                     1
+        LX-SSA-VNS vs. PSO (W/T/L) 35/33/0                               0/21/47
+        SSA-VNS vs. PSO (W/T/L)    41/27/0                               0/22/46
+        Old: w = 0.7, c1 = c2 = 2; constriction: Clerc–Kennedy setting [59]. Average rank: 1 = best,
+        feasibility-aware rule (fewer than 15 of 30 feasible runs in a case = ranked below the qualified
+        methods); bold: best average rank. W/T/L: cases in which the hybrid is significantly better /
+        not different / worse than PSO (two-sided Wilcoxon signed-rank test, 30 seed-paired runs, Holm-
+        adjusted over the seven comparisons of the hybrid in each case, α = 0.05).
+
+
+583       Evaluator and code validation. Our objective matches the original implementation
+584   (largest difference 8.7 × 10−11 over 720 archived final objectives) and the official IEA37
+585   calculator (relative difference <10−11 ); the Horns Rev 1 model was compared with Py-
+586   Wake’s NOJ model at identical bins (Section 9.3). Our reused SSA, LX-SSA, PSO and
+587   DE code reproduces the recorded result distributions of the original code (2 of 24 Mann–
+588   Whitney tests reject at α = 0.05; 1.2 expected).
+589       Code, data and environment. Runs: Linux containers (Intel Xeon; Python 3.11.15,
+590   NumPy 2.4.6, SciPy 1.17.1). Each run record gives the method, case, seed, budget,
+591   initialization, evaluations, final objective, feasibility, minimum spacing, coordinates and
+592   convergence curve; a guide names the command behind every run file, and one build script
+593   regenerates all macros, tables and figures and runs the checks. Code, per-run results and
+594   scripts are public (see the data availability statement).
+
+595   7. Results on the Benchmark
+596       This section reports the 68 benchmark cases (22,440 runs of 6,030 evaluations, random
+597   starts, 15◦ rose; per case: Tables S4–S9).
+
+598   7.1. Effect of the Baseline Setting
+599       The old setting lies beyond the order-2 (variance) stability boundary (11). Run on the
+600   same cases, budget and seeds as the constriction setting (9), it returns a feasible layout
+601   in only 86.0% of the runs (fewer than 15 feasible runs in 8 cases), is significantly worse in
+602   56 of the 68 cases and never better, and has a mean wake loss 0.61 pp higher over the 60
+603   cases in which both settings have at least 15 feasible runs.
+604       What goes wrong. In instrumented reruns (clipping without velocity reset or clamping;
+605   Fig. S11 and Table S49), its swarm contracts much less (final spread 8.9 times, velocity 13
+606   times that of the constriction setting), 8.7% of the coordinates are clipped (constriction:
+607   1.6%), and far fewer particle evaluations in the second half of a run are feasible (2.6% vs.
+
+
+                                                      18
+                                                                 w = 0.7, c1 = c2 = c; clip, keep v (c = 2: old setting)                              c = 2, |v| ≤ 0.2 (u − l)
+                                                                 c = 2, clipped v set to 0                                                            constriction (w = 0.7298, c = 1.496)
+
+
+
+
+                                                                                       (feasible runs, 6 common cases)
+
+
+
+
+                                                                                                                                                                      final swarm spread / r (%)
+                                              100
+
+                 feasible final layouts (%)
+                                                                                                                         2.0
+
+
+
+
+                                                                                              mean wake loss (%)
+                                               80
+                                                                                                                         1.8                                                                       10
+                                               60
+                                                                                                                         1.6
+                                               40
+                                                               order-2                                                                                                                              1
+                                                             boundary                                                    1.4
+                                               20
+                                                          c * = 1.7486
+                                                0                                                                        1.2                                                                       0.1
+                                                    1.2   1.4 1.6 1.8        2.0                                               1.2   1.4 1.6 1.8        2.0                                              1.2   1.4 1.6 1.8      2.0
+                                                             c (c1 = c2)                                                                c (c1 = c2)                                                               c (c1 = c2)
+
+
+
+
+      Figure 3: Stand-alone PSO with w = 0.7 and c1 = c2 = c on the 12 split cases × 30 seeds (6,030
+      evaluations, random starts; line with circles), the old setting (c = 2) with two other bound-handling rules
+      (clipped velocity components set to zero; velocity clamping |v| ≤ vmax = 0.2 (u − l); drawn slightly to the
+      right of c = 2), and the constriction setting (w = 0.7298, c = 1.49618; stored runs of the main comparison,
+      spread not logged). The dashed vertical line is the order-2 stability boundary c∗ = 12(1 − w2 )/(7 − 5w) =
+      1.7486 of Proposition 1 (stagnation, no bounds). Left: feasible final layouts (% of 360 runs). Middle:
+      mean wake loss of the feasible runs, averaged over the 6 cases in which every setting has at least 15
+      feasible runs. Right: median final swarm spread (mean over particles of the RMS turbine distance to the
+      global best), relative to the farm radius (log scale). All settings start from the same seeded initial swarm.
+      Values: Table S3.
+
+
+608   48.4%). With the constriction setting the spread around G shrinks steadily, as expected
+609   under order-2 stability (limit variance ∝ (Pmi − Gm )2 ; Proposition 1); with the old setting
+610   it stays at a sizeable fraction of the radius, the large steps keep pushing coordinates onto
+611   the box, where a clipped coordinate stays while its kept velocity points outward and
+612   violates the circular boundary (Lemma S3), and most infeasible evaluations violate both
+613   constraints.
+614        The final layouts, in contrast, mostly violate only the spacing (224 of 286; boundary
+615   only 10, both 52; constriction: none), an effect of the penalty scaling in (6) (gib in m2 ,
+616   gijs in m): the best infeasible layout lies inside the circle with turbines slightly too close,
+617   and 60 of the 62 boundary violations are turbines pinned at the box near a tangent point,
+618   where gib is cheap (Section 3.4).
+619        Coefficient sweep. A sweep of c1 = c2 = c at w = 0.7 (Fig. 3 and Table S3; 360
+620   runs per setting; c = 2.0 reproduces the stored old-setting runs bit for bit) shows that
+621   the boundary c∗ = 1.7486 marks approximately where this PSO starts to fail: at least
+622   98.9% of the runs are feasible for c ≤ 1.7, then feasibility declines progressively (90.0% at
+623   c = 1.8, 58.9% at 2.0); velocity clamping raises it to 92.2%, still worse than constriction in
+624   all 12 cases. There is no step at c∗ : the decline begins between 1.7 and 1.8 and accelerates,
+625   while the swarm spread grows smoothly with c (by about an order of magnitude from
+626   c = 1.4 to 1.7) and the wake loss rises already on the stable side (lower at c = 1.6 than
+627   at 1.7 in 10 of 12 cases, p = 0.005), then in all 12 cases from 1.7 to 1.8. The boundary
+628   marks where the steps become too large for this bounded problem; the sweep does not
+629   show that crossing it causes the failure. Zeroing clipped velocity components does not
+630   rescue the old setting (57.2% feasible), whereas clamping brings it to about the level of
+631   c = 1.8: the deficit comes mainly from the large steps, not from the bound handling.
+632        Table 3 shows the effect on a comparison. It ranks an eight-method pool, the methods
+633   of Table 4 with LX-SSA-VNS instead of PSO-VNS, once with each PSO setting (all other
+634   methods use identical runs): with the old setting, SSA-VNS ranks first and PSO only
+635   in position 5, behind both salp-swarm hybrids; with the constriction setting, PSO ranks
+636   first, ahead of every salp-swarm method (standard coefficients [59]; none of the methods
+
+                                                                                                                                      19
+                    Table 4: Case-level analysis of the eight methods over the 68 benchmark cases.
+                                    Method        Avg. rank Best Feas.       pz           pW         ∆L
+                                    PSO-VNS         1.82     29    100.0       –           –       –
+                                    PSO             1.97     25    100.0     0.713       0.296   −0.018
+                                    SSA-VNS         3.45     0      99.6 2.0 × 10−4 5.7 × 10−11 −0.330
+                                    VNS             4.40      3    100.0 2.4 × 10−9 1.3 × 10−10 −0.465
+                                    SSA             5.38     0      97.6 8.3 × 10−17 4.5 × 10−11 −0.611
+                                    MS-SLSQP        5.88     1     100.0 1.8 × 10−21 4.2 × 10−11 −0.435
+                                    LX-SSA          6.06      0     96.9 3.3 × 10−23 4.5 × 10−11 −0.765
+                                    DE              7.04     0      71.4 1.0 × 10−34 5.6 × 10−11 −0.887
+      Avg. rank: average rank of the mean feasible objective (1 = best; fewer than 15 feasible runs in a case = ranked below
+      the qualified methods, by number of feasible runs); Best: cases in which the method alone ranks first; Feas.: feasible runs
+      (%); pz : Holm-adjusted p of the average-rank test against PSO-VNS. Because mean-rank tests depend on the pool [22],
+      pW gives the two-sided Wilcoxon signed-rank test on the 68 per-case mean wake losses (Holm-adjusted over the 7 methods)
+      and ∆L the mean wake-loss difference (pp, PSO-VNS minus method; negative = PSO-VNS better) over the cases in which
+      both methods have at least 15 feasible runs (66 for SSA, 66 for LX-SSA, 50 for DE, otherwise 68). Friedman χ2F = 319.3
+      (7 d.f.), p = 4.6 × 10−65 ; Iman–Davenport FF = 136.5 (7, 469 d.f.), p = 6.7 × 10−109 .
+
+
+             Table 5: Run-level outcome of PSO-VNS against each method (W/T/L over the 68 cases).
+                                                            SSA-             LX-                      MS-
+                             DS r (m) Cases         PSO              SSA             DE        VNS
+                                                            VNS              SSA                     SLSQP
+                             I      500      9      0/8/1 6/3/0 8/1/0 8/1/0 7/2/0 6/3/0 7/2/0
+                             I      750      11     1/8/2 9/2/0 10/1/0 10/1/0 9/2/0 8/3/0 10/1/0
+                             I      1000     14    3/11/0 9/5/0 12/2/0 12/2/0 12/2/0 12/2/0 12/2/0
+                             II     500       9     3/5/1 7/2/0 7/2/0 8/1/0 7/2/0 7/1/1 8/1/0
+                             II     750      11     2/9/0 8/3/0 10/1/0 10/1/0 9/2/0 8/3/0 9/2/0
+                             II     1000     14    5/9/0 10/4/0 12/2/0 12/2/0 12/2/0 10/4/0 13/1/0
+                             All             68   14/50/4 49/19/0 59/9/0 60/8/0 56/12/0 51/16/1 59/9/0
+                             r̃rb                  +0.08 +0.72 +0.98 +0.97 +1.00 +0.84 +0.99
+      W/T/L: cases in which PSO-VNS is significantly better / not different / worse (two-sided Wilcoxon signed-rank test on 30
+      seed-paired runs, α = 0.05, Holm-adjusted over the seven comparisons of PSO-VNS in each case, a different family from
+      Table 7; an infeasible run ranks below every feasible run). r̃rb : median rank-biserial correlation (positive = PSO-VNS
+      better; zero differences dropped, rrb = 0 if all are zero).
+
+
+
+637   was tuned on these cases). The reversal holds at 6,030 evaluations; on the six largest cases
+638   at 120,030, SSA-VNS ranks ahead of PSO (4.17 vs. 5.83; Section 9.1). The old setting
+639   thus makes the methods compared with it, including our own LX-SSA, appear stronger
+640   than they are.
+
+641   7.2. Overall Comparison
+642       Over the eight methods (Table 4), the Friedman test rejects the hypothesis of equal
+643   performance (χ2F = 319.3, p = 4.6×10−65 ; Iman–Davenport FF = 136.5, p = 6.7×10−109 ).
+644   PSO-VNS has the best average rank (1.82), alone ranks first in 29 cases, and stays first
+645   when the final layouts are re-evaluated with 5◦ or 1◦ direction sub-bins (1◦ : 2.09; Sec-
+646   tion 10). In the Holm-adjusted post hoc tests (pz in Table 4; tied ranks make them con-
+647   servative), PSO-VNS ranks significantly better than SSA-VNS, VNS, SSA, MS-SLSQP,
+648   LX-SSA and DE, but not than PSO (pHolm = 0.71). The rank order and these conclusions
+649   are unchanged for thresholds of 1, 10, 15, 20, 25 and 30 feasible runs; significant compar-
+650   isons with PSO-VNS favor the same method in each of the six clusters, and leaving out
+651   one cluster changes none of them (Tables S16–S19).
+652       In Fig. S1, the two PSO-based methods lead with a small gap, far ahead of SSA-VNS;
+653   both hybrids rank ahead of their first phase and of VNS, and the last rank of DE also
+654   reflects its feasibility (71.4% of its runs).
+655       Against SSA-VNS, PSO-VNS is significantly better in 49 cases and never worse
+656   (pHolm = 5.7 × 10−11 ). Against SSA, LX-SSA, DE, VNS and MS-SLSQP (untuned DE;
+
+                                                                      20
+                                                                                  PSO-VNS            SSA-VNS            LX-SSA         VNS
+                                                                                  PSO                SSA                DE             MS-SLSQP
+
+
+                                                               Data Set I, r = 500 m                   Data Set I, r = 750 m                 Data Set I, r = 1000 m
+
+
+
+
+                     Mean wake loss (% of ideal)
+                                                   6
+
+
+                                                   4
+
+
+                                                   2
+
+
+                                                   0
+                                                       2   3     4   5   6   7   8      9   10   2     4       6    8        10   12    2    4    6   8    10   12     14
+
+                                                               Data Set II, r = 500 m                 Data Set II, r = 750 m                 Data Set II, r = 1000 m
+                     Mean wake loss (% of ideal)
+
+
+
+
+                                                   8
+
+                                                   6
+
+                                                   4
+
+                                                   2
+
+                                                   0
+                                                       2   3    4 5 6 7 8 9                 10   2    4    6      8     10        12    2    4   6   8    10 12 14
+                                                               Number of turbines N                   Number of turbines N                    Number of turbines N
+
+
+
+
+      Figure 4: Mean wake loss (% of the wake-free benchmark objective) of the feasible runs versus the
+      prescribed number of turbines N , for each farm and wind data set (30 runs of 6,030 evaluations, random
+      initialization). A point is drawn only when the method has at least 15 feasible runs in that case, so a
+      curve (mostly DE) stops where the method has too few feasible runs.
+
+
+657   finite-difference gradients), it is significantly better in most cases; it is never significantly
+658   worse than SSA-VNS, SSA, LX-SSA, DE and MS-SLSQP and significantly worse than
+659   VNS in one case. PSO-VNS is more reliable in reaching feasibility on the Horns Rev 1
+660   block with random starts (30/30 vs. 19/30, McNemar p = 9.8 × 10−4 ; Section 9.3)
+661   and ranks best on the six largest cases at all three budgets (exploratory; Section 9.1).
+662   The leading methods depend on the conditions: from feasible starts, VNS ranks first
+663   (Section 9.2); under the Gaussian wake, PSO ranks narrowly ahead of PSO-VNS with
+664   15◦ bins but not with 1◦ sub-bins (Section 10.2).
+665       The wake loss grows with N , falls as the farm becomes larger, and is higher for the
+666   broader wind rose of Data Set II (Fig. 4). PSO-VNS ends feasible in all runs (DE: 71.4%).
+667   In the densest cases (500 m, N = 10), the global best of the PSO phase is feasible at the
+668   switch in only 63.3% of the runs, but all runs are feasible after the VNS phase. For the
+669   smallest N , all methods reach almost no wake loss, so these cases cannot separate the
+670   methods; the curves fan out with N , most in the small farm and under the broad rose of
+671   Data Set II.
+672       After the switch, both keep improving (Fig. 5): the VNS phase removes on average
+673   30.3% (median 22.6%) of the wake loss left after the PSO phase and repairs 26 runs
+674   infeasible at the switch, whereas continuing PSO for the same 3,000 evaluations removes
+675   29.2% (median 20.6%).
+
+676   7.3. PSO-VNS versus PSO
+677       Against PSO, PSO-VNS is significantly better in 14 cases, tied in 50 and worse in
+678   4 (run level, Table 5). The case means do not differ significantly (∆L = −0.018 pp,
+679   p = 0.30; Hodges–Lehmann estimate −0.003 pp). Whether the difference is negligible at
+680   the post hoc margin ±0.05 pp depends on the level of inference (Table 6): on this fixed
+681   benchmark (seed level), PSO-VNS has a small significant advantage inside the margin
+682   (90% CI [−0.026, −0.010]); over exchangeable cases the two are equivalent ([−0.041,
+683   0.004], TOST p = 0.011, minimal margin 0.041); over farm clusters, equivalence is not
+
+
+                                                                                                            21
+                                                                                             PSO-VNS              LX-SSA-VNS                      RSD-VNS             PSO          LX-SSA
+                                                                                             SSA-VNS              RS-VNS                          VNS                 SSA
+
+
+                                                       Data Set I, r = 500 m, N = 10                                   Data Set I, r = 750 m, N = 12                          Data Set I, r = 1000 m, N = 15
+
+
+
+
+                      Median best wake loss (%)
+                                                  10
+                                                                                                                   5                                                      5
+
+
+
+                                                                                                                   3                                                      3
+                                                   5
+
+                                                                                                                   2                                                      2
+
+
+                                                       3000     4000                          5000     6000             2000                      4000         6000            2000 3000 4000 5000 6000
+
+                                                       Data Set II, r = 500 m, N = 10                                  Data Set II, r = 750 m, N = 12                         Data Set II, r = 1000 m, N = 15
+                      Median best wake loss (%)
+
+
+
+
+                                                                                                                  10                                                      9
+                                                                                                                                                                          8
+                                                  10
+                                                                                                                                                                          7
+
+                                                                                                                                                                          6
+
+                                                                                                                                                                          5
+
+
+                                                       3000     4000     5000                          6000             2000                     4000          6000            2000 3000 4000 5000 6000
+                                                                Evaluations                                                                  Evaluations                             Evaluations
+
+
+
+
+      Figure 5: Convergence of the nine component-analysis variants (Table 7) for the largest turbine count of
+      each farm: median best feasible wake loss over 30 runs versus evaluations. PSO-VNS and PSO coincide
+      up to 3,030 evaluations (dotted line), where PSO-VNS switches to VNS. Curves of the main comparison:
+      Fig. S2 of the supplementary material.
+
+                                                                                              100
+                                                                                                                                                  cluster, CR2 t5, mmin = 0.067
+                                                                    TOST p (PSO-VNS − PSO)
+
+
+
+
+                                                                                                                                                  cluster, wild bootstrap, mmin = 0.066
+
+                                                                                             10−1
+                                                                                                       α = 0.05
+
+                                                                                                  −2
+                                                                                             10
+                                                                                                                            margin 0.05 pp
+
+
+
+
+                                                                                             10−3
+
+                                                                                                                           seed level                      case level
+                                                                                                                           mmin = 0.026                    mmin = 0.041
+                                                                                             10−4
+                                                                                                   0.00 0.02 0.04 0.06 0.08 0.10 0.12
+                                                                                                      equivalence margin m (pp of wake loss)
+
+
+
+      Figure 6: Equivalence curve of PSO-VNS vs. PSO: TOST p value versus the equivalence margin m (pp
+      of wake loss) at three levels of inference (Table 6): seed level (fixed benchmark; bootstrap of the seed-
+      paired runs within every case), case level (bootstrap over the 68 cases, as Table 8) and cluster level (six
+      farm clusters; CR2 cluster-robust t with 5 d.f., and the restricted wild-cluster bootstrap). Dotted lines:
+      α = 0.05 and the margin m = 0.05 pp. The dots mark the minimal margins mmin , at which a curve
+      crosses α; equivalence holds at every margin to the right of the dot. The bootstrap curves stop at their
+      resolution limit 1/10,001.
+
+
+684   shown (CR2 [−0.067, 0.031], minimal margin 0.067). In the Bayesian signed-rank test,
+685   practical equivalence is the most probable outcome (posterior probability > 0.99; posterior
+686   means 0.25/0.62/0.12 for PSO-VNS better by more than the margin/equivalent/PSO
+687   better). The margin corresponds to 4.1 (Data Set I) and 2.1 MWh/yr (Data Set II) per
+688   turbine, the mean gain of PSO-VNS to 0.2 MWh/yr per turbine (0.020% of AEP). Spread
+689   and worst run do not differ (p = 0.55, 0.80).
+690       The levels ask whether new seeds on this fixed benchmark would reproduce the dif-
+691   ference (seed), whether it holds for exchangeable cases like these (case), and whether it
+692   carries over to new farms, given six clusters with nested N (cluster; five d.f.). The minimal
+693   margin grows with the scope; as the post hoc margin lies just above the case-level value,
+694   Fig. 6 gives the whole TOST curve. The seed-level interval excludes zero: the methods
+
+
+                                                                                                                                             22
+      Table 6: Practical equivalence (margin m = 0.05 pp, set after the primary analysis) of the pairs of
+      Table 8 at three levels of inference. ∆L: mean over the n cases of the case-mean wake-loss difference,
+      first minus second method (pp; negative = first better; the same estimate at every level). Seed level
+      (fixed benchmark: the 68 cases are fixed and only the run-to-run variability is random): 10,000 bootstrap
+      resamples of the 30 seed-paired runs within every case (same seeds for both methods; case means over the
+      feasible resampled runs), percentile 90% CI. Case level (generalization to exchangeable cases, as Table 8):
+      percentile bootstrap over the cases; pTOST as there. Cluster level (generalization to new farms; 6 (data
+      set, radius) clusters): cluster-robust 90% CI with the CR2 (bias-reduced) variance and a t distribution
+      with 5 d.f. (Bell–McCaffrey d.f. 4.8 for PSO-VNS vs. PSO), and a restricted wild-cluster bootstrap-
+      t TOST (CR2-studentized, all 46,656 draws of the Webb six-point weights enumerated; mmin by test
+      inversion). mmin : smallest margin at which equivalence holds (rounded up). Eq.: equivalent at ±m
+      (cluster level: CR2 CI inside ±m and wild pTOST ≤ 0.05).
+                                                   Seed level                      Case level                                  Cluster level
+      Pair (first vs. second)    n   ∆L        90% CI      mmin Eq.       90% CI        mmin pTOST Eq.        CR2 90% CI     mmin wild pTOST wild mmin Eq.
+      Component-analysis contrasts
+      SSA-VNS vs. RS-VNS         68 −0.068 [−0.092, −0.044] 0.093 no [−0.101, −0.039] 0.102     0.839 no [−0.126, −0.011] 0.126        0.716   0.130   no
+      LX-SSA-VNS vs. RS-VNS 68 −0.005 [−0.030, 0.020] 0.031 yes [−0.034, 0.021] 0.035           0.008 yes [−0.061, 0.051] 0.062        0.082   0.068   no
+      PSO-VNS vs. RS-VNS         68 −0.399 [−0.420, −0.378] 0.421 no [−0.479, −0.324] 0.479     1.000 no [−0.544, −0.254] 0.544        0.995   0.557   no
+      SSA-VNS vs. LX-SSA-VNS 68 −0.063 [−0.086, −0.040] 0.086 no [−0.086, −0.042] 0.087         0.841 no [−0.087, −0.039] 0.088        0.843   0.087   no
+      LX-SSA vs. SSA             66 +0.153 [0.123, 0.185] 0.185 no     [0.104, 0.206] 0.207     1.000 no   [0.109, 0.198] 0.198        0.995   0.213   no
+      SSA-VNS vs. SSA            66 −0.294 [−0.319, −0.269] 0.319 no [−0.368, −0.226] 0.368     1.000 no [−0.371, −0.216] 0.372        0.995   0.376   no
+      LX-SSA-VNS vs. LX-SSA 66 −0.394 [−0.422, −0.367] 0.423 no [−0.505, −0.293] 0.506          1.000 no [−0.467, −0.321] 0.468        0.997   0.467   no
+      PSO-VNS vs. PSO            68 −0.018 [−0.026, −0.010] 0.026 yes [−0.041, 0.004] 0.041     0.011 yes [−0.067, 0.031] 0.067        0.105   0.067   no
+      PSO-VNS vs. VNS            68 −0.465 [−0.489, −0.442] 0.489 no [−0.545, −0.386] 0.546     1.000 no [−0.593, −0.338] 0.593        0.996   0.575   no
+      SSA-VNS vs. RSD-VNS        68 +0.024 [0.002, 0.046] 0.047 yes [−0.022, 0.062] 0.062       0.141 no [−0.051, 0.099] 0.100         0.263   0.089   no
+      LX-SSA-VNS vs. RSD-VNS 68 +0.087 [0.065, 0.110] 0.111 no         [0.047, 0.126] 0.126     0.936 no   [0.004, 0.170] 0.171        0.788   0.165   no
+      PSO-VNS vs. RSD-VNS        68 −0.306 [−0.325, −0.287] 0.326 no [−0.380, −0.239] 0.381     1.000 no [−0.442, −0.171] 0.442        0.994   0.454   no
+      RSD-VNS vs. RS-VNS         68 −0.093 [−0.115, −0.070] 0.115 no [−0.127, −0.055] 0.128     0.971 no [−0.131, −0.054] 0.131        0.967   0.132   no
+      Main comparison, PSO-VNS vs. each method (PSO and VNS: see above)
+      PSO-VNS vs. SSA-VNS     68 −0.330 [−0.350, −0.310] 0.351 no [−0.397, −0.266] 0.397        1.000   no   [−0.434, −0.227] 0.434    0.997   0.430   no
+      PSO-VNS vs. SSA         66 −0.611 [−0.633, −0.589] 0.633 no [−0.735, −0.493] 0.735        1.000   no   [−0.770, −0.452] 0.771    0.996   0.753   no
+      PSO-VNS vs. LX-SSA      66 −0.765 [−0.791, −0.739] 0.792 no [−0.930, −0.606] 0.930        1.000   no   [−0.946, −0.583] 0.946    0.997   0.921   no
+      PSO-VNS vs. DE          50 −0.887 [−0.916, −0.858] 0.917 no [−1.137, −0.648] 1.137        1.000   no   [−1.173, −0.600] 1.174    0.994   1.169   no
+      PSO-VNS vs. MS-SLSQP    68 −0.435 [−0.452, −0.419] 0.452 no [−0.505, −0.366] 0.505        1.000   no   [−0.579, −0.291] 0.580    0.994   0.580   no
+
+
+
+
+695   differ reproducibly here, but by less than the margin. No pair is equivalent at the cluster
+696   level.
+697       The average hides case-level differences in both directions: 11 cases favor PSO-VNS
+698   by more than the margin (by up to 0.41 pp) and 8 favor PSO (up to 0.27 pp; Table S26).
+699   The two are equivalent for N < 10 (48 cases, 90% CI [−0.005, 0.021]) but not for N ≥ 10
+700   (−0.079 pp, [−0.142, −0.017]) or on the 44 cases with a wake loss of at least 0.2 pp
+701   ([−0.060, 0.008]). They follow a data set × density crossover (density ϕ = N (ℓmin /2r)2 ;
+702   stated after review, exploratory; interaction p = 0.01): as ϕ grows, PSO-VNS gains in
+703   Data Set II (slope −0.52 pp, p = 1.0×10−4 ) and PSO in Data Set I (+0.29 pp, p = 0.0012).
+704   In the post hoc subgroup Data Set II, N ≥ 10, PSO-VNS has the lower mean wake loss in
+705   10 of 10 cases (pHolm ≤ 0.018 over all 28 case-mean Wilcoxon tests; 0.221% of AEP); all 7
+706   Data Set I cases beyond the margin favor PSO. With 1◦ sub-bins, PSO-VNS is slightly but
+707   significantly better than PSO (∆L = −0.043 pp, 90% CI [−0.062, −0.025]; Table S40).
+708       The average verdict thus depends on the case mix: in the 24 cases with a PSO-VNS
+709   wake loss below 0.2 pp, both find almost wake-free layouts and none differs by more than
+710   the margin. The differences are structured (3 of 6 cluster means beyond the margin, in
+711   both directions): in Data Set II, 11 cases beyond the margin, the larger layouts of all three
+712   farms, favor PSO-VNS, and in Data Set I all 7, dense layouts in the two smaller farms,
+713   favor PSO (Table S27). The crossover, found after review with no cause identified, is a
+714   hypothesis for designed experiments. PSO-VNS thus does not dominate a well-configured
+715   PSO: it is at least as good on average, gains in larger Data Set II layouts and loses in
+716   dense Data Set I layouts.
+
+
+
+
+                                                                            23
+        Table 7: Component analysis over the 68 benchmark cases (6,030 evaluations, 30 seed-paired runs).
+                                    Variant              Phase 1        Phase 2 Avg. rank Feas. (%)
+                                    PSO-VNS         PSO                  VNS       1.96        100.0
+                                    SSA-VNS         SSA                  VNS       4.46         99.6
+                                    LX-SSA-VNS     LX-SSA                VNS       5.41         99.9
+                                    RS-VNS     random (square)           VNS       5.29         99.4
+                                    RSD-VNS     random (disc)            VNS       3.77         99.8
+                                    VNS              –                   VNS       6.12        100.0
+                                    PSO             PSO                   –        2.24        100.0
+                                    SSA             SSA                   –        7.50         97.6
+                                    LX-SSA         LX-SSA                 –        8.25         96.9
+
+                              Contrast                       Isolates          W/T/L         pW         ∆L
+                              PSO-VNS vs. PSO        VNS phase                 8/58/2       0.592      −0.018
+                                                     (PSO)
+                              SSA-VNS vs. SSA        VNS phase                 39/29/0 5.7 × 10−10 −0.294
+                                                     (SSA)
+                              LX-SSA-VNS vs. LX-SSA  VNS phase                 34/34/0 1.1 × 10−10 −0.394
+                                                     (LX-SSA)
+                              PSO-VNS vs. VNS        swarm start               49/18/1 5.7 × 10−10 −0.465
+                                                     vs. best initial
+                                                     point
+                              PSO-VNS vs. RS-VNS     PSO vs.                   47/21/0 3.2 × 10−10 −0.399
+                                                     random
+                                                     sampling
+                              SSA-VNS vs. RS-VNS     SSA vs.                   2/66/0       0.002      −0.068
+                                                     random
+                                                     sampling
+                              LX-SSA-VNS vs. RS-VNS LX-SSA vs.                 1/67/0       0.718      −0.005
+                                                     random
+                                                     sampling
+                              PSO-VNS vs. RSD-VNS    PSO vs. disc              45/23/0 4.0 × 10−10 −0.306
+                                                     sampling
+                              SSA-VNS vs. RSD-VNS    SSA vs. disc              0/66/2       0.014      +0.024
+                                                     sampling
+                              LX-SSA-VNS vs. RSD-VNS LX-SSA vs.                1/62/5     8.2 × 10−6 +0.087
+                                                     disc sampling
+                              RSD-VNS vs. RS-VNS     disc vs. square           6/62/0     4.2 × 10−7 −0.093
+                                                     sampling
+                              PSO-VNS vs. SSA-VNS    PSO vs. SSA               44/24/0 2.5 × 10−10 −0.330
+                                                     as Phase 1
+                              PSO-VNS vs. LX-SSA-VNS PSO vs.                   47/21/0 2.3 × 10−10 −0.393
+                                                     LX-SSA as
+                                                     Phase 1
+                              SSA-VNS vs. LX-SSA-VNS LX-SSA as                 2/66/0     2.7 × 10−5 −0.063
+                                                     published
+                                                     (hybrid)
+                              LX-SSA vs. SSA         LX-SSA as                 0/64/4     1.3 × 10−6 +0.153
+                                                     published
+                                                     (alone)
+      Top: average rank among the nine variants (Friedman χ2F = 374.3, 8 d.f., p = 5.96 × 10−76 ) and feasible runs. Bottom:
+      planned contrasts. W/T/L: cases in which the first variant is significantly better / not different / worse (run-level Wilcoxon,
+      α = 0.05, Holm-adjusted over the fifteen contrasts of each case, a different family from Table 5); pW : Wilcoxon test on the
+      68 per-case mean wake losses, Holm-adjusted over the fifteen contrasts; ∆L: mean difference of the case-mean wake losses
+      (pp; negative = first variant better) over the cases in which both variants have at least 15 feasible runs (66–68 of 68 per
+      contrast).
+
+
+
+717   8. Component Analysis of Two-Phase Hybrids
+718       The variants of Table 7 combine a Phase 1 (PSO, SSA, LX-SSA, random sampling
+719   or none) with or without the same VNS phase (6,030 evaluations from random starts,
+720   same seeds; convergence: Fig. 5); their average ranks differ (Friedman p = 6.0 × 10−76 ).
+721   W/T/L, p (Holm-adjusted Wilcoxon test on the 68 case means) and ∆L (mean difference
+722   of the case means, pp) are those of Table 7; a 90% bootstrap interval of ∆L (in brackets)
+723   inside ±0.05 pp means practical equivalence at the case level.
+
+
+                                                                    24
+724   8.1. The VNS Phase
+725       The VNS phase improves both salp-swarm methods: SSA-VNS is 39/29/0 (W/T/L)
+726   against SSA and LX-SSA-VNS 34/34/0 against LX-SSA (∆L = −0.294 and −0.394). For
+727   PSO, which PSO-VNS repeats for its first 3,030 evaluations (Section 5), the difference is
+728   small, not significant and practically equivalent to zero (∆L = −0.018 [−0.041, 0.004],
+729   p = 0.59). At this budget the VNS phase is essentially one compass-search descent: for
+730   PSO-VNS, the shake-and-search cycles take 21.5% of the Phase-2 evaluations (pooled;
+731   median run 4.7%) but give 0.5% of the Phase-2 gain (2.5% with the cycle cut off by the
+732   budget), and the median run with N ≥ 12 never shakes (Table S50). The analysis thus
+733   measures the value of a local-search phase.
+734       In Table S50 (12 split cases × 10 seeds), the first descent from the switch point takes
+735   a median of 2,860 evaluations in PSO-VNS and gives 97.5% of the Phase-2 improvement
+736   (SSA-VNS 90.3%, RS-VNS 88.6%). A shake costs one evaluation, but the new descent
+737   after it scans 2n = 4N moves per step, and 114 of 120 runs accept no cycle; accepted
+738   cycles use only k = 1. For N ≥ 12 the first descent is unfinished in 39 of 40 runs, so the
+739   local-minimality guarantee (Proposition S9) does not apply there. VNS never makes a
+740   feasible incumbent infeasible and starts from the best feasible Phase-1 layout when one
+741   exists. The contrasts thus test a truncated compass search after Phase 1; shaking and
+742   neighborhood change can matter only for small N .
+
+743   8.2. Random-Sampling Controls
+744       Random sampling of equal cost replaces Phase 1, uniform in the site disc (RSD-VNS)
+745   or in its bounding square (RS-VNS); VNS alone is a third control. RS-VNS is weak: 730
+746   of its runs draw no feasible sample, although all of them draw samples wholly inside the
+747   circle; the spacing constraint is binding, and disc sampling rescues only 242 of these runs.
+748   RSD-VNS beats RS-VNS (6/62/0, ∆L = −0.093) and ranks third (3.77).
+749       Table S52 replays Phase 1 of RS-VNS from the seeded random streams. The share of
+750   square samples wholly inside the circle matches (π/4)N (Proposition 2), but the feasible
+751   share vanishes much sooner, as random positions rarely keep all N (N − 1)/2 pairs ℓmin
+752   apart: for N = 15 in the 1000-m farm, 2.64% of the 90,450 samples lie inside and none
+753   is feasible. The 730 runs without a feasible sample (including all runs of 14 cases) start
+754   VNS from the least-penalized sample; paired by seed, 242 of them would get a feasible
+755   sample in the disc and 488 none. RS-VNS is thus weak mainly because of the spacing,
+756   only in part because of the square, and beating it is only a minimum bar.
+757       In the disc, the feasible Phase-1 samples rise from 9.1% to 19.3% and the runs without
+758   one fall from 730 to 494. At the switch (Table S14; controls read at 3,000 evaluations),
+759   the best layout is feasible in 75.7% (RSD-VNS) and 64.2% (RS-VNS) of the runs, well
+760   below the swarm phases, so VNS must often repair the start; the switch loss covers the
+761   feasible runs only.
+
+762   8.3. Swarm First Phases
+763       A PSO phase clearly beats every control: PSO-VNS is 45/23/0 against RSD-VNS
+764   (∆L = −0.306 [−0.380, −0.239], wholly below −0.05), 47/21/0 against RS-VNS and
+765   49/18/1 against VNS. At this budget and from random starts, salp-swarm phases add
+766   nothing beyond random sampling in the farm. Against RSD-VNS, SSA-VNS is 0/66/2
+767   (∆L = +0.024; Hodges–Lehmann estimate +0.025 pp, 95% CI [0.007, 0.058]; the case
+768   means, not the farm clusters, favor RSD-VNS): a gain of the SSA phase larger than
+769   the margin is ruled out at the seed and the case level (90% intervals [0.002, 0.046] and
+
+                                                  25
+      Table 8: Practical equivalence of the per-case mean wake losses at 6,030 evaluations. ∆L: mean difference
+      of the case-mean wake losses, first minus second method (percentage points, pp; negative = first method
+      better), over the n cases in which both methods have at least 15 feasible runs out of 30 (cases excluded:
+      LX-SSA vs. SSA 2; SSA-VNS vs. SSA 2; LX-SSA-VNS vs. LX-SSA 2; PSO-VNS vs. SSA 2; PSO-VNS
+      vs. LX-SSA 2; PSO-VNS vs. DE 18); 95% and 90% percentile bootstrap CIs (10,000 resamples of the
+      cases, fixed seed). One equivalence margin m = 0.05 pp is applied to every comparison; it was set
+      after the primary analysis. Two one-sided tests (TOST): the pair is equivalent at m (“Eq.”) if the
+      90% CI lies inside (−m, m); pTOST : bootstrap TOST p (share of bootstrap means beyond ∓m, add-
+      one corrected; ≤: no bootstrap mean beyond the margin); mmin : smallest margin at which equivalence
+      holds, max(|lo90 |, |hi90 |), rounded up. Bayesian signed-rank test [28] on the case-mean differences with
+      region of practical equivalence (−m, m) (Dirichlet-process prior strength s = 0.5 at z0 = 0, 50,000 Monte
+      Carlo samples, fixed seed): posterior probability that the first method is better (PA ), that the two are
+      practically equivalent (Prope ) and that the second is better (PB ).
+       Pair (first vs. second)    n ∆L (pp)         95% CI           90% CI         pTOST mmin Eq.         PA   Prope   PB
+       Component-analysis contrasts
+       SSA-VNS vs. RS-VNS         68   −0.068   [−0.108, −0.034] [−0.101, −0.039]   0.839   0.102   no     0.30 0.70 <0.01
+       LX-SSA-VNS vs. RS-VNS 68        −0.005    [−0.041, 0.026] [−0.034, 0.021]    0.008   0.035   yes   <0.01 >0.99 <0.01
+       PSO-VNS vs. RS-VNS         68   −0.399   [−0.495, −0.308] [−0.479, −0.324]   1.000   0.479   no    >0.99 <0.01 <0.01
+       SSA-VNS vs. LX-SSA-VNS 68       −0.063   [−0.091, −0.038] [−0.086, −0.042]   0.841   0.087   no     0.53 0.47 <0.01
+       LX-SSA vs. SSA             66   +0.153     [0.096, 0.217]   [0.104, 0.206]   1.000   0.207   no    <0.01 0.12 0.88
+       SSA-VNS vs. SSA            66   −0.294   [−0.383, −0.214] [−0.368, −0.226]   1.000   0.368   no    >0.99 <0.01 <0.01
+       LX-SSA-VNS vs. LX-SSA      66   −0.394   [−0.528, −0.276] [−0.505, −0.293]   1.000   0.506   no    >0.99 <0.01 <0.01
+       PSO-VNS vs. PSO            68   −0.018    [−0.045, 0.008] [−0.041, 0.004]    0.011   0.041   yes   <0.01 >0.99 <0.01
+       PSO-VNS vs. VNS            68   −0.465   [−0.559, −0.371] [−0.545, −0.386]   1.000   0.546   no    >0.99 <0.01 <0.01
+       SSA-VNS vs. RSD-VNS        68   +0.024    [−0.033, 0.068] [−0.022, 0.062]    0.141   0.062   no    <0.01 0.77 0.23
+       LX-SSA-VNS vs. RSD-VNS 68       +0.087     [0.039, 0.133]   [0.047, 0.126]   0.936   0.126   no    <0.01 0.10 0.90
+       PSO-VNS vs. RSD-VNS        68   −0.306   [−0.396, −0.227] [−0.380, −0.239]   1.000   0.381   no    >0.99 <0.01 <0.01
+       RSD-VNS vs. RS-VNS         68   −0.093   [−0.134, −0.049] [−0.127, −0.055]   0.971   0.128   no     0.95 0.05 <0.01
+       Main comparison, PSO-VNS vs. each method (PSO and VNS: see above)
+       PSO-VNS vs. SSA-VNS     68 −0.330 [−0.409, −0.255] [−0.397, −0.266]          1.000   0.397   no    >0.99 <0.01 <0.01
+       PSO-VNS vs. SSA         66 −0.611 [−0.762, −0.471] [−0.735, −0.493]          1.000   0.735   no    >0.99 <0.01 <0.01
+       PSO-VNS vs. LX-SSA      66 −0.765 [−0.964, −0.580] [−0.930, −0.606]          1.000   0.930   no    >0.99 <0.01 <0.01
+       PSO-VNS vs. DE          50 −0.887 [−1.191, −0.604] [−1.137, −0.648]          1.000   1.137   no    >0.99 <0.01 <0.01
+       PSO-VNS vs. MS-SLSQP    68 −0.435 [−0.519, −0.353] [−0.505, −0.366]          1.000   0.505   no    >0.99 <0.01 <0.01
+
+
+
+770   [−0.022, 0.062], both above −0.05), whereas equivalence remains inconclusive. LX-SSA-
+771   VNS is 1/62/5 and worse (∆L = +0.087, p = 8.2 × 10−6 ). The small SSA gain over
+772   RS-VNS (2/66/0, ∆L = −0.068) only reflects that control’s weakness; LX-SSA-VNS and
+773   RS-VNS are practically equivalent ([−0.034, 0.021]). Re-evaluated with 1◦ direction bins
+774   (Table S41), SSA-VNS and LX-SSA-VNS again have a higher loss than RSD-VNS (0.074
+775   and 0.135 pp) and PSO-VNS beats all three controls; only the SSA gain over RS-VNS is
+776   no longer significant.
+777       LX-SSA as published. LX-SSA costs 2Np evaluations per iteration (Section 4.2) and
+778   so runs half as many iterations as SSA; the contrasts do not separate its Laplace step
+779   from this cost. As published, it makes the salp swarm worse: LX-SSA is 0/64/4 against
+780   SSA (∆L = +0.153, p = 1.3 × 10−6 ) and SSA-VNS is 2/66/0 against LX-SSA-VNS
+781   (∆L = −0.063, p = 2.7 × 10−5 ).
+782       Choice of Phase 1. With the same VNS phase, PSO-VNS is 44/24/0 against SSA-
+783   VNS and 47/21/0 against LX-SSA-VNS. At the switch, its global best is feasible more
+784   often (98.7% of the runs vs. 95.7% and 94.1%) and, when feasible, has a lower wake loss
+785   (1.63% vs. 2.01% and 2.11%). Whether PSO helps mainly by faster feasibility or by better
+786   exploration remains open (cf. the feasible starts in Section 9.2).
+787       Practical equivalence. Table 8 adds the TOST decision [23] at ±0.05 pp, the minimal
+788   margin mmin and the Bayesian signed-rank probabilities [28] of each contrast. Only the
+789   VNS phase after PSO (Section 7.3) and LX-SSA-VNS vs. RS-VNS (mmin = 0.035 pp) are
+
+
+                                                              26
+                    Table 9: Initialization and budget on the six largest benchmark cases (30 seeds).
+                                                   Random init. Feasible init.        Avg. rank
+                                   Method          Loss   Feas.   Loss   Feas. 6,030 30,030 120,030
+                                   PSO-VNS    4.084 100.0 3.938 100.0 1.50              1.17     2.17
+                                   SSA-VNS    4.678 95.0 3.955 100.0 4.33               4.17    4.17
+                                   LX-SSA-VNS 4.802 98.9 3.952 100.0 5.17               5.67     5.83
+                                   RS-VNS     4.830 93.3   n/r   n/r  4.67              6.33     4.67
+                                   VNS        4.950 100.0 3.810 100.0 6.50              4.83     3.17
+                                   PSO        4.181 100.0 5.549 100.0 1.83              2.50    5.83
+                                   SSA        4.828 80.0 4.947 100.0 8.33               8.67     8.83
+                                   LX-SSA     5.379 77.8 5.048 100.0 8.67               9.83    10.00
+                                   DE           –    1.1 5.549 100.0 10.00              5.17     3.33
+                                   MS-SLSQP   4.522 99.4 4.294 100.0 4.00               6.67    7.00
+      Loss: mean wake loss (%) of the feasible runs; Feas.: feasible runs (%); both at 6,030 evaluations with random and
+      feasibility-preserving initialization. Avg. rank at 6,030, 30,030 and 120,030 evaluations, random initialization. n/r: not run.
+
+
+
+790   equivalent, at the case level but, like every pair, not over the farm clusters. PSO-VNS
+791   gains more than the margin over every control, as does the VNS phase after SSA and
+792   LX-SSA. LX-SSA as published is worse than SSA by more than the margin (whole 90%
+793   interval above +0.05 pp); after VNS, a practical gain of SSA-VNS over LX-SSA-VNS
+794   is about as probable as a negligible one (PA = 0.53, Prope = 0.47). Over RS-VNS, a
+795   negligible SSA gain is the more probable outcome (Prope = 0.70), though equivalence is
+796   not shown. Against RSD-VNS the question is one-sided, whether the SSA phase gives a
+797   better start than disc sampling by a relevant amount; the interval rules this out at the
+798   seed and the case level (above), equivalence is not shown (mmin = 0.062 pp), and the
+799   posterior points against SSA-VNS (PA < 0.01, PB = 0.23). We therefore claim only that
+800   an SSA phase gives no gain of practical size over disc sampling, not that it is equivalent
+801   or worse; LX-SSA-VNS is worse (PB = 0.90).
+
+802   8.4. Budget Split
+803       Of five splits tested on twelve cases (from ω = 0.25 to plain PSO, ω = 1; Table S12),
+804   ω = 0.75 has the lowest mean wake loss and average rank and ω = 0.9 does not beat
+805   it, so a split above the preset ω = 0.5 used here is a candidate to confirm on the target
+806   problem. Per case (Table S15), ω = 0.75 has a lower mean loss than ω = 0.5 in eleven
+807   cases (significantly in four) and significantly higher in no case; ω = 0.25 is significantly
+808   worse than ω = 0.5 in five cases. Plain PSO has a higher mean loss than ω = 0.75 (2.693%
+809   vs. 2.543%; W/T/L of ω = 0.75: 9/3/0), so the best split is interior; these results hold
+810   in all six farm clusters. ω = 0.9 differs from ω = 0.75 in no case (0/12/0, case means
+811   p = 0.15); its mean loss (2.553%) is slightly higher, but below those of ω = 0.5 and plain
+812   PSO. We keep ω = 0.5, which may slightly understate PSO-VNS.
+
+813   9. Tests Beyond the Benchmark
+814   9.1. Budget Scaling
+815       On the six largest benchmark cases (random starts), PSO-VNS keeps the best average
+816   rank at all three budgets (6,030, 30,030 and 120,030 evaluations: 1.50, 1.17 and 2.17;
+817   Table 9; Fig. 7) and ranks first in 4, 5 and 3 of the six cases (exploratory; rank differences
+818   not tested); PSO’s mean wake loss minus that of PSO-VNS is +0.10, +0.18 and +0.27 pp
+819   (Table S31). The order of the other methods depends on the budget: from 6,030 to
+820   120,030 evaluations, PSO falls back from an average rank of 1.83 to 5.83, behind SSA-
+821   VNS (4.17), and VNS moves up from 6.50 to 3.17; at 120,030, VNS, SSA-VNS, RS-VNS,
+
+                                                                   27
+822   LX-SSA-VNS and DE come within 0.17 pp of the mean wake loss of PSO-VNS (3.14%).
+823   The ranking at 6,030 evaluations is thus that of a small budget.
+                                                  Data Set I, r = 500 m, N = 10                            Data Set I, r = 750 m, N = 12                        Data Set I, r = 1000 m, N = 15                        Data Set II, r = 500 m, N = 10
+
+                                                                                                       4                                                                                                              9
+
+
+
+
+                         Mean wake loss (%)
+
+
+
+
+                                                                                  Mean wake loss (%)
+
+
+
+
+                                                                                                                                           Mean wake loss (%)
+
+
+
+
+                                                                                                                                                                                                 Mean wake loss (%)
+                                              5                                                                                                                 3
+
+                                                                                                       3
+                                              4                                                                                                                                                                       8
+                                                                                                                                                                2
+                                                                                                       2
+                                              3
+                                                                                                                                                                                                                      7
+
+                                              2                                                        1                                                        1
+                                                    6k         30k       120k                                6k         30k       120k                              6k         30k      120k                              6k        30k       120k
+
+                                              Data Set II, r = 750 m, N = 12                           Data Set II, r = 1000 m, N = 15                              Horns Rev 1, 16 turbines
+                                                                                                                                                                                                                                 PSO-VNS
+                                                                                                                                                                                                                                 PSO
+                                              7
+                         Mean wake loss (%)
+
+
+
+
+                                                                                  Mean wake loss (%)
+
+
+
+
+                                                                                                                                           Mean AEP loss (%)
+                                                                                                                                                                                                                                 SSA-VNS
+                                                                                                       6                                                        8
+                                                                                                                                                                                                                                 SSA
+                                              6                                                                                                                                                                                  LX-SSA
+                                                                                                       5                                                                                                                         DE
+                                                                                                                                                                7                                                                VNS
+                                              5                                                                                                                                                                                  MS-SLSQP
+                                                                                                       4
+                                                                                                                                                                                                                                 LX-SSA-VNS
+                                                                                                                                                                6                                                                RS-VNS
+                                                    6k         30k       120k                                6k         30k       120k                              6k         30k      120k
+
+
+                                                                                                                           Evaluations (log scale)
+
+
+
+
+      Figure 7: Budget scaling: mean wake loss of the six largest benchmark cases and mean AEP loss of the
+      Horns Rev 1 block (feasible runs; methods with at least half of their runs feasible) versus the budget
+      (random initialization; 10 seeds for Horns Rev 1 at 120,030 evaluations).
+
+824      The methods differ mainly in how much they gain from a larger budget (Fig. 7): from
+825   6,030 to 120,030 evaluations, the mean wake loss of VNS falls from 4.95% to 3.17%, that
+826   of PSO only from 4.18% to 3.42% (PSO-VNS: 4.08% to 3.14%). On the Horns Rev 1
+827   block (last panel), the mean AEP loss of PSO-VNS also falls (7.07%, 6.52% and 6.40%),
+828   and at 120,030 evaluations DE has the lowest.
+
+829   9.2. Feasibility-Preserving Initialization
+830       With feasibility-preserving initialization, the share of feasible runs rises for SSA-VNS
+831   (95.0% to 100.0%), SSA (80.0% to 100.0%), LX-SSA (77.8% to 100.0%) and DE (1.1% to
+832   100.0%). VNS alone is then best in mean wake loss and average rank, and PSO-VNS ranks
+833   second (rank 2.83; loss 3.94%, 4.08% with random starts; Table 9; per case: Table S30).
+834   PSO and DE never improve on the best initial layout (210 runs each): their moves change
+835   all or most coordinates at once and, between distinct dense layouts, make turbines collide
+836   (median minimum spacing after the first PSO move 95 m, limit 308 m), so in our runs no
+837   trial is both feasible and better and the global best never moves (Lemma 1, Proposition 3;
+838   Table S51). VNS, which moves one coordinate at a time, is not affected. The advantage of
+839   PSO-VNS thus depends on the initialization: from random starts, PSO may help mainly
+840   by reaching feasibility.
+841       What follows from the algorithms can be separated from what is only observed. Let
+842   L(X) be the wake loss, the first term of (6), so that Fp = L + Pen with Pen ≥ 0.
+
+843   Lemma 1 (Improvement needs a feasible, better trial). If the global best G is feasible,
+844   a trial X replaces it only if L(X) < L(G) and every constraint violation g of X satisfies
+845   (1 + µg)2 < L(G); in the benchmark cases, g < 4.6 × 10−8 (m or m2 ), far below the
+846   reporting tolerance of 10−6 m.
+
+847   Proof. Replacement needs Fp (X) < Fp (G) = L(G), and Fp (X) is the sum of L(X) ≥ 0
+848   and the violation terms (1 + µg)2 > 0. In the benchmark cases, L(G) ≤ N Eideal + ε with
+849   N ≤
+        p 15, Eideal ≤ 14,045.74 (ε:pthe small negative part of the power curve above cut-in),
+850   so L(G) < 459.1 and g < ( L(G) − 1)/µ < 4.6 × 10−8 for µ = 1010 .
+
+
+                                                                                                                                         28
+             Table 10: Horns Rev 1 16-turbine block (5◦ direction bins): AEP, feasibility and AEP loss.
+                                                     6,030 evaluations, R             Loss (%)
+                                  Layout / method        AEP     Feas.       6k R     6k F   30k    120k
+                                  Installed layout   139.82        –          6.04     –      –      –
+                                  PSO-VNS            138.29      30/30        7.07    6.97 6.52     6.40
+                                  SSA-VNS            137.59      30/30        7.54    6.98 7.19     6.47
+                                  LX-SSA-VNS         137.41      30/30        7.66    7.02 7.07     6.44
+                                  RS-VNS             137.58      28/30       7.5428   n/r   7.04    6.25
+                                  VNS                137.35      30/30        7.70    6.91 6.85     6.23
+                                  PSO                137.79      19/30       7.4019   8.35 6.7828   6.63
+                                  SSA                136.25      30/30        8.44    7.83 8.17     7.62
+                                  LX-SSA             136.00      28/30       8.6128   7.89 8.50     8.28
+                                  DE                   –         0/30           –     8.35 7.408    6.12
+                                  MS-SLSQP           136.31      30/30        8.40    8.00 7.82     7.31
+      Wake-free AEP 148.81 GWh/yr. AEP: mean (GWh/yr) over the feasible runs of 30 seeds at 6,030 evaluations, random
+      initialization (R); Feas.: feasible runs. Loss: mean AEP loss (%) of the feasible runs at 6,030 evaluations with random
+      (R) and feasibility-preserving (F) initialization and at 30,030 and 120,030 evaluations (R; 10 seeds at 120,030); superscript:
+      feasible runs when not all are feasible; n/r: not run. Run-level tests: supplementary material.
+
+
+
+851   Proposition 3 (PSO from feasible starts). Let all initial layouts be feasible, let the ve-
+852   locities start at zero with Pi = Xi , and let i∗ be the particle with the best initial layout,
+                  ∗     ∗                                                                ∗
+853   so that Xi = Pi = G. (a) As long as G does not change, particle i∗ keeps Vi = 0 and
+         ∗
+854   Xi = G: it re-evaluates G once per iteration and evaluates no other point. (b) The first
+855   move of every other particle is Xi ← Xi + c2 ρ2 ◦ (G − Xi ), clipped to the box: turbine k of
+856   layout i moves a random fraction in [0, c2 ] = [0, 1.50] of the way, per coordinate, toward
+857   turbine k of G, although the numbering of the turbines of two independently generated
+858   layouts is arbitrary.
+                                                     ∗                   ∗       ∗
+859   Proof. (a) By induction: with Vi = 0 and Pi = Xi = G, all three terms of (7) vanish,
+                                                                                 ∗
+860   the particle stays at G, and Fp (G) is no strict improvement, so neither Pi nor G changes.
+861   (b) At the first move, Vi = 0 and Pi = Xi , so only the last term of (7) remains.
+862       A DE trial takes coordinate j from the mutant xr1 + F (xr2 − xr3 ) if j = jrand or
+863   Uj < CR, i.e., 1 + Bin(n − 1, CR) coordinates, on average 27.1 of n = 30 for N = 15,
+864   again regardless of the turbine numbering. By Lemma 1, G moves only if such a combined
+865   layout is feasible and better; that this never happened in our runs is an observation, not
+866   a consequence of the proposition.
+867       In Table S51, which logs every candidate, the only feasible PSO candidates (3.33%)
+868   are the re-evaluations of G of part (a), no personal best is updated, and no DE trial is
+869   feasible. The numbering of part (b) is not the whole explanation: after relabeling the
+870   turbines of each start to their nearest turbines of G, the first PSO move is feasible in only
+871   0.1% of the draws, a convex combination of two layouts in 16.6%. Independent weights
+872   per coordinate, with overshoot, place the turbines of two distinct dense layouts (median
+873   RMS distance 291 m) too close together or outside the site.
+
+874   9.3. Horns Rev 1 16-Turbine Block
+875       The model (Section S1.7) uses the Jensen wake with a hub-center in-wake test, the
+876   thrust coefficient CT at the free-stream speed, and 5◦ direction and 1-m/s speed bins; the
+877   boundary violation in (6) is the distance (m) outside the parallelogram. For the installed
+878   80-turbine farm at identical bins, PyWake 2.6.20’s NOJ model [68] gives 661.39 GWh/yr
+879   and ours 666.75 GWh/yr (0.81% more; wake loss 11.11% vs. 10.39%; Table S44); with CT
+880   at the local speed, our model reproduces PyWake’s hub-center NOJ (momentum-theory
+881   induction) exactly, and rotor averaging does not explain the difference.
+
+                                                                   29
+      Table 11: IEA37 Case Study 1: AEP (MWh) of the best run of each method and of published layouts [4,
+      42].
+                                                        16 turbines (r = 1300 m) 36 turbines (r = 2000 m)
+                           Method / source                6,030          30,030     6,030         30,030
+                           Example layout                         366,941.6                 737,883.1
+                           Best published, stricta                418,924.4                 863,676.3
+                           Best published, projectedb             421,451.1                 882,382.8
+                           PSO-VNS                      402,782.4      413,331.9   787,708.9     827,385.0
+                           PSO                          403,753.1      412,702.4   787,988.7     830,256.4
+                           SSA-VNS                      403,251.3      406,924.6   766,803.3     819,930.5
+                           SSA                          395,150.2      401,459.3   750,707.4     802,538.2
+                           LX-SSA                       393,284.6      398,770.0   746,301.3     789,311.3
+                           DE                           357,391.3      397,402.7       –             –
+                           VNS                          400,169.3      404,076.0   785,791.3     824,230.2
+                           MS-SLSQP                     405,433.8      410,349.5   748,571.1     833,365.0
+      AEP of the best feasible run of each method (30 seeds; –: no feasible run). a Best published layout with every turbine
+      within 1 mm of the boundary (participant 4 in both scenarios). b Best published layout after projecting the turbines outside
+      the boundary radially onto it, spacing re-checked (participant 12 in both scenarios; up to 3.5 m and 4.9 mm outside before
+      projection).
+
+
+
+882       The installed layout, a regular 7D grid, reaches 139.82 GWh/yr (wake loss 6.04%;
+883   Table 10). At 6,030 evaluations from random starts, the robust result is feasibility: PSO-
+884   VNS is feasible in 30/30 runs, PSO in only 19/30 (exact McNemar p = 9.8 × 10−4 ; 30/30
+885   with feasible starts) and DE in 0/30. The best layout of all methods at this budget, a
+886   PSO-VNS layout (139.78 GWh/yr; Figs. S8 and S10), stays below the installed block,
+887   like every run at this budget.
+888       We also re-evaluated every final layout with 1◦ bins and with PyWake’s NOJ at the
+889   same bins (Table S42). The AEP advantage of PSO-VNS over PSO at 6,030 evaluations
+890   on the 19 jointly feasible seeds (+0.54 GWh/yr, p = 0.016) vanishes with 1◦ bins (−0.05,
+891   p = 0.65) and under PyWake. At 30,030 evaluations, PSO-VNS has the highest mean AEP
+892   under all three evaluations (5◦ bins: 139.11 GWh/yr) and beats PSO on the 28 jointly
+893   feasible seeds also with 1◦ bins (+0.28 GWh/yr, p = 6.5 × 10−4 ) and under PyWake;
+894   at 120,030 evaluations (10 seeds), DE has the highest mean AEP. The finer rose costs
+895   the installed block 0.32 GWh/yr and the optimized layouts 1.08 GWh/yr on average,
+896   the VNS-based methods most: like those of the benchmark (Section 10.5), the optimized
+897   layouts exploit the gaps between the coarse direction bins. With 1◦ bins, 0 of the 901
+898   feasible optimized layouts (all methods and budgets) exceed the installed block (16 with 5◦
+899   bins), although the looser spacing 4D (installed: 7D) enlarges their feasible set. The block
+900   is evaluated without the other 64 turbines, and cables, foundations, loads and navigation
+901   are not modeled: the comparison tests the optimizers, not the installed design.
+
+902   9.4. IEA37 Case Study 1
+903       In IEA37 Case Study 1 the participants chose their own optimizers and budgets [4].
+904   None of our methods reaches the best feasible published layouts (Table 11; layouts:
+905   Fig. S10). Table 11 counts a published layout as feasible at a tolerance of 1 mm (ours:
+906   10−6 m); after radial projection onto the boundary, 5 more are feasible, and the best are
+907   then those of participant 12. Against these, the best PSO-VNS layout at 30,030 evalua-
+908   tions differs in AEP by −1.93% (16 turbines) and −6.23% (36 turbines; strict: −1.33%
+909   and −4.20%), in wake loss by +1.73 and +5.21 pp, and would rank fourth among 12 and
+910   ninth among 10 feasible submissions. With 36 turbines, the best of our layouts comes
+911   from MS-SLSQP (−5.56%). At 6,030 evaluations the gaps are larger (best PSO-VNS lay-
+912   out, projected: −4.43% and −10.73%; all gaps: Table S46), so they depend more on the
+
+                                                                    30
+             Table 12: Robustness to the benchmark model: final layouts re-evaluated, not re-optimized.
+                                                            ∆ (%)
+                                 Model                   DS I DS II Rank        Best      τ̄   Same
+                                 Benchmark             +0.0 +0.0       1.82 PSO-VNS –           –
+                                 Cubic curve           −17.7 −36.9     1.82 PSO-VNS 0.95        94
+                                 Cubic, 25 m/s cut-out −21.5 −37.0     1.80 PSO-VNS 0.95        93
+                                 Gaussian wake         −0.3 −0.4       1.97   PSO   0.66        54
+      All feasible final layouts of the 68 cases. ∆: mean relative change of the objective (%); Rank: average rank of PSO-VNS;
+      Best: best-ranked method; τ̄ : mean Kendall correlation between the benchmark and the alternative ordering within a case;
+      Same: cases (%) with unchanged best method. Ranks of all methods: supplementary material.
+
+
+
+913   budget than on the feasibility convention. As the participants’ budgets are not reported
+914   comparably, the size of the gap is indicative only. The 64-turbine scenario was not run,
+915   and, like the published layouts, ours are optimized for 16 discrete directions and one wind
+916   speed.
+
+917   9.5. Computational Cost and Published Results
+918       Per evaluation, the metaheuristics need 0.23–0.45 ms and MS-SLSQP 0.53 ms, about
+919   2.3 times as long as PSO (indicative; Table S35); one 6,030-evaluation run of PSO-VNS
+920   takes 1.5–3.2 s, depending on N . Published Kusiak–Song results [3, 33–35] are discussed
+921   in Section S8; they are not compared numerically because budgets, constraint handling
+922   and reporting differ.
+
+923   10. Sensitivity to the Modeling Assumptions
+924       The benchmark fixes a power curve, a wake model, a minimum spacing, a boundary
+925   rule and a discretization of the wind rose. We re-evaluated every feasible final layout of
+926   the main comparison, without re-optimization, under a cubic power curve, a Gaussian
+927   wake and finer direction bins (Table 12; all methods: Table S36); this asks whether the
+928   delivered layouts keep their order under another model, not which layouts the methods
+929   would find for it.
+
+930   10.1. Power Curve
+931       A cubic power curve between cut-in and rated speed [69] (also with a 25 m/s cut-out)
+932   lowers the expected power by 17.7% (Data Set I) and 36.9% (Data Set II), so our energy
+933   values are benchmark values, but it leaves the ranking intact (τ̄ = 0.95; same best method
+934   in 94% of the cases; PSO-VNS first, also with the cut-out).
+
+935   10.2. Wake Model
+936       The uncalibrated Gaussian wake of [46] (KG = 0.04; Section S5.1) differs from the
+937   Jensen cone (K = 0.075) in its smooth lateral profile and expansion rate and, unlike the
+938   cone test of the benchmark, gives no deficit to turbines upstream of the wake source.
+939   The mean objective changes little (Table 12), but the wake loss of the same final layouts
+940   differs between the two models by 0.38 pp on average (median 0.27 pp), 7.6 times the
+941   equivalence margin (Section 6.2), and by more than the margin for 86% of the 15,614
+942   layouts, whereas the per-case difference PSO-VNS − PSO changes by only 0.031 pp on
+943   average. The ordering is less stable (τ̄ = 0.66), and PSO is narrowly first (1.91 vs. 1.97);
+944   with 1◦ direction bins, PSO-VNS is first under the Gaussian wake as well (Section 10.5).
+
+
+
+                                                                31
+945   10.3. Minimum Spacing
+946       The optimized layouts often lie on the 4D constraint: 49% of the feasible final layouts
+947   also satisfy 5D and 36% 6D (4.1% and 0.1% for N = 11–15, where the fixed site leaves less
+948   room), so they do not transfer to larger spacings without re-optimization (site capacity:
+949   Table S37). PSO-VNS and PSO were not re-run at larger spacings (archived SSA and
+950   LX-SSA runs: Table S38).
+
+951   10.4. Boundary Rule
+952       All methods clip the coordinates to the bounding square and leave the circle to the
+953   penalty (Section 3.4). The rule matters: an SSA that projects turbines radially onto the
+954   circle instead attains higher mean objectives than the original SSA in all six representative
+955   cases (p ≤ 0.0036), as the projection returns a turbine to the site directly. All methods
+956   therefore use the same rule: the comparison is one of search strategies under a common
+957   repair.
+
+958   10.5. Direction Resolution
+959       The benchmark evaluates the wake only at the centers of 24 direction bins of 15◦ , so a
+960   pair of turbines can be placed with no bin center in its narrow wake interval (Section 3).
+961   We split each bin into 3 (5◦ ) or 15 (1◦ ) sub-bins with its Weibull parameters and an
+962   equal share of its frequency (wake-free power unchanged) and re-evaluated all 21,716
+963   feasible final layouts (Table S39). The 1◦ rose raises the mean wake loss of every method,
+964   by 0.40 pp (DE) to 1.04 pp (PSO; PSO-VNS: 1.322% to 2.335%), mostly already with
+965   5◦ sub-bins: optimized layouts exploit the gaps between the coarse bins, those of PSO
+966   and the VNS-based methods most. PSO-VNS still ranks first (2.09; PSO 2.37, the only
+967   method not significantly different), also under the Gaussian wake at 1◦ (2.22 vs. 2.35);
+968   PSO’s narrow lead under the Gaussian wake with 15◦ bins (1.91 vs. 1.97; τ̄ = 0.66) is
+969   a property of the coarse rose. Beyond the top two the order changes (τ̄ = 0.52; same
+970   best method in 37% of the cases): MS-SLSQP moves from sixth to third, and its gap to
+971   PSO-VNS shrinks from 0.435 to 0.135 pp but remains significant.
+972       For PSO-VNS vs. PSO (Table S39; details: Table S40), the case-mean difference
+973   becomes −0.043 pp (90% CI [−0.062, −0.025]): a small but significant advantage (p =
+974   2.5 × 10−4 ), not equivalence at ±0.05 pp (minimal margin 0.062 pp); the same holds with
+975   5◦ sub-bins. The sign of the per-case difference changes in 26 of the 60 cases with a
+976   nonzero difference, so the per-case winner often depends on the discretization. On the 44
+977   non-trivial cases, equivalence is shown at neither resolution, and the Data Set II N ≥ 10
+978   advantage remains (10 of 10 cases). The component-analysis conclusions hold, but the
+979   small SSA gain over RS-VNS is no longer significant (Table S41). The order beyond the
+980   top two and the equivalence verdict are thus properties of the discretized benchmark; the
+981   first place of PSO-VNS is not.
+
+982   11. Discussion
+983       In this benchmark, which method appears best depends strongly on the protocol; we
+984   discuss why, what follows for hybrid design and layout practice, and condense the protocol
+985   into a checklist.
+
+
+
+
+                                                   32
+ 986   11.1. What Drives the Conclusions of Metaheuristic Comparisons
+ 987       Baseline configuration. An advantage over PSO is informative only if the PSO base-
+ 988   line is convergent: the old setting lies beyond the order-2 boundary (11), which marks
+ 989   approximately where this PSO starts to fail, and places PSO at position 5 of Table 3
+ 990   instead of 1 (Section 7.1). The c-sweep links this to Proposition 1 without establishing a
+ 991   cause (feasibility starts to decline in the step containing c∗ = 1.7486), and velocity clamp-
+ 992   ing largely restores feasibility (92.2%), whereas zeroing clipped components does not: the
+ 993   setting fails mainly through large steps. The stability region is thus a cheap screen for
+ 994   settings, not a guarantee.
+ 995       Controls. An advantage of a hybrid’s first phase is informative only if it beats random
+ 996   sampling in the farm at equal cost. Square sampling is too weak a control (730 RS-VNS
+ 997   runs draw no feasible sample, mainly because of the spacing), so a salp-swarm phase
+ 998   appears to help against it; against disc sampling only the PSO phase gains, and the small
+ 999   SSA gain over RS-VNS is no longer significant with 1◦ bins (Section 8). With essentially
+1000   one compass-search descent as second phase, this measures the value of a start [36].
+1001       Level of equivalence. Non-significance is not equivalence, and equivalence depends on
+1002   the level and the evaluation: PSO-VNS and PSO are equivalent at ±0.05 pp across seeds
+1003   and cases but not across farm clusters, nor under a 1◦ rose, where PSO-VNS has a small
+1004   significant advantage (Sections 7.3 and 10). The levels answer different questions (this
+1005   benchmark, similar cases, new farms), and the minimal margin grows with them (0.026,
+1006   0.041 and 0.067 pp); equivalence holds for N < 10 but not for N ≥ 10, and 19 of 68 cases
+1007   differ by more than the margin, in both directions.
+1008       Discretization, initialization and budget. With 1◦ sub-bins the wake loss of every
+1009   method rises (PSO-VNS: 1.322% to 2.335%), as optimized layouts exploit the gaps be-
+1010   tween the 15◦ bins (Section 10). PSO-VNS and PSO keep the first two places, but
+1011   MS-SLSQP moves from sixth to third and PSO’s lead under the Gaussian wake with 15◦
+1012   bins disappears. From feasible starts, a single local search (VNS alone) ranks first on the
+1013   six largest cases (Section 9.2), and at 120,030 evaluations the leading methods lie within
+1014   0.17 pp (Section 9.1). A ranking is thus the ranking of a protocol.
+
+1015   11.2. Implications for the Design of Two-Phase Swarm–Local-Search Hybrids
+1016       The swarm phase as a feasibility-reaching start. A first phase need not be a good
+1017   optimizer, only a cheap source of good starts; in our runs, the PSO phase is valuable
+1018   largely because it reaches feasibility: at the switch, its global best is feasible in 98.7% of
+1019   the runs, against 95.7% for SSA and 75.7% for disc sampling, whereas feasible disc samples
+1020   are not worse (wake loss 1.53% vs. 1.63%, over different runs). From feasible starts, PSO
+1021   never improves on the best initial layout and VNS alone ranks first (Section 9.2). A
+1022   swarm phase is thus most useful when random layouts are infeasible; when a feasible start
+1023   is cheap (our packing initialization costs no objective evaluations), the budget is better
+1024   spent on the local search.
+1025       The local-search phase and the split. At 6,030 evaluations, the first compass-search
+1026   descent gives 97.5% of the Phase-2 gain and is unfinished in 39 of 40 runs with N ≥ 12
+1027   (Section 8). At small budgets the cost of the descent (2n evaluations per step) thus
+1028   matters more than the neighborhoods, which act only for small N ; cheaper descents are
+1029   obvious candidates, but untested. The first descent also repairs infeasible switch points
+1030   (densest cases: 63.3% feasible at the switch, all at the end). Of the splits tested, ω = 0.75
+1031   was best and plain PSO (ω = 1) had a higher mean loss (Section 8.4): the swarm needs
+1032   enough evaluations to reach feasibility, and the descent enough to progress.
+
+                                                    33
+1033       Where PSO-VNS helps and where it does not. At 6,030 evaluations from random
+1034   starts, PSO-VNS reaches feasibility more reliably on the Horns Rev 1 block (30/30 vs.
+1035   19/30 runs, McNemar p = 9.8 × 10−4 ; on the benchmark PSO is feasible in every run
+1036   as well), ranks best on the six largest cases at all three budgets (exploratory), and, in
+1037   the post hoc subgroup of the larger Data Set II layouts (N ≥ 10), has the lower mean
+1038   wake loss in 10 of 10 cases (pHolm ≤ 0.018), also with 1◦ bins. It does not help from
+1039   feasible starts, in the densest Data Set I layouts (all 7 Data Set I cases beyond the margin
+1040   favor PSO), on IEA37, or on the benchmark average by more than a few hundredths of a
+1041   percentage point.
+
+1042   11.3. Implications for Wind Farm Layout Practice
+1043       The direction discretization is the main caveat for practice: with 1◦ bins the benchmark
+1044   wake loss rises by 0.40–1.04 pp, and none of the 901 feasible optimized Horns Rev 1 layouts
+1045   exceeds the installed block (16 with the 5◦ bins used in optimization). Gains of layouts
+1046   optimized under a coarse rose should be verified at a fine resolution before they are
+1047   credited to an optimizer.
+1048       The Horns Rev 1 block, without the other 64 turbines, with 4D instead of 7D spacing
+1049   and without cables, loads or navigation, tests optimizers, not the installed design (Sec-
+1050   tion 9.3). Our model takes CT at the free-stream speed (wake loss −0.72 pp relative to
+1051   PyWake’s NOJ model); with CT at the local speed it reproduces PyWake’s hub-center
+1052   NOJ exactly, as design studies require. On IEA37, the best PSO-VNS layouts at 30,030
+1053   evaluations lie 1.93% (16 turbines) and 6.23% (36 turbines) below the best feasible pub-
+1054   lished layouts in AEP; they came from the participants’ own optimizers, some gradient-
+1055   based, with budgets not reported comparably [4, 17]. The methods compared here, at
+1056   these budgets, are reference points for comparing optimizers, not design tools.
+
+1057   11.4. Recommendations for Benchmarking
+1058       Table 13 condenses the protocol into a checklist [12, 13], with the reason for each item
+1059   in this study and where the paper implements it.
+
+1060   12. Threats to Validity
+1061       Internal validity. PSO-VNS repeats PSO exactly up to the switch, and the controls
+1062   differ from the hybrids only in Phase 1 (3,015 versus 3,030 evaluations); the code repro-
+1063   duces the original and stored runs (Section 6.4). Configuration remains a threat: DE is
+1064   untuned (its low feasibility, 71.4%, may reflect penalty-dominated search), MS-SLSQP
+1065   uses finite differences on a discontinuous objective, and the old PSO setting was run
+1066   without velocity clamping, which largely restores its feasibility, and with one boundary
+1067   rule and penalty scaling. The SSA–LX-SSA contrast confounds the Laplace step with the
+1068   doubled cost per iteration.
+1069       Construct validity. At 6,030 evaluations the “VNS” phase is essentially one truncated
+1070   compass-search descent, so the component analysis concerns this local search, not VNS in
+1071   general. The objective, the gross energy of a discretized rose under a hub-center top-hat
+1072   Jensen wake, is a benchmark value, not farm quality; final quality at a fixed budget is
+1073   the only measure tested; and the feasibility-first ranking limits, but does not remove,
+1074   survivorship bias.
+1075       External validity. All results are for discretized roses (15◦ benchmark bins, 5◦ on
+1076   Horns Rev 1), which optimized layouts exploit, a top-hat Jensen wake, circular farms, a
+1077   4D spacing and a prescribed N , with random starts and 6,030 evaluations unless stated:
+
+                                                   34
+                       Table 13: Checklist for benchmarking metaheuristics on the WFLOP.
+            Item                                    Rationale in this study        What we did (where)
+       1    Convergent baseline settings (PSO:      The old setting reverses the   c-sweep, bound variants
+            Eq. (11)); state bound and velocity     order of PSO and the           (Sections 4.1 and 7.1)
+            handling                                salp-swarm hybrids
+       2    Equal budgets in evaluations (incl.     Iterations differ in cost      B = 6,030; seeds 1–30
+            initial population, gradients);         (LX-SSA: 2Np )                 (Section 6)
+            seed-paired runs
+       3    Rank feasibility first; report          Feasible-run means favor       Qualification threshold
+            feasibility rates                       unreliable methods             (Table 4)
+       4    Paired, multiplicity-corrected tests;   Rank post hoc tests depend     Holm, six thresholds, six
+            robustness to thresholds and clusters   on the pool; cases share       clusters (Section 6)
+                                                    farms
+       5    Equivalence at a stated level and       Verdicts change with the       TOST at three levels
+            margin; report minimal margins          level                          (Section 7.3)
+       6    Ablate hybrids against the local        A square control flatters      VNS, RS-VNS, RSD-VNS
+            method alone and an equal-cost          salp-swarm phases              (Table 7)
+            in-site random control
+       7    Vary budget and initialization before   The leader changes from        Three budgets, feasible
+            generalizing a ranking                  feasible starts                starts (Table 9)
+       8    Re-evaluate at a finer rose and other   Layouts exploit coarse bins    1◦ bins, Gaussian,
+            models; publish code and data                                          PyWake (Sections 9.3
+                                                                                   and 10)
+
+
+1078   rankings of a small budget (Section 11.1). The only real site is one 16-turbine block,
+1079   on which the feasibility advantage of PSO-VNS rests, with the Horns Rev 1 and IEA37
+1080   caveats of Section 11.3; the 64-turbine IEA37 scenario was not run. The pool lacks CMA-
+1081   ES [70] and L-SHADE [71], so “best of eight” means best among the methods compared.
+1082   Turbulence and loads (critical at 4D), wake steering, blockage, terrain, cables, electrical
+1083   losses and costs are outside our scope; all AEP values are gross.
+1084       Statistical conclusion validity. The margin, the N ≥ 10 split, the Data Set II subgroup
+1085   and the density pattern were stated after the primary analysis; the margin is a convention,
+1086   and the minimal margins let readers apply their own. The 68 cases form only six clusters
+1087   with nested N : an exact sign test over clusters cannot fall below p = 0.031, cluster-robust
+1088   intervals have 5 degrees of freedom, and the p-values describe this benchmark, not a
+1089   population of farms. The budget and feasible-start rankings (six cases) are not tested,
+1090   and the Horns Rev 1 result rests on one site with 30 seeds.
+
+1091   13. Conclusions and Future Work
+1092       On the discretized Kusiak–Song benchmark with random starts and 6,030 evaluations,
+1093   three findings emerge. First, the baseline configuration changes the conclusions: the old
+1094   PSO setting, which lies beyond the order-2 boundary and rarely samples feasible layouts
+1095   late in the run, puts PSO behind salp-swarm hybrids, whereas the constriction setting puts
+1096   it ahead of every salp-swarm method at this budget. Second, salp-swarm first phases add
+1097   nothing beyond random sampling in the farm (a gain above the margin is ruled out across
+1098   seeds and cases; LX-SSA as published is worse), whereas a PSO phase gives the second
+1099   phase, essentially one compass-search descent, a clearly better start. Third, PSO-VNS
+1100   has the best average rank with 15◦ , 5◦ and 1◦ direction bins, also under a Gaussian wake
+1101   at 1◦ , but its average advantage over a well-configured PSO is small: within ±0.05 pp
+1102   under the benchmark rose (across seeds and cases, not farm clusters) and −0.043 pp under
+
+                                                        35
+1103   a 1◦ rose, with case-level differences in both directions that follow a data set × density
+1104   pattern (exploratory). PSO-VNS reaches feasibility more reliably on Horns Rev 1 (30/30
+1105   vs. 19/30 runs, McNemar p = 9.8 × 10−4 ); it is a consistent reference method, not a
+1106   superior optimizer.
+1107       Future work follows from the threats above. Expensive wake models: surrogate-assisted
+1108   evaluation (graph neural networks mapping a layout and a wind state to turbine powers,
+1109   or data-driven and Kriging surrogates [48–50]) would make equal-budget comparisons at
+1110   higher fidelity affordable, if the surrogate error is reported next to the method differences.
+1111   Larger farms, such as the IEA37 64-turbine scenario and the full 80-turbine Horns Rev 1.
+1112   Exact-gradient baselines on a smooth wake model [17], instead of finite differences on
+1113   a discontinuous objective. Stronger baselines and controls: CMA-ES, L-SHADE, tuned
+1114   DE, a cost-matched ablation of the Laplace step, and random-sampling controls at larger
+1115   budgets. Finer roses during optimization, with loads and economic objectives.
+
+1116   CRediT authorship contribution statement
+1117       [TBD: authors: confirm roles]
+1118   Prince Solanki: Conceptualization, Methodology, Software, Formal analysis, Investiga-
+1119   tion, Writing – original draft. [TBD: confirm]
+1120   Pulkit Dwivedi: Validation, Writing – review & editing. [TBD: confirm]
+1121   Vanita Garg: Validation, Writing – review & editing, Supervision. [TBD: confirm]
+1122   Vinay Shukla: Validation, Writing – review & editing, Supervision. [TBD: confirm]
+
+1123   Declaration of competing interest
+1124       The authors declare that they have no known competing financial interests or personal
+1125   relationships that could have appeared to influence the work reported in this paper. [TBD:
+1126   confirm]
+
+1127   Data availability
+1128       The source code of all methods and of the benchmark evaluator, the per-run re-
+1129   sults of all studies (including the runs with the old PSO setting) and the analy-
+1130   sis scripts are openly available at [TBD: Zenodo DOI]. Each run record gives the
+1131   method, case, seed, final objective (AEP for Horns Rev 1), feasibility, final tur-
+1132   bine coordinates and convergence curve, and the budget and initialization where
+1133   these vary. The file analysis/README reproduce.md lists the script that produces
+1134   each table, figure and number of this paper and of its supplementary material, and
+1135   analysis/requirements.txt pins the software versions. The Horns Rev 1 and IEA37
+1136   input data are taken from [42, 68]. The supplementary material gives the model details,
+1137   the pseudocode of SSA and LX-SSA, the wind data, the per-case results, the coordinates
+1138   of the best layouts and further figures.
+
+1139   Declaration of generative AI and AI-assisted technologies in the manuscript
+1140   preparation process
+1141      During the preparation of this work the authors used Claude (Anthropic) to assist
+1142   with code for the analyses, drafting and editing of the text, and consistency checks. After
+1143   using this tool, the authors reviewed and edited the content as needed and take full
+
+                                                    36
+1144   responsibility for the content of the published article. [TBD: authors: confirm or edit this
+1145   statement]
+
+1146   Acknowledgments
+1147      [TBD: funding statement, e.g., “This research did not receive any specific grant from
+1148   funding agencies in the public, commercial, or not-for-profit sectors.”] [TBD: acknowl-
+1149   edgment, or delete this sentence]
+
+1150   References
+1151    [1] R. Srikakulapu and U. Vinatha, “Optimized design of collector topology for offshore wind farm based
+1152        on ant colony optimization with multiple travelling salesman problem,” J. Mod. Power Syst. Clean
+1153        Energy, vol. 6, no. 6, pp. 1181–1192, Nov. 2018, doi: 10.1007/s40565-018-0386-4.
+1154    [2] P. Hou, J. Zhu, K. Ma, G. Yang, W. Hu, and Z. Chen, “A review of offshore wind farm layout
+1155        optimization and electrical system design methods,” J. Mod. Power Syst. Clean Energy, vol. 7, no.
+1156        5, pp. 975–986, Sep. 2019, doi: 10.1007/s40565-019-0550-5.
+1157    [3] A. Kusiak and Z. Song, “Design of wind farm layout for maximum wind energy capture,” Renew.
+1158        Energy, vol. 35, no. 3, pp. 685–694, Mar. 2010, doi: 10.1016/j.renene.2009.08.019.
+1159    [4] N. F. Baker, A. P. J. Stanley, J. J. Thomas, A. Ning, and K. Dykes, “Best practices for wake model
+1160        and optimization algorithm selection in wind farm layout optimization,” in Proc. AIAA SciTech
+1161        2019 Forum, San Diego, CA, USA, Jan. 2019, Paper AIAA 2019-0540, doi: 10.2514/6.2019-0540.
+1162    [5] F. Azlan, J. C. Kurnia, B. T. Tan, and M.-Z. Ismadi, “Review on optimisation methods of wind
+1163        farm array under three classical wind condition problems,” Renew. Sustain. Energy Rev., vol. 135,
+1164        Art. no. 110047, Jan. 2021, doi: 10.1016/j.rser.2020.110047.
+1165    [6] S. Pookpunt and W. Ongsakul, “Optimal placement of wind turbines within wind farm using binary
+1166        particle swarm optimization with time-varying acceleration coefficients,” Renew. Energy, vol. 55, pp.
+1167        266–276, 2013, doi: 10.1016/j.renene.2012.12.005.
+1168    [7] P. Asaah, L. Hao, and J. Ji, “Optimal placement of wind turbines in wind farm layout using particle
+1169        swarm optimization,” J. Mod. Power Syst. Clean Energy, vol. 9, no. 2, pp. 367–375, Mar. 2021, doi:
+1170        10.35833/MPCE.2019.000087.
+1171    [8] S. Mirjalili, A. H. Gandomi, S. Z. Mirjalili, S. Saremi, H. Faris, and S. M. Mirjalili, “Salp swarm
+1172        algorithm: A bio-inspired optimizer for engineering design problems,” Adv. Eng. Softw., vol. 114,
+1173        pp. 163–191, Dec. 2017, doi: 10.1016/j.advengsoft.2017.07.002.
+1174    [9] H. Rezk, A. Fathy, A. A. Z. Diab, and M. Al-Dhaifallah, “The application of water cycle optimization
+1175        algorithm for optimal placement of wind turbines in wind farms,” Energies, vol. 12, no. 22, Art. no.
+1176        4335, 2019, doi: 10.3390/en12224335.
+1177   [10] J. N. Hooker, “Testing heuristics: We have it all wrong,” J. Heuristics, vol. 1, no. 1, pp. 33–42,
+1178        1995, doi: 10.1007/BF02430364.
+1179   [11] J. Derrac, S. Garcı́a, D. Molina, and F. Herrera, “A practical tutorial on the use of nonparametric
+1180        statistical tests as a methodology for comparing evolutionary and swarm intelligence algorithms,”
+1181        Swarm Evol. Comput., vol. 1, no. 1, pp. 3–18, 2011, doi: 10.1016/j.swevo.2011.02.002.
+1182   [12] T. Bartz-Beielstein et al., “Benchmarking in optimization: Best practice and open issues,” 2020,
+1183        arXiv:2007.03488.
+1184   [13] A. LaTorre, D. Molina, E. Osaba, J. Poyatos, J. Del Ser, and F. Herrera, “A prescription of method-
+1185        ological guidelines for comparing bio-inspired optimization algorithms,” Swarm Evol. Comput., vol.
+1186        67, Art. no. 100973, Dec. 2021, doi: 10.1016/j.swevo.2021.100973.
+1187   [14] K. Sörensen, “Metaheuristics—The metaphor exposed,” Int. Trans. Oper. Res., vol. 22, no. 1, pp.
+1188        3–18, Jan. 2015, doi: 10.1111/itor.12001.
+1189   [15] C. Aranha et al., “Metaphor-based metaheuristics, a call for action: The elephant in the room,”
+1190        Swarm Intell., vol. 16, no. 1, pp. 1–6, 2022, doi: 10.1007/s11721-021-00202-9.
+1191   [16] D. Wilson et al., “Evolutionary computation for wind farm layout optimization,” Renew. Energy,
+1192        vol. 126, pp. 681–691, 2018, doi: 10.1016/j.renene.2018.03.052.
+1193   [17] J. J. Thomas et al., “A comparison of eight optimization methods applied to a wind farm layout
+1194        optimization problem,” Wind Energy Sci., vol. 8, pp. 865–891, 2023, doi: 10.5194/wes-8-865-2023.
+
+
+                                                          37
+1195   [18] J. Kennedy and R. Eberhart, “Particle swarm optimization,” in Proc. IEEE Int. Conf. Neural Netw.
+1196        (ICNN), Perth, WA, Australia, Nov. 1995, vol. 4, pp. 1942–1948, doi: 10.1109/ICNN.1995.488968.
+1197   [19] R. Poli, “Mean and variance of the sampling distribution of particle swarm optimizers dur-
+1198        ing stagnation,” IEEE Trans. Evol. Comput., vol. 13, no. 4, pp. 712–721, Aug. 2009, doi:
+1199        10.1109/TEVC.2008.2011744.
+1200   [20] M. R. Bonyadi and Z. Michalewicz, “Particle swarm optimization for single objective con-
+1201        tinuous space problems: A review,” Evol. Comput., vol. 25, no. 1, pp. 1–54, 2017, doi:
+1202        10.1162/EVCO r 00180.
+1203   [21] C. W. Cleghorn and A. P. Engelbrecht, “Particle swarm stability: A theoretical extension us-
+1204        ing the non-stagnate distribution assumption,” Swarm Intell., vol. 12, no. 1, pp. 1–22, 2018, doi:
+1205        10.1007/s11721-017-0141-x.
+1206   [22] A. Benavoli, G. Corani, and F. Mangili, “Should we really use post-hoc tests based on mean-ranks?”
+1207        J. Mach. Learn. Res., vol. 17, no. 5, pp. 1–10, 2016.
+1208   [23] D. Lakens, “Equivalence tests: A practical primer for t tests, correlations, and meta-analyses,” Soc.
+1209        Psychol. Personal. Sci., vol. 8, no. 4, pp. 355–362, 2017, doi: 10.1177/1948550617697177.
+1210   [24] N. Mladenović and P. Hansen, “Variable neighborhood search,” Comput. Oper. Res., vol. 24, no. 11,
+1211        pp. 1097–1100, Nov. 1997, doi: 10.1016/S0305-0548(97)00031-2.
+1212   [25] P. Hansen and N. Mladenović, “Variable neighborhood search: Principles and applications,” Eur.
+1213        J. Oper. Res., vol. 130, no. 3, pp. 449–467, May 2001, doi: 10.1016/S0377-2217(00)00100-4.
+1214   [26] P. Solanki and K. Deep, “Laplacian salp swarm algorithm for continuous optimization,” Int. J. Syst.
+1215        Assur. Eng. Manage., [TBD: vol., no., pp.], 2023, doi: 10.1007/s13198-023-01935-y.
+1216   [27] F. Neri and C. Cotta, “Memetic algorithms and memetic computing optimization: A literature
+1217        review,” Swarm Evol. Comput., vol. 2, pp. 1–14, 2012, doi: 10.1016/j.swevo.2011.11.003.
+1218   [28] A. Benavoli, G. Corani, J. Demšar, and M. Zaffalon, “Time for a change: A tutorial for comparing
+1219        multiple classifiers through Bayesian analysis,” J. Mach. Learn. Res., vol. 18, no. 77, pp. 1–36, 2017.
+1220   [29] G. Mosetti, C. Poloni, and B. Diviacco, “Optimization of wind turbine positioning in large windfarms
+1221        by means of a genetic algorithm,” J. Wind Eng. Ind. Aerodyn., vol. 51, no. 1, pp. 105–116, Jan.
+1222        1994, doi: 10.1016/0167-6105(94)90080-9.
+1223   [30] S. A. Grady, M. Y. Hussaini, and M. M. Abdullah, “Placement of wind turbines using genetic algo-
+1224        rithms,” Renew. Energy, vol. 30, no. 2, pp. 259–270, Feb. 2005, doi: 10.1016/j.renene.2004.05.007.
+1225   [31] N. O. Jensen, “A note on wind generator interaction,” Risø Nat. Lab., Roskilde, Denmark, Tech.
+1226        Rep. Risø-M-2411, 1983.
+1227   [32] I. Katić, J. Højstrup, and N. O. Jensen, “A simple model for cluster efficiency,” in Proc. Eur. Wind
+1228        Energy Assoc. Conf. Exhib. (EWEC), Rome, Italy, Oct. 1986, vol. 1, pp. 407–410.
+1229   [33] J. C. Bansal and P. Farswan, “Wind farm layout using biogeography based optimization,” Renew.
+1230        Energy, vol. 107, pp. 386–402, Jul. 2017, doi: 10.1016/j.renene.2017.01.064.
+1231   [34] Y. Eroğlu and S. U. Seçkiner, “Design of wind farm layout using ant colony algorithm,” Renew.
+1232        Energy, vol. 44, pp. 53–62, Aug. 2012, doi: 10.1016/j.renene.2011.12.013.
+1233   [35] Y. Eroğlu and S. U. Seçkiner, “Wind farm layout optimization using particle filtering approach,”
+1234        Renew. Energy, vol. 58, pp. 95–107, Oct. 2013, doi: 10.1016/j.renene.2013.02.019.
+1235   [36] J. Feng and W. Z. Shen, “Solving the wind farm layout optimization problem using random search
+1236        algorithm,” Renew. Energy, vol. 78, pp. 182–192, 2015, doi: 10.1016/j.renene.2015.01.005.
+1237   [37] C. N. Elkinton, J. F. Manwell, and J. G. McGowan, “Algorithms for offshore wind farm layout
+1238        optimization,” Wind Eng., vol. 32, no. 1, pp. 67–84, Jan. 2008, doi: 10.1260/030952408784305877.
+1239   [38] X. Ju and F. Liu, “Wind farm layout optimization using self-informed genetic algorithm
+1240        with information guided exploitation,” Appl. Energy, vol. 248, pp. 429–445, Aug. 2019, doi:
+1241        10.1016/j.apenergy.2019.04.084.
+1242   [39] F. Bai, X. Ju, S. Wang, W. Zhou, and F. Liu, “Wind farm layout optimization using adaptive evolu-
+1243        tionary algorithm with Monte Carlo tree search reinforcement learning,” Energy Convers. Manage.,
+1244        vol. 252, Art. no. 115047, Jan. 2022, doi: 10.1016/j.enconman.2021.115047.
+1245   [40] S. V. Nagpal, M. V. Liu, and C. L. Anderson, “A comparison of deterministic refinement tech-
+1246        niques for wind farm layout optimization,” Renew. Energy, vol. 168, pp. 581–592, May 2021, doi:
+1247        10.1016/j.renene.2020.12.043.
+1248   [41] D. Cazzaro and D. Pisinger, “Variable neighborhood search for large offshore wind farm layout opti-
+1249        mization,” Comput. Oper. Res., vol. 138, Art. no. 105588, Feb. 2022, doi: 10.1016/j.cor.2021.105588.
+
+
+
+                                                           38
+1250   [42] N. F. Baker et al., “IEA Wind Task 37 wind farm layout optimization case studies: Case files and
+1251        submitted results,” GitHub repository, commit 267f6e5, 2020. Accessed: Sep. 28, 2026. [Online].
+1252        Available: https://github.com/IEAWindSystems/iea37-wflo-casestudies
+1253   [43] D. Guirguis, D. A. Romero, and C. H. Amon, “Toward efficient optimization of wind farm lay-
+1254        outs: Utilizing exact gradient information,” Appl. Energy, vol. 179, pp. 110–123, 2016, doi:
+1255        10.1016/j.apenergy.2016.06.101.
+1256   [44] E. Quaeghebeur, R. Bos, and M. B. Zaaijer, “Wind farm layout optimization using pseudo-
+1257        gradients,” Wind Energy Sci., vol. 6, no. 3, pp. 815–839, Jun. 2021, doi: 10.5194/wes-6-815-2021.
+1258   [45] A. P. J. Stanley and A. Ning, “Massive simplification of the wind farm layout optimization problem,”
+1259        Wind Energy Sci., vol. 4, no. 4, pp. 663–676, Dec. 2019, doi: 10.5194/wes-4-663-2019.
+1260   [46] M. Bastankhah and F. Porté-Agel, “A new analytical model for wind-turbine wakes,” Renew. Energy,
+1261        vol. 70, pp. 116–123, Oct. 2014, doi: 10.1016/j.renene.2014.01.002.
+1262   [47] S. Tao, Q. Xu, A. Feijóo, G. Zheng, and J. Zhou, “Wind farm layout optimization with a
+1263        three-dimensional Gaussian wake model,” Renew. Energy, vol. 159, pp. 553–569, Oct. 2020, doi:
+1264        10.1016/j.renene.2020.06.003.
+1265   [48] K. Yang, X. Deng, Z. Ti, S. Yang, S. Huang, and Y. Wang, “A data-driven layout optimization
+1266        framework of large-scale wind farms based on machine learning,” Renew. Energy, vol. 218, Art. no.
+1267        119240, Dec. 2023, doi: 10.1016/j.renene.2023.119240.
+1268   [49] Z. Wang, Y. Tu, K. Zhang, Z. Han, Y. Cao, and D. Zhou, “An optimization framework for wind
+1269        farm layout design using CFD-based Kriging model,” Ocean Eng., vol. 293, Art. no. 116644, Feb.
+1270        2024, doi: 10.1016/j.oceaneng.2023.116644.
+1271   [50] P. Li, Y. Che, A. Hua, L. Wang, M. Zheng, and X. Guo, “A data-physics hybrid-driven layout
+1272        optimization framework for large-scale wind farms,” Appl. Energy, vol. 392, Art. no. 125908, Aug.
+1273        2025, doi: 10.1016/j.apenergy.2025.125908.
+1274   [51] N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, and D. Brockhoff, “COCO: A platform for
+1275        comparing continuous optimizers in a black-box setting,” Optim. Methods Softw., vol. 36, no. 1, pp.
+1276        114–144, 2021, doi: 10.1080/10556788.2020.1808977.
+1277   [52] J. Demšar, “Statistical comparisons of classifiers over multiple data sets,” J. Mach. Learn. Res., vol.
+1278        7, pp. 1–30, Jan. 2006.
+1279   [53] S. Holm, “A simple sequentially rejective multiple test procedure,” Scand. J. Stat., vol. 6, no. 2, pp.
+1280        65–70, 1979.
+1281   [54] J. Carrasco, S. Garcı́a, M. M. Rueda, S. Das, and F. Herrera, “Recent trends in the use of statistical
+1282        tests for comparing swarm and evolutionary computing algorithms: Practical guidelines and a critical
+1283        review,” Swarm Evol. Comput., vol. 54, Art. no. 100665, 2020, doi: 10.1016/j.swevo.2020.100665.
+1284   [55] F. Campelo and F. Takahashi, “Sample size estimation for power and accuracy in the experimental
+1285        comparison of algorithms,” J. Heuristics, vol. 25, no. 2, pp. 305–338, Apr. 2019, doi: 10.1007/s10732-
+1286        018-9396-7.
+1287   [56] C. L. Camacho-Villalón, M. Dorigo, and T. Stützle, “Exposing the grey wolf, moth-flame, whale,
+1288        firefly, bat, and antlion algorithms: Six misleading optimization techniques inspired by bestial
+1289        metaphors,” Int. Trans. Oper. Res., vol. 30, no. 6, pp. 2945–2971, 2023, doi: 10.1111/itor.13176.
+1290   [57] M. Castelli, L. Manzoni, L. Mariot, M. S. Nobile, and A. Tangherloni, “Salp swarm optimization: A
+1291        critical review,” Expert Syst. Appl., vol. 189, Art. no. 116029, 2022, doi: 10.1016/j.eswa.2021.116029.
+1292   [58] Y. Shi and R. Eberhart, “A modified particle swarm optimizer,” in Proc. IEEE Int. Conf. Evol.
+1293        Comput. (ICEC), Anchorage, AK, USA, May 1998, pp. 69–73, doi: 10.1109/ICEC.1998.699146.
+1294   [59] M. Clerc and J. Kennedy, “The particle swarm—Explosion, stability, and convergence in a multi-
+1295        dimensional complex space,” IEEE Trans. Evol. Comput., vol. 6, no. 1, pp. 58–73, Feb. 2002, doi:
+1296        10.1109/4235.985692.
+1297   [60] I. C. Trelea, “The particle swarm optimization algorithm: Convergence analysis and parameter
+1298        selection,” Inf. Process. Lett., vol. 85, no. 6, pp. 317–325, 2003, doi: 10.1016/S0020-0190(02)00447-
+1299        7.
+1300   [61] F. van den Bergh and A. P. Engelbrecht, “A study of particle swarm optimization particle trajecto-
+1301        ries,” Inf. Sci., vol. 176, no. 8, pp. 937–971, 2006, doi: 10.1016/j.ins.2005.02.003.
+1302   [62] N. Krasnogor and J. Smith, “A tutorial for competent memetic algorithms: Model, taxonomy,
+1303        and design issues,” IEEE Trans. Evol. Comput., vol. 9, no. 5, pp. 474–488, Oct. 2005, doi:
+1304        10.1109/TEVC.2005.850260.
+
+
+
+
+                                                            39
+1305   [63] N. Mladenović, M. Dražić, V. Kovačević-Vujčić, and M. Čangalović, “General variable neighborhood
+1306        search for the continuous optimization,” Eur. J. Oper. Res., vol. 191, no. 3, pp. 753–770, Dec. 2008,
+1307        doi: 10.1016/j.ejor.2006.12.064.
+1308   [64] D. Zaharie, “Critical values for the control parameters of differential evolution algorithms,” in Proc.
+1309        MENDEL 2002, 8th Int. Conf. Soft Comput., Brno, Czech Republic, 2002, pp. 62–67.
+1310   [65] K. Deep and M. Thakur, “A new crossover operator for real coded genetic algorithms,” Appl. Math.
+1311        Comput., vol. 188, no. 1, pp. 895–911, May 2007, doi: 10.1016/j.amc.2006.10.047.
+1312   [66] R. Storn and K. Price, “Differential evolution—A simple and efficient heuristic for global opti-
+1313        mization over continuous spaces,” J. Global Optim., vol. 11, no. 4, pp. 341–359, Dec. 1997, doi:
+1314        10.1023/A:1008202821328.
+1315   [67] D. Kraft, “A software package for sequential quadratic programming,” DFVLR, Inst. für Dynamik
+1316        der Flugsysteme, Oberpfaffenhofen, Germany, Tech. Rep. DFVLR-FB 88-28, 1988.
+1317   [68] DTU Wind Energy, “PyWake: Open-source static wake modeling framework,” Python package
+1318        py wake, ver. 2.6.20 (Horns Rev 1 site data in py wake/examples/data/hornsrev1.py), MIT Li-
+1319        cense, 2026. Accessed: Sep. 25, 2026. [Online]. Available: https://gitlab.windenergy.dtu.dk/
+1320        TOPFARM/PyWake
+1321   [69] C. Carrillo, A. F. Obando Montaño, J. Cidrás, and E. Dı́az-Dorado, “Review of power curve
+1322        modelling for wind turbines,” Renew. Sustain. Energy Rev., vol. 21, pp. 572–581, May 2013, doi:
+1323        10.1016/j.rser.2013.01.012.
+1324   [70] N. Hansen and A. Ostermeier, “Completely derandomized self-adaptation in evolution strategies,”
+1325        Evol. Comput., vol. 9, no. 2, pp. 159–195, 2001, doi: 10.1162/106365601750190398.
+1326   [71] R. Tanabe and A. S. Fukunaga, “Improving the search performance of SHADE using linear popu-
+1327        lation size reduction,” in Proc. IEEE Congr. Evol. Comput. (CEC), Beijing, China, Jul. 2014, pp.
+1328        1658–1665, doi: 10.1109/CEC.2014.6900380.
+
+
+
+
+                                                            40
+

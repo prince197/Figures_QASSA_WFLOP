@@ -1,0 +1,74 @@
+% Front matter of SWEVO_manuscript.tex (elsarticle), from optA/01_front.tex (the IEEEtran version for MPCE).
+% Authors, affiliations and e-mail addresses as in the \thanks lines of optA/01_front.tex. The funding statement
+% of the MPCE version is in the back matter (optA/swevo_back.tex); highlights are a separate file (SWEVO_highlights.txt).
+\begin{frontmatter}
+
+\title{Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization}
+
+\author[iilm]{Prince Solanki\corref{cor1}\fnref{fnprev}}
+\ead{prince@ma.iitr.ac.in}
+\ead{prince@iilm.edu}
+\cortext[cor1]{Corresponding author.}
+\fntext[fnprev]{Previously with the Department of Mathematics, Indian Institute of Technology Roorkee, Roorkee, India.}
+
+\author[bennettcse]{Pulkit Dwivedi}
+\ead{pdwivedi19900@gmail.com}
+\ead{pulkit.dwivedi@bennett.edu.in}
+
+\author[amity]{Vanita Garg}
+\ead{vanitagarg16@gmail.com}
+
+\author[sjtu,bennettmath]{Vinay Shukla}
+\ead{vinayshukla4321@gmail.com}
+\ead{vnshukla01@sjtu.edu.cn}
+
+\affiliation[iilm]{organization={Department of Mathematics, School of Computer Science \& Engineering, IILM University},
+            city={Gurugram},
+            state={Haryana},
+            country={India}}
+\affiliation[bennettcse]{organization={Department of Computer Science and Engineering, Bennett University},
+            city={Greater Noida},
+            state={Uttar Pradesh},
+            country={India}}
+\affiliation[amity]{organization={Amity University},
+            city={Noida},
+            state={Uttar Pradesh},
+            country={India}}
+\affiliation[sjtu]{organization={School of Mathematical Sciences, Shanghai Jiao Tong University},
+            city={Shanghai},
+            postcode={200240},
+            country={China}}
+\affiliation[bennettmath]{organization={Department of Mathematics, School of Computer Science Engineering and Technology, Bennett University},
+            city={Greater Noida},
+            state={Uttar Pradesh},
+            country={India}}
+
+% Abstract: same text as optA/01_front.tex (about 220 words, no citations); the CHECK comments are kept as comments.
+\begin{abstract}
+Comparisons of wind farm layout optimizers can change with baseline configuration, component controls and treatment of unsuccessful runs. We investigate these effects on the discretized Kusiak--Song benchmark using 68 cases, 30 paired seeds and 6,030 evaluations per run, with random-sampling controls, feasibility-qualified rankings and interval-based equivalence analyses. An additional real-coded genetic algorithm and exact-gradient baselines test conclusions beyond the original eight-method pool. The PSO setting $w=0.7$, $c_1=c_2=2$ lies beyond the variance-stability boundary under stagnation and reverses its ranking relative to salp-swarm hybrids; the empirical coefficient sweep and clamping study bound this explanation. An SSA first phase shows no gain exceeding 0.05 percentage points of wake loss over disc sampling at $4D$ and $5D$, but this conclusion does not hold at $6D$. PSO followed by VNS has the best benchmark average rank, although its mean advantage over well-configured PSO lies within a post hoc margin of $\pm0.05$ percentage points at the seed and exchangeable-case levels under the 15$^\circ$ benchmark rose; scenario-cluster analyses and a 1$^\circ$ re-evaluation of the stored layouts do not establish equivalence. Its feasibility advantage over PSO appears on two measured-wind blocks, but conditional quality rankings need not identify the most reliable method. GA performs better at the larger budget on Horns Rev~1 and with 36 IEA37 turbines. On the piecewise-smooth IEA37 model, SLSQP with analytic objective and constraint derivatives outperforms the tested metaheuristics at the charged budget. These findings concern the implemented configurations and models, rather than universal optimizer superiority.
+\end{abstract}
+
+\begin{keyword}
+Benchmarking \sep equivalence testing \sep particle swarm optimization \sep random-sampling control \sep wake effect \sep wind farm layout optimization
+\end{keyword}
+
+\end{frontmatter}
+
+% Nomenclature (IEEEdescription in the MPCE version): compact two-column table after the front matter
+\section*{Nomenclature}
+\noindent
+\begin{tabular}{@{}>{$}l<{$}@{\quad}l@{}}
+B & Budget (number of evaluations)\\
+C_T,\ K & Thrust coefficient; Jensen wake-spreading constant\\
+D,\ R & Rotor diameter and rotor radius ($D=2R$)\\
+E_{\rm ideal} & Wake-free benchmark objective of one turbine\\
+F_p & Penalized wake loss (minimized)\\
+\ell_{\min} & Minimum spacing between turbines\\
+N,\ N_p & Number of turbines; population size\\
+N_\theta,\ N_s & Numbers of wind-direction and wind-speed bins\\
+r & Farm radius\\
+w,\ c_1,\ c_2 & Inertia weight and acceleration coefficients of PSO\\
+\mathbf X & Layout vector $(x_1,y_1,\ldots,x_N,y_N)$\\
+\theta & Wind direction (blowing towards, CCW from east)\\
+\omega & Fraction of the budget given to Phase~1
+\end{tabular}

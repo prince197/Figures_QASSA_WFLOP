@@ -1,0 +1,14 @@
+# Items the authors must resolve before submission
+
+The automated revision cannot supply author facts or reconstruct missing measurements. This checklist separates those responsibilities from completed editing.
+
+1. **Recover the complete research archive.** Add the 36,190 original optimization records, the diagnostic outputs, original model/optimizer modules and all original analysis/check scripts. Supply an environment specification that actually runs them. Rerun the historical checks and regenerate all original tables from that archive.
+2. **Recover full-precision coordinates.** Add unrounded coordinates and their record keys for affected legacy runs, or undertake documented reruns. Verify constraints and objective replay at declared tolerances before calling the archive reproducible. Do not infer unrounded coordinates by projecting the saved rounded layouts.
+3. **Complete benchmark reliability analysis.** Decide on an all-run endpoint, apply it to the full original data, and report success uncertainty and performance together. The new Lillgrund endpoint is executable, but original benchmark records are missing.
+4. **Review inferential claims.** Decide whether to retain the approximate interval-based equivalence sensitivities. Stronger claims require calibration and appropriate dependence treatment; the revised manuscript explicitly limits population interpretation.
+5. **Confirm author details.** Existing manuscript affiliations, corresponding-author emails and names were preserved. Confirm their current correctness. Do not substitute affiliations from unrelated prior projects without author approval.
+6. **Confirm declarations.** CRediT roles, no-grant funding statement and no-conflict declaration came from the uploaded declarations file. Confirm them for every author. AI disclosure now names the ChatGPT assistance used in this revision; review the description and verify the final scientific content yourselves.
+7. **Confirm submission eligibility.** Confirm author approval, originality, concurrent-submission status, third-party/data permissions and any required statements in the actual submission system. The revised cover letter does not invent approvals. Complete a public data/code deposit and insert its real identifier only when available.
+8. **Choose any new experiments or shortening.** Normalized constraint-handling controls, stronger tuned DE/CMA-ES, null calibration, optimization under alternative evaluators and larger/full farms cannot be claimed as completed. The manuscript remains extensive; choose further shortening based on the journal's current instructions and editorial priorities.
+
+**Readiness decision:** the revised documents are technically buildable and the supplied revision records are auditable. The full scientific package is still not ready to be represented as completely reproducible or unconditionally submission-ready. Missing evidence, not language polish, is now the main blocker.

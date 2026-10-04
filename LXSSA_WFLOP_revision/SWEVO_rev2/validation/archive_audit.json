@@ -1,0 +1,125 @@
+{
+  "record_audit": {
+    "ga": {
+      "records": 2040,
+      "shards": 10,
+      "loss_identity_max_abs_error": 5.820766091346741e-11,
+      "feasible_labels": 2012,
+      "rounded_spacing_failures": 0,
+      "rounded_boundary_failures": 0,
+      "rounded_any_failures": 0,
+      "boundary_check": "checked"
+    },
+    "gahr": {
+      "records": 60,
+      "shards": 2,
+      "loss_identity_max_abs_error": 2.842170943040401e-14,
+      "feasible_labels": 60,
+      "rounded_spacing_failures": 0,
+      "rounded_boundary_failures": 0,
+      "rounded_any_failures": 0,
+      "boundary_check": "not available for Horns Rev 1"
+    },
+    "gaiea": {
+      "records": 120,
+      "shards": 2,
+      "loss_identity_max_abs_error": 5.820766091346741e-11,
+      "feasible_labels": 120,
+      "rounded_spacing_failures": 0,
+      "rounded_boundary_failures": 0,
+      "rounded_any_failures": 0,
+      "boundary_check": "checked"
+    },
+    "grad": {
+      "records": 240,
+      "shards": 40,
+      "loss_identity_max_abs_error": 6.548361852765083e-11,
+      "feasible_labels": 240,
+      "rounded_spacing_failures": 32,
+      "rounded_boundary_failures": 236,
+      "rounded_any_failures": 236,
+      "boundary_check": "checked"
+    },
+    "laplace": {
+      "records": 2160,
+      "shards": 12,
+      "loss_identity_max_abs_error": 5.820766091346741e-11,
+      "feasible_labels": 1922,
+      "rounded_spacing_failures": 5,
+      "rounded_boundary_failures": 73,
+      "rounded_any_failures": 78,
+      "boundary_check": "checked"
+    },
+    "spacing": {
+      "records": 6480,
+      "shards": 40,
+      "loss_identity_max_abs_error": 5.820766091346741e-11,
+      "feasible_labels": 4259,
+      "rounded_spacing_failures": 9,
+      "rounded_boundary_failures": 226,
+      "rounded_any_failures": 229,
+      "boundary_check": "checked"
+    },
+    "lg16": {
+      "records": 270,
+      "shards": 4,
+      "loss_identity_max_abs_error": 1.4210854715202004e-14,
+      "feasible_labels": 77,
+      "rounded_spacing_failures": 1,
+      "rounded_boundary_failures": 17,
+      "rounded_any_failures": 17,
+      "boundary_check": "checked",
+      "rounded_aep_max_abs_GWh": 3.8036481214476225e-05,
+      "largest_replay_difference_run": {
+        "algorithm": "SLSQP",
+        "seed": 13
+      },
+      "rounded_aep_errors_above_0_001_GWh": 0
+    },
+    "lg16b": {
+      "records": 270,
+      "shards": 30,
+      "loss_identity_max_abs_error": 1.7763568394002505e-14,
+      "feasible_labels": 232,
+      "rounded_spacing_failures": 10,
+      "rounded_boundary_failures": 72,
+      "rounded_any_failures": 73,
+      "boundary_check": "checked",
+      "rounded_aep_max_abs_GWh": 0.2250720044003316,
+      "largest_replay_difference_run": {
+        "algorithm": "PSOC",
+        "seed": 18
+      },
+      "rounded_aep_errors_above_0_001_GWh": 15
+    }
+  },
+  "total_records": 11640,
+  "reported_total_optimization_runs": 47830,
+  "missing_original_optimization_records": 36190,
+  "missing_modules": [
+    "authors_objective",
+    "authors_optimizers",
+    "extra_baselines",
+    "feasible_init",
+    "hornsrev_model",
+    "hybrid_lxssa_bvns",
+    "iea37_experiments",
+    "iea37_model",
+    "init_hook",
+    "mpce_experiments",
+    "mpce_inference_extra",
+    "mpce_results",
+    "original_vns",
+    "rs_vns",
+    "wflop_model"
+  ],
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "pandas": "2.2.3",
+  "limitations": [
+    "Stored-record verification only; optimizers not rerun.",
+    "Original analysis modules and primary records absent.",
+    "Legacy rounded coordinates cannot recover original full precision.",
+    "Horns Rev boundary geometry cannot be checked from supplied model files."
+  ]
+}

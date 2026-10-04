@@ -1,0 +1,94 @@
+% Shared preamble; cross references refreshed by analysis/build_swevo.sh.
+\documentclass[preprint,12pt,number]{elsarticle}
+\usepackage{lmodern}
+% numbered references [1], [2], ... (natbib numbers; manual thebibliography in optA/swevo_back.tex);
+% sort&compress gives [1-3] ranges as the cite package does in the MPCE version
+\biboptions{sort&compress}
+% A4 text block slightly larger than the elsarticle preprint default, so that the tallest generated table
+% (analysis/mpce_tab_ablation.tex) fits on a page; \emergencystretch avoids overfull lines in the contribution list
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\setlength{\emergencystretch}{1.5em}
+% elsarticle 3.3 puts a stray space after the title-page footer box ("Preprint submitted to ..."), which gives an
+% Overfull \hbox of about 2.6pt on page 1 in any document; absorb it (layout unchanged)
+\makeatletter
+\let\swevo@pprintTitle\ps@pprintTitle
+\def\ps@pprintTitle{\swevo@pprintTitle\let\swevo@oddfoot\@oddfoot
+  \def\@oddfoot{\hbox to\textwidth{\swevo@oddfoot\hss}}\let\@evenfoot\@oddfoot}
+\makeatother
+% continuous line numbers for review, starting after the title page (switched on right after \end{frontmatter};
+% numbering the elsarticle title page itself pushes its footnotes into the footer)
+\usepackage{lineno}
+\usepackage{etoolbox}
+\AfterEndEnvironment{frontmatter}{\linenumbers}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{url}
+% Numbers of the supplementary-material items cited in this file (Tables S*, Figs. S*, Sections S*), copied from
+% SWEVO_supplement.aux, so that this file compiles on its own (no xr package / xref folder needed).
+% If the numbering of the supplement changes, recompile the supplement and update these lines.
+\input{xref/supplement_labels.tex}
+
+
+\journal{Swarm and Evolutionary Computation}
+
+% Visible placeholder for author information and for numbers whose runs are still pending
+% (an empty argument, used in table cells, prints just [TBD])
+\newcommand{\TBD}[1]{\textcolor{red}{[TBD\ifx\relax#1\relax\else: #1\fi]}}
+% All numbers (formerly \N... macros from analysis/mpce_numbers*.tex) are written directly in the text below.
+% Figure from the analysis pipeline; a framed placeholder is printed while the file does not exist yet.
+% #1 width, #2 file (with extension), #3 placeholder height
+\newcommand{\pipefig}[3]{\IfFileExists{#2}{\includegraphics[width=#1]{#2}}%
+{\fbox{\parbox[c][#3][c]{\dimexpr#1-2\fboxsep-2\fboxrule\relax}{\centering\TBD{figure {\ttfamily\detokenize{#2}} not yet generated}}}}}
+% Extended SWEVO version: theorem environments and placement of generated tables by label
+\usepackage{amsthm}
+\usepackage{environ}
+\newtheorem{lemma}{Lemma}\newtheorem{definition}{Definition}\newtheorem{remark}{Remark}
+% >>>>> begin optA/sw/capture.tex
+% Capture of generated supplementary tables so that the SWEVO main text can place some of them (\SuppTable{<label>}).
+% Copied from SWEVO_supplement.tex (same macro names; no numbering changes).
+\makeatletter
+\newcount\supp@n
+\def\supp@labels{}
+\long\def\supp@getlabel#1\label#2#3\supp@stop{\def\supp@thislabel{#2}}
+\newcommand{\supp@store}{%
+  \global\advance\supp@n\@ne
+  \expandafter\supp@getlabel\BODY\label{supp-unlabelled-\the\supp@n}\supp@stop
+  \expandafter\global\expandafter\let\csname supp@body@\supp@thislabel\endcsname\BODY
+  \xdef\supp@labels{\unexpanded\expandafter{\supp@labels}\noexpand\do{\supp@thislabel}}}
+\newcommand{\CaptureSuppTables}[1]{\begingroup
+  \RenewEnviron{table}[1][]{\supp@store}\RenewEnviron{table*}[1][]{\supp@store}%
+  \input{#1}\endgroup}
+\newcommand{\SuppTable}[1]{%
+  \@ifundefined{supp@body@#1}{\par\noindent\TBD{generated table \detokenize{#1} not found}\par}{%
+    \@ifundefined{supp@used@#1}{\global\@namedef{supp@used@#1}{}%
+      \begin{table}[!htbp]\@nameuse{supp@body@#1}\end{table}}{}}}
+\newcommand{\SuppTableOpt}[1]{\@ifundefined{supp@body@#1}{}{\SuppTable{#1}}}
+\newcommand{\IfSuppTable}[3]{\@ifundefined{supp@body@#1}{#3}{#2}}
+\newcommand{\SuppOmit}[1]{\global\@namedef{supp@used@#1}{}}
+% \SuppTableNote{<label>}{<text>}: append a note below a captured table (inside its float); no-op if absent
+\newcommand{\SuppTableNote}[2]{\@ifundefined{supp@body@#1}{}{%
+  \expandafter\g@addto@macro\csname supp@body@#1\endcsname{\par\smallskip{\footnotesize\raggedright #2\par}}}}
+\newif\ifsupp@left
+\newcommand{\IfSuppTablesLeft}[1]{\global\supp@leftfalse
+  \def\do##1{\@ifundefined{supp@used@##1}{\global\supp@lefttrue}{}}\supp@labels
+  \ifsupp@left #1\fi}
+\newcommand{\SuppRemainingTables}{\def\do##1{\SuppTable{##1}}\supp@labels}
+% \SuppTableAddLabel{<label>}{<alias>}: give a captured table a second label (e.g. the name under which a table moved
+% from the main text refers to it); no-op if the table is absent
+\newcommand{\SuppTableAddLabel}[2]{\@ifundefined{supp@body@#1}{}{%
+  \expandafter\g@addto@macro\csname supp@body@#1\endcsname{\label{#2}}}}
+\makeatother
+
+% <<<<< end optA/sw/capture.tex
+% [flattened: removed \CaptureSuppTables{analysis/mpce_supplementary.tex}]
+% Proposition environment used in optA/04_methods.tex (which also defines it, guarded, for the IEEEtran version)
+\makeatletter\@ifundefined{proposition}{\newtheorem{proposition}{Proposition}}{}\makeatother
+
+

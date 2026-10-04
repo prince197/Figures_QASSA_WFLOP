@@ -1,0 +1,52 @@
+\begin{table}[!htbp]
+\centering
+\caption{Lillgrund reliability and conditional AEP from the supplied run records.}
+\label{tab:archive-reliability}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{3}{c}{6,030 evaluations} & \multicolumn{3}{c}{30,030 evaluations} \\
+Method & Feas. & 95\% CI & Mean AEP & Feas. & 95\% CI & Mean AEP \\
+\midrule
+PSO-VNS & 17/30 & [0.39, 0.73] & 113.074 & 30/30 & [0.89, 1.00] & 114.592 \\
+MS-SLSQP & 30/30 & [0.89, 1.00] & 112.865 & 30/30 & [0.89, 1.00] & 113.452 \\
+PSO & 0/30 & [0.00, 0.11] & -- & 19/30 & [0.46, 0.78] & 113.615 \\
+VNS & 8/30 & [0.14, 0.44] & 112.883 & 30/30 & [0.89, 1.00] & 114.194 \\
+SSA-VNS & 13/30 & [0.27, 0.61] & 112.571 & 29/30 & [0.83, 0.99] & 114.005 \\
+RSD-VNS & 6/30 & [0.10, 0.37] & 112.582 & 27/30 & [0.74, 0.97] & 113.217 \\
+SSA & 3/30 & [0.03, 0.26] & 111.479 & 28/30 & [0.79, 0.98] & 112.139 \\
+LX-SSA & 0/30 & [0.00, 0.11] & -- & 18/30 & [0.42, 0.75] & 110.706 \\
+DE & 0/30 & [0.00, 0.11] & -- & 21/30 & [0.52, 0.83] & 114.007 \\
+\bottomrule
+\end{tabular}
+\par\smallskip\parbox{\textwidth}{\footnotesize Feas.: archived feasible labels; CI: marginal Wilson interval for success probability; mean AEP: conditional on those labels, GWh/yr. These intervals concern independent seeds at this block, not variation over sites. Rounded archival coordinates do not independently reproduce all labels; Section~\ref{sec:archive-precision}.}
+\end{table}
+\begin{table}[!htbp]
+\centering
+\caption{All-run paired outcomes for PSO-VNS on Lillgrund, using the archived feasibility labels.}
+\label{tab:archive-paired}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{rlcccc}
+\toprule
+Budget & Compared with & W/T/L & Superiority & 95\% CI & Holm $p$ \\
+\midrule
+6,030 & VNS & 16/10/4 & 0.700 & [0.567, 0.817] & 0.0827 \\
+6,030 & DE & 17/13/0 & 0.783 & [0.700, 0.867] & 0.000168 \\
+6,030 & LX-SSA & 17/13/0 & 0.783 & [0.700, 0.867] & 0.000168 \\
+6,030 & PSO & 17/13/0 & 0.783 & [0.700, 0.867] & 0.000168 \\
+6,030 & RSD-VNS & 15/11/4 & 0.683 & [0.550, 0.800] & 0.0967 \\
+6,030 & MS-SLSQP & 10/0/20 & 0.333 & [0.167, 0.500] & 0.395 \\
+6,030 & SSA & 17/11/2 & 0.750 & [0.633, 0.850] & 0.00583 \\
+6,030 & SSA-VNS & 15/8/7 & 0.633 & [0.483, 0.767] & 0.395 \\
+30,030 & VNS & 20/0/10 & 0.667 & [0.500, 0.833] & 0.395 \\
+30,030 & DE & 22/0/8 & 0.733 & [0.567, 0.900] & 0.0967 \\
+30,030 & LX-SSA & 30/0/0 & 1.000 & [1.000, 1.000] & 2.98e-08 \\
+30,030 & PSO & 28/0/2 & 0.933 & [0.833, 1.000] & 1.22e-05 \\
+30,030 & RSD-VNS & 27/0/3 & 0.900 & [0.767, 1.000] & 0.000101 \\
+30,030 & MS-SLSQP & 28/0/2 & 0.933 & [0.833, 1.000] & 1.22e-05 \\
+30,030 & SSA & 29/0/1 & 0.967 & [0.900, 1.000] & 8.66e-07 \\
+30,030 & SSA-VNS & 19/0/11 & 0.633 & [0.467, 0.800] & 0.395 \\
+\bottomrule
+\end{tabular}
+\par\smallskip\parbox{\textwidth}{\footnotesize A feasible run beats an infeasible run; if both are feasible, larger AEP wins (ties within $10^{-9}$ GWh); two infeasible runs tie. Superiority is $(W+T/2)/30$. CI: 20,000 paired-seed percentile bootstrap samples, seed $20261004+B$. Two-sided exact sign tests exclude ties; Holm correction covers all 16 comparisons in this table. This additional endpoint does not replace the original signed-rank tests and gives no ordering between failed layouts.}
+\end{table}

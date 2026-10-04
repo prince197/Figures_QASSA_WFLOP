@@ -1,0 +1,47 @@
+{
+  "raw_original_csv_files_unchanged": 140,
+  "python_sources_syntax": "PASS",
+  "documents": {
+    "SWEVO_cover_letter.pdf": {
+      "pages": 1,
+      "no_visible_placeholders": true,
+      "sha256": "9dfb2e7db1cd1ee0280ea777a41add518e751b658ff5abae7dd65cd3474ea313"
+    },
+    "SWEVO_declarations.pdf": {
+      "pages": 1,
+      "no_visible_placeholders": true,
+      "sha256": "937707076161b00eb7adf4573a50cfd87d3c0fa25804878b38806327495e5f2b"
+    },
+    "SWEVO_manuscript.pdf": {
+      "pages": 48,
+      "no_visible_placeholders": true,
+      "sha256": "89d2c877ace8646a3c8ef37c23f4455b255fedc73e3778bc9d3d2d28a2aa527b"
+    },
+    "SWEVO_manuscript_full.pdf": {
+      "pages": 48,
+      "no_visible_placeholders": true,
+      "sha256": "d0e0e7481d97576698eb084240d9fdb9fccdd533694ba356a2493e1ce6df777f"
+    },
+    "SWEVO_supplement.pdf": {
+      "pages": 58,
+      "no_visible_placeholders": true,
+      "sha256": "94fd2eaea5af3edaa41edaedb256688dd5cb14248a0c711ebf05c4efdd42589d"
+    }
+  },
+  "main_full_page_text_identical": true,
+  "final_tex_logs": {
+    "SWEVO_manuscript_full.log": [],
+    "SWEVO_cover_letter.log": [],
+    "SWEVO_manuscript.log": [],
+    "SWEVO_supplement.log": [],
+    "SWEVO_declarations.log": []
+  },
+  "full_research_reproduction": "BLOCKED by missing original records/modules",
+  "visual_qa": {
+    "main_pages_rendered_and_inspected": 48,
+    "supplement_pages_rendered_and_inspected": 58,
+    "report_pages_rendered_and_inspected": 6,
+    "cover_letter_and_declarations_inspected": true,
+    "result": "PASS: no observed clipping, overlap or missing figures; dense original tables remain a readability limitation"
+  }
+}

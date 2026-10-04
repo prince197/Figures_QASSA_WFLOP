@@ -1,0 +1,1025 @@
+\documentclass[10pt]{article}
+\usepackage{lmodern}
+% Supplementary material of SWEVO_manuscript.tex. Tables, figures, sections, algorithms and equations are numbered
+% S1, S2, ...; the main text refers to them through xr (\externaldocument), so the numbering always matches.
+% The generated tables come from analysis/mpce_supplementary.tex (written by analysis/mpce_results.py). That file is
+% read once by \CaptureSuppTables, which stores every table under its \label; \SuppTable{<label>} then places the
+% table in the section it belongs to. A generated table that is not placed explicitly is printed at the end
+% ("Further Generated Tables"), so no table of the pipeline can be lost; a placed label that the pipeline no
+% longer produces is shown as a red TBD box. \SuppTableOpt{<label>} places a table only if the pipeline produces it
+% (no box otherwise), \IfSuppTable{<label>}{<yes>}{<no>} typesets text depending on it, and \SuppOmit{<label>}
+% deliberately leaves a generated table out (it is then not printed at the end either).
+% Numbers in the text come only from the \N... macros (analysis/mpce_numbers.tex, then the Phase-4 placeholders),
+% loaded exactly as in the main file.
+% Build: sh analysis/build_swevo.sh (compiles this file and the main text alternately).
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{environ}
+\usepackage[section]{placeins}
+% Numbers of the main-text items cited here, copied from SWEVO_manuscript_full.aux so that this file compiles on its own
+% (no xr / xref needed, e.g. on Overleaf). Update these lines if the numbering of the main text changes.
+\input{xref/manuscript_labels.tex}
+
+
+\newcommand{\TBD}[1]{\textcolor{red}{[TBD\ifx\relax#1\relax\else: #1\fi]}}
+% \BayEq{\NBay...} in math mode: "= value" for a number, "< 0.01" / "> 0.99" (no "=") for a bound given as \ensuremath{...}
+\makeatletter
+\newcommand{\BayEq}[1]{\expandafter\supp@bayeq#1\@nil}
+\def\supp@bayeq#1#2\@nil{\ifx#1\ensuremath #2\else =#1#2\fi}
+\makeatother
+% number macros, loaded in the same order as in SWEVO_manuscript.tex (a macro whose data are missing prints [TBD])
+\input{analysis/mpce_numbers.tex}
+\input{analysis/mpce_numbers_extra.tex}
+\input{analysis/mpce_numbers_diag.tex}
+\input{analysis/mpce_numbers_dir.tex}
+\input{analysis/mpce_numbers_csweep.tex}
+\input{optA/phase4_macros_stub.tex}
+\input{optA/phase6_macros_stub.tex}
+% a missing or empty (0-byte) figure file gives a TBD box instead of a fatal pdfTeX error
+\makeatletter
+\newcommand{\pipefig}[3]{\ifnum0\pdffilesize{#2}>0 \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
+{\includegraphics[width=#1]{#2}}%
+{\fbox{\parbox[c][#3][c]{\dimexpr#1-2\fboxsep-2\fboxrule\relax}{\centering\TBD{figure {\ttfamily\detokenize{#2}} not yet generated}}}}}
+\makeatother
+
+% --- placement of the generated tables by label (see the header comment) ---
+\makeatletter
+\newcount\supp@n
+\def\supp@labels{}
+\long\def\supp@getlabel#1\label#2#3\supp@stop{\def\supp@thislabel{#2}}
+\newcommand{\supp@store}{%
+  \global\advance\supp@n\@ne
+  \expandafter\supp@getlabel\BODY\label{supp-unlabelled-\the\supp@n}\supp@stop
+  \expandafter\global\expandafter\let\csname supp@body@\supp@thislabel\endcsname\BODY
+  \xdef\supp@labels{\unexpanded\expandafter{\supp@labels}\noexpand\do{\supp@thislabel}}}
+\newcommand{\CaptureSuppTables}[1]{\begingroup
+  \RenewEnviron{table}[1][]{\supp@store}\RenewEnviron{table*}[1][]{\supp@store}%
+  \input{#1}\endgroup}
+\newcommand{\SuppTable}[1]{%
+  \@ifundefined{supp@body@#1}{\par\noindent\TBD{generated table \detokenize{#1} not found}\par}{%
+    \@ifundefined{supp@used@#1}{\global\@namedef{supp@used@#1}{}%
+      \begin{table}[!htbp]\@nameuse{supp@body@#1}\end{table}}{}}}
+\newcommand{\SuppTableOpt}[1]{\@ifundefined{supp@body@#1}{}{\SuppTable{#1}}}
+\newcommand{\IfSuppTable}[3]{\@ifundefined{supp@body@#1}{#3}{#2}}
+\newcommand{\SuppOmit}[1]{\global\@namedef{supp@used@#1}{}}
+% \SuppTableNote{<label>}{<text>}: append a note below a captured table (inside its float); no-op if absent
+\newcommand{\SuppTableNote}[2]{\@ifundefined{supp@body@#1}{}{%
+  \expandafter\g@addto@macro\csname supp@body@#1\endcsname{\par\smallskip{\footnotesize\raggedright #2\par}}}}
+\newif\ifsupp@left
+\newcommand{\IfSuppTablesLeft}[1]{\global\supp@leftfalse
+  \def\do##1{\@ifundefined{supp@used@##1}{\global\supp@lefttrue}{}}\supp@labels
+  \ifsupp@left #1\fi}
+\newcommand{\SuppRemainingTables}{\def\do##1{\SuppTable{##1}}\supp@labels}
+% \SuppTableAddLabel{<label>}{<alias>}: give a captured table a second label (e.g. the name under which a table moved
+% from the main text refers to it); no-op if the table is absent
+\newcommand{\SuppTableAddLabel}[2]{\@ifundefined{supp@body@#1}{}{%
+  \expandafter\g@addto@macro\csname supp@body@#1\endcsname{\label{#2}}}}
+% \SuppMainAlias{<label>}: a generated caption refers to <label>, which is placed in the main text (optA/sw/moved.md) and
+% not in this document; \ref{<label>} then prints the main-text number (as \ref{M-<label>}; no label is defined here)
+\newcommand{\SuppMainAlias}[1]{\expandafter\let\csname r@#1\expandafter\endcsname\csname r@M-#1\endcsname}
+\makeatother
+
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thealgorithm}{S\arabic{algorithm}}
+\renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\setcounter{totalnumber}{6}\setcounter{topnumber}{4}\renewcommand{\topfraction}{0.95}\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.6}
+
+\title{Supplementary Material for:\\ Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization}
+\author{Prince Solanki, Pulkit Dwivedi, Vanita Garg, and Vinay Shukla}
+\date{}
+
+\begin{document}
+\maketitle
+\CaptureSuppTables{analysis/mpce_supplementary.tex}
+% The two summary tables below average over the six largest cases AND the Horns Rev 1 block, whereas main
+% Table feasbudget and the main text use the six largest cases only; to avoid two different sets of the same
+% quantities they are left out (R8-3). The per-case tables (tab:feasinit-cases, tab:budget-cases) are kept.
+\SuppOmit{tab:feasinit}
+\SuppOmit{tab:budget}
+
+\noindent Tables, figures, sections, algorithms and equations of this document are numbered S1, S2, \ldots; references without the prefix S (e.g., Table~\ref{M-tab:friedman68} or \eqref{M-eq:penalty}) point to the main text. The sections follow the order of the main text: details of the evaluation protocol and of the implementation (Section~\ref{sec:S-protocol}), of the effect of the baseline setting and the main comparison (Section~\ref{sec:S-tables}), of the component analysis, the practical equivalence and the robustness of the statistical conclusions (Section~\ref{sec:S-ablation}), of the tests beyond the benchmark (Section~\ref{sec:S-beyond}) and of the sensitivity to the modeling assumptions, including the direction resolution of the wind roses (Section~\ref{sec:S-robust}), followed by the theoretical details (Section~\ref{sec:S-theory}), the algorithm diagnostics (Section~\ref{sec:S-diag}), a note on published Kusiak--Song results (Section~\ref{sec:S-literature}), a map from each result to the script that produces it (Section~\ref{sec:S-repro}) and the five experiments added in the revision: an ablation of the Laplace step of LX-SSA, a real-coded GA, a re-optimization at minimum spacings $5D$ and $6D$, exact-gradient baselines on IEA37 and a second site, a Lillgrund block (Section~\ref{sec:S-rev-lap}). Unless stated otherwise, all results are based on 30 seed-paired runs of 6,030 evaluations (objective calls, including the initial population and, for MS-SLSQP, the finite-difference gradient calls) with random initialization; the method names are those of the main text, and PSO denotes the constriction setting~\eqref{M-eq:constriction} unless the old setting is named. All Horns Rev~1 results use the 5$^\circ$ direction binning of Section~\ref{sec:S-hrmodel}. The results hold for the discretized wind roses of the benchmark (24 bins of 15$^\circ$) and of Horns Rev~1 (5$^\circ$ bins); Section~\ref{sec:S-direction} re-evaluates the final layouts with 1$^\circ$ bins. All tables of Sections~\ref{sec:S-tables}--\ref{sec:S-robust} are generated from the published run data by \texttt{analysis/mpce\_results.py}, except those of Section~\ref{sec:S-inference} (\texttt{analysis/mpce\_inference\_extra.py}), of Section~\ref{sec:S-csweep} (\texttt{analysis/mpce\_csweep.py}) and of Section~\ref{sec:S-direction} (\texttt{analysis/mpce\_direction.py}); the diagnostics of Section~\ref{sec:S-diag} come from instrumented reruns (\texttt{analysis/mpce\_diagnostics.py}), and every number of Section~\ref{sec:S-theory} is recomputed by \texttt{analysis/make\_theory\_figures.py}.
+
+\section{Evaluation Protocol and Implementation Details}
+\label{sec:S-protocol}
+\label{sec:S-impl}
+This section gives the data, the pseudocode and the settings needed to reproduce the protocol of Section~\ref{M-sec:setup}: the two wind data sets of the 68 benchmark cases, the salp-swarm methods compared as Phase-1 alternatives in the component analysis, the details of the ranking and the tests (Sections~\ref{sec:S-wind}--\ref{sec:S-stats}), and the implementation details that the main text does not state: iteration counts, MS-SLSQP, the feasibility-preserving initialization, the Horns Rev~1 model and the feasibility tolerance (Sections~\ref{sec:S-iter}--\ref{sec:S-tol}). All settings are those of the code in \texttt{analysis/} (Section~\ref{sec:S-repro}).
+
+\subsection{Wind Data}
+\label{sec:S-wind}
+Table~\ref{tab:S-wind} lists the two wind data sets of the Kusiak--Song benchmark~\cite{Kusiak2010,Bansal2017}.
+\begin{table}[!htb]
+\centering
+\caption{Wind Data Sets I and II: probability $p_l$ of direction bin $l$ ($[15(l-1),15l)^\circ$, direction the wind blows towards, counter-clockwise from east) and Weibull scale $\psi$; $\zeta=2$ in all bins. The most probable bin is $l=7$ (90$^\circ$--105$^\circ$ towards, i.e., wind from 165$^\circ$--180$^\circ$ in the meteorological convention $\theta_{\rm met}=270^\circ-\theta$) for Data Set~I and $l=13$ (180$^\circ$--195$^\circ$ towards, i.e., wind from 75$^\circ$--90$^\circ$) for Data Set~II.}
+\label{tab:S-wind}
+\scriptsize\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{l*{12}{c}}
+\toprule
+Bin $l$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\
+\midrule
+DS I: $p_l$ ($\psi=13$) & 0.000 & 0.010 & 0.010 & 0.010 & 0.010 & 0.200 & 0.600 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 \\
+DS II: $\psi$ & 7.0 & 5.0 & 5.0 & 5.0 & 5.0 & 4.0 & 5.0 & 6.0 & 7.0 & 7.0 & 8.0 & 9.5 \\
+DS II: $p_l$ & 0.0002 & 0.0080 & 0.0227 & 0.0242 & 0.0225 & 0.0339 & 0.0423 & 0.0290 & 0.0617 & 0.0813 & 0.0994 & 0.1394 \\
+\midrule
+Bin $l$ & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 & 21 & 22 & 23 & 24 \\
+\midrule
+DS I: $p_l$ ($\psi=13$) & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & 0.010 & 0.000 \\
+DS II: $\psi$ & 10.0 & 8.5 & 8.5 & 6.5 & 4.6 & 2.6 & 8.0 & 5.0 & 6.4 & 5.2 & 4.5 & 3.9 \\
+DS II: $p_l$ & 0.1839 & 0.1115 & 0.0765 & 0.0080 & 0.0051 & 0.0019 & 0.0012 & 0.0010 & 0.0017 & 0.0031 & 0.0097 & 0.0317 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Salp Swarm Algorithm and Its Laplacian Variant}
+\label{sec:S-ssa-alg}
+Algorithm~\ref{alg:S-ssa} gives the pseudocode of SSA~\cite{Mirjalili2017} and LX-SSA~\cite{Solanki2023} as described in Section~\ref{M-sec:ssa} of the main text, as used in Phase~1 of SSA-VNS and LX-SSA-VNS and as stand-alone methods; the evaluations per iteration are derived there, and the resulting iteration counts are given in Section~\ref{sec:S-iter}.
+
+\begin{algorithm}[!htb]
+\caption{SSA and LX-SSA (lines marked LX: LX-SSA only); evaluations per line in brackets}
+\label{alg:S-ssa}
+\begin{algorithmic}[1]
+\State Draw and evaluate $N_p$ salps; sort them by $F_p$ and set the best as food source $\mathbf H$. \Comment{[$N_p$]}
+\For{$t=1$ to $T$}
+    \State Update $\xi_1=2\exp[-(4t/T)^2]$.
+    \For{salp $i=1,\ldots,N_p$}
+        \If{$i\le N_p/2$}
+            \State Update leader $i$ using \eqref{M-eq:leader} (new position $\tilde{\mathbf X}^i$).
+        \Else
+            \State Form the follower candidate $\mathbf Z^i=\tfrac{1}{2}(\mathbf X^i+\tilde{\mathbf X}^{i-1})$ and set $\tilde{\mathbf X}^i\gets\mathbf Z^i$.
+            \State LX: form $\mathbf Y^i$ using \eqref{M-eq:laplace}, box-repair $\mathbf Y^i$ and $\mathbf Z^i$, evaluate both and set $\tilde{\mathbf X}^i$ to the better one. \Comment{[2 per follower]}
+        \EndIf
+    \EndFor
+    \State Box-repair $\tilde{\mathbf X}$, set $\mathbf X\gets\tilde{\mathbf X}$, evaluate $F_p$ for all salps, sort them, and update $\mathbf H$. \Comment{[$N_p$]}
+\EndFor
+\State \Return $\mathbf H$.
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Ranking and Test Details}
+\label{sec:S-stats}
+For the paired run-level tests, a run is scored by a prioritized composite endpoint, feasibility first and then the benchmark objective: a feasible run is scored by its objective, an infeasible run below every feasible run, and infeasible runs are ordered among themselves by their minimum spacing (larger is better; boundary violations are not used). Paired differences with $\lvert d\rvert\le10^{-9}$ are treated as zero and dropped, both in the Wilcoxon signed-rank test and in the rank-biserial correlation $r_{\rm rb}$. Case means are rounded to $10^{-6}$ objective units before ranking, so that exact ties (e.g., all methods at the wake-free optimum for $N=2$) are not broken by floating-point noise. Holm's correction for the run-level tests is applied within each case over the comparisons of one table; the main-comparison table (Table~\ref{M-tab:wtl}) and the ablation table (Table~\ref{M-tab:ablation}) are different families, so the same pair of methods (e.g., PSO-VNS vs.\ PSO) can have slightly different W/T/L tallies in the two tables. The W/T/L counts are descriptive tallies. In the case-mean Wilcoxon test, a case in which only one of the two methods has at least 15 feasible runs enters as a difference in its favor that is larger than every observed difference, and a case in which neither has is dropped (Section~\ref{M-sec:setup}). The 68 cases are not independent (nested $N$ within six farm and wind combinations), so all $p$ values describe this benchmark, not a population of farms.
+
+\subsection{Iteration Counts and Phase-1 Budgets}
+\label{sec:S-iter}
+With $N_p=30$ and $B=6{,}030$, stand-alone PSO, SSA and DE run for $(B-N_p)/N_p=200$ iterations and LX-SSA for $(B-N_p)/(2N_p)=100$. A hybrid with split $\omega$ runs $T_1=\operatorname{round}((\omega B-N_p)/c)$ Phase-1 iterations, where $c$ is the number of evaluations per iteration ($N_p$ for PSO and SSA, $2N_p$ for LX-SSA) and Python's round-half-to-even rule applies; for $\omega=0.5$ the argument is $99.5$ for PSO and SSA, which is rounded to $T_1=100$ (3,030 evaluations), and LX-SSA gets $T_1=50$ (3,030 evaluations). For the split study, $\omega=0.25$ gives 49 PSO iterations (1,500 evaluations), $\omega=0.75$ gives 150 (4,530 evaluations) and $\omega=0.9$ gives 180 (5,430 evaluations). RS-VNS evaluates $\operatorname{round}(\omega B)=3{,}015$ random layouts (including the seeded initial population of 30), about the same effort as the 3,030 Phase-1 evaluations of the swarm hybrids; its random layouts, like all random initial layouts, are uniform in the bounding square $[-r,r]^{2N}$, so all $N$ turbines lie inside the circle only with probability $(\pi/4)^N$, and a sample that also satisfies the spacing constraint is far rarer (Table~\ref{tab:S-th-box}). Both random-sampling controls switch to VNS after these 3,015 evaluations (the swarm hybrids after 3,030). The disc-sampling control RSD-VNS evaluates the same 3,015 layouts; only its 2,985 layouts after the common initial population are drawn uniformly in the farm disc instead (Section~\ref{sec:S-ablation}). DE/rand/1/bin (scale factor 0.5, crossover rate 0.9) clips the mutant to the box before crossover and replaces a member immediately when its trial vector is better (asynchronous one-to-one selection).
+
+\subsection{MS-SLSQP}
+\label{sec:S-slsqp}
+MS-SLSQP does not minimize $F_p$: it minimizes the wake loss (without penalty) under explicit inequality constraints, using SciPy's SLSQP~\cite{Kraft1988} with the bounds $[-r,r]$ on every coordinate, at most 200 iterations per start, $\mathrm{ftol}=10^{-9}$ and forward-difference gradients with a step of 1~m. The constraints are scaled, $(\ell_{ij}^2-\ell_{\min}^2)/\ell_{\min}^2\ge0$ for every pair and $(r^2-x_i^2-y_i^2)/r^2\ge0$ for every turbine (for Horns Rev~1, the signed distance of every turbine to every edge of the parallelogram divided by the half-width of the search box, 943~m). The 30 initial layouts are evaluated with $F_p$ and used as starts in increasing order of $F_p$; after the 30 initial layouts, every further start is a new random layout drawn from the same generator (uniform in the box, or feasible under the feasibility-preserving initialization), until the budget is used up. Every objective call, including the finite-difference calls, counts as an evaluation. MS-SLSQP returns the best evaluated layout (by wake loss) whose scaled constraints are all $\ge-10^{-9}$; the reported feasibility of this layout is then judged with the common tolerance of $10^{-6}$~m (Section~\ref{M-sec:setup}). These are standard, untuned settings; since the top-hat Jensen wake makes the wake loss discontinuous in the coordinates, finite-difference gradients are unreliable, which handicaps MS-SLSQP on this benchmark.
+
+\subsection{Feasibility-Preserving Initialization}
+\label{sec:S-feasinit-impl}
+Algorithm~\ref{alg:S-feasinit} generates each of the $N_p$ initial layouts of the feasible-start study (Section~\ref{M-sec:feasinit}); it uses no objective evaluations, so it does not count toward the budget. With spacing $s=\ell_{\min}$, it minimizes the smooth packing penalty
+\begin{equation}
+P(\mathbf z)=\frac{1}{\tilde s^{4}}\Bigl[\tfrac12\sum_{i<j}\max\bigl(0,\tilde s^2-\ell_{ij}^2\bigr)^2+\sum_{i}b_i\Bigr],\qquad \tilde s=1.0005\,s,
+\label{eq:S-packing}
+\end{equation}
+with $b_i=\max(0,x_i^2+y_i^2-\tilde r^2)^2$, $\tilde r=(1-10^{-7})\,r$, for the circular farms and $b_i=\tilde s^2\sum_e\max(0,\delta_{ie})^2$, with $\delta_{ie}$ the signed distance of turbine $i$ outside edge $e$, for the Horns Rev~1 parallelogram. The slightly inflated spacing and shrunken radius leave a margin, so that the result passes the feasibility test. All random draws come from the seeded global generator, so the runs of all methods with the same seed start from the same feasible initial population and stay paired; under this initialization the later random restarts of MS-SLSQP also use Algorithm~\ref{alg:S-feasinit}. RS-VNS and RSD-VNS were not run with this initialization, since they would need one packing solve for each of their 3,015 random layouts.
+\begin{algorithm}[!htb]
+\caption{Feasibility-preserving initialization of one layout ($N$ turbines, spacing $s$, circle of radius $r$ or convex polygon)}
+\label{alg:S-feasinit}
+\begin{algorithmic}[1]
+\For{try $=1$ to 200}
+    \State Draw $N$ positions uniformly in the site (circle: uniform in the disc; polygon: rejection sampling from its bounding box).
+    \State Minimize $P$~\eqref{eq:S-packing} from these positions with L-BFGS-B (analytic gradient; at most 3,000 iterations, $\mathrm{ftol}=10^{-15}$, $\mathrm{gtol}=10^{-12}$).
+    \State Circle: move every turbine that lies outside the circle radially back onto it.
+    \If{every pairwise distance is $\ge s-10^{-6}$~m and every turbine lies within $10^{-6}$~m of the site}
+        \State \Return the layout.
+    \EndIf
+\EndFor
+\State Stop with an error.
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Horns Rev~1 Model}
+\label{sec:S-hrmodel}
+The Horns Rev~1 block (Section~\ref{M-sec:hornsrev-site}) uses the V80 power and thrust curves and the 12-sector Weibull wind climate of PyWake's Horns Rev~1 example~\cite{PyWake}, with the sector frequencies normalized to one. The boundary is the parallelogram through the four corner turbines of the installed 16-turbine block, enlarged by 0.1\% about the centre of the block so that the installed turbines (integer coordinates) lie inside it; in $F_p$~\eqref{M-eq:penalty}, the boundary violation of a turbine is its distance (m) outside the parallelogram, and the spacing violation is $\ell_{\min}-\ell_{ij}$ (m) with $\ell_{\min}=4D=320$~m. The search box is the square of half-width 943~m (the largest absolute coordinate of the parallelogram) centred on the block; the same half-width is the $r$ of the VNS radii. The wake model is the Jensen top-hat wake with $K=0.04$, a hub-centre in-wake test (turbine $i$ is waked by $j$ if it lies downstream of $j$ and within $R+Kx$ of its axis, where $x$ is the downstream distance; there is no rotor-overlap fraction), the thrust coefficient at the free-stream speed (which gives a somewhat lower wake loss than PyWake; Section~\ref{sec:S-hr16}) and root-sum-square superposition. The wind speed is discretized in 1-m/s bins centred at 3, 4, \ldots, 25~m/s, each with the Weibull probability of its $\pm0.5$~m/s interval. The wind direction is discretized in 5$^\circ$ bins centred at 2.5$^\circ$, 7.5$^\circ$, \ldots, 357.5$^\circ$ (meteorological convention); every 30$^\circ$ sector (centred at 0$^\circ$, 30$^\circ$, \ldots, 330$^\circ$) contains exactly six bins, each carrying the Weibull parameters of its sector and one sixth of its frequency.
+
+\emph{Direction binning.} Bins centred at 0$^\circ$, 5$^\circ$, \ldots, 355$^\circ$ and assigned to sectors by rounding half to even would give the sectors seven and five bins alternately, with frequencies summing to 1.003; the binning above gives every sector six bins and frequencies summing to one. All Horns Rev~1 runs (all methods, budgets and initializations), the installed and wake-free AEP values and all Horns Rev~1 results in the main text and in this document use this binning. The check of the model against PyWake is described in Section~\ref{sec:S-hr16}.
+
+\subsection{Feasibility Tolerance}
+\label{sec:S-tol}
+The penalty $F_p$ treats any positive violation as infeasible, whereas every reported feasibility (final layouts, convergence curves, ranking rule) uses the tolerance of $10^{-6}$~m on both the spacing and the boundary, in all studies. Because the penalty term is $(1+\mu g)^2$ with $\mu=10^{10}$, the comparison of $F_p$ values is a feasibility-first rule only for violations above $(\sqrt{L}-1)/\mu$, where $L$ is the wake loss of the feasible layout compared with; for the benchmark cases this is at most $4.6\times10^{-8}$ (m for the spacing, m$^2$ for the boundary; Lemma~\ref{lem:S-feas-improve}). A smaller violation adds little to $F_p$ and can beat a feasible layout. Conversely, violations between about $5\cdot10^{-8}$ and $10^{-6}$~m are heavily penalized in $F_p$ but counted as feasible in the reporting; the penalty's effective tolerance is thus much stricter than the reporting tolerance. % CHECK (manual): (sqrt(15 x 14045.74) - 1)/1e10 = 4.58e-8
+
+\section{Baseline Setting and Main Comparison: Details}
+\label{sec:S-tables}
+This section documents the runs behind the effect of the baseline setting (Section~\ref{M-sec:psosetting}) and gives the per-case results, the full case-level statistics, the coordinates of the best layouts and further figures of the main comparison of the eight methods (Section~\ref{M-sec:overall}).
+
+\subsection{Old and Corrected PSO Setting}
+\label{sec:S-psosetting}
+Table~\ref{M-tab:baseline} ranks the eight-method pool of a preliminary, unpublished comparison of ours (LX-SSA-VNS, SSA-VNS, LX-SSA, SSA, PSO, DE, VNS and MS-SLSQP) twice: once with PSO in the \emph{old setting} $w=0.7$, $c_1=c_2=2$, and once with the \emph{corrected} constriction setting~\eqref{M-eq:constriction} used for PSO everywhere else in this paper. The old setting satisfies the order-1 (mean) stability condition but violates the order-2 (variance) condition~\eqref{M-eq:poli} of~\cite{Poli2009} ($c_1+c_2=4$ against the bound 3.50 for $w=0.7$), so that, under stagnation and without bounds, the second moments of the particle positions are unbounded (Proposition~\ref{prop:S-settings}). Both conditions are derived under stagnation and for an unbounded search space, and in our code the velocities are kept when a position is clipped to the box (Lemma~\ref{lem:S-clip}); the old setting is run without velocity clamping. The instrumented runs of Section~\ref{sec:S-diag-pso} show what happens in practice: the swarm of the old setting contracts much less and moves faster, clips more coordinates and has far fewer feasible particle evaluations late in the run (\NDFeasPartOld\% against \NDFeasPartNew\% in iterations 101--200), and it is feasible in only \NOldPSOFeas\% of its runs (Section~\ref{M-sec:psosetting}); its infeasible final layouts mostly violate only the spacing constraint (Table~\ref{tab:D-psodyn}). Section~\ref{sec:S-csweep} varies the coefficients across the order-2 boundary and the bound handling. % CHECK-DIAG [D03]-[D06]
+ The old-setting runs come from the PSO code of that preliminary comparison (\texttt{analysis/authors\_optimizers.py}, run by \texttt{analysis/full\_grid\_experiments.py}); the corrected runs use the same code, in which only the three coefficients are changed. Both settings thus share the population of 30, the 200 iterations, the zero initial velocities, the box repair and the immediate update of the personal and global bests, and both are run on the same 68 cases with the same penalized objective~\eqref{M-eq:penalty}, the same budget of 6,030 evaluations and the same seeds 1--30. Because every optimizer draws its initial population first after seeding, a run with the old setting starts from the same initial population as the run with the corrected setting and as the runs of all other methods with the same seed, so the comparison of the two settings is seed-paired. The two columns of Table~\ref{M-tab:baseline} share the runs of all methods except PSO and use the same feasibility-aware ranking rule (Table~\ref{M-tab:friedman68}); every change in the ranking therefore comes from the PSO setting alone. The old setting was run only on the 68 benchmark cases at 6,030 evaluations (and in the coefficient sweep of Section~\ref{sec:S-csweep}), so the change in the ranking is shown at this budget only. At larger budgets the ranking changes: at 120,030 evaluations SSA-VNS has a better average rank on the six largest cases than PSO (\NBudRankSSAVNSOneTwentyK{} vs.\ \NBudRankPSOOneTwentyK; Section~\ref{M-sec:budget}). All other results of the paper use the corrected setting.\IfSuppTable{tab:baseline-cases}{ Table~\ref{tab:baseline-cases} gives the per-case comparison of the two settings.}{}
+\SuppTableOpt{tab:baseline-cases}
+
+\FloatBarrier
+\subsection{Coefficient Sweep and Bound Handling}
+\label{sec:S-csweep}
+The comparison of two settings cannot show whether the order-2 boundary marks where this PSO fails, nor separate the step size from the bound handling. Stand-alone PSO was therefore run with $w=0.7$ and $c_1=c_2=c$ from 1.2 to 2.0 on the \NSCases{} cases of the split study $\times$ \NSSeeds{} seeds (\NSRuns{} runs per setting, 6,030 evaluations, random starts; Fig.~\ref{M-fig:S-csweep} of the main text and Table~\ref{tab:S-csweep}); the point $c=2.0$ reproduces the stored runs of the old setting bit for bit. % CHECK-CSWEEP [S01]
+On the order-2 stable side, $c\le\NSCBelow$, at least \NSFeasBelow\% of the final layouts are feasible and all \NSCases{} cases are qualified; beyond the boundary $c^\ast=\NSBoundC$, feasibility falls to \NSFeasCOneEight\% at $c=1.8$, \NSFeasCOneNine\% at 1.9 and \NSFeasCTwoZero\% at 2.0. % CHECK-CSWEEP [S02], [S03]
+The degradation begins in the step from 1.7 to 1.8, which contains $c^\ast$, and accelerates beyond it; it is an onset, not a jump at $c^\ast$. The final swarm spread grows smoothly with $c$, and the mean wake loss already rises from $c=1.6$ to 1.7, on the stable side. % CHECK-CSWEEP [S04]-[S07]
+The old setting thus lies beyond the order-2 boundary, consistent with its loss of feasibility, and the boundary marks approximately where this PSO starts to fail; the sweep does not show that crossing it causes the failure.
+
+The old setting is run without velocity clamping, and a clipped coordinate keeps its velocity (Lemma~\ref{lem:S-clip}). Setting the velocity components of clipped coordinates to zero does not rescue it (\NSFeasVZero\% feasible). Velocity clamping, $\lvert v\rvert\le\NSVmaxFrac\,(u-l)$, raises feasibility to \NSFeasVMax\%, about the level of $c=1.8$ without clamping, but the clamped old setting remains worse than the constriction setting (lower feasibility, and a higher mean wake loss in all \NSCases{} cases). The deficit of the old setting therefore comes mainly from its large steps, not from the bound handling. % CHECK-CSWEEP [S09]-[S12]
+% the figure fig:S-csweep of this generated file is placed in the main text; only its table is placed here
+\begingroup\RenewEnviron{figure*}[1][]{}\RenewEnviron{figure}[1][]{}\CaptureSuppTables{analysis/mpce_supp_csweep.tex}\endgroup
+\SuppTable{tab:S-csweep}
+
+\FloatBarrier
+\subsection{Per-Case Results}
+\label{sec:S-percase}
+Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard deviation of the benchmark objective of every method in every case of the main comparison.
+\SuppTable{tab:res-1-500}
+\SuppTable{tab:res-1-750}
+\SuppTable{tab:res-1-1000}
+\SuppTable{tab:res-2-500}
+\SuppTable{tab:res-2-750}
+\SuppTable{tab:res-2-1000}
+
+\FloatBarrier
+\subsection{Case-Level Statistics and Best Layouts}
+\label{sec:S-caselevel}
+Table~\ref{tab:friedman68-full} extends Table~\ref{M-tab:friedman68} by the full case-level statistics, and Table~\ref{tab:coords} lists the coordinates of the best layouts for the largest $N$ of each farm (shown in Fig.~\ref{fig:S-layouts}); when PSO-VNS is itself the best method of a farm, Table~\ref{tab:coords} has a single entry for it.
+\SuppTable{tab:friedman68-full}
+\SuppTable{tab:coords}
+
+\FloatBarrier
+\subsection{Additional Figures}
+\label{sec:S-figs}
+Fig.~\ref{fig:S-ranks} shows the average ranks of Table~\ref{M-tab:friedman68}; the mean wake loss versus the number of turbines is shown in Fig.~\ref{M-fig:wakeloss} of the main text.
+\begin{figure}[!htb]
+\centering
+\pipefig{0.55\textwidth}{figures_mpce/avg_ranks.pdf}{5cm}
+\caption{Average rank of the eight methods of the main comparison over the 68 benchmark cases (feasibility-aware ranking of Table~\ref{M-tab:friedman68}; 1 = best).}
+\label{fig:S-ranks}
+\end{figure}
+Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} show the convergence, the distribution of the final wake loss, the feasibility and the best layouts of the eight methods of the main comparison.
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/convergence_max.pdf}{8cm}
+\caption{Convergence of the eight methods of the main comparison for the largest $N$ of each farm: median (line) and interquartile range (band) of the best feasible wake loss over 30 runs versus the number of evaluations (objective-function calls), logarithmic vertical axis. The median is drawn once at least 15 of the 30 runs have found a feasible layout and the upper quartile once at least 23 have, so curves start late where early layouts are infeasible; a method that never reaches this share (DE in the largest cases) has no curve in the panel.}
+\label{fig:S-conv-max}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/convergence_mid.pdf}{8cm}
+\caption{As Fig.~\ref{fig:S-conv-max}, for the middle $N$ of each farm ($N=6$, 8 and 10 for $r=500$, 750 and 1000~m).}
+\label{fig:S-conv-mid}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/boxplots_max.pdf}{8cm}
+\caption{Distribution of the wake loss of the feasible runs (30 runs of 6,030 evaluations, random initialization) for the largest $N$ of each farm (number of feasible runs in parentheses when fewer than 30).}
+\label{fig:S-box-max}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/boxplots_mid.pdf}{8cm}
+\caption{As Fig.~\ref{fig:S-box-max}, for the middle $N$ of each farm.}
+\label{fig:S-box-mid}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/feasibility_vs_n.pdf}{8cm}
+\caption{Percentage of feasible final layouts of the eight methods of the main comparison (30 seed-paired runs of 6,030 evaluations with random initialization per case) versus the number of turbines $N$, for each farm and wind data set.}
+\label{fig:S-feas}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/layouts_max.pdf}{9cm}
+\caption{Best layout of all methods (squares) and best PSO-VNS layout (dots) for the largest $N$ of each farm (one marker set when PSO-VNS is itself the best method); the coordinates are listed in Table~\ref{tab:coords}.}
+\label{fig:S-layouts}
+\end{figure}
+
+\section{Component Analysis: Details}
+\label{sec:S-ablation}
+The component analysis of Section~\ref{M-sec:ablation} (Table~\ref{M-tab:ablation}) uses the same 68 cases and runs as the main comparison, plus LX-SSA-VNS and two random-sampling controls, RS-VNS and RSD-VNS. It ranks \NAblNVar{} variants (Friedman test with \NAblDf{} degrees of freedom) and tests \NAblNContrasts{} planned contrasts in every case, Holm-adjusted over the contrasts of the case (Section~\ref{sec:S-stats}).
+
+\emph{Random-sampling controls.} Both controls replace Phase~1 by 3,015 random layouts of equal cost, the seeded initial population of 30 shared with all methods (so their runs stay seed-paired) followed by 2,985 further random layouts, and then run the same VNS phase from the best of them (lowest $F_p$); they search nothing in Phase~1. RS-VNS draws these layouts uniformly in the bounding square (Section~\ref{sec:S-iter}). It is deliberately a weak control, so a Phase-1 method that is better than RS-VNS passes only a minimum bar. A square sample is feasible with probability at most $(\pi/4)^N$ (Proposition~\ref{M-prop:S-box} of the main text), and far less because of the spacing constraint (Table~\ref{tab:S-th-box}). In \NRSRunsNoFeasSample{} RS-VNS runs, Phase~1 draws no feasible layout at all (Table~\ref{tab:D-rsreplay}), although all of them draw layouts with every turbine inside the farm (\NRsNoFeasInside{} of \NRSRunsNoFeasSample), so the spacing constraint is binding in all of them; paired by seed with the disc-sampling control, \NRsSquareExplains{} of these runs obtain a feasible sample in the disc, whereas \NRsSpacingDominates{} have none under either sampling. The weakness of RS-VNS thus lies mainly in the spacing constraint and only in part in the square. % CHECK-DIAG [D17]; CHECK-FINAL [C60]
+ RSD-VNS is the stronger control: it draws every turbine uniformly in the farm disc (angle uniform in $[0,2\pi)$, distance $r\sqrt{U}$ from the centre with $U$ uniform in $[0,1]$), so that a sample can violate only the spacing constraint; budget, seeds and VNS phase are those of RS-VNS. A geometry-only replay of the random streams of all runs, verified against the stored convergence curves, gives \NRSDPctFeasSamples\% feasible Phase-1 samples for RSD-VNS against \NRSPctFeasSamples\% for RS-VNS, and \NRSDRunsNoFeasSample{} against \NRSRunsNoFeasSample{} runs without any feasible Phase-1 sample; at the switch, the best layout is feasible in \NSwitchFeasRSDVNS\% against \NSwitchFeasRSVNS\% of the runs (Table~\ref{tab:switch}). Both controls switch to VNS after 3,015 evaluations; their feasibility at the switch is read at the last stored checkpoint before it (call 3,000), which for RS-VNS gives the same runs as at 3,015, whereas for RSD-VNS the last 15 samples can make a few more runs feasible. % CHECK-FINAL [C57], [C61]
+
+\emph{What the controls show.} Against the square-sampling control, an SSA phase gives only a small gain and an LX-SSA phase none (Section~\ref{M-sec:ablation}). % CHECK-FINAL [C15], [C35]
+Against the disc control, the SSA phase gives no gain: SSA-VNS is never significantly better than RSD-VNS at run level (W/T/L \NAblSSAVNSvsRSDVNS), and the case means even favor the disc control ($\overline{\Delta L}=\NCmSSAVNSvsRSDVNSDL$~pp; higher mean loss in \NCmSSAVNSvsRSDVNSLosses{} and lower in \NCmSSAVNSvsRSDVNSWins{} cases, $p_{\rm Holm}=\NCmSSAVNSvsRSDVNSPHolm$), but not at the level of farm clusters (RSD-VNS lower in \NXClSSAVNSvsRSDVNSOpp{} of \NXClustersNum, cluster-robust $p=\NXClSSAVNSvsRSDVNSCRP$; Section~\ref{sec:S-inference}). % CHECK-FINAL [C53]; CHECK-EXTRA [X33]
+ LX-SSA-VNS is worse than RSD-VNS (W/T/L \NAblLXSSAVNSvsRSDVNS, $\overline{\Delta L}=\NCmLXSSAVNSvsRSDVNSDL$~pp, $p_{\rm Holm}=\NCmLXSSAVNSvsRSDVNSPHolm$; RSD-VNS lower in \NXClLXSSAVNSvsRSDVNSOpp{} of \NXClustersNum{} clusters, cluster-robust $p=\NXClLXSSAVNSvsRSDVNSCRP$), % CHECK-FINAL [C55]; CHECK-EXTRA [X34]
+whereas a PSO phase clearly beats both controls (PSO-VNS against RSD-VNS: W/T/L \NAblPSOVNSvsRSDVNS, $\overline{\Delta L}=\NCmPSOVNSvsRSDVNSDL$~pp, $p_{\rm Holm}=\NCmPSOVNSvsRSDVNSPHolm$). % CHECK-FINAL [C56]
+RSD-VNS itself is better than RS-VNS (W/T/L \NAblRSDVNSvsRSVNS, $\overline{\Delta L}=\NCmRSDVNSvsRSVNSDL$~pp, $p_{\rm Holm}=\NCmRSDVNSvsRSVNSPHolm$) and has the third-best average rank of the \NAblNVar{} variants (\NAblRankRSDVNS), after PSO-VNS and PSO and ahead of SSA-VNS (\NAblRankSSAVNS). % CHECK-FINAL [C57], [C58]
+At 6,030 evaluations from random starts and the benchmark spacing $4D$, salp-swarm phases therefore add nothing of practical size beyond random sampling in the farm (at $5D$ neither, but at $6D$ the SSA phase gains; Section~\ref{sec:S-rev-spacing}): a gain of the SSA phase over disc sampling larger than the margin is ruled out at the seed and case levels (\emph{Practical equivalence} below), and the LX-SSA phase is worse; the small gain of SSA-VNS over RS-VNS reflects only the weakness of the square-sampling control. LX-SSA as published (Laplace step and twice the evaluations per iteration, hence half the iterations) is worse than SSA (Section~\ref{M-sec:ablation}); these contrasts do not separate the Laplace step from its cost; the ablation of Section~\ref{sec:S-rev-lap-abl} does. % CHECK-EXTRA [X53]
+
+\emph{VNS phase.} At 6,030 evaluations, Phase~2 of all hybrids is essentially one compass-search descent from the switch point (Section~\ref{sec:S-diag-vns}): in PSO-VNS, the shaking-plus-local-search cycles take \NDCycleEvalsPctPSOVNS\% of the Phase-2 evaluations (pooled over the runs; median run \NDCycleEvalsPctMedianPSOVNS\%) and give \NDCycleSharePSOVNS\% of the Phase-2 gain (\NDCycleAllSharePSOVNS\% including the cycle cut off by the budget). The component analysis therefore measures the value of a local-search (compass-search) phase after Phase~1, and the neighbourhood structure of VNS can matter only for small $N$. % CHECK-DIAG [D08]-[D10], [D20]
+
+\IfSuppTable{tab:ablation-cases}{Table~\ref{tab:ablation-cases} gives the per-case values of LX-SSA-VNS, RS-VNS and RSD-VNS and the per-case outcomes of the \NAblNContrasts{} contrasts.}{\IfFileExists{analysis/mpce_tab_ablation_cases.tex}{Table~\ref{tab:ablation-cases} gives the per-case values of LX-SSA-VNS, RS-VNS and RSD-VNS and the per-case outcomes of the \NAblNContrasts{} contrasts.}{}}\IfSuppTable{tab:switch}{ Table~\ref{tab:switch} gives the feasibility and the wake loss of the Phase-1 result at the switch to VNS.}{}
+
+\emph{Budget split.} Table~\ref{tab:split} summarizes the budget-split study of Section~\ref{M-sec:split}, in which the split $\omega=0.5$ of PSO-VNS, fixed before the experiments, is compared with $\omega=0.25$, $0.75$ and $0.9$ and with the end point $\omega=1$, plain PSO at the same budget (\NSplitNSettings{} settings): \NSplitBestSetting{} has the lowest mean wake loss and the best average rank, and plain PSO has a higher mean wake loss than \NSplitBestSetting, so the best tested split is not the PSO end point. % CHECK-FINAL [C47]
+ Table~\ref{tab:split-cases} gives the per-case values. The split $\omega=0.9$ differs significantly from $\omega=0.75$ in no case (W/T/L of $\omega=0.75$: \NSplitSeventyFiveVsNinety; case means $p=\NSplitCmNinetyP$) and has a higher mean loss (\NSplitLossNinety\% vs.\ \NSplitLossSeventyFive\%), so \NSplitBestSetting{} remains the best of the \NSplitNSettings{} settings. % CHECK-FINAL [C47], [C59]
+% Table tab:split (a main-text table of the MPCE version, analysis/mpce_tab_split.tex) is placed here, not in the SWEVO
+% main text; the generated tables of mpce_supp_inference.tex refer to it as M-tab:split, so it also gets that name
+% (drop the alias once the generator refers to tab:split).
+\CaptureSuppTables{analysis/mpce_tab_split.tex}
+\SuppTableAddLabel{tab:split}{M-tab:split}
+\SuppTable{tab:split}
+\IfSuppTable{tab:ablation-cases}{\SuppTable{tab:ablation-cases}}{\IfFileExists{analysis/mpce_tab_ablation_cases.tex}{\input{analysis/mpce_tab_ablation_cases.tex}}{}}
+\SuppTableOpt{tab:switch}
+\IfSuppTable{tab:equivalence}{\par\emph{Practical equivalence.} A non-significant test does not show that two methods are equally good (Section~\ref{sec:S-th-equiv}). Table~\ref{tab:equivalence} therefore tests practical equivalence of the case means with two one-sided tests (TOST~\cite{Lakens2017}) on the 90\% bootstrap interval and adds the Bayesian signed-rank test with a region of practical equivalence~\cite{Benavoli2017}. One margin of $\pm\NEqMargin$~pp of wake loss is applied to every pair. It is a convention, set after the primary analysis and not derived from the data; in benchmark energy it corresponds to \NXMarginMWhTurbDsI~MWh/yr per turbine in Data Set~I and \NXMarginMWhTurbDsII~MWh/yr in Data Set~II. The table therefore reports, for every pair, the minimal margin $m_{\min}$ at which equivalence holds, and Fig.~\ref{M-fig:equiv-curve} of the main text shows the TOST $p$ value of PSO-VNS vs.\ PSO as a function of the margin, so that readers can apply their own threshold. % CHECK-EXTRA [X56], [X57]
+ The verdict depends on the level of inference (Definition~\ref{M-def:S-equiv} of the main text and Table~\ref{tab:X-equiv-levels}). On the fixed benchmark (seed level: the 68 cases fixed, the run-to-run variability random), the 90\% CI of PSO-VNS $-$ PSO is \NXEqSeedPSOVNSvsPSOCI~pp, a small but significant average advantage of PSO-VNS that lies inside the margin, so the two are equivalent at this level; with the cases treated as exchangeable (case level), the 90\% CI is \NEqPSOVNSvsPSOCI~pp ($p_{\rm TOST}=\NEqPSOVNSvsPSOP$, $m_{\min}=\NEqPSOVNSvsPSOMin$~pp), so the two are practically equivalent at this level too; allowing dependence within the six benchmark groups (cluster-robust CR2 interval), the 90\% CI \NXEqClustPSOVNSvsPSOCI~pp extends beyond $-\NEqMargin$~pp, and equivalence cannot be shown ($m_{\min}=\NXEqClustPSOVNSvsPSOMin$~pp). % CHECK-FINAL [C49]; CHECK-EXTRA [X39]-[X41]
+ The average hides case-specific differences in both directions (Tables~\ref{tab:X-heterogeneity} and~\ref{tab:X-beyond}): \NXHetBeyond{} of the \NXHetN{} cases differ by more than the margin, \NXHetBeyondPSOVNS{} in favor of PSO-VNS (by up to \NXHetMaxPSOVNS~pp) and \NXHetBeyondPSO{} in favor of PSO (by up to \NXHetMaxPSO~pp). For the \NXEqSmallN{} cases with $N<10$ the two methods are equivalent (90\% CI \NXEqSmallCI~pp), for the \NXEqLargeN{} cases with $N\ge10$ they are not (mean \NXEqLargeMean~pp, 90\% CI \NXEqLargeCI~pp), and on the \NXEqNontrivialN{} cases with a PSO-VNS wake loss of at least \NXTrivialLoss\% equivalence is not shown either (90\% CI \NXEqNontrivialCI~pp). % CHECK-EXTRA [X43]-[X45]
+ The Bayesian signed-rank test gives a posterior probability $\BayEq{\NBayPSOVNSvsPSORope}$ that practical equivalence is the most probable of the three outcomes (a rounded Monte Carlo share); the posterior mean shares of the pairs of cases are \NXBayMeanPSOVNSvsPSOLeft{} (PSO-VNS better by more than the margin), \NXBayMeanPSOVNSvsPSORope{} (inside the margin) and \NXBayMeanPSOVNSvsPSORight{} (PSO better by more than the margin; Table~\ref{tab:X-bayes}), so about one pair of cases in four favors PSO-VNS by more than the margin. % CHECK-FINAL [C49]; CHECK-EXTRA [X48]
+ LX-SSA-VNS and RS-VNS are equivalent at the seed and case levels ($m_{\min}=\NEqLXSSAVNSvsRSVNSMin$~pp, $P_{\rm rope}\BayEq{\NBayLXSSAVNSvsRSVNSRope}$) but not at the cluster level ($m_{\min}=\NXEqClustLXSSAVNSvsRSVNSMin$~pp); no pair of Table~\ref{tab:equivalence} is equivalent at the cluster level. % CHECK-FINAL [C50]; CHECK-EXTRA [X55]
+The small gain of SSA-VNS over the weak control RS-VNS could not be shown to be equivalent to zero at $\pm\NEqMargin$~pp (90\% CI \NEqSSAVNSvsRSVNSCI~pp, $m_{\min}=\NEqSSAVNSvsRSVNSMin$~pp); in the Bayesian analysis, ``practically negligible'' is the more probable outcome ($P_{\rm rope}\BayEq{\NBaySSAVNSvsRSVNSRope}$ vs.\ $P_{\rm A}\BayEq{\NBaySSAVNSvsRSVNSBetter}$). % CHECK-FINAL [C51]
+Against the disc control, the question is one-sided: a gain of the SSA phase larger than the margin is ruled out at the seed and case levels (90\% CIs of SSA-VNS $-$ RSD-VNS \NXEqSeedSSAVNSvsRSDVNSCI{} and \NXEqCaseSSAVNSvsRSDVNSCI~pp, both with a lower limit above $-\NEqMargin$~pp) but not at the cluster level (CR2 \NXEqClustSSAVNSvsRSDVNSCI~pp); equivalence itself is not shown at the case level ($m_{\min}=\NEqSSAVNSvsRSDVNSMin$~pp), and the difference points against SSA-VNS: the posterior probability that ``SSA-VNS better'' is the most probable outcome is $P_{\rm A}\BayEq{\NBaySSAVNSvsRSDVNSBetter}$, against $P_{\rm rope}\BayEq{\NBaySSAVNSvsRSDVNSRope}$ and $P_{\rm B}\BayEq{\NBaySSAVNSvsRSDVNSWorse}$ for ``RSD-VNS better''. % CHECK-FINAL [C54]; CHECK-EXTRA [X53]
+LX-SSA-VNS is not equivalent to RSD-VNS and worse than it (90\% CI \NEqLXSSAVNSvsRSDVNSCI~pp, $P_{\rm B}\BayEq{\NBayLXSSAVNSvsRSDVNSWorse}$), % CHECK-FINAL [C55]
+whereas the gain of PSO-VNS over RSD-VNS exceeds the margin: its whole 90\% CI \NEqPSOVNSvsRSDVNSCI~pp lies below $-\NEqMargin$~pp ($P_{\rm A}\BayEq{\NBayPSOVNSvsRSDVNSBetter}$). % CHECK-FINAL [C56]
+The disc control is better than the square control (RSD-VNS vs.\ RS-VNS: 90\% CI \NEqRSDVNSvsRSVNSCI~pp, $P_{\rm A}\BayEq{\NBayRSDVNSvsRSVNSBetter}$). % CHECK-FINAL [C57]
+PSO-VNS does not differ from PSO in the spread of its runs either: the per-case standard deviation and the worst feasible run of the 30 runs do not differ significantly ($p=\NSdP$ and $p=\NWorstP$). Its robustness advantage lies in reaching feasibility, and it rests on one site with random starts: \NHRFeasPSOVNS{} vs.\ \NHRFeasPSO{} feasible runs on the Horns Rev~1 block (exact McNemar $p=\NXHRMcNemarP$, Table~\ref{tab:X-mcnemar}; Section~\ref{M-sec:hornsrev-site}), whereas on the 68 benchmark cases both methods are always feasible.}{}% CHECK-FINAL [C52]; CHECK-EXTRA [X52]
+% tab:equivalence (all 18 pairs) is placed here; the main text keeps a compact summary (M-tab:equiv-main)
+\SuppTable{tab:equivalence}
+\SuppTable{tab:split-cases}
+
+\FloatBarrier
+\subsection{Robustness of the Statistical Conclusions}
+\label{sec:S-inference}
+Tables~\ref{tab:X-threshold}--\ref{tab:X-energy} check whether the statistical conclusions of the main text depend on choices of the analysis. \emph{Qualification threshold} (Tables~\ref{tab:X-threshold} and~\ref{tab:X-threshold-controls}): with each of the six thresholds \NXThrList{} feasible runs of 30 (the paper uses 15), PSO-VNS is best-ranked, the complete rank order of the eight methods is the same, and all \NXThrNConcl{} conclusions listed in the tables are unchanged. % CHECK-EXTRA [X02]-[X09], [X31]
+
+\emph{Dependence between cases} (Tables~\ref{tab:X-cluster} and~\ref{tab:X-loco}): the 68 cases form \NXClusters{} (data set, radius) clusters with nested $N$. Every comparison that is significant on the case means favors the same method in all \NXClusters{} clusters except \NXClCaseSigNotUnanimous{}, and leaving out any one cluster changes, of the \NXLocoNPairs{} verdicts, only that of \NXLocoChanged{}; PSO-VNS is best-ranked in every leave-one-cluster-out run. These cluster analyses concern significance verdicts; equivalence at the cluster level is not shown for any pair (Table~\ref{tab:X-equiv-levels} and Section~\ref{sec:S-ablation}). % CHECK-EXTRA [X11], [X14], [X55]
+The case-level result that SSA-VNS is worse than RSD-VNS does not hold at the cluster level: RSD-VNS has the lower mean in \NXClSSAVNSvsRSDVNSOpp{} of \NXClustersNum{} clusters, the cluster-robust $t$ test gives $p=\NXClSSAVNSvsRSDVNSCRP$, the cluster-bootstrap interval \NXClSSAVNSvsRSDVNSCI~pp contains zero, and one leave-one-cluster-out run loses significance ($p$ up to \NXLocoSSAVNSvsRSDVNSPMax); we therefore state only that the SSA phase gives no gain over disc sampling. LX-SSA-VNS is worse than RSD-VNS in \NXClLXSSAVNSvsRSDVNSOpp{} of \NXClustersNum{} clusters with a cluster-bootstrap interval above zero (\NXClLXSSAVNSvsRSDVNSCI~pp) and no leave-one-cluster-out change, but the cluster-robust test is not significant ($p=\NXClLXSSAVNSvsRSDVNSCRP$). PSO-VNS beats RSD-VNS, and RSD-VNS beats RS-VNS, in all \NXClusters{} clusters (cluster-robust $p=\NXClPSOVNSvsRSDVNSCRP$ and \NXClRSDVNSvsRSVNSCRP). The small gain of SSA-VNS over the weak control RS-VNS is found in all clusters, but with cluster-robust $p=\NXClSSAVNSvsRSVNSCRP$. % CHECK-EXTRA [X16], [X17], [X32]-[X34]
+
+\emph{Multiplicity} (Table~\ref{tab:X-multiplicity}): with one Holm correction over all \NXMultN{} case-mean Wilcoxon tests of the main text (not over the other tests of the paper), \NXMultSigHolm{} of the \NXMultSigRaw{} unadjusted significant tests remain significant; the only ones lost are \NXMultLostHolm{} (under Benjamini--Hochberg only \NXMultLostBH), whereas the Data Set~II subgroup with $N\ge10$ ($p_{\rm Holm}\le\NXHolmPSOVNSvsPSOdsIILargeP$) and all four contrasts with RSD-VNS ($p_{\rm Holm}\le\NXHolmSSAVNSvsRSDVNSP$) survive. Thus $\omega=0.9$ is better than $\omega=0.5$ only unadjusted ($p_{\rm Holm}=\NXHolmSplitFiftyVsNinetyP$), and it beats $\omega=0.75$ at no level; the other split conclusions hold in all clusters (Table~\ref{tab:X-cluster-split}). % CHECK-EXTRA [X18]-[X21], [X35]-[X37]
+
+\emph{Subgroup and heterogeneity} (Tables~\ref{tab:X-subgroup}, \ref{tab:X-heterogeneity} and~\ref{tab:X-beyond}; exploratory, stated after the primary analysis): the advantage of PSO-VNS over PSO grows with $N$ only in Data Set~II (mean within-farm Spearman $\rho=\NXSpearDsIIStrat$, $p=\NXSpearDsIIStratP$), not in Data Set~I, where the trend has the opposite sign ($\rho=\NXSpearDsIStrat$, $p=\NXSpearDsIStratP$), and not over all cases once $N$ is compared only within a farm ($p=\NXSpearAllStratP$). % CHECK-EXTRA [X22]-[X24]
+ With the density $\phi=\NXDensDef$, the two data sets form a crossover: within Data Set~II PSO-VNS gains with density (slope \NXDensSlopeDsII~pp per unit $\phi$, $p=\NXDensPDsII$), within Data Set~I PSO gains (slope \NXDensSlopeDsI~pp, $p=\NXDensPDsI$; interaction $p=\NXDensInterP$), and \NXHetClBeyond{} of the \NXClustersNum{} cluster means of PSO-VNS $-$ PSO exceed the margin, in opposite directions. % CHECK-EXTRA [X46], [X47]
+
+\emph{Energy} (Table~\ref{tab:X-energy}): over the 68 cases, the benchmark-energy gain of PSO-VNS over PSO is \NXEnPSOVNSvsPSOPct\% of AEP (95\% CI \NXEnPSOVNSvsPSOPctCI\%), or \NXEnPSOVNSvsPSOMWhTurb~MWh/yr per turbine, against a margin of \NXMarginMWhTurbDsI{} (Data Set~I) and \NXMarginMWhTurbDsII~MWh/yr per turbine (Data Set~II); in Data Set~II with $N\ge10$ it is \NXEnPSOVNSvsPSOdsIILargePct\%, and the gain of SSA-VNS over the weak control RS-VNS (none against RSD-VNS) is \NXEnSSAVNSvsRSVNSPct\%, against \NXEnPSOVNSvsRSVNSPct\% for PSO-VNS over RS-VNS. These are differences in benchmark (model) energy, whose capacity factor is far above real sites. % CHECK-EXTRA [X25]-[X27], [X56]
+
+\emph{Wake model} (Table~\ref{tab:X-modelshift}): the Jensen and Gaussian wake losses of the same final layouts differ by \NXModelShiftMean~pp on average, but this level shift largely cancels in paired comparisons: the per-case PSO-VNS $-$ PSO difference changes by \NXModelShiftPairMean~pp on average between the two models, and its sign changes in \NXModelShiftPairSignChanges{} of the 68 cases. The model shift is therefore not used to justify the margin. % CHECK-EXTRA [X30]
+
+\emph{Estimates that match the tests} (Table~\ref{tab:X-hl}): the Hodges--Lehmann estimate, which belongs to the Wilcoxon signed-rank test, of SSA-VNS $-$ RSD-VNS is \NXHLSSAVNSvsRSDVNS~pp (95\% CI \NXHLSSAVNSvsRSDVNSCI~pp), consistent with the significant Wilcoxon test, whereas the 95\% CI of the mean contains zero; that of PSO-VNS $-$ PSO is \NXHLPSOVNSvsPSO~pp (95\% CI \NXHLPSOVNSvsPSOCI~pp), smaller in magnitude than the mean because a few large cases dominate the mean. % CHECK-EXTRA [X49], [X50]
+% The tables of mpce_supp_inference.tex are placed in the order of the file, except tab:X-equiv-levels, which is placed
+% in the main text (optA/sw/06_results.tex); the captions of tab:X-heterogeneity and tab:X-bayes refer to it and to
+% tab:equivalence (main-text numbers).
+\CaptureSuppTables{analysis/mpce_supp_inference.tex}
+\SuppTable{tab:X-equiv-levels}
+\SuppTable{tab:X-threshold}
+\SuppTable{tab:X-threshold-controls}
+\SuppTable{tab:X-cluster}
+\SuppTable{tab:X-loco}
+\SuppTable{tab:X-cluster-split}
+\SuppTable{tab:X-multiplicity}
+\SuppTable{tab:X-subgroup}
+\SuppTable{tab:X-energy}
+\SuppTable{tab:X-modelshift}
+\SuppTable{tab:X-bayes}
+% The notes of tab:X-heterogeneity are long \multicolumn{8}{l} rows (generated by mpce_inference_extra.py); inside
+% that one table they are set as wrapped paragraphs so that they fit the text width (local to its float).
+\makeatletter
+\begingroup
+\def\supp@wraplabel{tab:X-heterogeneity}%
+\let\supp@origlabel\label \let\supp@origmc\multicolumn
+\def\label#1{\supp@origlabel{#1}\def\supp@tmp{#1}\ifx\supp@tmp\supp@wraplabel
+  \def\multicolumn##1##2##3{\supp@origmc{##1}{p{0.9\textwidth}}{##3}}\fi}%
+\SuppTable{tab:X-heterogeneity}
+\endgroup
+\makeatother
+\SuppTable{tab:X-beyond}
+\SuppTable{tab:X-hl}
+\SuppTable{tab:X-mcnemar}
+
+\section{Tests Beyond the Benchmark: Details}
+\label{sec:S-beyond}
+This section gives the per-case values of the feasibility-preserving initialization and the budget scaling (Section~\ref{M-sec:feasinit}), the full results of the Horns Rev~1 block (Section~\ref{M-sec:hornsrev-site}) and of IEA37 Case Study~1 (Section~\ref{M-sec:iea37}), and the computational cost (Section~\ref{M-sec:runtime}).
+
+\subsection{Feasibility-Preserving Initialization and Budget Scaling}
+\label{sec:S-feasbudget}
+Tables~\ref{tab:feasinit-cases} and~\ref{tab:budget-cases} give the per-case values behind Table~\ref{M-tab:feasbudget} for the six largest benchmark cases, together with the Horns Rev~1 block (the averages of Table~\ref{M-tab:feasbudget} are over the six benchmark cases only). In the paired tests of Table~\ref{tab:feasinit-cases}, runs are scored as in Section~\ref{sec:S-stats}: an infeasible run ranks below every feasible run, so a positive $r_{\rm rb}$ can come from more feasible runs even when the mean of the feasible runs is not better. With feasible starts, PSO and DE do not move away from the best initial layout (Section~\ref{M-sec:feasinit}), so their feasible-start values coincide in every case; Section~\ref{sec:S-diag-feas} analyzes why.
+\SuppTableNote{tab:feasinit-cases}{Note: with feasible starts, PSO and DE do not move away from the best (packed) initial layout (Section~\ref{M-sec:feasinit}), so their feasible-start values coincide in every case. Infeasible runs enter the paired test ranked below every feasible run (Section~\ref{sec:S-stats}).}
+\SuppTable{tab:feasinit-cases}
+\SuppTable{tab:budget-cases}
+
+\FloatBarrier
+\subsection{Horns Rev~1 16-Turbine Block}
+\label{sec:S-hr16}
+Table~\ref{tab:hr-site-full} gives the full results for the Horns Rev~1 block, and Fig.~\ref{fig:S-hr16} its convergence and layouts. All values use the 5$^\circ$ direction binning of Section~\ref{sec:S-hrmodel}. The 1$^\circ$ re-evaluation of every Horns Rev~1 run is reported in Section~\ref{sec:S-direction}.
+
+\emph{Check against PyWake.} Our model was checked on the installed 80-turbine Horns Rev~1 farm against the Jensen (NOJ) model of PyWake~\NFPyWakeVersion~\cite{PyWake} ($k=0.04$), with the same turbine curves and wind climate and at identical direction and speed bins (the bin probabilities agree to \NFPyWakePMaxDiff, and the wake-free AEP is identical, \NFPyWakeIdealAEP~GWh/yr; Table~\ref{tab:F-pywake}). PyWake gives \NFPyWakeAEP~GWh/yr (wake loss \NFPyWakeLossPct\%) and our model \NFPyWakeOurAEP~GWh/yr (\NFPyWakeOurLossPct\%): our AEP is \NFPyWakeDiffPct\% higher, and the difference of the wake losses (ours minus PyWake's) is \NFPyWakeLossDiffPP~pp, \NFPyWakeLossDiffRel\% of PyWake's wake loss. % CHECK-DIR [F31], [F32]
+ Rotor averaging does not explain the difference: PyWake's hub-centre variant (\NFPyWakeRotorCenterAEP~GWh/yr) lies further from our value than its default. The difference comes from the thrust coefficient, which our model takes at the free-stream speed: with $C_T$ at the local (waked) speed, our model gives \NFOurLocalCTAEP~GWh/yr and reproduces PyWake's NOJ with hub-centre test and momentum-theory induction exactly; the remaining small gap to PyWake's default NOJ is its rotor averaging and induction polynomial. Our model therefore slightly underestimates the wake loss; the same model is used for all methods. For the installed 16-turbine block, PyWake gives \NFPyWakeSixteenAEP~GWh/yr and our model \NFPyWakeSixteenOurAEP~GWh/yr (\NFPyWakeSixteenDiffPct\% higher). % CHECK-DIR [F33]-[F35]
+\SuppTable{tab:hr-site-full}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/hr16.pdf}{7cm}
+\caption{Horns Rev~1 16-turbine block (5$^\circ$ direction bins): median best feasible AEP versus evaluations (left) and layouts (right).}
+\label{fig:S-hr16}
+\end{figure}
+
+\FloatBarrier
+\subsection{IEA37 Case Study~1}
+\label{sec:S-iea37}
+Table~\ref{tab:iea37-detail} gives the results of all methods at both budgets, Table~\ref{tab:iea37-pub} compares our best layouts with the submitted ones~\cite{Baker2019,IEA37repo} under the published 1-mm feasibility tolerance, Fig.~\ref{fig:S-iea37-conv} shows the convergence at the largest budget, and Fig.~\ref{fig:S-layouts-sites} the best layouts of IEA37 Case Study~1 and of the Horns Rev~1 block. Some published layouts lie slightly outside the boundary circle (by a few millimetres, and participant~12 with 16 turbines by \NFIEAProjExcessSixteen~m); after the outside turbines are projected radially onto the circle, \NFIEANChanged{} of these layouts become feasible, and the best feasible published layout is that of participant~12 in both scenarios (Table~\ref{tab:F-iea}). With this projection, the gap of the best PSO-VNS layout at 30,030 evaluations to the best feasible published layout is \NFIEAGapSixteenThirtyKProj\% for 16 turbines and \NFIEAGapThirtySixThirtyKProj\% for 36 turbines (strict 1-mm convention: \NFIEAGapSixteenThirtyKStrict\% and \NFIEAGapThirtySixThirtyKStrict\%); Table~\ref{tab:F-iea-gap} gives these gaps also in wake-loss percentage points. % CHECK-DIR [F41]-[F46]
+\SuppTable{tab:iea37-detail}
+\SuppTable{tab:iea37-pub}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/iea37_convergence.pdf}{6cm}
+\caption{IEA37 Case Study~1: median best feasible wake loss versus evaluations at the largest budget.}
+\label{fig:S-iea37-conv}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+\pipefig{\textwidth}{figures_mpce/layouts_iea37_hr16.pdf}{6cm}
+\caption{Best layouts. Left and middle: IEA37 Case Study~1, 16 and 36 turbines, best feasible published layout and best PSO-VNS layout at 30,030 evaluations. Right: Horns Rev~1 16-turbine block (5$^\circ$ direction bins), installed layout ($7D$ grid) and best PSO-VNS layout at 6,030 evaluations (minimum spacing $4D$).}
+\label{fig:S-layouts-sites}
+\end{figure}
+
+\FloatBarrier
+\subsection{Computational Cost}
+\label{sec:S-cost}
+Table~\ref{tab:cost} gives the time per evaluation and per run. The metaheuristics need 0.24--0.47~ms per evaluation and MS-SLSQP 1.82~ms, about 7.5~times as much as PSO. These timings are indicative only: they come from the machines that produced the respective result files, so small differences between methods are not meaningful. % CHECK-FINAL [C46]
+\SuppTable{tab:cost}
+
+\section{Sensitivity to the Modeling Assumptions: Details}
+\label{sec:S-robust}
+This section defines the Gaussian wake model of the re-evaluation in Section~\ref{M-sec:gaussian}, gives the full re-evaluation results of Sections~\ref{M-sec:powercurve} and~\ref{M-sec:gaussian} and the details of the spacing check of Section~\ref{M-sec:spacing}\IfSuppTable{tab:boundary}{ and of the boundary check of Section~\ref{M-sec:boundary}}{}, and re-evaluates the final layouts with finer direction bins (Section~\ref{M-sec:direction}).
+
+\subsection{Gaussian Wake Model Used for the Re-Evaluation}
+\label{sec:S-gauss}
+For the re-evaluation of Section~\ref{M-sec:gaussian}, the deficit of the Jensen model is replaced by the Gaussian wake model of Bastankhah and Port\'e-Agel~\cite{Bastankhah2014},
+\begin{equation}
+\begin{split}
+\Delta_{ij}&=\Bigl(1-\sqrt{1-C_T/(8\sigma^2/D^2)}\Bigr)\exp\!\bigl(-v_{ij}^2/(2\sigma^2)\bigr),\qquad
+\sigma/D=K_{\rm G}\,d_{ij}/D+\epsilon,\\
+\epsilon&=0.2\sqrt{\tfrac12(1+\sqrt{1-C_T})/\sqrt{1-C_T}},
+\end{split}
+\label{eq:S-gauss}
+\end{equation}
+for turbines $i$ downstream of $j$, with $K_{\rm G}=0.04$, the lateral offset $v_{ij}$ and downstream distance $d_{ij}$ of Section~\ref{M-sec:model}, and the same root-sum-square superposition and Weibull scaling as the benchmark. The Gaussian model differs from the Jensen cone both in its smooth lateral profile and in its expansion rate ($K_{\rm G}=0.04$ vs.\ $K=0.075$, not calibrated to each other), and, unlike the cone test of the benchmark, it gives no deficit to turbines upstream of $j$. It is not valid in the near wake (below about 2--3 rotor diameters), which does not matter at $\ell_{\min}=4D$.
+
+\FloatBarrier
+\subsection{Re-Evaluation, Spacing and Boundary Handling}
+\label{sec:S-robust-tables}
+Table~\ref{tab:robust} gives the full re-evaluation of the final layouts under the alternative power-curve and wake models, and Table~\ref{tab:capacity} gives the constructive capacity of the three farms at $4D$, $5D$ and $6D$ spacing. Table~\ref{tab:spacing-authors} is an archived check from a preliminary comparison of ours: six cases were re-optimized at $5D$ and $6D$ with the original SSA and LX-SSA code only; the methods of this paper were re-optimized at $5D$ and $6D$ after the primary analysis (Section~\ref{sec:S-rev-spacing}). The archived table shows how the attainable benchmark objective changes when the spacing is enlarged; it is not a comparison of the methods of this paper.\IfSuppTable{tab:boundary}{ Table~\ref{tab:boundary} gives the comparison of the two boundary rules for SSA (coordinate clipping vs.\ radial projection onto the circle) quoted in Section~\ref{M-sec:boundary}.}{}
+Table~\ref{M-tab:robust-final} of the main text summarizes the re-evaluation: PSO-VNS keeps the best average rank under the cubic power curve, with and without a 25-m/s cut-out, whereas under the Gaussian wake with the benchmark's 15$^\circ$ bins PSO is narrowly first; with 1$^\circ$ bins, PSO-VNS is first under the Gaussian wake as well (Section~\ref{sec:S-direction}). % CHECK-FINAL [C21], [C22]; CHECK-DIR [F09]
+\SuppTable{tab:robust}
+\SuppTable{tab:capacity}
+\SuppTable{tab:spacing-authors}
+\SuppTableOpt{tab:boundary}
+
+\FloatBarrier
+\subsection{Direction Resolution}
+\label{sec:S-direction}
+The benchmark evaluates the wake only at the centres of 24 direction bins of 15$^\circ$, and the Horns Rev~1 model at the centres of 5$^\circ$ bins. Between neighbouring bin centres a top-hat wake leaves direction gaps in which a turbine is not waked, and optimized layouts can exploit them. All feasible final layouts were therefore re-evaluated, not re-optimized, with finer bins (\texttt{analysis/mpce\_direction.py}). On the benchmark (\NFNLayouts{} layouts of the 68 cases), every 15$^\circ$ bin is split into 3 (5$^\circ$) or \NFSubBins{} (1$^\circ$) sub-bins that keep its Weibull parameters and share its frequency, so the wake-free power is unchanged (Table~\ref{tab:F-bench}). With 1$^\circ$ sub-bins, the mean wake loss of every method rises, by \NFLossRiseMin{} to \NFLossRiseMax~pp; for PSO-VNS from \NFLossPSOVNSFifteen\% to \NFLossPSOVNSOne\%, about \NFLossRiseMarginRatio{} times the equivalence margin. The optimized layouts thus exploit the gaps between the 15$^\circ$ bins, the VNS-based methods and PSO most. % CHECK-DIR [F01], [F03]-[F05]
+ PSO-VNS has the best average rank with 15$^\circ$, 5$^\circ$ and 1$^\circ$ bins (at 1$^\circ$: \NFRankPSOVNSOne{} against \NFRankPSOOne{} for PSO), also under the Gaussian wake at 1$^\circ$ (\NFGaussOneRankPSOVNS{} against \NFGaussOneRankPSO); PSO is narrowly first only under the Gaussian wake at 15$^\circ$ (Table~\ref{M-tab:robust-final}), a property of the coarse rose. The order beyond the top two changes: MS-SLSQP moves from sixth to third (average rank \NFRankMSSLSQPFifteen{} to \NFRankMSSLSQPOne), and the within-case orderings agree only moderately with those of the benchmark (mean Kendall $\bar\tau=\NFTauOne$; same best method in \NFSameBestOne\% of the cases). % CHECK-DIR [F06], [F07], [F09]
+ For PSO-VNS vs.\ PSO (Table~\ref{tab:F-equiv}), the 15$^\circ$ result is case-level equivalence at $\pm\NEqMargin$~pp. With 1$^\circ$ sub-bins, the mean difference is \NFPairMeanOne~pp (90\% CI \NFPairCIOne~pp): PSO-VNS is slightly but significantly better (case-mean Wilcoxon $p=\NFPairPOne$), and equivalence at $\pm\NEqMargin$~pp is no longer shown (minimal margin \NFPairMinMarginOne~pp). The sign of the per-case difference changes in \NFSignChangesOne{} of the \NFSignChangesBase{} cases with a nonzero difference; on the \NFNonTrivN{} non-trivial cases, equivalence is shown at neither resolution; and the Data Set~II advantage for $N\ge10$ survives (lower mean wake loss in \NFDSIINTenWinsOne{} of \NFDSIINTenN{} cases, \NFDSIINTenMeanOne~pp). % CHECK-DIR [F10], [F12]-[F14]
+ The component-analysis conclusions hold with 1$^\circ$ sub-bins (Table~\ref{tab:F-abl}): SSA-VNS and LX-SSA-VNS have a higher case-mean wake loss than the disc-sampling control RSD-VNS ($p=\NFAblSSAVNSvsRSDVNSOneP$ and \NFAblLXSSAVNSvsRSDVNSOneP), and PSO-VNS beats every control and keeps the best average rank of the \NAblNVar{} variants; the small gain of SSA-VNS over the square-sampling control RS-VNS is no longer significant ($p=\NFAblSSAVNSvsRSVNSOneP$). % CHECK-DIR [F16], [F17]
+
+\emph{Horns Rev~1} (Tables~\ref{tab:F-hr} and~\ref{tab:F-hrpair}). Every run of the Horns Rev~1 study was re-evaluated with 1$^\circ$ bins and with PyWake's NOJ model at the same bins. With 1$^\circ$ bins, no feasible run of any method at any budget exceeds the installed block (\NFHRAboveOneTotal{} of \NFHRNFeas, against \NFHRAboveFiveTotal{} with the 5$^\circ$ bins of the paper), and under PyWake only \NFHRAbovePyWakeTotal{} run does, a DE run at 120,030 evaluations. The installed block loses \NFHRInstDrop~GWh/yr under the finer rose, the optimized layouts \NFHRMeanDrop~GWh/yr on average, the VNS-based methods most. % CHECK-DIR [F21]-[F23]
+ At 6,030 evaluations with random starts, the AEP advantage of PSO-VNS over PSO on the \NFHRPairSixKOneN{} jointly feasible seeds holds only with the 5$^\circ$ bins (\NFHRPairSixKFive~GWh/yr, $p=\NFHRPairSixKFiveP$); with 1$^\circ$ bins (\NFHRPairSixKOne~GWh/yr, $p=\NFHRPairSixKOneP$) and under PyWake (\NFHRPairSixKPyWake~GWh/yr, $p=\NFHRPairSixKPyWakeP$) PSO has the nonsignificantly higher mean. The robust result at 6,030 evaluations is feasibility (\NHRFeasPSOVNS{} vs.\ \NHRFeasPSO{} feasible runs). % CHECK-DIR [F24], [F25]
+ At 30,030 evaluations, PSO-VNS keeps the highest mean AEP with 1$^\circ$ bins (\NFHRThirtyKBestOneAEP~GWh/yr) and under PyWake (\NFHRThirtyKBestPyWakeAEP~GWh/yr), and its advantage over PSO on the \NFHRPairThirtyKOneN{} jointly feasible seeds is significant under both ($p=\NFHRPairThirtyKOneP$ and \NFHRPairThirtyKPyWakeP). % CHECK-DIR [F26]
+ The results of this paper are therefore results for the discretized wind roses of the benchmark and of Horns Rev~1; the 1$^\circ$ re-evaluation is a robustness check of the final layouts, not a re-optimization with a finer rose.
+\input{analysis/mpce_supp_direction.tex}
+
+\FloatBarrier
+\input{optA/sw/supp_theory.tex}
+
+\FloatBarrier
+\section{Algorithm Diagnostics}
+\label{sec:S-diag}
+This section looks inside the runs: the dynamics of the two PSO settings (Section~\ref{sec:S-diag-pso}), what happens in the VNS phase of the hybrids (Section~\ref{sec:S-diag-vns}), why PSO and DE do not move from feasible starts (Section~\ref{sec:S-diag-feas}) and the Phase~1 of RS-VNS (Section~\ref{sec:S-diag-rs}). The data come from instrumented reruns of subsets of the runs of the paper (\texttt{analysis/mpce\_diagnostics.py}). The instrumented optimizers are verbatim copies of the code of the paper with logging lines that only read the state and draw no random numbers. All \NDVerRuns{} instrumented runs reproduce the stored runs of the paper (same wake loss, coordinates, convergence curve and number of evaluations; \NDVerStoredMatch{} of \NDVerRuns), and seed~1 of every case and method, rerun with the original, uninstrumented code in the same process, gives bit-identical results (\NDVerBitMatch{} of \NDVerBitRuns{} runs). % CHECK-DIAG [D01], [D02]
+\input{analysis/mpce_supp_diag.tex}
+
+\subsection{PSO Dynamics of the Two Settings}
+\label{sec:S-diag-pso}
+Fig.~\ref{fig:D-psodyn} and Table~\ref{tab:D-psodyn} compare the old and the constriction setting on \NDDynCases{} cases $\times$ \NDDynSeeds{} seeds. At the last iteration, the swarm of the old setting is \NDSpreadRatio{} times as wide and its mean absolute velocity \NDVelRatio{} times as large as with the constriction setting: it contracts much less, consistent with its missing order-2 stability (Proposition~\ref{prop:S-settings}; Section~\ref{sec:S-csweep}). It clips \NDClipOld\% of the coordinates per iteration (constriction: \NDClipNew\%), and only \NDFeasPartOld\% of its particle evaluations in iterations 101--200 are feasible (constriction: \NDFeasPartNew\%). % CHECK-DIAG [D03]-[D05]
+Most of its infeasible evaluations violate both constraints. The infeasible \emph{final} layouts, however, mostly violate only the spacing constraint: with the $10^{-6}$~m rule of the paper, \NDStoredSpacingOnlyOld{} of the \NDStoredInfeasOld{} infeasible final layouts of the old setting violate only the spacing, \NDStoredBoundOnlyOld{} only the boundary and \NDStoredBothOld{} both. In $F_p$~\eqref{M-eq:penalty}, the boundary violation $g^{\rm b}_i=x_i^2+y_i^2-r^2$ is measured in m$^2$ and the spacing violation $g^{\rm s}_{ij}$ in m, so a turbine clearly outside the circle is penalized much more than two turbines slightly too close, and the best infeasible layout tends to lie inside the circle with turbines too close. The remaining boundary violations are mostly a penalty-scaling effect as well: in \NDStoredTangentOld{} of the \NDStoredAnyBoundOld{} final layouts that violate the boundary, an outside turbine is pinned at the box, near a point where the box touches the circle (one coordinate at $\pm r$), where $g^{\rm b}_i=y_i^2$ is of second order in the other coordinate and hence cheap in $F_p$. A penalty with normalized violations, e.g., $(\lVert\mathbf x_i\rVert-r)/r$ and $(\ell_{\min}-\ell_{ij})/\ell_{\min}$, would avoid both effects. The infeasibility of the final layouts of the old setting is therefore mainly a spacing problem, not one of turbines left outside the circle. % CHECK-DIAG [D06], [D07], [D21]
+
+\subsection{Inside the VNS Phase}
+\label{sec:S-diag-vns}
+Table~\ref{tab:D-vns} follows Phase~2 of PSO-VNS, SSA-VNS and RS-VNS on the \NDVnsCases{} cases of the split study $\times$ \NDVnsSeeds{} seeds. At 6,030 evaluations, Phase~2 is essentially one compass-search descent: for PSO-VNS, the first descent from the switch point takes a median of \NDDescentEvalsPSOVNS{} evaluations (pooled share \NDDescentEvalsPctPSOVNS\% of the Phase-2 evaluations; median share per run \NDDescentEvalsPctMedianPSOVNS\%) and yields \NDDescentSharePSOVNS\% of the Phase-2 improvement, and \NDNoAcceptedPSOVNS{} of \NDVnsRunsPSOVNS{} runs have no accepted shaking cycle. A shake costs a single evaluation; the relevant cost is that of the cycles (shake plus the local search that follows it), which take \NDCycleEvalsPctPSOVNS\% of the Phase-2 evaluations (pooled; median run \NDCycleEvalsPctMedianPSOVNS\%) and give \NDCycleSharePSOVNS\% of the Phase-2 gain (\NDCycleAllSharePSOVNS\% including the cycle cut off by the budget). % CHECK-DIAG [D08], [D20]
+For $N\ge12$ the median run has no shaking step at all, because the first descent almost never finishes within the budget, and all accepted cycles use the smallest neighbourhood $k=1$. % CHECK-DIAG [D09], [D10]
+VNS never makes a feasible incumbent infeasible, and its start is always the best feasible Phase-1 layout when Phase~1 evaluated one. % CHECK-DIAG [D11], [D12]
+The component analysis (Section~\ref{M-sec:ablation}) therefore measures the value of a local-search phase after Phase~1, a truncated best-improvement compass search at this budget; the neighbourhood structure of VNS can matter only for small $N$, and the local-minimality certificate of Proposition~\ref{prop:S-ls} does not apply to the runs in which the first descent is unfinished.
+
+\subsection{Feasible Starts}
+\label{sec:S-diag-feas}
+Table~\ref{tab:D-feasstart} logs every candidate of PSO and DE from feasible starts (\NDFsCases{} cases $\times$ \NDFsSeeds{} seeds). Neither method improves on the best initial layout, in these runs or in any of the \NDFsStoredRunsPSO{} stored runs of each. % CHECK-DIAG [D13]
+Of the \NDFsCandPSO{} PSO candidates, \NDFsFeasCandPSO\% are feasible, and every one of them is the particle holding $\mathbf G$ (with zero velocity) re-evaluating $\mathbf G$, as in Proposition~\ref{prop:S-frozen}(a); no personal best is ever updated, and none of the \NDFsCandDE{} DE trials is feasible or accepted. % CHECK-DIAG [D14]
+Label symmetry does not explain the stall: after the turbines of each start are relabelled to their nearest turbines of $\mathbf G$, the first PSO move is still feasible in only \NDFsMixMatched\% of the draws, and only a common weight for all coordinates (a convex combination of two layouts) gives \NDFsMixScalar\%. % CHECK-DIAG [D15]
+The feasible starts are distinct dense layouts (median RMS turbine distance to $\mathbf G$ after relabeling \NDFsInitRms~m), and the independent per-coordinate weights, with overshoot beyond $\mathbf G$, place turbines too close to each other or outside the site. % CHECK-DIAG [D16]
+
+\subsection{Phase~1 of RS-VNS}
+\label{sec:S-diag-rs}
+Table~\ref{tab:D-rsreplay} replays the random stream of Phase~1 of RS-VNS. The replay agrees with the stored runs, and the share of samples with all turbines inside the circle matches $(\pi/4)^N$ (Proposition~\ref{M-prop:S-box} of the main text). In \NDRsRunsNoFeasSample{} RS-VNS runs, among them all runs of \NDRsCasesNoFeasSample{} cases, Phase~1 draws no feasible layout at all, and VNS starts from the least-violating sample (Section~\ref{sec:S-th-budget}); in all of these runs the spacing constraint is binding (Section~\ref{sec:S-ablation}). The last column of Table~\ref{tab:D-rsreplay} gives the feasibility rate of samples drawn uniformly in the disc, the Phase-1 distribution of the control RSD-VNS (Section~\ref{sec:S-ablation}). % CHECK-DIAG [D17]
+
+\section{Published Kusiak--Song Results}
+\label{sec:S-literature}
+The Kusiak--Song benchmark has been solved with an evolution strategy~\cite{Kusiak2010}, ant colony optimization~\cite{Eroglu2012}, particle filtering~\cite{Eroglu2013} and biogeography-based optimization~\cite{Bansal2017}. We do not compare our results numerically with these studies. The published values available to us are transcriptions whose source tables could not be checked against the original papers, several of them are internally inconsistent (e.g., objective and wake loss that do not add up to the wake-free value), and the budgets, the numbers of runs and the handling of infeasible layouts of these studies differ from ours or are not reported. The transcribed values and the status of each are listed in \texttt{analysis/literature\_values.csv} and \texttt{analysis/literature\_values.md}.
+% AUTHOR: if the published values are verified against the original papers, a comparison table can be added here.
+
+\section{Historical Reproducibility Map and Archive Completeness}
+\label{sec:S-repro}
+This map describes the original workflow, not a complete set of executable files in the present archive. Most scripts in Table~\ref{tab:S-repro}, the original \texttt{fresh\_*.csv}/\texttt{mpce\_*.csv} runs and the core optimizer modules are absent. The supplied revision drivers depend on those missing modules. \texttt{analysis/README\_reproduce.md} now distinguishes the available standalone audit and document build from blocked full-study reproduction. The historical behaviour-preserving replay statements below are author-reported. Section~\ref{sec:S-archive} documents the independently executable checks and unresolved coordinate precision.
+
+Table~\ref{tab:S-repro} lists which script produces which part of the results; \texttt{analysis/README\_reproduce.md} gives the commands, the run files and the order in which to call them. The per-run results of the main comparison come from two generations of experiment scripts with the same objective and optimizer code: SSA, LX-SSA, DE, the old-setting PSO, VNS, SSA-VNS and LX-SSA-VNS from the grid scripts of a preliminary comparison of ours (\texttt{fresh\_*.csv}), and PSO, PSO-VNS, RS-VNS, RSD-VNS and MS-SLSQP, as well as the split, initialization, budget, Horns Rev~1 and IEA37 studies, from \texttt{analysis/mpce\_experiments.py} and \texttt{analysis/iea37\_experiments.py} (\texttt{mpce\_*.csv}); \texttt{mpce\_results.py} records the source file of every run. Later code changes were behavior-preserving: re-runs of archived runs with the current code reproduce their objectives and coordinates exactly. Convergence curves are stored at every $\lfloor(B-30)/200\rfloor$ evaluations.\IfSuppTable{tab:provenance}{ Table~\ref{tab:provenance} gives the source of the runs of every method and study.}{}
+\begin{table}[!htb]
+\centering
+\caption{Reproducibility map: script (in \texttt{analysis/}) that produces each part of the results. Commands and run files: \texttt{analysis/README\_reproduce.md}.}
+\label{tab:S-repro}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.42\textwidth}>{\raggedright\arraybackslash}p{0.52\textwidth}}
+\toprule
+Results & Script \\
+\midrule
+Runs of PSO, PSO-VNS, RS-VNS, RSD-VNS, MS-SLSQP; split, feasible-initialization, budget and Horns Rev~1 studies & \texttt{mpce\_experiments.py} (one experiment id per study) \\
+Runs of IEA37 Case Study~1 & \texttt{iea37\_experiments.py} \\
+Runs of SSA, LX-SSA, DE, old-setting PSO, VNS, SSA-VNS, LX-SSA-VNS & \texttt{full\_grid\_experiments.py} of a preliminary comparison of ours, experiments \texttt{grid} (SSA, LX-SSA, DE, old-setting PSO), \texttt{vgrid} (VNS) and \texttt{bgrid} (SSA-VNS, LX-SSA-VNS) \\
+Main-text tables, generated tables of this document (\texttt{mpce\_supplementary.tex}), figures in \texttt{figures\_mpce/}, \texttt{mpce\_summary.json} & \texttt{mpce\_results.py} (called by \texttt{build\_mpce\_paper.sh}) \\
+Number macros \texttt{mpce\_numbers.tex}; checks of outcome-dependent statements & \texttt{mpce\_numbers.py}; \texttt{mpce\_check\_final.py} (both called by \texttt{mpce\_results.py}) \\
+Re-evaluation with the cubic power curve and the Gaussian wake & \texttt{mpce\_robustness.py} (cached in \texttt{mpce\_reevaluation\_cache.csv}) \\
+Spacing re-optimization with SSA and LX-SSA (Table~\ref{tab:spacing-authors}) & \texttt{analyze\_authors\_runs.py} \\
+Spacing re-optimization of the nine methods at $5D$ and $6D$ (Section~\ref{sec:S-rev-spacing}) & runs: \texttt{rev2\_spacing.py}; statistics and tables: \texttt{rev2\_analysis.py} \\
+Exact-gradient baselines on IEA37 (Section~\ref{sec:S-rev-grad}) & runs, gradient check and $c_g$: \texttt{rev2\_gradient.py} (with \texttt{check}); statistics and tables: \texttt{rev2\_analysis.py} \\
+Second site, Lillgrund block (Section~\ref{sec:S-rev-site}) & model and PyWake check: \texttt{rev2\_site\_model.py} (with \texttt{--pywake}); runs: \texttt{rev2\_site.py}; statistics and table: \texttt{rev2\_analysis.py} \\
+Packing capacity (Table~\ref{tab:capacity}) & \texttt{packing\_capacity.py} \\
+Model schematics (Fig.~\ref{M-fig:model} of the main text) & \texttt{make\_model\_figures.py} \\
+Verification of the evaluator against the original code and archived runs; IEA37 calculator & \texttt{validate\_evaluator.py}, \texttt{calibrate\_authors\_code.py}; \texttt{iea37\_model.py} (run as a script) \\
+Robustness of the statistical conclusions, equivalence at three levels, equivalence curve (Section~\ref{sec:S-inference}, Fig.~\ref{M-fig:equiv-curve} of the main text); \texttt{mpce\_numbers\_extra.tex} & \texttt{mpce\_inference\_extra.py} and \texttt{mpce\_check\_extra.py} (checks X01--X57), after \texttt{mpce\_results.py} \\
+Algorithm diagnostics (Section~\ref{sec:S-diag}); \texttt{mpce\_numbers\_diag.tex}, \texttt{diag\_*.pdf} & \texttt{mpce\_diagnostics.py} (instrumented reruns, about 18~min; run separately) and \texttt{mpce\_check\_diag.py} (checks D01--D22) \\
+PSO coefficient sweep and bound handling (Section~\ref{sec:S-csweep}); \texttt{mpce\_numbers\_csweep.tex}, \texttt{csweep.pdf} & runs: \texttt{mpce\_experiments.py}; analysis: \texttt{mpce\_csweep.py} and \texttt{mpce\_check\_csweep.py} (checks S01--S15) \\
+Direction resolution, Horns Rev~1 re-evaluation and PyWake check, projected IEA37 layouts (Sections~\ref{sec:S-hr16}, \ref{sec:S-iea37} and~\ref{sec:S-direction}); \texttt{mpce\_numbers\_dir.tex} & \texttt{mpce\_direction.py}, \texttt{pywake\_check.py} (PyWake~\NFPyWakeVersion), \texttt{iea37\_projected.py}; \texttt{mpce\_check\_dir.py} (checks F01--F46) \\
+Theoretical details (Section~\ref{sec:S-theory}), \texttt{theory\_*.pdf} & \texttt{make\_theory\_figures.py}; with \texttt{--check} (about 3~min) it verifies every number of Section~\ref{sec:S-theory} (checks T01--T13) \\
+Laplace ablation and real-coded GA (Section~\ref{sec:S-rev-lap}) & runs: \texttt{rev2\_laplace.py}, \texttt{rev2\_ga.py}; statistics and tables: \texttt{rev2\_analysis.py} (reuses the functions of \texttt{mpce\_results.py} and \texttt{mpce\_inference\_extra.py}) \\
+\bottomrule
+\end{tabular}
+\end{table}
+\SuppTableOpt{tab:provenance}
+% flush the reproducibility map and the provenance table onto their own page before the references: forced out by the
+% \FloatBarrier of the bibliography heading (placeins), they overfilled the text page by 5.7 pt
+\clearpage
+
+\section{Revision Experiments: Laplace Ablation, a Real-Coded GA, Minimum Spacing, Exact Gradients and a Second Site}
+\label{sec:S-rev-lap}
+This section reports five experiments added after the primary analysis: an ablation of the Laplace step of LX-SSA (Section~\ref{sec:S-rev-lap-abl}), a real-coded genetic algorithm as a ninth method of the main comparison (Section~\ref{sec:S-rev-ga}), a re-optimization at minimum spacings $5D$ and $6D$ (Section~\ref{sec:S-rev-spacing}), exact-gradient baselines on IEA37 Case Study~1 (Section~\ref{sec:S-rev-grad}) and a second site with a measured wind climate, a Lillgrund block (Section~\ref{sec:S-rev-site}). The first three use the penalized objective~\eqref{M-eq:penalty}, the bounds, the counting of evaluations, the seeds 1--30 and the random initialization of the main comparison, and the statistics of Section~\ref{sec:S-stats}: wake loss in \% of the wake-free objective, feasibility-aware ranking with qualification at 15 of 30 feasible runs, case-mean Wilcoxon tests with Holm's correction, and 90\% percentile bootstrap intervals over the cases (10{,}000 resamples) with the margin of 0.05~pp of Table~\ref{tab:equivalence}; the exact-gradient methods use the constrained formulation of MS-SLSQP (Section~\ref{sec:S-slsqp}), the same seeds and random initialization, and are compared at the run level, as are the methods on the Lillgrund block, which follows the Horns Rev~1 protocol (Sections~\ref{sec:S-hrmodel} and~\ref{sec:S-hr16}). None of the experiments changes a table or a number of the main text other than those that cite this section.
+
+\subsection{Laplace Ablation}
+\label{sec:S-rev-lap-abl}
+LX-SSA as published differs from SSA in two respects (Section~\ref{M-sec:ssa} and Algorithm~\ref{alg:S-ssa}): every follower also evaluates a Laplace candidate~\eqref{M-eq:laplace} and keeps the better of it and the SSA midpoint, and an iteration costs $2N_p$ evaluations instead of $N_p$, partly because the kept candidates are evaluated again with the whole population. Six variants separate these components. Each was run on the 12 cases of the split study (middle and largest $N$ per farm and data set; Table~\ref{M-tab:design}) with 30 seed-paired runs of 6{,}030 evaluations from random starts (2{,}160 new runs); SSA and LX-SSA ($\chi=1$) are the stored runs of the main comparison. \emph{No re-evaluation}: LX-SSA without the redundant re-evaluation; the leaders are evaluated once and every follower keeps the known value of its chosen candidate, so an iteration costs $1.5N_p=45$ evaluations (133 full iterations and a 134th in which only the leaders are evaluated, exactly 6{,}030 evaluations); with the same number of iterations, its trajectory is that of LX-SSA. \emph{Laplace replaces midpoint}: every follower takes the Laplace candidate instead of the midpoint, without comparison, at the cost of SSA ($N_p$ evaluations per iteration, 200 iterations). \emph{Uniform $\gamma$}: LX-SSA as published with $\gamma\sim U(-2,2)$ instead of the Laplace distribution; like Laplace$(0,1)$, it is symmetric about zero with $\mathrm E\lvert\gamma\rvert=1$, but it is light-tailed ($\lvert\gamma\rvert\le2$), so it isolates the heavy tail. \emph{Scale}: LX-SSA as published with $\chi=0.25$, 0.5 and 2 ($\phi=0$).
+
+Table~\ref{tab:S-rev-laplace} gives the results. The eight methods differ (Friedman $\chi^2_F=38.2$, 7 d.f., $p=2.72\times10^{-6}$). SSA and LX-SSA have at least 15 feasible runs in 10 of the 12 cases, so the loss differences are taken over these 10 cases; there, LX-SSA has a mean wake loss 0.246~pp higher than SSA (90\% CI [0.103, 0.396]).
+\emph{Cost.} Without the re-evaluation, LX-SSA has a 0.169~pp lower mean wake loss ([$-$0.293, $-$0.060]; lower in 8 of the 10 cases) but remains 0.077~pp above SSA ([0.018, 0.144]): part of the deficit of LX-SSA is its doubled evaluation cost.
+\emph{Laplace step vs.\ midpoint.} At the cost of SSA, the variant with the Laplace candidate in place of the midpoint is feasible in more runs than SSA (93.9\% vs.\ 90.0\%; at least 15 feasible runs in all 12 cases vs.\ 10) and ranks first alone in 6 cases (SSA: 4), but in the 10 cases in which both qualify its mean wake loss is 0.077~pp higher ([$-$0.029, 0.189]; 3.149\% vs.\ 3.073\%), and its average rank, 2.83, is close to that of SSA, 2.67. The Laplace step thus gives no advantage in wake loss over the SSA midpoint.
+\emph{Heavy tail.} With the uniform $\gamma$, the mean wake loss is that of LX-SSA within 0.007~pp ([$-$0.073, 0.052]): the heavy tail of the Laplace distribution has no detectable effect, although equivalence within $\pm0.05$~pp is not shown.
+\emph{Scale.} Smaller scales are worse: $\chi=0.25$ and $\chi=0.5$ raise the mean wake loss of LX-SSA by 0.155~pp ([0.073, 0.243]) and 0.093~pp ([0.012, 0.170]) and have the two worst average ranks (7.42 and 6.33). With $\chi=2$ the loss is 0.123~pp lower ([$-$0.263, 0.009], an interval that includes zero; average rank 3.92 vs.\ 4.25), but still 0.122~pp above SSA ([0.048, 0.200]); no tested scale brings LX-SSA level with SSA.
+
+With 12 cases, the case-level tests have little power. None of the Holm-adjusted case-mean Wilcoxon tests against LX-SSA is significant (smallest $p_{\rm Holm}=0.085$), and against SSA only $\chi=0.25$ is (worse, $p_{\rm Holm}=0.014$). In the Holm-adjusted average-rank tests, $\chi=0.25$ ranks worse than LX-SSA ($p=0.011$), and $\chi=0.25$ and $\chi=0.5$ rank worse than SSA, the best-ranked method ($p=1.4\times10^{-5}$ and $p=0.0015$); no other rank difference is significant. With the cases fixed (seed-level bootstrap within cases), the 90\% intervals mostly give the same reading, e.g., [$-$0.259, $-$0.079]~pp for the variant without re-evaluation and [$-$0.101, 0.087]~pp for the uniform $\gamma$, both against LX-SSA; they differ on whether zero is excluded for $\chi=0.5$ ([$-$0.013, 0.206]) and $\chi=2$ ([$-$0.215, $-$0.032]) against LX-SSA and for the variant without re-evaluation against SSA ([$-$0.004, 0.158]). The differences above are therefore estimates with their intervals, not confirmed effects. On these cases, the Laplace step gives LX-SSA no advantage over the SSA midpoint, part of its deficit against SSA is its doubled evaluation cost, the heavy tail does not matter, and scales below the published $\chi=1$ are worse.
+
+\begin{table}[!htbp]
+\centering
+\caption{Role and parameterization of the Laplace step: SSA, LX-SSA and six LX-SSA variants on the 12 cases of the split study (6{,}030 evaluations, 30 seed-paired runs).}
+\label{tab:S-rev-laplace}
+\scriptsize\setlength{\tabcolsep}{2pt}
+\begin{tabular}{lcccccccccc}
+\toprule
+& & & & & \multicolumn{3}{c}{vs.\ LX-SSA} & \multicolumn{3}{c}{vs.\ SSA} \\
+\cmidrule(lr){6-8}\cmidrule(lr){9-11}
+Method & Calls/it. / $T$ & Loss (\%) & Feas. & Rank & $\overline{\Delta L}$ & 90\% CI & $p_{\rm Holm}$ & $\overline{\Delta L}$ & 90\% CI & $p_{\rm Holm}$ \\
+\midrule
+SSA & 30 / 200 & 3.073$^{10}$ & 90.0 & 2.67 & $-$0.246 & [$-$0.396, $-$0.103] & 0.195 & -- & -- & -- \\
+LX-SSA & 60 / 100 & 3.319$^{10}$ & 88.9 & 4.25 & -- & -- & -- & +0.246 & [0.103, 0.396] & 0.148 \\
+LX-SSA, no re-evaluation & 45 / 134 & 3.150$^{10}$ & 88.9 & 3.75 & $-$0.169 & [$-$0.293, $-$0.060] & 0.186 & +0.077 & [0.018, 0.144] & 0.168 \\
+LX-SSA, Laplace replaces midpoint & 30 / 200 & 3.979 & 93.9 & 2.83 & $-$0.169 & [$-$0.297, $-$0.057] & 0.085 & +0.077 & [$-$0.029, 0.189] & 0.891 \\
+LX-SSA, $\gamma\sim U(-2,2)$ & 60 / 100 & 3.311$^{10}$ & 89.4 & 4.83 & $-$0.007 & [$-$0.073, 0.052] & 0.922 & +0.238 & [0.108, 0.377] & 0.059 \\
+LX-SSA, $\chi=0.25$ & 60 / 100 & 3.474$^{10}$ & 86.7 & 7.42 & +0.155 & [0.073, 0.243] & 0.117 & +0.401 & [0.243, 0.572] & 0.014 \\
+LX-SSA, $\chi=0.5$ & 60 / 100 & 3.412$^{10}$ & 85.0 & 6.33 & +0.093 & [0.012, 0.170] & 0.316 & +0.339 & [0.152, 0.537] & 0.059 \\
+LX-SSA, $\chi=2$ & 60 / 100 & 3.195$^{10}$ & 90.0 & 3.92 & $-$0.123 & [$-$0.263, 0.009] & 0.465 & +0.122 & [0.048, 0.200] & 0.148 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Calls/it.\ / $T$: objective evaluations per iteration and number of iterations at 6{,}030 evaluations. Loss: mean wake loss (\%) of the feasible runs, averaged over the cases in which the method has at least 15 feasible runs of 30 (superscript: number of such cases when fewer than 12; the variant with the Laplace candidate in place of the midpoint qualifies in all 12 cases, and its mean over the 10 cases of the other methods is 3.149\%). Feas.: feasible runs (\%). Rank: average feasibility-aware rank among the 8 methods of this table. $\overline{\Delta L}$: mean difference of the per-case mean wake losses, method minus reference (pp; negative = method better) over the cases in which both qualify, with 90\% percentile bootstrap CI over the cases; $p_{\rm Holm}$: case-mean Wilcoxon signed-rank test, Holm-adjusted over the 7 comparisons with the same reference. LX-SSA and SSA: stored runs of the main comparison. Friedman $\chi^2_F=38.2$ (7 d.f.), $p=2.72\times10^{-6}$; Iman--Davenport $F_F=9.2$, $p=3.25\times10^{-8}$.}
+\end{table}
+
+\subsection{Real-Coded Genetic Algorithm}
+\label{sec:S-rev-ga}
+A standard real-coded GA (label GA) was run on the 68 benchmark cases with 30 seed-paired runs of 6{,}030 evaluations from random starts (2{,}040 runs): $N_p=30$, binary tournament selection, simulated binary crossover (SBX)~\cite{Deb1995} ($\eta_c=15$, $p_c=0.9$, per-variable exchange probability 0.5), polynomial mutation~\cite{DebGoyal1996} ($\eta_m=20$, $p_m=1/n$ with $n=2N$ variables), clipping to the box, and generational replacement with elitism. The initial population and every generation cost $N_p$ evaluations (200 generations). These are common default settings, not tuned to this benchmark. GA minimizes the same penalized objective as the other penalty-based methods, with the same evaluation counting; the runs of the other eight methods are those of the main comparison. The comparison covers the 68 benchmark cases, the Horns Rev~1 block and IEA37 Case Study~1 (see below).
+% GA Horns Rev 1 / IEA37: rev2_gahr (60 runs) and rev2_gaiea (120 runs) complete; reported below (tab:S-rev-ga-hr, tab:S-rev-ga-iea; numbers from rev2out_ga/rev2_summary.json: ga_hr16, ga_iea37).
+
+Table~\ref{tab:S-rev-ga} gives the case-level analysis of the nine methods (Friedman $\chi^2_F=374.8$, 8 d.f., $p=4.46\times10^{-76}$). GA ranks third (average rank 2.74) after PSO-VNS (2.18) and PSO (2.40), and alone ranks first in 16 cases (PSO-VNS: 21, PSO: 17). It differs significantly from neither PSO-VNS nor PSO, in the average-rank test (Holm $p=0.468$ and $0.471$) or in the case-mean Wilcoxon test ($p_{\rm Holm}=0.101$ and $0.696$). Its mean wake loss is 0.026~pp higher than that of PSO-VNS (90\% CI [$-$0.006, 0.062]) and 0.008~pp higher than that of PSO ([$-$0.022, 0.041]): GA and PSO are practically equivalent at the 0.05~pp margin ($p_{\rm TOST}=0.020$, $m_{\min}=0.041$~pp), whereas equivalence of GA and PSO-VNS is not shown ($m_{\min}=0.062$~pp). At the run level, GA is significantly worse than PSO-VNS in 8 cases and better in 1 (PSO: 5 and 2), and it is feasible in 98.6\% of its runs (PSO-VNS and PSO: 100\%). Against the other six methods, GA has a lower mean wake loss, by 0.305~pp (SSA-VNS) to 0.857~pp (DE), with 90\% intervals wholly below zero; it is significantly better in 39 (SSA-VNS) to 58 (SSA) cases and worse in at most 3, and all Holm-adjusted $p$ values are at most 0.002.
+
+The relative order of the other eight methods is unchanged, and without GA their average ranks are those of Table~\ref{M-tab:friedman68}; the eight-method analysis of the main text therefore stands. In the nine-method pool, PSO-VNS keeps the best average rank, and a standard real-coded GA performs about as well as PSO on this benchmark and better than the salp-swarm methods, VNS, MS-SLSQP and DE.
+
+\emph{Horns Rev~1 and IEA37.} GA was also run, with the same settings and random starts, on the Horns Rev~1 block (Section~\ref{M-sec:hornsrev-site}) and on the 16- and 36-turbine scenarios of IEA37 Case Study~1 (Section~\ref{M-sec:iea37}), with 30 seeds at 6{,}030 and 30{,}030 evaluations (200 and 1{,}000 generations; 60 and 120 runs); the other methods are the stored runs of the main text (Tables~\ref{tab:S-rev-ga-hr} and~\ref{tab:S-rev-ga-iea}). On the Horns Rev~1 block, GA is feasible in 30 of 30 runs at both budgets. At 6{,}030 evaluations its mean AEP loss, 7.18\% (mean AEP 138.12~GWh/yr), is the second lowest, after that of PSO-VNS (7.07\%); in seed-paired Wilcoxon tests (infeasible runs below every feasible run, Holm over the ten comparisons of GA), GA does not differ significantly from PSO-VNS ($p_{\rm Holm}=0.53$) and is better than each of the other nine methods ($p_{\rm Holm}\le0.013$). At 30{,}030 evaluations GA has the lowest mean AEP loss of all methods, 6.16\% (139.64~GWh/yr), against 6.52\% for PSO-VNS, 6.78\% for PSO (28 feasible runs) and 6.85\% for VNS, and it is better than each of the other ten methods ($p_{\rm Holm}\le1.1\times10^{-4}$, the largest against PSO-VNS). With the 5$^\circ$ bins used in optimization, 6 of its 30 layouts at this budget exceed the AEP of the installed block (PSO-VNS: 3); the GA layouts are not part of the re-evaluation with 1$^\circ$ bins and PyWake (Table~\ref{tab:F-hr}).
+
+On IEA37, all 120 GA runs are feasible. With 16 turbines, the mean AEP of GA is the second highest at both budgets (391{,}037.6 and 401{,}766.1~MWh; PSO-VNS: 395{,}031.8 and 402{,}583.1~MWh), and its best runs (399{,}691.3 and 409{,}194.2~MWh) are below those of PSO-VNS, PSO and MS-SLSQP (at 6{,}030 evaluations also below those of SSA-VNS, 403{,}251.3, and VNS, 400{,}169.3~MWh). With 36 turbines, GA has the highest best-run AEP and the highest mean AEP of the methods of Table~\ref{tab:S-rev-ga-iea} and Table~\ref{tab:iea37-detail} at both budgets (the exact-gradient methods of Section~\ref{sec:S-rev-grad} are higher) (best 795{,}530.1 and 836{,}526.4~MWh; mean 774{,}971.9 and 823{,}061.5~MWh, against the next highest means of 741{,}565.6~MWh for VNS at 6{,}030 and 807{,}446.0~MWh for PSO-VNS at 30{,}030 evaluations); its best layout at 30{,}030 evaluations lies 3.14\% below the best feasible published layout in AEP (5.20\% after radial projection; PSO-VNS: 4.20\% and 6.23\%). Beyond the benchmark, GA thus gains more from the larger budget than PSO-VNS on the Horns Rev~1 block and is the strongest of the gradient-free methods compared with 36 IEA37 turbines. These runs were added after the primary analysis and cover one site and one case study with 30 seeds each; they do not change the benchmark ranking of Table~\ref{tab:S-rev-ga}, but show that it need not hold beyond the benchmark.
+
+\begin{table}[!htbp]
+\centering
+\caption{Real-coded genetic algorithm (GA) added to the method pool: case-level analysis of the nine methods over the 68 benchmark cases (6{,}030 evaluations, 30 seed-paired runs).}
+\label{tab:S-rev-ga}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lcccccccc}
+\toprule
+Method & Avg.\ rank & Best & Feas. & $p_z$ & $p_W$ & $\overline{\Delta L}$ (GA $-$ method) & 90\% CI & W/T/L (GA) \\
+\midrule
+PSO-VNS & 2.18 & 21 & 100.0 & 0.468 & 0.101 & +0.026 & [$-$0.006, 0.062] & 1/59/8 \\
+PSO & 2.40 & 17 & 100.0 & 0.471 & 0.696 & +0.008 & [$-$0.022, 0.041] & 2/61/5 \\
+GA & 2.74 & 16 & 98.6 & -- & -- & -- & -- & -- \\
+SSA-VNS & 4.32 & 0 & 99.6 & 0.002 & $9.29\times10^{-10}$ & $-$0.305 & [$-$0.376, $-$0.237] & 39/28/1 \\
+VNS & 5.21 & 3 & 100.0 & $5.28\times10^{-7}$ & $1.07\times10^{-9}$ & $-$0.439 & [$-$0.522, $-$0.359] & 46/19/3 \\
+SSA & 6.34 & 0 & 97.6 & $8.52\times10^{-14}$ & $6.06\times10^{-11}$ & $-$0.609 & [$-$0.742, $-$0.483] & 58/10/0 \\
+MS-SLSQP & 6.85 & 1 & 100.0 & $1.10\times10^{-17}$ & $2.34\times10^{-10}$ & $-$0.410 & [$-$0.483, $-$0.334] & 56/10/2 \\
+LX-SSA & 7.01 & 0 & 96.9 & $5.68\times10^{-19}$ & $6.06\times10^{-11}$ & $-$0.762 & [$-$0.937, $-$0.597] & 57/11/0 \\
+DE & 7.96 & 0 & 71.4 & $8.44\times10^{-28}$ & $1.14\times10^{-10}$ & $-$0.857 & [$-$1.103, $-$0.622] & 55/13/0 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Avg.\ rank: average feasibility-aware rank among the nine methods (rule of Table~\ref{M-tab:friedman68}); Best: cases in which the method alone ranks first; Feas.: feasible runs (\%); $p_z$: Holm-adjusted $p$ of the average-rank test against GA; $p_W$: Wilcoxon signed-rank test on the per-case mean wake losses, GA vs.\ the method (Holm-adjusted over the 8 methods; cases in which only one qualifies imputed); $\overline{\Delta L}$: mean difference of the case-mean wake losses, GA minus method (pp; positive = GA worse), over the cases in which both have at least 15 feasible runs, 90\% bootstrap CI over the cases; W/T/L: cases in which GA is significantly better / not different / worse (seed-paired Wilcoxon, Holm over the 8 comparisons of GA in each case). Friedman $\chi^2_F=374.8$ (8 d.f.), $p=4.46\times10^{-76}$; Iman--Davenport $F_F=148.5$, $p=1.17\times10^{-130}$. Without GA the ranks of the eight methods are those of Table~\ref{M-tab:friedman68}.}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Horns Rev~1 16-turbine block with GA added (5$^\circ$ direction bins): AEP, feasibility and AEP loss.}
+\label{tab:S-rev-ga-hr}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{2}{c}{6{,}030 evaluations, R} & \multicolumn{4}{c}{Loss (\%)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-7}
+Layout / method & AEP & Feas. & 6k R & 6k F & 30k & 120k \\
+\midrule
+Installed layout & 139.82 & -- & 6.04 & -- & -- & -- \\
+\midrule
+PSO-VNS & 138.29 & 30/30 & 7.07 & 6.97 & 6.52 & 6.40 \\
+SSA-VNS & 137.59 & 30/30 & 7.54 & 6.98 & 7.19 & 6.47 \\
+LX-SSA-VNS & 137.41 & 30/30 & 7.66 & 7.02 & 7.07 & 6.44 \\
+RS-VNS & 137.58 & 28/30 & 7.54$^{28}$ & n/r & 7.04 & 6.25 \\
+VNS & 137.35 & 30/30 & 7.70 & 6.91 & 6.85 & 6.23 \\
+PSO & 137.79 & 19/30 & 7.40$^{19}$ & 8.35 & 6.78$^{28}$ & 6.63 \\
+SSA & 136.25 & 30/30 & 8.44 & 7.83 & 8.17 & 7.62 \\
+LX-SSA & 136.00 & 28/30 & 8.61$^{28}$ & 7.89 & 8.50 & 8.28 \\
+DE & -- & 0/30 & -- & 8.35 & 7.40$^{8}$ & 6.12 \\
+MS-SLSQP & 136.31 & 30/30 & 8.40 & 8.00 & 7.82 & 7.31 \\
+GA & 138.12 & 30/30 & 7.18 & n/r & 6.16 & n/r \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Wake-free AEP 148.81 GWh/yr. Format of Table~\ref{M-tab:hr-site}; all rows except GA are those of that table. AEP: mean (GWh/yr) over the feasible runs of 30 seeds at 6{,}030 evaluations, random initialization (R); Feas.: feasible runs. Loss: mean AEP loss (\%, relative to the wake-free AEP) of the feasible runs at 6{,}030 evaluations with random (R) and feasibility-preserving (F) initialization and at 30{,}030 and 120{,}030 evaluations (R; 10 seeds at 120{,}030); superscript: feasible runs when not all are feasible; n/r: not run.}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{IEA37 Case Study~1 with GA added: AEP (MWh) of the best run, mean AEP and feasible runs.}
+\label{tab:S-rev-ga-iea}
+\scriptsize\setlength{\tabcolsep}{2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccccccc}
+\toprule
+& \multicolumn{6}{c}{16 turbines ($r=1300$~m)} & \multicolumn{6}{c}{36 turbines ($r=2000$~m)} \\
+\cmidrule(lr){2-7}\cmidrule(lr){8-13}
+& \multicolumn{3}{c}{6{,}030} & \multicolumn{3}{c}{30{,}030} & \multicolumn{3}{c}{6{,}030} & \multicolumn{3}{c}{30{,}030} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
+Method / source & Best & Mean & Feas. & Best & Mean & Feas. & Best & Mean & Feas. & Best & Mean & Feas. \\
+\midrule
+Example layout & \multicolumn{6}{c}{366{,}941.6} & \multicolumn{6}{c}{737{,}883.1} \\
+Best published, strict & \multicolumn{6}{c}{418{,}924.4} & \multicolumn{6}{c}{863{,}676.3} \\
+Best published, projected & \multicolumn{6}{c}{421{,}451.1} & \multicolumn{6}{c}{882{,}382.8} \\
+\midrule
+PSO-VNS & 402{,}782.4 & 395{,}031.8 & 30/30 & 413{,}331.9 & 402{,}583.1 & 30/30 & 787{,}708.9 & 736{,}832.4 & 30/30 & 827{,}385.0 & 807{,}446.0 & 30/30 \\
+PSO & 403{,}753.1 & 390{,}540.2 & 30/30 & 412{,}702.4 & 401{,}347.0 & 30/30 & 787{,}988.7 & 729{,}188.5 & 27/30 & 830{,}256.4 & 802{,}252.3 & 30/30 \\
+SSA-VNS & 403{,}251.3 & 388{,}562.9 & 30/30 & 406{,}924.6 & 396{,}920.5 & 30/30 & 766{,}803.3 & 728{,}870.3 & 30/30 & 819{,}930.5 & 791{,}404.4 & 30/30 \\
+SSA & 395{,}150.2 & 378{,}073.1 & 30/30 & 401{,}459.3 & 392{,}875.6 & 30/30 & 750{,}707.4 & 717{,}258.5 & 30/30 & 802{,}538.2 & 771{,}298.0 & 30/30 \\
+LX-SSA & 393{,}284.6 & 373{,}977.4 & 30/30 & 398{,}770.0 & 390{,}267.4 & 30/30 & 746{,}301.3 & 709{,}660.5 & 30/30 & 789{,}311.3 & 752{,}030.3 & 30/30 \\
+DE & 357{,}391.3 & 338{,}610.6 & 27/30 & 397{,}402.7 & 359{,}952.3 & 30/30 & -- & -- & 0/30 & -- & -- & 0/30 \\
+VNS & 400{,}169.3 & 387{,}637.3 & 30/30 & 404{,}076.0 & 396{,}192.0 & 30/30 & 785{,}791.3 & 741{,}565.6 & 30/30 & 824{,}230.2 & 801{,}797.4 & 30/30 \\
+MS-SLSQP & 405{,}433.8 & 382{,}605.2 & 18/30 & 410{,}349.5 & 394{,}567.0 & 29/30 & 748{,}571.1 & 733{,}342.0 & 4/30 & 833{,}365.0 & 798{,}913.0 & 14/30 \\
+GA & 399{,}691.3 & 391{,}037.6 & 30/30 & 409{,}194.2 & 401{,}766.1 & 30/30 & 795{,}530.1 & 774{,}971.9 & 30/30 & 836{,}526.4 & 823{,}061.5 & 30/30 \\
+\bottomrule
+\end{tabular}}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize AEP (MWh, official IEA37 model) of the best feasible run and mean over the feasible runs (30 seeds, random initialization); Feas.: feasible runs; --: no feasible run. The eight methods of the main comparison and GA; LX-SSA-VNS and RS-VNS are in Table~\ref{tab:iea37-detail}. Published rows as in Table~\ref{M-tab:iea37} (strict: every turbine within 1~mm of the boundary; projected: turbines outside projected radially onto it).}
+\end{table}
+
+\subsection{Minimum Spacing of 5D and 6D}
+\label{sec:S-rev-spacing}
+The benchmark fixes $\ell_{\min}=4D$ (308~m). To test whether the ranking and the component contrasts depend on this choice, the eight methods of the main comparison and the disc-sampling control RSD-VNS were re-optimized after the primary analysis at $\ell_{\min}=5D$ (385~m) and $6D$ (462~m) on the 12 cases of the split study (middle and largest $N$ per farm and data set; Table~\ref{M-tab:design}), with 30 seed-paired runs of 6{,}030 evaluations from random starts (6{,}480 new runs). Only the spacing changes: it enters the penalty~\eqref{M-eq:penalty}, the feasibility test and the explicit constraints of MS-SLSQP; all other settings, including the step sizes of VNS, which scale with the farm radius, are those of the main comparison. At $4D$, the stored runs of the main comparison and of the component analysis on the same cases are used. In the two cases $r=500$~m, $N=10$ (data sets I and II), no layout satisfies $5D$ or $6D$: at most 8 and 7 turbines fit in the 500-m farm (Table~\ref{tab:capacity}), and no run is feasible. These two cases are excluded, so that the same 10 cases are compared at every spacing; Table~\ref{tab:S-rev-spacing-rank} also gives the ranks over all 12. Ranking, qualification (15 of 30 feasible runs), case-level bootstrap intervals, TOST and case-mean Wilcoxon tests follow Section~\ref{sec:S-stats}; the contrasts are also given with a seed-level bootstrap within the fixed cases and with the Hodges--Lehmann estimate. The archived runs of Table~\ref{tab:spacing-authors} (original SSA and LX-SSA code, other cases) are not used here.
+
+\emph{Ranking.} The methods differ at every spacing (Friedman over the 10 cases, 8 d.f.: $p=3.24\times10^{-12}$, $2.55\times10^{-11}$ and $1.51\times10^{-10}$ at $4D$, $5D$ and $6D$; Table~\ref{tab:S-rev-spacing-rank}). PSO-VNS has the best average rank at all three spacings (1.40, 1.60 and 1.90). PSO is second at $4D$ and $5D$ (1.60 and 2.00) and third at $6D$ (3.50), where it has at least 15 feasible runs in only 8 of the 10 cases (80.0\% feasible runs; PSO-VNS: 90.0\%). MS-SLSQP moves up with the spacing, from 5.50 at $4D$ to 4.30 and 3.00: at $6D$ it ranks second, has the most feasible runs (95.0\%) and alone ranks first in 4 cases (PSO-VNS and PSO: 3 each). VNS moves up as well (6.10, 5.00, 4.00), and RSD-VNS moves down (3.50, 4.20, 4.80). In the Holm-adjusted average-rank tests against PSO-VNS, SSA, LX-SSA and DE rank lower at every spacing ($p\le6.2\times10^{-5}$), VNS at $4D$ and $5D$ ($p=6.2\times10^{-4}$ and 0.028) and MS-SLSQP at $4D$ ($p=0.0033$); no other difference is significant. Feasibility falls with the spacing, most for the salp-swarm methods and DE: at $6D$, SSA, LX-SSA and DE are feasible in 58.7\%, 52.0\% and 10.0\% of the runs.
+
+\emph{PSO-VNS vs.\ PSO.} On the 10 cases, the mean difference PSO-VNS${}-{}$PSO is $-0.035$~pp at $4D$, $-0.094$~pp at $5D$ and $-0.068$~pp at $6D$ (over the 8 cases in which both qualify; in the other 2 only PSO-VNS does; Table~\ref{tab:S-rev-spacing}). At $5D$ and $6D$, both 90\% intervals, with the cases fixed and over the cases, lie below zero ($5D$: [$-$0.135, $-$0.052] and [$-$0.200, $-$0.006]; $6D$: [$-$0.115, $-$0.022] and [$-$0.120, $-$0.015]), whereas at $4D$ the case-level interval includes zero. Equivalence within $\pm0.05$~pp is shown at no spacing on these cases (on the 68 cases at $4D$ it is shown at the seed and the case level; Table~\ref{tab:equivalence}). The case-mean Wilcoxon test is not significant at $5D$ ($p=0.43$; 5 cases favor each method) and gives $p=0.037$ at $6D$ (7 of 10 cases favor PSO-VNS, including the 2 imputed cases; Holm-adjusted over the six contrasts of Table~\ref{tab:S-rev-spacing}: $p=0.19$). The mean advantage of PSO-VNS over PSO is thus larger at $5D$ and $6D$ than at $4D$, but remains below 0.1~pp.
+
+\emph{SSA-VNS vs.\ RSD-VNS.} On the 10 cases, the SSA phase gives no gain over disc sampling at $4D$ and $5D$: the mean differences SSA-VNS${}-{}$RSD-VNS are $+0.079$ and $+0.043$~pp (positive = RSD-VNS better), and a gain larger than the margin is ruled out at both levels (all lower 90\% limits $\ge-0.034$~pp). (On all 12 split cases at $4D$, including the two 500-m cases with $N=10$, the case-level interval, [$-$0.272, 0.117], is too wide to rule it out; on the 68 cases it is ruled out, Section~\ref{M-sec:ablation}.) At $6D$ the result reverses. In the 8 cases in which both methods qualify (neither does in the other 2), SSA-VNS has the lower mean wake loss in all 8 ($\overline{\Delta L}=-0.136$~pp; Wilcoxon $p=0.0078$, Holm-adjusted over the six contrasts $p=0.047$; Hodges--Lehmann estimate $-0.117$~pp, 95\% CI [$-$0.279, $-$0.039]), and both 90\% intervals lie wholly below $-0.05$~pp (seed level [$-$0.224, $-$0.050], upper limit $-0.0501$; case level [$-$0.215, $-$0.073]). The average ranks agree (SSA-VNS 3.80, RSD-VNS 4.80), at similar feasibility (80.7\% and 78.0\% of the runs). At the largest spacing tested, the SSA phase therefore gives a gain larger than the margin over disc sampling on these cases: the conclusion of Section~\ref{M-sec:ablation} that salp-swarm first phases give no such gain holds at $4D$ and $5D$, but not at $6D$. With 8 cases, this is an estimate for the split cases, not a general effect.
+
+\begin{table}[!htbp]
+\centering
+\caption{Minimum spacing $4D$, $5D$ and $6D$: average rank and feasible runs of the nine methods on the split cases (6{,}030 evaluations, 30 seed-paired runs).}
+\label{tab:S-rev-spacing-rank}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{2}{c}{$4D$ (stored runs)} & \multicolumn{2}{c}{$5D$} & \multicolumn{2}{c}{$6D$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Method & Rank & Feas. & Rank & Feas. & Rank & Feas. \\
+\midrule
+PSO-VNS & 1.40 (1.50) & 100.0 & 1.60 (2.17) & 100.0 & 1.90 (2.42) & 90.0 \\
+PSO & 1.60 (1.67) & 100.0 & 2.00 (2.50) & 100.0 & 3.50 (3.75) & 80.0 \\
+SSA-VNS & 3.90 (3.92) & 100.0 & 4.10 (4.25) & 100.0 & 3.80 (4.00) & 80.7 \\
+SSA & 6.80 (7.00) & 100.0 & 7.00 (6.67) & 91.3 & 7.30 (6.92) & 58.7 \\
+LX-SSA & 7.30 (7.25) & 98.0 & 8.10 (7.58) & 79.3 & 7.90 (7.42) & 52.0 \\
+DE & 8.90 (8.92) & 60.0 & 8.70 (8.08) & 23.3 & 8.80 (8.17) & 10.0 \\
+VNS & 6.10 (6.00) & 100.0 & 5.00 (5.00) & 99.3 & 4.00 (4.17) & 82.0 \\
+MS-SLSQP & 5.50 (4.92) & 100.0 & 4.30 (4.42) & 100.0 & 3.00 (3.33) & 95.0 \\
+RSD-VNS & 3.50 (3.83) & 100.0 & 4.20 (4.33) & 100.0 & 4.80 (4.83) & 78.0 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Rank: average feasibility-aware rank among the nine methods of this table (rule of Table~\ref{M-tab:friedman68}: a method with fewer than 15 feasible runs of 30 in a case ranks below the qualified methods, by its number of feasible runs) over the 10 split cases, excluding the two cases $r=500$~m, $N=10$ (data sets I and II), which admit no feasible layout at $5D$ and $6D$ (at most 8 and 7 turbines; Table~\ref{tab:capacity}); in parentheses: over all 12 split cases (at $5D$ and $6D$ the two excluded cases then enter with all methods tied). Feas.: feasible runs (\%) over the 10 cases. $4D$: stored runs of the main comparison and, for RSD-VNS, of the component analysis, restricted to the split cases. Friedman over the 10 cases (8 d.f.): $4D$: $\chi^2_F=70.9$, $p=3.24\times10^{-12}$, Iman--Davenport $F_F=70.2$; $5D$: $\chi^2_F=66.4$, $p=2.55\times10^{-11}$, $F_F=43.9$; $6D$: $\chi^2_F=62.5$, $p=1.51\times10^{-10}$, $F_F=32.1$.}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Minimum spacing: component contrasts PSO-VNS $-$ PSO and SSA-VNS $-$ RSD-VNS at $4D$, $5D$ and $6D$ on the split cases (6{,}030 evaluations, 30 seed-paired runs).}
+\label{tab:S-rev-spacing}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lcccccccccc}
+\toprule
+Spacing & $n$ & $\overline{\Delta L}$ (pp) & 90\% CI seed & Eq. & 90\% CI case & Eq. & $m_{\min}$ & $p_W$ & HL & HL 95\% CI \\
+\midrule
+\multicolumn{11}{l}{\emph{PSO-VNS $-$ PSO}} \\
+$4D$ & 10 & $-$0.035 & [$-$0.060, $-$0.010] & no & [$-$0.110, 0.029] & no & 0.110 & 0.375 & $-$0.010 & [$-$0.184, 0.035] \\
+$4D$ (12 cases) & 12 & $-$0.050 & [$-$0.078, $-$0.021] & no & [$-$0.134, 0.029] & no & 0.134 & 0.424 & $-$0.012 & [$-$0.199, 0.078] \\
+$5D$ & 10 & $-$0.094 & [$-$0.135, $-$0.052] & no & [$-$0.200, $-$0.006] & no & 0.200 & 0.432 & $-$0.054 & [$-$0.274, 0.026] \\
+$6D$ & 8 & $-$0.068 & [$-$0.115, $-$0.022] & no & [$-$0.120, $-$0.015] & no & 0.120 & 0.037 & $-$0.063 & [$-$0.160, 0.024] \\
+\multicolumn{11}{l}{\emph{SSA-VNS $-$ RSD-VNS}} \\
+$4D$ & 10 & +0.079 & [0.026, 0.133] & no & [$-$0.005, 0.160] & no & 0.160 & 0.131 & +0.077 & [$-$0.048, 0.205] \\
+$4D$ (12 cases) & 12 & $-$0.046 & [$-$0.117, 0.025] & no & [$-$0.272, 0.117] & no & 0.272 & 0.424 & +0.031 & [$-$0.167, 0.159] \\
+$5D$ & 10 & +0.043 & [$-$0.034, 0.118] & no & [$-$0.011, 0.103] & no & 0.103 & 0.492 & +0.032 & [$-$0.037, 0.128] \\
+$6D$ & 8 & $-$0.136 & [$-$0.224, $-$0.050] & no & [$-$0.215, $-$0.073] & no & 0.215 & 0.008 & $-$0.117 & [$-$0.279, $-$0.039] \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize $\overline{\Delta L}$: mean difference of the per-case mean wake losses (pp of the wake-free benchmark objective; first minus second, negative = first better) over the $n$ cases in which both methods have at least 15 feasible runs of 30; the two cases $r=500$~m, $N=10$ are excluded (at $5D$ and $6D$ no method has a feasible run; at $4D$ the rows ``12 cases'' include them). At $6D$, PSO qualifies in 8 of the 10 cases and PSO-VNS in all 10, and neither SSA-VNS nor RSD-VNS qualifies in 2 cases. 90\% CI seed: percentile bootstrap of the seed-paired runs within the cases (cases fixed); 90\% CI case: percentile bootstrap over the cases (10{,}000 resamples, fixed seeds, as Table~\ref{tab:equivalence}); Eq.: TOST equivalence at $m=0.05$~pp (90\% CI inside $(-m,m)$); $m_{\min}$: smallest equivalence margin (case level); $p_W$: two-sided Wilcoxon signed-rank test on the case means (unadjusted; cases in which only one method qualifies imputed as in Table~\ref{M-tab:friedman68}, cases in which neither qualifies dropped); Holm-adjusted over the six 10-case contrasts: 1.0, 1.0 and 0.19 (PSO-VNS $-$ PSO at $4D$, $5D$, $6D$), 0.52, 1.0 and 0.047 (SSA-VNS $-$ RSD-VNS); HL: Hodges--Lehmann estimate with exact 95\% CI.}
+\end{table}
+
+\subsection{Exact-Gradient Baselines on IEA37}
+\label{sec:S-rev-grad}
+MS-SLSQP pays $2N$ extra evaluations for every forward-difference gradient and, on the top-hat benchmark, differentiates a discontinuous objective (Section~\ref{sec:S-slsqp}). To test gradient-based optimization under the conditions for which it is designed, two methods with the exact gradient were run after the primary analysis on the Gaussian-wake model of IEA37 Case Study~1 (Section~\ref{M-sec:iea37}; 16 turbines, $r=1300$~m, and 36 turbines, $r=2000$~m), with 30 seeds (1--30), random initialization and budgets of 6{,}030 and 30{,}030 evaluations (240 new runs). The other methods are the stored runs of Tables~\ref{tab:S-rev-ga-iea} and~\ref{tab:iea37-detail}.
+
+\emph{Methods.} \emph{MS-SLSQP, exact gradient} is MS-SLSQP (Section~\ref{sec:S-slsqp}: same starts, constraints, bounds, iteration limit, tolerance and bookkeeping of the best feasible layout) with the analytic gradient of the wake loss in place of forward differences; the Jacobian of the spacing and boundary constraints is also analytic (forward differences with a 1-m step in MS-SLSQP), and constraint evaluations are counted in neither method. \emph{PSO-SLSQP, exact gradient} has two phases. Phase~1 is the constriction PSO of PSO-VNS ($N_p=30$, $\omega=0.5$), identical to the first 3{,}030 or 15{,}030 evaluations of PSO-VNS and PSO with the same seed. Phase~2 runs SLSQP with the exact gradient from the PSO global best and then restarts it, alternately from a perturbed copy of the best feasible layout found so far ($\lceil N/4\rceil$ random turbines displaced by $\mathcal{N}(0,\ell_{\min}^2)$ in each coordinate, clipped to the box) and from the next personal best of the final swarm (in order of the penalized objective), until the budget is used up. Both methods use standard, untuned settings.
+
+\emph{Implementation comparison.} Both objective and constraint Jacobians are analytic in the new variants; the original SLSQP baseline uses finite differences. The hybrid also restarts around the incumbent and personal bests. Consequently, this study does not isolate the objective derivative from constraint derivatives or restart choices. Claims of feasibility use the original full-precision-run labels; the rounded CSV coordinates fail many strict checks (Section~\ref{sec:S-archive}).
+
+\emph{Gradient.} The IEA37 AEP is a frequency-weighted sum over the 16 directions of the turbine powers, each a function of the waked speed $v_i=U\bigl(1-(\sum_j d_{ij}^2)^{1/2}\bigr)$, where, in the frame of the direction, $d_{ij}=\bigl(1-\sqrt{1-C_T D^2/(8\sigma^2)}\bigr)\exp\bigl(-\tfrac12(\Delta y/\sigma)^2\bigr)$ with $\sigma=K|\Delta x|+D/\sqrt8$ for a turbine $j$ upstream of $i$~\cite{Baker2019}. The gradient with respect to all $2N$ coordinates follows from the chain rule through these terms, in one backward pass over the pairs and directions written by hand, with the branches of the model: a pair with $\Delta x=0$ contributes neither deficit nor derivative, the upstream indicator $\Delta x>0$ is taken as locally constant, and a turbine without deficit or outside the cubic part of the power curve has zero derivative. The model is thus piecewise smooth: it jumps where a wake switches on ($\Delta x$ changes sign), which no gradient can see. On 10 random layouts per scenario, the analytic gradient agrees with central differences ($h=10^{-3}$~m) to a normwise relative error of at most $1.3\times10^{-9}$, and on 21 layouts per scenario (20 random layouts and the IEA37 example layout) with the reverse-mode derivative of the same model in JAX~\cite{JAX2018} (double precision) to $6\times10^{-15}$ relative to the largest component.
+
+\emph{Budget and charge.} Every objective evaluation counts 1 (initial population, PSO particles and every SLSQP function evaluation, including line searches), and every gradient is charged $c_g$ evaluations: the measured ratio of the wall-clock time of one gradient (which also returns the AEP) to that of one objective evaluation, 2.29 (16 turbines) and 2.26 (36 turbines; medians of $7\times300$ calls on random layouts), rounded up to $c_g=3$. A gradient that no longer fits into the budget is not computed, so that objective evaluations, $c_g$ times the gradients and the unused remainder add up to the budget exactly (Table~\ref{tab:S-rev-grad-calls}); gradients take 72--73\% of the budget of exact-gradient MS-SLSQP. Forward differences correspond to $c_g=2N$, i.e., 32 and 72. \emph{Sensitivity to $c_g$.} No runs with other charges were made. For both methods, the charge only decides where a run stops, not its search path, so a smaller charge, such as the $c_g=1$ often assumed for reverse-mode differentiation, cannot lower the result at a given budget. A larger charge can: every 6{,}030-evaluation run of exact-gradient MS-SLSQP (on average 1{,}667 and 1{,}647 objective and 1{,}454 and 1{,}461 gradient evaluations with 16 and 36 turbines) would fit into 30{,}030 evaluations for any $c_g\le19$, and its mean AEP at 6{,}030 already exceeds that of every method other than PSO-SLSQP at 30{,}030 (Table~\ref{tab:S-rev-grad}). For the stored 6,030-evaluation MS-SLSQP prefixes, recomputing the charge as function calls plus 19 times gradient calls yields maxima of 29,486 (16 turbines) and 29,550 (36 turbines), both below 30,030. This is accounting on saved call counts, not a new optimizer run at $c_g=19$; it relies on a charge-independent search prefix and best-so-far retention.
+
+\emph{Results.} Table~\ref{tab:S-rev-grad} gives the AEP. Both exact-gradient methods are feasible in all 240 runs and, in all four settings, have a higher best and mean AEP than each of the eleven other methods (Tables~\ref{tab:S-rev-ga-iea} and~\ref{tab:iea37-detail}). Their mean AEP exceeds the highest mean of the other methods by 1.8--3.3\% with 16 turbines (PSO-VNS: 395{,}031.8 and 402{,}583.1~MWh) and by 1.9--7.5\% with 36 turbines (GA: 774{,}971.9 and 823{,}061.5~MWh), and their standard deviations over the seeds are smaller (1{,}801--6{,}101~MWh against 4{,}587--19{,}268~MWh for PSO-VNS). MS-SLSQP with forward differences is feasible in only 18, 29, 4 and 14 of 30 runs. At 6{,}030 evaluations the two exact-gradient methods have similar mean AEP (407{,}721.0 and 407{,}891.4~MWh with 16 turbines, 832{,}893.3 and 832{,}404.0~MWh with 36); at 30{,}030, PSO-SLSQP has the higher mean (413{,}179.2 vs.\ 409{,}976.3 and 842{,}556.9 vs.\ 838{,}852.9~MWh; not tested). In seed-paired Wilcoxon tests (infeasible runs below every feasible run; Table~\ref{tab:S-rev-grad-calls}), exact-gradient MS-SLSQP is better than MS-SLSQP with forward differences in all 30 seed pairs in every setting ($p=1.9\times10^{-9}$), and PSO-SLSQP is better than PSO-VNS, PSO and MS-SLSQP with forward differences in all 30 pairs ($p_{\rm Holm}=5.6\times10^{-9}$). As PSO-SLSQP and PSO-VNS share Phase~1 run by run, the latter comparison isolates the second phase: SLSQP with exact gradients against the compass-search descent. The best PSO-SLSQP layouts at 30{,}030 evaluations (418{,}757.4 and 847{,}780.3~MWh) lie 0.04\% and 1.84\% below the best feasible published layouts (strict convention; 0.64\% and 3.92\% after radial projection), against 3.14\% and 5.20\% for the best layout of the other methods with 36 turbines (GA).
+
+\emph{Wall-clock time.} The equal budget in evaluations does not charge the work of SLSQP itself. Mean times per run (16 turbines at 6{,}030 and 30{,}030 evaluations; 36 turbines at 6{,}030 and 30{,}030) are 4.3, 34.7, 16.0 and 85.4~s for exact-gradient MS-SLSQP and 5.8, 23.7, 12.4 and 56.6~s for PSO-SLSQP, against 11.2, 56.8, 15.7 and 78.8~s for MS-SLSQP with forward differences and 1.3, 5.7, 3.2 and 17.1~s for PSO-VNS; at the timings of the charge measurement, the objective and gradient evaluations of an exact-gradient MS-SLSQP run with 36 turbines at 30{,}030 evaluations account for about 8 of its 85~s, and the rest is spent in the SLSQP subproblems with their $N(N-1)/2+N$ constraints and in the constraint evaluations. The timings come from different batches of runs and are indicative only (as in Table~\ref{tab:cost}). Even so, exact-gradient MS-SLSQP at 6{,}030 evaluations needs less time per run than PSO-VNS at 30{,}030 (4.3 vs.\ 5.7~s and 16.0 vs.\ 17.1~s) and has the higher mean AEP (407{,}721.0 vs.\ 402{,}583.1 and 832{,}893.3 vs.\ 807{,}446.0~MWh).
+
+On this smooth model with cheap exact gradients, gradient-based optimization, alone or after a PSO phase, is therefore stronger than every metaheuristic tested, at equal charged budgets and at similar wall-clock times; this agrees with the efficiency of exact gradients in layout optimization~\cite{Guirguis2016}. In the comparison of~\cite{Thomas2023}, in which each method was run by researchers experienced with it and without a common budget, gradient-based and gradient-free methods reached similar yields; the larger differences here may reflect the equal budgets and the untuned metaheuristics. The comparisons of the metaheuristics in the main text concern the discontinuous top-hat benchmark and settings without gradients; they do not extend to smooth models on which exact gradients are available.
+
+\begin{table}[!htbp]
+\centering
+\caption{IEA37 Case Study~1 with exact-gradient methods added: AEP (MWh) of the best run, mean AEP and feasible runs.}
+\label{tab:S-rev-grad}
+\scriptsize\setlength{\tabcolsep}{2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccccccc}
+\toprule
+& \multicolumn{6}{c}{16 turbines ($r=1300$~m)} & \multicolumn{6}{c}{36 turbines ($r=2000$~m)} \\
+\cmidrule(lr){2-7}\cmidrule(lr){8-13}
+& \multicolumn{3}{c}{6{,}030} & \multicolumn{3}{c}{30{,}030} & \multicolumn{3}{c}{6{,}030} & \multicolumn{3}{c}{30{,}030} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
+Method / source & Best & Mean & Feas. & Best & Mean & Feas. & Best & Mean & Feas. & Best & Mean & Feas. \\
+\midrule
+Example layout & \multicolumn{6}{c}{366{,}941.6} & \multicolumn{6}{c}{737{,}883.1} \\
+Best published, strict & \multicolumn{6}{c}{418{,}924.4} & \multicolumn{6}{c}{863{,}676.3} \\
+Best published, projected & \multicolumn{6}{c}{421{,}451.1} & \multicolumn{6}{c}{882{,}382.8} \\
+\midrule
+PSO-VNS & 402{,}782.4 & 395{,}031.8 & 30/30 & 413{,}331.9 & 402{,}583.1 & 30/30 & 787{,}708.9 & 736{,}832.4 & 30/30 & 827{,}385.0 & 807{,}446.0 & 30/30 \\
+PSO & 403{,}753.1 & 390{,}540.2 & 30/30 & 412{,}702.4 & 401{,}347.0 & 30/30 & 787{,}988.7 & 729{,}188.5 & 27/30 & 830{,}256.4 & 802{,}252.3 & 30/30 \\
+SSA-VNS & 403{,}251.3 & 388{,}562.9 & 30/30 & 406{,}924.6 & 396{,}920.5 & 30/30 & 766{,}803.3 & 728{,}870.3 & 30/30 & 819{,}930.5 & 791{,}404.4 & 30/30 \\
+SSA & 395{,}150.2 & 378{,}073.1 & 30/30 & 401{,}459.3 & 392{,}875.6 & 30/30 & 750{,}707.4 & 717{,}258.5 & 30/30 & 802{,}538.2 & 771{,}298.0 & 30/30 \\
+LX-SSA & 393{,}284.6 & 373{,}977.4 & 30/30 & 398{,}770.0 & 390{,}267.4 & 30/30 & 746{,}301.3 & 709{,}660.5 & 30/30 & 789{,}311.3 & 752{,}030.3 & 30/30 \\
+DE & 357{,}391.3 & 338{,}610.6 & 27/30 & 397{,}402.7 & 359{,}952.3 & 30/30 & -- & -- & 0/30 & -- & -- & 0/30 \\
+VNS & 400{,}169.3 & 387{,}637.3 & 30/30 & 404{,}076.0 & 396{,}192.0 & 30/30 & 785{,}791.3 & 741{,}565.6 & 30/30 & 824{,}230.2 & 801{,}797.4 & 30/30 \\
+MS-SLSQP & 405{,}433.8 & 382{,}605.2 & 18/30 & 410{,}349.5 & 394{,}567.0 & 29/30 & 748{,}571.1 & 733{,}342.0 & 4/30 & 833{,}365.0 & 798{,}913.0 & 14/30 \\
+MS-SLSQP, exact gradient & 411{,}941.6 & 407{,}721.0 & 30/30 & 414{,}406.5 & 409{,}976.3 & 30/30 & 839{,}509.3 & 832{,}893.3 & 30/30 & 846{,}018.5 & 838{,}852.9 & 30/30 \\
+PSO-SLSQP, exact gradient & 415{,}704.0 & 407{,}891.4 & 30/30 & 418{,}757.4 & 413{,}179.2 & 30/30 & 842{,}857.1 & 832{,}404.0 & 30/30 & 847{,}780.3 & 842{,}556.9 & 30/30 \\
+\bottomrule
+\end{tabular}}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize AEP (MWh, official IEA37 model) of the best feasible run and mean over the feasible runs (30 seeds, random initialization); Feas.: feasible runs; --: no feasible run. The eight methods of the main comparison (stored runs) and the two exact-gradient methods; GA, LX-SSA-VNS and RS-VNS are in Tables~\ref{tab:S-rev-ga-iea} and~\ref{tab:iea37-detail}. Published rows as in Table~\ref{M-tab:iea37} (strict: every turbine within 1~mm of the boundary; projected: turbines outside projected radially onto it). MS-SLSQP: forward-difference gradients (main comparison); exact gradient: analytic AEP gradient, each gradient charged $c_g=3$ objective evaluations (Table~\ref{tab:S-rev-grad-calls}).}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Exact-gradient methods on IEA37 Case Study~1: evaluation accounting and run-level tests.}
+\label{tab:S-rev-grad-calls}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccc}
+\toprule
+Method & $N$ & Budget & FunCalls & GradCalls & $c_g$ & Unused & vs.\ MS-SLSQP & vs.\ PSO-VNS & vs.\ PSO \\
+\midrule
+MS-SLSQP, exact gradient & 16 & 6{,}030 & 1{,}667 & 1{,}454.2 & 3 & 0.67 & $1.86\times10^{-9}$ (W) & -- & -- \\
+PSO-SLSQP, exact gradient & 16 & 6{,}030 & 3{,}836 & 731.0 & 3 & 0.67 & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) \\
+MS-SLSQP, exact gradient & 16 & 30{,}030 & 8{,}198 & 7{,}277.1 & 3 & 0.40 & $1.86\times10^{-9}$ (W) & -- & -- \\
+PSO-SLSQP, exact gradient & 16 & 30{,}030 & 19{,}036 & 3{,}664.3 & 3 & 0.57 & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) \\
+MS-SLSQP, exact gradient & 36 & 6{,}030 & 1{,}647 & 1{,}460.9 & 3 & 0.63 & $1.86\times10^{-9}$ (W) & -- & -- \\
+PSO-SLSQP, exact gradient & 36 & 6{,}030 & 3{,}835 & 731.3 & 3 & 0.77 & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) \\
+MS-SLSQP, exact gradient & 36 & 30{,}030 & 8{,}116 & 7{,}304.3 & 3 & 0.60 & $1.86\times10^{-9}$ (W) & -- & -- \\
+PSO-SLSQP, exact gradient & 36 & 30{,}030 & 19{,}050 & 3{,}659.8 & 3 & 0.87 & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) & $5.59\times10^{-9}$ (W) \\
+\bottomrule
+\end{tabular}}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Means over the 30 runs. FunCalls: objective evaluations; GradCalls: exact gradient evaluations, each charged $c_g$ evaluations (measured cost ratio, rounded up); Unused: evaluations left when a gradient no longer fitted into the budget, so FunCalls + $c_g\,$GradCalls + Unused = budget. Last columns: seed-paired Wilcoxon $p$ (infeasible runs below every feasible run; Holm over the references of the method; W/T/L from the method's side) against MS-SLSQP with forward-difference gradients and, for PSO-SLSQP, against PSO-VNS and PSO (same Phase~1).}
+\end{table}
+
+\subsection{Second Measured Site: Lillgrund}
+\label{sec:S-rev-site}
+In the primary analysis, the Horns Rev~1 block (Section~\ref{sec:S-hr16}) is the only site with a measured wind climate. After the primary analysis, the eight methods of the main comparison and the random-sampling control RSD-VNS were therefore run on a second such site, a 16-turbine block of the Lillgrund offshore wind farm (Sweden; 48 Siemens SWT-2.3-93 turbines), with 30 seeds (1--30), random initialization and budgets of 6{,}030 and 30{,}030 evaluations (540 new runs).
+
+\emph{Data and provenance.} The installed layout, the power and thrust curves of the SWT-2.3-93 ($D=93$~m, hub height 65~m) and the 12-sector Weibull climate (sector frequencies normalized to one) are those of PyWake's Lillgrund example~\cite{PyWake} (\texttt{py\_wake/examples/data/lillgrund.py}). According to the PyWake source, the Weibull parameters are based on seven months of measurements (June 2012 to January 2013) at the 61-m level of the Lillgrund met mast~\cite{Gocmen2016}. The climate is thus measured at the site, like that of Horns Rev~1, but with two caveats: seven months do not cover a full year, so the rose is not seasonally balanced, and it refers to 61~m rather than the 65-m hub height (as in PyWake, no shear correction is applied). The results describe the optimizers under this climate, not the long-term yield of the site.
+
+\emph{Block, boundary and spacing.} The farm is a skewed lattice with a within-row spacing of 400~m ($4.3D$) and a between-row spacing of 306~m ($3.3D$), and two positions in its center are empty. Of the two complete $4\times4$ blocks, we use the one at the eastern corner of the farm, the analogue of the corner block of Horns Rev~1. The boundary is the parallelogram through its four corner turbines, enlarged by 0.2\% about the center of the block (the as-built positions deviate from the lattice by a few decimeters, and at 0.1\% one installed turbine still lies 0.24~m outside (0.69~m outside the exact corner parallelogram)); all 16 installed turbines lie at least 0.2~m inside. The Horns Rev~1 spacing $\ell_{\min}=4D$ cannot be used: by Oler's inequality~\cite{Oler1961}, at most 15.7 points with mutual distances of at least $4D=372$~m fit into the parallelogram (area 1.081~km$^2$, perimeter 4.24~km), and a multistart max--min-distance optimization found no 16-turbine layout with a minimum spacing above $3.64D$. We therefore use $\ell_{\min}=3D=279$~m, just below the installed minimum spacing ($3.29D$), so that the installed block is feasible and serves as the reference, as at Horns Rev~1 (where the optimized layouts may use $4D$ instead of the installed $7D$). This is the tightest spacing of the study; turbulence and loads, which are not modeled, matter more at it.
+
+\emph{Model and methods.} The model is that of Horns Rev~1 (Section~\ref{sec:S-hrmodel}): the Jensen top-hat wake with $K=0.04$, a hub-center in-wake test, root-sum-square superposition, the thrust coefficient at the free-stream speed, 5$^\circ$ direction bins centered at 2.5$^\circ$, 7.5$^\circ$, \ldots, 357.5$^\circ$ (six per sector) and 1-m/s speed bins centered at 3, 4, \ldots, 25~m/s; the wake-free AEP of the block is 139.40~GWh/yr. The penalized objective, the search box (half-width equal to the largest absolute coordinate of the parallelogram, also the $r$ of the VNS radii), the constraints of MS-SLSQP and the feasibility test are those of Horns Rev~1 with the new parallelogram and $\ell_{\min}$. The methods run unchanged, except that RSD-VNS draws its Phase-1 samples uniformly in the parallelogram instead of in the disc of the circular farms. GA and the exact-gradient methods were not run on this site.
+
+\emph{Check against PyWake.} As for Horns Rev~1 (Section~\ref{sec:S-hr16}), our model was compared with the NOJ model of PyWake~2.6.20 ($k=0.04$) at identical bins (identical wake-free AEP). For the installed block with 5$^\circ$ bins, PyWake gives 113.40~GWh/yr and our model 116.10~GWh/yr (2.38\% more; AEP loss 18.65\% vs.\ 16.72\%). As at Horns Rev~1, the difference comes from the thrust coefficient: with $C_T$ at the local speed, our model gives 114.19~GWh/yr and reproduces PyWake's NOJ with hub-center test and momentum-theory induction exactly. The difference is larger than for the Horns Rev~1 block (0.53\%), whose turbines are $7D$ apart. With 1$^\circ$ bins it is 0.50\% (ours 114.18, PyWake 113.62~GWh/yr): with our model, the finer rose lowers the AEP of the installed block by 1.65\% here, against 0.23\% at Horns Rev~1. The 5$^\circ$ bins thus favor the installed Lillgrund block, and as the optimized layouts were not re-evaluated with 1$^\circ$ bins, their comparison with the installed block is uncertain; the comparison of the methods uses the same model for all.
+
+\emph{Results.} Table~\ref{tab:S-rev-site} gives the AEP, feasibility and ranks. The installed block reaches 116.10~GWh/yr (AEP loss 16.72\%). The methods differ at both budgets (run-level Friedman test with infeasible runs below every feasible run: $p=9.99\times10^{-31}$ and $1.85\times10^{-20}$). At 6{,}030 evaluations, feasibility is the main difference: only MS-SLSQP is feasible in all 30 runs, PSO-VNS in 17, SSA-VNS in 13, VNS in 8, RSD-VNS in 6, SSA in 3, and PSO, LX-SSA and DE in none. PSO-VNS and MS-SLSQP are the only methods with at least 15 feasible runs, and PSO-VNS ranks first (mean AEP 113.07~GWh/yr over its feasible runs; MS-SLSQP 112.87). In seed-paired Wilcoxon tests (infeasible runs below every feasible run; Holm over the eight comparisons of PSO-VNS), MS-SLSQP is nevertheless better than PSO-VNS ($p_{\rm Holm}=0.010$), because 13 PSO-VNS runs are infeasible; PSO-VNS is better than PSO, SSA, LX-SSA, DE, VNS and RSD-VNS ($p_{\rm Holm}<0.011$) and does not differ significantly from SSA-VNS ($p_{\rm Holm}=0.13$). At 30{,}030 evaluations, every method is feasible in at least 18 runs; PSO-VNS, VNS and MS-SLSQP are feasible in all 30. PSO-VNS ranks first (114.59~GWh/yr), followed by VNS (114.19), DE (114.01, 21 feasible runs), SSA-VNS (114.01) and PSO (113.62, 19 feasible runs), and it is better than every other method ($p_{\rm Holm}<0.02$) except VNS ($p_{\rm Holm}=0.058$). All 30 PSO-VNS layouts at this budget lie on or close to the spacing constraint (minimum spacing $3.00D$--$3.08D$).
+
+\emph{PSO-VNS vs.\ PSO.} The feasibility advantage of PSO-VNS found on Horns Rev~1 (30/30 vs.\ 19/30 runs at 6{,}030 evaluations; Table~\ref{tab:hr-site-full}) replicates on this site: at 6{,}030 evaluations PSO-VNS is feasible in 17 and PSO in none of the 30 runs, and at 30{,}030 in 30 and 19. Every seed on which PSO is feasible also gives a feasible PSO-VNS run (exact McNemar test: $p=1.5\times10^{-5}$ and $9.8\times10^{-4}$), and in the seed-paired Wilcoxon tests PSO-VNS is better than PSO at both budgets ($p_{\rm Holm}=0.0010$ and $5.6\times10^{-8}$); on the 19 jointly feasible seeds at 30{,}030 evaluations, PSO-VNS has the higher AEP in 17 (mean 114.60 vs.\ 113.62~GWh/yr). As the PSO phase of PSO-VNS repeats the PSO run of the same seed, this difference is due to the VNS phase.
+
+\emph{Installed block and component contrasts.} No method reaches the installed block on average: the mean AEP of the feasible runs lies 1.30\% (PSO-VNS at 30{,}030 evaluations) to 4.64\% (LX-SSA at 30{,}030) below it; no run at 6{,}030 evaluations and one PSO-VNS run at 30{,}030 (116.16~GWh/yr, 0.05\% more) exceed it, with the 5$^\circ$ bins that favor the installed block (see above). Of the salp-swarm methods, LX-SSA is feasible in no run at 6{,}030 and ranks last at 30{,}030, and SSA-VNS has more feasible runs than the disc-sampling control RSD-VNS (13 vs.\ 6 and 29 vs.\ 27) and, at 30{,}030 evaluations, a higher mean AEP (114.01 vs.\ 113.22~GWh/yr); this contrast was not among the planned tests.
+
+On a second site with a different turbine, wind climate and block geometry and a tighter spacing, PSO-VNS thus again reaches feasibility more reliably than PSO and has the best mean AEP of the qualifying methods, and, as at Horns Rev~1, no method beats the installed block on average. At the small budget, however, MS-SLSQP is the only method feasible in every run. These results rest on one block, a seven-month climate evaluated with 5$^\circ$ bins and 30 seeds per budget; they are a replication at a second site, not a sample of sites.
+
+\begin{table}[!htbp]
+\centering
+\caption{Lillgrund 16-turbine block (second measured site; 5$^\circ$ direction bins, minimum spacing $3D$): AEP, feasibility, AEP loss and rank.}
+\label{tab:S-rev-site}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lcccccccccc}
+\toprule
+ & \multicolumn{5}{c}{6{,}030 evaluations} & \multicolumn{5}{c}{30{,}030 evaluations} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-11}
+Layout / method & AEP & Feas. & Loss & $\Delta_{\rm inst}$ & Rank & AEP & Feas. & Loss & $\Delta_{\rm inst}$ & Rank \\
+\midrule
+Installed block & 116.10 & -- & 16.72 & 0.00 & -- & 116.10 & -- & 16.72 & 0.00 & -- \\
+\midrule
+PSO-VNS & 113.07 & 17/30 & 18.89 & $-$2.60 & 1 & 114.59 & 30/30 & 17.80 & $-$1.30 & 1 \\
+MS-SLSQP & 112.87 & 30/30 & 19.04 & $-$2.78 & 2 & 113.45 & 30/30 & 18.62 & $-$2.28 & 6 \\
+SSA-VNS & 112.57 & 13/30 & 19.25 & $-$3.04 & 3 & 114.01 & 29/30 & 18.22 & $-$1.80 & 4 \\
+VNS & 112.88 & 8/30 & 19.02 & $-$2.77 & 4 & 114.19 & 30/30 & 18.08 & $-$1.64 & 2 \\
+RSD-VNS & 112.58 & 6/30 & 19.24 & $-$3.03 & 5 & 113.22 & 27/30 & 18.78 & $-$2.48 & 7 \\
+SSA & 111.48 & 3/30 & 20.03 & $-$3.98 & 6 & 112.14 & 28/30 & 19.56 & $-$3.41 & 8 \\
+PSO & -- & 0/30 & -- & -- & 8 & 113.62 & 19/30 & 18.50 & $-$2.14 & 5 \\
+LX-SSA & -- & 0/30 & -- & -- & 8 & 110.71 & 18/30 & 20.59 & $-$4.64 & 9 \\
+DE & -- & 0/30 & -- & -- & 8 & 114.01 & 21/30 & 18.22 & $-$1.80 & 3 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Siemens SWT-2.3-93 ($D=93$~m), 12-sector Weibull climate of the Lillgrund met mast~\cite{PyWake,Gocmen2016}, Jensen wake with $K=0.04$, same model and bins as the Horns Rev~1 block (Section~\ref{sec:S-hrmodel}); wake-free AEP 139.40~GWh/yr; minimum spacing $3D=279$~m ($4D$ is geometrically infeasible for 16 turbines in this block). AEP: mean (GWh/yr) over the feasible runs of 30 seed-paired runs, random initialization; Feas.: feasible runs; Loss: mean AEP loss (\%) relative to the wake-free AEP; $\Delta_{\rm inst}$: mean AEP relative to the installed block (\%); Rank: feasibility-aware rank of the mean AEP (rule of Table~\ref{M-tab:friedman68}: a method with fewer than 15 feasible runs ranks below the qualified methods, by its number of feasible runs; ties averaged); --: no feasible run. Run-level Friedman test (infeasible runs below every feasible run): $p=9.99\times10^{-31}$ (6{,}030) and $1.85\times10^{-20}$ (30{,}030).}
+\end{table}
+
+\IfSuppTablesLeft{\section{Further Generated Tables}
+\label{sec:S-further}
+The following tables are generated by \texttt{analysis/mpce\_results.py} but not yet assigned to one of the sections above.
+\SuppRemainingTables}
+
+\clearpage
+\section{Executable Archive Audit and All-Run Reliability}
+\label{sec:S-archive}
+\subsection{Coverage and limits}
+The revision CSVs contain 11,640 records: GA benchmark 2,040, GA Horns Rev~1 60, GA IEA37 120, exact-gradient IEA37 240, Laplace ablation 2,160, spacing 6,480, and Lillgrund 270 at each of two budgets. The standalone \texttt{experiments/audit\_archive.py} checks complete numbered shards, unique case/method/seed keys, finite objectives, $\mathrm{Calls}=\mathrm{Budget}$ and the stored objective--wake-loss identities. Exact-gradient records also satisfy function calls plus $c_g$ times gradient calls plus unused budget equals budget. These checks pass for the supplied records. Missing original records, diagnostics and modules prevent full-study reproduction; the audit does not validate their historical statistics or optimizer behaviour.
+
+\subsection{Serialization precision}
+\label{sec:archive-precision}
+Legacy coordinates are saved to three decimals (benchmark/IEA37) or two decimals (Lillgrund), incompatible with independent verification at $10^{-6}$~m. Among labelled-feasible records, rounded rechecking fails for 236 exact-gradient, 78 Laplace, 229 spacing, 17 Lillgrund 6,030 and 73 Lillgrund 30,030 runs. The Horns Rev~1 boundary could not be audited without its missing model. Stored values and feasibility labels remain unchanged; failure of a rounded layout does not prove that its unrounded predecessor failed. The local Lillgrund evaluator replays rounded coordinates with some differences, up to 0.225~GWh among feasible labels at the larger budget. Exact replay therefore requires original full-precision positions or author-supplied reruns. The updated experiment writers preserve 17 significant digits prospectively; this cannot recover precision discarded from existing CSVs.
+
+\subsection{Paired endpoint and uncertainty}
+Using original feasibility labels, a feasible run beats an infeasible one; two feasible runs are compared by AEP (ties within $10^{-9}$~GWh); two infeasible runs tie. This avoids ordering two failed layouts solely by spacing while ignoring boundary violation. Let $W,T,L$ denote PSO-VNS wins, ties and losses against one comparator. The score $(W+T/2)/30$ estimates superiority over seed variability on this fixed block. A 95\% percentile interval resamples the 30 matched seed pairs 20,000 times (fixed seed recorded in the audit). The exact two-sided binomial sign test conditions on $W+L$ discordant pairs. Holm correction covers all 16 comparisons (eight opponents at two budgets). A Wilson 95\% interval describes each success proportion. These new endpoints supplement, rather than replace, the earlier conditional-mean ranks and signed-rank statistics. None supplies a population-of-farms inference or repairs uncertain strict feasibility of rounded archived positions.
+\input{analysis/archive_reliability_tables.tex}
+
+\subsection{Additional analyses of the supplied records}
+\label{sec:S-addl}
+The analyses of this subsection use only the stored records and generated tables of this package; no optimizer was rerun.
+
+\emph{Equal-cluster weighting.} The cluster-level intervals of Table~\ref{tab:X-equiv-levels} weight the six (data set, radius) clusters by their numbers of cases (9, 11 and 14 per radius in each data set). Table~\ref{tab:S-eqclus} adds an equal-cluster sensitivity analysis: the estimate is the average of the six cluster means of the case-mean differences, with a 90\% $t$ interval (5 d.f.) over these six means. The per-case means are taken from Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} (PSO-VNS, PSO and SSA-VNS; benchmark objective converted to wake loss) and Table~\ref{tab:ablation-cases} (LX-SSA-VNS, RS-VNS and RSD-VNS); the case-weighted CR2 intervals reconstructed from them reproduce Table~\ref{tab:X-equiv-levels} to the third decimal. No wild-cluster bootstrap was computed for the equal-cluster target. At the margin $\pm0.05$~pp every verdict is unchanged; LX-SSA-VNS minus RSD-VNS keeps a lower limit above $-0.05$~pp, but its equal-cluster interval includes zero.
+\begin{table}[!htbp]
+\centering
+\caption{Case-weighted and equal-cluster estimates at the cluster level (68 cases, 6,030 evaluations, 15$^\circ$ rose). $\overline{\Delta L}$: first minus second method (pp; negative = first better). Cluster means in the order Data Set~I, $r=500$, 750, 1000~m; Data Set~II, $r=500$, 750, 1000~m.}
+\label{tab:S-eqclus}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccl}
+\toprule
+& \multicolumn{2}{c}{Case-weighted} & \multicolumn{2}{c}{Equal-cluster} & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Pair (first vs.\ second) & $\overline{\Delta L}$ & CR2 90\% CI & $\overline{\Delta L}$ & $t_5$ 90\% CI & Cluster means \\
+\midrule
+PSO-VNS vs.\ PSO & $-0.018$ & [$-$0.067, 0.031] & $-0.014$ & [$-$0.063, 0.035] & 0.064, 0.043, $-$0.008, $-$0.063, $-$0.031, $-$0.090 \\
+SSA-VNS vs.\ RSD-VNS & $+0.024$ & [$-$0.051, 0.099] & $+0.012$ & [$-$0.067, 0.092] & $-$0.153, 0.016, 0.025, $-$0.013, 0.064, 0.137 \\
+SSA-VNS vs.\ RS-VNS & $-0.068$ & [$-$0.126, $-$0.011] & $-0.079$ & [$-$0.142, $-$0.017] & $-$0.212, $-$0.055, $-$0.018, $-$0.119, $-$0.064, $-$0.008 \\
+RSD-VNS vs.\ RS-VNS & $-0.093$ & [$-$0.131, $-$0.054] & $-0.092$ & [$-$0.125, $-$0.058] & $-$0.059, $-$0.071, $-$0.042, $-$0.106, $-$0.128, $-$0.145 \\
+LX-SSA-VNS vs.\ RSD-VNS & $+0.087$ & [0.004, 0.170] & $+0.077$ & [$-$0.005, 0.158] & $-$0.067, 0.041, 0.059, 0.053, 0.152, 0.222 \\
+PSO-VNS vs.\ RSD-VNS & $-0.306$ & [$-$0.442, $-$0.171] & $-0.332$ & [$-$0.478, $-$0.185] & $-$0.621, $-$0.233, $-$0.131, $-$0.454, $-$0.315, $-$0.235 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{All-run paired outcome in the spacing study.} Table~\ref{tab:S-allrun-spacing} applies the paired endpoint above to the re-optimization at $5D$ and $6D$ (Section~\ref{sec:S-rev-spacing}), with the stored objective in place of AEP and the stored feasibility labels: on the 10 compared split cases, 300 seed pairs per spacing. The 95\% percentile intervals resample the 10 cases 20,000 times (all seed pairs of a resampled case kept together; fixed seed). The analysis is descriptive and not adjusted for multiplicity; the precision caveat of Section~\ref{sec:archive-precision} applies to 229 spacing labels.
+\begin{table}[!htbp]
+\centering
+\caption{All-run paired outcome of PSO-VNS against each method in the spacing study (10 split cases $\times$ 30 seeds, 6,030 evaluations, random starts). Feas.: feasible runs of the comparator (\%; PSO-VNS: 100.0 at $5D$, 90.0 at $6D$). W/T/L: seed pairs won, tied and lost by PSO-VNS (feasible beats infeasible; two feasible runs compared by objective; two infeasible runs tie). Score: $(W+T/2)/300$ with 95\% case-bootstrap interval. Last row: SSA-VNS against RSD-VNS.}
+\label{tab:S-allrun-spacing}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{3}{c}{$5D$} & \multicolumn{3}{c}{$6D$} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Comparator & Feas. & W/T/L & Score [95\% CI] & Feas. & W/T/L & Score [95\% CI] \\
+\midrule
+PSO & 100.0 & 178/0/122 & 0.593 [0.497, 0.693] & 80.0 & 169/30/101 & 0.613 [0.548, 0.670] \\
+SSA-VNS & 100.0 & 236/0/64 & 0.787 [0.723, 0.850] & 80.7 & 185/22/93 & 0.653 [0.582, 0.718] \\
+SSA & 91.3 & 285/0/15 & 0.950 [0.917, 0.980] & 58.7 & 251/28/21 & 0.883 [0.827, 0.937] \\
+LX-SSA & 79.3 & 293/0/7 & 0.977 [0.943, 1.000] & 52.0 & 261/30/9 & 0.920 [0.865, 0.965] \\
+DE & 23.3 & 294/0/6 & 0.980 [0.950, 1.000] & 10.0 & 264/30/6 & 0.930 [0.867, 0.985] \\
+VNS & 99.3 & 251/0/49 & 0.837 [0.800, 0.877] & 82.0 & 186/24/90 & 0.660 [0.583, 0.730] \\
+MS-SLSQP & 100.0 & 238/0/62 & 0.793 [0.680, 0.897] & 95.0 & 171/6/123 & 0.580 [0.432, 0.733] \\
+RSD-VNS & 100.0 & 232/0/68 & 0.773 [0.703, 0.843] & 78.0 & 212/20/68 & 0.740 [0.687, 0.797] \\
+\midrule
+SSA-VNS vs.\ RSD-VNS & -- & 144/0/156 & 0.480 [0.437, 0.523] & -- & 143/44/113 & 0.550 [0.517, 0.587] \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Elapsed time.} Table~\ref{tab:S-time} gives the median elapsed seconds per run stored in the revision records. Ratios are formed within one study; studies ran in separate batches, so ratios across studies are indicative only. The records of PSO-VNS on IEA37 belong to the missing original archive, so the exact-gradient methods are compared there with the GA.
+\begin{table}[!htbp]
+\centering
+\caption{Median elapsed time per run (s) in the supplied revision records; in parentheses, the ratio to PSO-VNS (spacing, Lillgrund) or to the GA (IEA37) of the same study and budget. Spacing: 10 split cases, $5D$ and $6D$ pooled (600 runs per method).}
+\label{tab:S-time}
+\scriptsize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccc}
+\toprule
+Method & Spacing, 6,030 & Lillgrund, 6,030 & Lillgrund, 30,030 \\
+\midrule
+PSO-VNS & 2.47 (1.00) & 5.68 (1.00) & 27.69 (1.00) \\
+PSO & 2.07 (0.84) & 5.74 (1.01) & 28.94 (1.05) \\
+SSA-VNS & 2.19 (0.89) & 5.56 (0.98) & 27.35 (0.99) \\
+SSA & 2.11 (0.85) & 5.70 (1.00) & 28.17 (1.02) \\
+LX-SSA & 2.23 (0.90) & 5.69 (1.00) & 28.48 (1.03) \\
+DE & 2.90 (1.17) & 6.35 (1.12) & 31.18 (1.13) \\
+VNS & 1.98 (0.80) & 5.58 (0.98) & 36.75 (1.33) \\
+MS-SLSQP & 4.47 (1.81) & 12.79 (2.25) & 44.21 (1.60) \\
+RSD-VNS & 2.14 (0.86) & 5.70 (1.00) & 31.67 (1.14) \\
+\midrule
+& IEA37, 16 turbines & & IEA37, 36 turbines \\
+& 6,030 / 30,030 & & 6,030 / 30,030 \\
+\midrule
+GA & 0.98 / 4.76 (1.00) & & 2.79 / 13.09 (1.00) \\
+MS-SLSQP, analytic & 4.3 / 31.8 (6.7) & & 15.4 / 84.8 (6.5) \\
+PSO-SLSQP, analytic & 3.0 / 18.5 (3.9) & & 11.0 / 56.2 (4.3) \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}{\scriptsize IEA37 ratios at 30,030 evaluations.}
+\end{table}
+\FloatBarrier
+
+\begin{thebibliography}{99}
+\bibitem{Kusiak2010} A. Kusiak and Z. Song, ``Design of wind farm layout for maximum wind energy capture,'' \textit{Renew. Energy}, vol. 35, no. 3, pp. 685--694, 2010, doi: 10.1016/j.renene.2009.08.019.
+\bibitem{Eroglu2012} Y. Ero\u{g}lu and S. U. Se\c{c}kiner, ``Design of wind farm layout using ant colony algorithm,'' \textit{Renew. Energy}, vol. 44, pp. 53--62, 2012, doi: 10.1016/j.renene.2011.12.013.
+\bibitem{Eroglu2013} Y. Ero\u{g}lu and S. U. Se\c{c}kiner, ``Wind farm layout optimization using particle filtering approach,'' \textit{Renew. Energy}, vol. 58, pp. 95--107, 2013, doi: 10.1016/j.renene.2013.02.019.
+\bibitem{Bansal2017} J. C. Bansal and P. Farswan, ``Wind farm layout using biogeography based optimization,'' \textit{Renew. Energy}, vol. 107, pp. 386--402, 2017, doi: 10.1016/j.renene.2017.01.064.
+\bibitem{Mirjalili2017} S. Mirjalili \textit{et al.}, ``Salp swarm algorithm: A bio-inspired optimizer for engineering design problems,'' \textit{Adv. Eng. Softw.}, vol. 114, pp. 163--191, 2017, doi: 10.1016/j.advengsoft.2017.07.002.
+\bibitem{Solanki2023} P. Solanki and K. Deep, ``Laplacian salp swarm algorithm for continuous optimization,'' \textit{Int. J. Syst. Assur. Eng. Manag.}, 2023, doi: 10.1007/s13198-023-01935-y.
+\bibitem{Poli2009} R. Poli, ``Mean and variance of the sampling distribution of particle swarm optimizers during stagnation,'' \textit{IEEE Trans. Evol. Comput.}, vol. 13, no. 4, pp. 712--721, Aug. 2009, doi: 10.1109/TEVC.2008.2011744.
+\bibitem{Kraft1988} D. Kraft, ``A software package for sequential quadratic programming,'' DFVLR, Inst. f\"ur Dynamik der Flugsysteme, Oberpfaffenhofen, Germany, Tech. Rep. DFVLR-FB 88-28, 1988.
+\bibitem{PyWake} DTU Wind Energy, ``PyWake: Open-source static wake modeling framework,'' Python package \texttt{py\_wake}, ver. 2.6.20 (Horns Rev~1 and Lillgrund site data in \texttt{py\_wake/examples/data/hornsrev1.py} and \texttt{lillgrund.py}), MIT License, 2026. [Online]. Available: \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}. Accessed: Sep. 25, 2026.
+\bibitem{Bastankhah2014} M. Bastankhah and F. Port\'e-Agel, ``A new analytical model for wind-turbine wakes,'' \textit{Renew. Energy}, vol. 70, pp. 116--123, 2014, doi: 10.1016/j.renene.2014.01.002.
+\bibitem{Benavoli2016} A. Benavoli, G. Corani, and F. Mangili, ``Should we really use post-hoc tests based on mean-ranks?'' \textit{J. Mach. Learn. Res.}, vol. 17, no. 5, pp. 1--10, 2016.
+\bibitem{Baker2019} N. F. Baker \textit{et al.}, ``Best practices for wake model and optimization algorithm selection in wind farm layout optimization,'' in \textit{Proc. AIAA SciTech 2019 Forum}, San Diego, CA, USA, 2019, Paper AIAA 2019-0540, doi: 10.2514/6.2019-0540.
+\bibitem{IEA37repo} N. F. Baker \textit{et al.}, ``IEA Wind Task 37 wind farm layout optimization case studies: Case files and submitted results,'' GitHub repository, commit 267f6e5, 2020. Accessed: Sep. 28, 2026. [Online]. Available: \url{https://github.com/IEAWindSystems/iea37-wflo-casestudies}
+\bibitem{Cleghorn2018}
+C. W. Cleghorn and A. P. Engelbrecht, ``Particle swarm stability: A theoretical extension using the non-stagnate distribution assumption,'' \textit{Swarm Intell.}, vol. 12, no. 1, pp. 1--22, 2018, doi: 10.1007/s11721-017-0141-x.
+\bibitem{Benavoli2017}
+% VERIFY-REF (2026-09-28): JMLR abstract page jmlr.org/papers/v18/16-305.html, arXiv:1606.04316, ACM DL 10.5555/3122009.3176821 -- authors, title, vol. 18, paper no. 77, pp. 1-36, 2017 confirmed (JMLR has no DOI)
+A. Benavoli, G. Corani, J. Dem\v{s}ar, and M. Zaffalon, ``Time for a change: A tutorial for comparing multiple classifiers through Bayesian analysis,'' \textit{J. Mach. Learn. Res.}, vol. 18, no. 77, pp. 1--36, 2017.
+\bibitem{Lakens2017}
+% VERIFY-REF (2026-09-28): SAGE record journals.sagepub.com/doi/10.1177/1948550617697177, TU Eindhoven research portal, CRAN TOSTER citation -- author, title, vol. 8, no. 4, pp. 355-362, 2017, DOI confirmed (source of the TOST procedure used for tab:equivalence)
+D. Lakens, ``Equivalence tests: A practical primer for $t$ tests, correlations, and meta-analyses,'' \textit{Soc. Psychol. Personal. Sci.}, vol. 8, no. 4, pp. 355--362, 2017, doi: 10.1177/1948550617697177.
+\bibitem{Deb1995}
+K. Deb and R. B. Agrawal, ``Simulated binary crossover for continuous search space,'' \textit{Complex Syst.}, vol. 9, no. 2, pp. 115--148, 1995.
+\bibitem{DebGoyal1996}
+K. Deb and M. Goyal, ``A combined genetic adaptive search (GeneAS) for engineering design,'' \textit{Comput. Sci. Informatics}, vol. 26, no. 4, pp. 30--45, 1996.
+\bibitem{JAX2018}
+J. Bradbury, R. Frostig, P. Hawkins, M. J. Johnson, Y. Katariya, C. Leary, D. Maclaurin, G. Necula, A. Paszke, J. VanderPlas, S. Wanderman-Milne, and Q. Zhang, ``JAX: Composable transformations of Python+NumPy programs,'' Python package \texttt{jax}, ver. 0.10.2, 2018--2026. [Online]. Available: \url{https://github.com/jax-ml/jax}
+\bibitem{Guirguis2016}
+D. Guirguis, D. A. Romero, and C. H. Amon, ``Toward efficient optimization of wind farm layouts: Utilizing exact gradient information,'' \textit{Appl. Energy}, vol. 179, pp. 110--123, 2016, doi: 10.1016/j.apenergy.2016.06.101.
+\bibitem{Thomas2023}
+J. J. Thomas \textit{et al.}, ``A comparison of eight optimization methods applied to a wind farm layout optimization problem,'' \textit{Wind Energy Sci.}, vol. 8, no. 5, pp. 865--891, 2023, doi: 10.5194/wes-8-865-2023.
+\bibitem{Gocmen2016}
+% VERIFY-REF (2026-09-30): ScienceDirect record S0960148116306346 -- authors, title, vol. 99, pp. 524-532, 2016, DOI confirmed
+T. G\"o\c{c}men and G. Giebel, ``Estimation of turbulence intensity using rotor effective wind speed in Lillgrund and Horns Rev-I offshore wind farms,'' \textit{Renew. Energy}, vol. 99, pp. 524--532, 2016, doi: 10.1016/j.renene.2016.07.038.
+\bibitem{Oler1961}
+% VERIFY-REF (2026-09-30): Springer record 10.1007/BF02559533 -- author, title, Acta Math. vol. 105, no. 1, pp. 19-48, 1961 confirmed
+N. Oler, ``An inequality in the geometry of numbers,'' \textit{Acta Math.}, vol. 105, no. 1, pp. 19--48, 1961, doi: 10.1007/BF02559533.
+\end{thebibliography}
+
+\end{document}
