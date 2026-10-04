@@ -37,6 +37,7 @@ analysis/direction.log
 analysis/equal_budget_tests.csv
 analysis/extra_baselines.py
 analysis/feasible_init.py
+analysis/final_best_layouts_maxN.csv
 analysis/final_reevaluation.csv
 analysis/fresh_bgrid.csv
 analysis/fresh_bhr16.csv
@@ -47,6 +48,7 @@ analysis/fresh_vhr16.csv
 analysis/full_grid_experiments.py
 analysis/hornsrev_model.py
 analysis/hornsrev_tests.csv
+analysis/hybrid_lxssa_bvns.py
 analysis/hybrid_lxssa_vns.py
 analysis/iea37_data/iea37-335mw.yaml
 analysis/iea37_data/iea37-aepcalc.py
@@ -379,10 +381,14 @@ analysis/rev3_constraint_validate.log
 analysis/rev3_fine.py
 analysis/rev3_fine_analysis.py
 analysis/rev3_fine_manifest.md
+analysis/rev3_fine_timing.log
 analysis/rev3_fine_validate.log
 analysis/rev3_inference.log
 analysis/rev3_inference.py
+analysis/rev3_numbers_audit.json
 analysis/rev3_numbers_audit.py
+analysis/rev3_numbers_checks.log
+analysis/rev3_numbers_report.md
 analysis/rev3_numbers_theory_check.py
 analysis/rev3_precision_audit.json
 analysis/rev3_precision_audit.py

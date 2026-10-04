@@ -62,10 +62,11 @@ step check_revision python3 experiments/check_revision.py
 cd "$A"
 # 8. optional slower steps
 if [ "${WITH_SLOW:-0}" = "1" ]; then
-  step theory_figure python3 make_theory_figures.py
-  if [ -n "$TEXARG" ]; then
+  if [ -n "$TEXARG" ]; then   # figure + numbers + checks T01-T13 against the manuscript text (~4 min)
     mkdir -p "$WORK/optA/sw"; cp "$WORK/ms/optA/sw/supp_theory.tex" "$WORK/optA/supp_theory.tex"; cp "$WORK/ms/optA/sw/04_methods.tex" "$WORK/optA/sw/"
     step theory_check python3 make_theory_figures.py --check --swevo
+  else                         # figure + numbers only (~4 min)
+    step theory_figure python3 make_theory_figures.py
   fi
   step validate_evaluator python3 validate_evaluator.py
   step iea37_calculator python3 iea37_model.py

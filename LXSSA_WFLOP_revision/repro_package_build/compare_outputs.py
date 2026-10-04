@@ -9,12 +9,27 @@ Each file is reported as
                        (YYYY-MM-DD HH:MM:SS), the PDF /CreationDate, the gzip header time, absolute paths of the
                        machine, run-time statements ("in 12 s", "12.3 s", JSON "seconds": 27.2) and the
                        environment version strings recorded in JSON outputs ("python": "3.11.15", "numpy": ...,
-                       "pandas": ...); the normalized lines are counted,
+                       "pandas": ...), and in CSV files the columns `Generated` / `Seconds` (time stamp,
+                       wall-clock time); the normalized lines are counted,
   DIFFERENT            anything else (the first differing lines are printed),
   MISSING              absent in one of the two directories.
 Exit code 1 if any file is DIFFERENT or MISSING.
 """
-import difflib, glob, gzip, os, re, sys
+import csv, difflib, glob, gzip, io, os, re, sys
+
+VOLATILE_COLS = ("Generated", "Seconds")  # CSV columns holding generation time stamps / wall-clock seconds
+
+
+def csv_equal_without_volatile(x, y):
+    """True if two CSV files are equal cell by cell after dropping the VOLATILE_COLS columns."""
+    try:
+        rx = list(csv.reader(io.StringIO(x.decode("utf-8")))); ry = list(csv.reader(io.StringIO(y.decode("utf-8"))))
+    except Exception:
+        return False
+    if not rx or not ry or rx[0] != ry[0] or len(rx) != len(ry):
+        return False
+    keep = [i for i, c in enumerate(rx[0]) if c not in VOLATILE_COLS]
+    return all([u[i] for i in keep if i < len(u)] == [v[i] for i in keep if i < len(v)] for u, v in zip(rx, ry))
 
 TS = re.compile(rb"\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}")
 PDFDATE = re.compile(rb"/CreationDate \(D:[^)]*\)")
@@ -59,6 +74,8 @@ def main(argv):
         if nx == ny:
             n = sum(1 for u, v in zip(x.split(b"\n"), y.split(b"\n")) if u != v)
             print(f"IDENTICAL-NORMALIZED {f} ({n} line(s) differ only in time stamps / paths / run times / version strings)"); continue
+        if f.endswith(".csv") and csv_equal_without_volatile(x, y):
+            print(f"IDENTICAL-NORMALIZED {f} (all cells identical except the columns {'/'.join(VOLATILE_COLS)})"); continue
         bad += 1
         lx, ly = nx.decode("utf-8", "replace").splitlines(), ny.decode("utf-8", "replace").splitlines()
         d = [l for l in difflib.unified_diff(lx, ly, "stored", "regenerated", n=0, lineterm="") if not l.startswith("@@")]

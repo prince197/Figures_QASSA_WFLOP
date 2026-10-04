@@ -60,7 +60,7 @@ analysis/extra_runs_hr80.csv,legacy,exclude,83265,earlier paper (superseded)
 analysis/extra_tables.tex,legacy,exclude,4765,earlier paper
 analysis/feasible_init.py,optimizer,include,3711,feasibility-preserving initialization
 analysis/final_ablation_tests.csv,legacy,exclude,18967,earlier paper
-analysis/final_best_layouts_maxN.csv,legacy,exclude,2105,earlier paper
+analysis/final_best_layouts_maxN.csv,input,include,2105,best layouts of an earlier analysis; read by make_model_figures.py (example layout of Fig. 1a)
 analysis/final_case_tests.csv,legacy,exclude,51019,earlier paper
 analysis/final_frontmatter.py,legacy,exclude,5201,manuscript builder of an earlier paper
 analysis/final_prose.py,legacy,exclude,63415,manuscript builder of an earlier paper
@@ -102,7 +102,7 @@ analysis/hornsrev_tests.csv,output,include,1503,output of analyze_authors_runs.p
 analysis/hybrid_best_layouts_maxN.csv,legacy,exclude,3189,superseded intermediate hybrid version
 analysis/hybrid_case_tests.csv,legacy,exclude,59613,superseded intermediate hybrid version
 analysis/hybrid_frontmatter.py,legacy,exclude,8919,manuscript builder of an earlier paper
-analysis/hybrid_lxssa_bvns.py,legacy,exclude,2607,superseded intermediate hybrid version
+analysis/hybrid_lxssa_bvns.py,optimizer,include,2607,two-phase hybrids PSO-VNS / SSA-VNS / LX-SSA-VNS
 analysis/hybrid_lxssa_vns.py,model,include,3360,superseded hybrid with the modified VNS; kept because full_grid_experiments.py imports it (rows VNS/LXVNS are not used)
 analysis/hybrid_reevaluation.csv,legacy,exclude,3468832,superseded intermediate hybrid version
 analysis/hybrid_results.py,legacy,exclude,26735,superseded intermediate hybrid version
@@ -437,18 +437,22 @@ analysis/rev2_spacing_s9of40.csv,runs-rev2,include,267998,revision-2 per-run rec
 analysis/rev3_constraint.py,rev3-code,include,17631,revision-3 script
 analysis/rev3_constraint_analysis.py,rev3-code,include,23995,revision-3 script
 analysis/rev3_constraint_manifest.md,rev3-doc,include,9381,revision-3 manifest / prespecification
-analysis/rev3_constraint_pen.csv.partial,unclassified,exclude,101019,revision-3 file of an unexpected type (check by hand)
-analysis/rev3_constraint_run_pen.log,rev3-log,include,78,revision-3 log
+analysis/rev3_constraint_pen.csv.partial,unclassified,exclude,561124,revision-3 file of an unexpected type (check by hand)
+analysis/rev3_constraint_run_pen.log,rev3-log,include,438,revision-3 log
 analysis/rev3_constraint_validate.csv,rev3-data,include,5332,revision-3 run records / outputs
 analysis/rev3_constraint_validate.json,rev3-output,include,2699,revision-3 output
 analysis/rev3_constraint_validate.log,rev3-log,include,2700,revision-3 log
 analysis/rev3_fine.py,rev3-code,include,22249,revision-3 script
-analysis/rev3_fine_analysis.py,rev3-code,include,24820,revision-3 script
-analysis/rev3_fine_manifest.md,rev3-doc,include,8798,revision-3 manifest / prespecification
+analysis/rev3_fine_analysis.py,rev3-code,include,25171,revision-3 script
+analysis/rev3_fine_manifest.md,rev3-doc,include,9994,revision-3 manifest / prespecification
+analysis/rev3_fine_timing.log,rev3-log,include,4028,revision-3 log
 analysis/rev3_fine_validate.log,rev3-log,include,2928,revision-3 log
-analysis/rev3_inference.log,rev3-log,include,1604,revision-3 log
+analysis/rev3_inference.log,rev3-log,include,4399,revision-3 log
 analysis/rev3_inference.py,rev3-code,include,52096,revision-3 script
-analysis/rev3_numbers_audit.py,rev3-code,include,59631,revision-3 script
+analysis/rev3_numbers_audit.json,rev3-output,include,3698669,revision-3 output
+analysis/rev3_numbers_audit.py,rev3-code,include,66312,revision-3 script
+analysis/rev3_numbers_checks.log,rev3-log,include,65190,revision-3 log
+analysis/rev3_numbers_report.md,rev3-doc,include,17486,revision-3 manifest / prespecification
 analysis/rev3_numbers_theory_check.py,rev3-code,include,17821,revision-3 script
 analysis/rev3_precision_audit.json,rev3-output,include,63747,revision-3 output
 analysis/rev3_precision_audit.py,rev3-code,include,18326,revision-3 script
