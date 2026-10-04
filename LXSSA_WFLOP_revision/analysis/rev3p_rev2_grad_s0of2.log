@@ -1,0 +1,14 @@
+rev2_grad_s0of2: 105 keys, 105 to run, procs=1
+  10/105 232s last rev2_grad_s29of40.csv:0 MISMATCH
+  20/105 408s last rev2_grad_s34of40.csv:0 MISMATCH
+  30/105 543s last rev2_grad_s3of40.csv:3 MISMATCH
+  40/105 599s last rev2_grad_s19of40.csv:4 MISMATCH
+  50/105 650s last rev2_grad_s4of40.csv:4 MISMATCH
+  60/105 694s last rev2_grad_s30of40.csv:3 MISMATCH
+  70/105 739s last rev2_grad_s34of40.csv:2 MISMATCH
+  80/105 782s last rev2_grad_s35of40.csv:2 MISMATCH
+  90/105 799s last rev2_grad_s27of40.csv:4 MISMATCH
+  100/105 810s last rev2_grad_s18of40.csv:5 MISMATCH
+  105/105 815s last rev2_grad_s7of40.csv:5 MISMATCH
+rev2_grad_s0of2: done in 815s
+wrote /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/rev3_fullprec_rev2_grad_s0of2.csv: 105 of 105 records
