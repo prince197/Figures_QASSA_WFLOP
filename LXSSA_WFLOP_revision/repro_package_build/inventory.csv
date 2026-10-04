@@ -75,16 +75,16 @@ analysis/followup_statistics.py,legacy,exclude,2779,earlier analyses (superseded
 analysis/fresh_best_layouts_maxN.csv,legacy,exclude,3186,earlier paper
 analysis/fresh_bgrid.csv,runs-original,include,8742135,"68 cases: SSA-VNS, LX-SSA-VNS"
 analysis/fresh_bhr16.csv,runs-superseded-read,include,107113,"old Horns Rev binning; read, then replaced by hrfix"
-analysis/fresh_bhr80.csv,legacy,exclude,21788,earlier paper; not read by the SWEVO analysis
-analysis/fresh_bsplit.csv,legacy,exclude,1467040,LX-SSA-VNS split runs of the earlier paper; not read by the SWEVO analysis
+analysis/fresh_bhr80.csv,runs-audited,include,21788,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
+analysis/fresh_bsplit.csv,runs-audited,include,1467040,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
 analysis/fresh_case_tests.csv,legacy,exclude,43110,earlier paper
 analysis/fresh_grid.csv,runs-original,include,25150969,"68 cases: SSA, LX-SSA, DE, old-setting PSO (+ unused SLSQP/VNS rows)"
-analysis/fresh_hgrid.csv,legacy,exclude,4337051,"superseded hybrid (LXVNS) runs, not used"
-analysis/fresh_hhr16.csv,legacy,exclude,50186,"superseded hybrid (LXVNS) runs, not used"
-analysis/fresh_hhr80.csv,legacy,exclude,21826,"superseded hybrid (LXVNS) runs, not used"
+analysis/fresh_hgrid.csv,runs-audited,include,4337051,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
+analysis/fresh_hhr16.csv,runs-audited,include,50186,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
+analysis/fresh_hhr80.csv,runs-audited,include,21826,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
 analysis/fresh_hr16.csv,runs-superseded-read,include,277384,old Horns Rev binning; read by mpce_results.py but every HR row is replaced by hrfix
-analysis/fresh_hr80.csv,legacy,exclude,140371,Horns Rev 80-turbine runs of the earlier paper; not read by the SWEVO analysis
-analysis/fresh_hsplit.csv,legacy,exclude,1431311,"superseded hybrid (LXVNS) runs, not used"
+analysis/fresh_hr80.csv,runs-audited,include,140371,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
+analysis/fresh_hsplit.csv,runs-audited,include,1431311,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
 analysis/fresh_reevaluation.csv,legacy,exclude,2548788,earlier paper
 analysis/fresh_results.py,legacy,exclude,23035,six-method study of an earlier paper
 analysis/fresh_robust_summary.json,legacy,exclude,1332,earlier paper
@@ -93,7 +93,7 @@ analysis/fresh_summary.json,legacy,exclude,2366,earlier paper
 analysis/fresh_tables.tex,legacy,exclude,15701,earlier paper
 analysis/fresh_vgrid.csv,runs-original,include,4492170,68 cases: VNS
 analysis/fresh_vhr16.csv,runs-superseded-read,include,55996,"old Horns Rev binning; read, then replaced by hrfix"
-analysis/fresh_vhr80.csv,legacy,exclude,22037,earlier paper; not read by the SWEVO analysis
+analysis/fresh_vhr80.csv,runs-audited,include,22037,"superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"
 analysis/friedman_case_level.csv,legacy,exclude,359,earlier analyses (superseded)
 analysis/full_grid_experiments.py,driver,include,7361,runs fresh_grid / fresh_vgrid / fresh_bgrid (+ old Horns Rev files)
 analysis/hornsrev_model.py,model,include,6175,"Horns Rev 1 site model (V80, measured 12-sector climate from PyWake 2.6.20)"
