@@ -10,23 +10,25 @@
 \newcommand{\concern}[2]{\subsection*{#1\quad #2}}
 \title{Response to the review of\\ ``Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization''}
 \author{Prince Solanki, Pulkit Dwivedi, Vanita Garg, Vinay Shukla}
-\date{Revision 3, October 2026}
+\date{Second revision, October 2026}
 \begin{document}
 \maketitle
 
 We thank the reviewer for the careful report (items R1--R10) and the detailed list of remaining work (Sections A--E).
 Below we answer every item. Section, table and equation numbers refer to the revised manuscript (M) and the
-revised supplementary material (S). For each item we state whether it is \emph{resolved} by new analyses, new
+revised supplementary material (S); ``first revision'' is our previous revision (GA, Laplace, spacing, exact-gradient and Lillgrund experiments), ``this revision'' the present one. For each item we state whether it is \emph{resolved} by new analyses, new
 experiments or text changes, or \emph{disclosed} (a limitation stated in the paper but not removed).
 
-\textbf{A correction of premise that affects several items.} The previous revision stated that the 36,190 original run
+\textbf{A correction of premise that affects several items.} The first revision stated that the 36,190 original run
 records and fifteen core modules were missing from the archive, so that the historical checks and several requested
 re-analyses could not be rerun. This was incorrect: the complete archive exists. For this revision we re-executed the
 entire analysis pipeline from it in the environment of the runs (CPython 3.11.15, NumPy 2.4.6, SciPy 1.17.1, pandas
-3.0.6). All 91 regenerated tables, number files, summaries and figures are identical to those of the manuscript apart
+3.0.6). All 91 regenerated tables, number files, summaries and figures are identical to the stored pipeline outputs apart
 from time stamps. All automated checks pass (62 main-result, 57 statistical, 22 diagnostic, 41 direction-resolution,
 15 coefficient-sweep and 57 theory checks). The analysis of the first-revision experiments reproduces its 4,670
-values exactly, and reruns of stored runs with the archived drivers are bit-identical except for elapsed time. This
+values exactly, and reruns of stored runs of the gradient-free methods with the archived drivers are bit-identical
+except for elapsed time; SLSQP-based runs (MS-SLSQP, exact-gradient SLSQP) are not bit-reproducible across CPU and
+BLAS builds (M 6.4, 9.6). This
 made every item of Section~B and item~C4 feasible. We also added 5,100 new optimization runs (C1, C2) and the
 full-precision reruns of C4. All statements about missing material have been removed (M 6.4, Data availability,
 S9, S12).
@@ -36,25 +38,28 @@ S9, S12).
 \concern{R1}{Unfinished declarations.}
 \emph{Resolved in the text; author confirmation pending.} The CRediT roles, competing-interest, funding and
 data-availability statements are complete. The declaration on generative AI now names all tools used, in Elsevier's
-template wording. The only remaining \texttt{[TBD]} markers are facts that only the authors can supply: the
-deposit DOI, confirmation of the AI tool list, and the cover-letter confirmation of originality and approval.
+template wording. The remaining \texttt{[TBD]} markers are facts that only the authors can supply (the
+deposit DOI, confirmation of the AI tool list, and the cover-letter confirmation of originality and approval) and
+the counts of the full-precision reruns still running on cloud workers (C4: M 9.6, Data availability, S11.11).
 
 \concern{R2}{Public availability.}
-\emph{Resolved up to the public deposit.} A versioned, deposit-ready reproducibility package (release 1.0.0) contains
-all run records (36,190 original, 11,640 first-revision and 5,100 new runs, plus the full-precision reruns), all
-models, optimizers, drivers, analysis and check scripts, an environment specification (requirements, Dockerfile) and
-SHA-256 checksums. Its README maps every table, figure and number to the command that regenerates it. We verified it
-from a clean unpack: checksums pass, and the full regeneration reproduces all outputs. The Data availability statement
-now describes the package and states that the public DOI will be added before publication. Until then, the package
-is available to the editor and reviewers. Changes: M 6.4, Data availability, S9 (Reproducibility Map), S12.
+\emph{Resolved up to the public deposit.} A versioned reproducibility package contains all models, optimizers,
+drivers, analysis and check scripts, an environment specification (requirements, Dockerfile) and SHA-256 checksums;
+its README maps every table, figure and number to the command that regenerates it. Its release candidate (1.0.0-rc),
+with the 36,190 original and 11,640 first-revision run records, was verified from a clean unpack: checksums pass,
+and the full regeneration reproduces all 91 outputs. The final package (release 1.0.0, rebuilt with the 5,100 runs of
+this revision and the full-precision reruns) is verified by checksums and regeneration
+\TBD{lead: confirm after package rebuild}. The Data availability statement describes the package and states that the
+public DOI will be added before publication; until then, the package is available to the editor and reviewers.
+Changes: M 6.4, Data availability, S9 (Reproducibility Map), S12.
 
 \concern{R3}{Stronger baselines outside the principal tables.}
 \emph{Resolved.} The site comparisons were recomputed in single method pools:
 \begin{itemize}
-\item \emph{Horns Rev~1.} The ten methods plus the GA (Table~10 now names its pool and gives ranks; Table~S71).
+\item \emph{Horns Rev~1.} The ten methods plus the GA (Table~11 now names its pool and gives ranks; Table~S71).
 PSO-VNS is best at 6,030 evaluations (GA second, $p_{\rm Holm}=0.53$). The GA is best at 30,030 and beats all ten
 other methods ($p_{\rm Holm}\le1.1\times10^{-4}$).
-\item \emph{IEA37.} The ten methods, the GA and both exact-gradient methods (Tables~11--12, S72). An exact-gradient
+\item \emph{IEA37.} The ten methods, the GA and both exact-gradient methods (Tables~12--13, S72). An exact-gradient
 method ranks first in every scenario and budget. Among the gradient-free methods, PSO-VNS leads with 16 turbines and
 the GA with 36.
 \end{itemize}
@@ -83,7 +88,8 @@ Three constraint handlings: (i) the published penalty with box clipping; (ii) De
 dimensionless violations with box clipping; (iii) the same rules with radial projection (M 10.4, Tables~S77--S78).
 \item \emph{Validation.} Variant~(i) reproduces 60 of 60 stored runs bit for bit.
 \item \emph{With projection.} The rank order is unchanged and every method improves by 0.46--0.80~pp. PSO-VNS keeps
-its paired advantage over GA, SSA-VNS and DE, but not over PSO.
+its all-run advantage over GA, SSA-VNS and DE; over PSO, its conditional advantage holds, but its all-run advantage
+is not significant.
 \item \emph{With box clipping and normalized violations.} A turbine clipped to the square becomes cheap, and PSO's
 feasibility falls from 98.9\% to 73.3\%. PSO-VNS is then no longer distinguishable from GA and SSA-VNS, and the GA
 has the best case-level rank.
@@ -92,7 +98,7 @@ The abstract, contributions, Discussion (11), Threats (12), the checklist (Table
 now say that the conclusions concern the implemented penalty and repair, and how they depend on it.
 
 \concern{R6}{Proposition~1(c).}
-\emph{Resolved in the previous revision and re-verified.} The theory check (57 conditions, including the corrected
+\emph{Resolved in the first revision and re-verified.} The theory check (57 conditions, including the corrected
 statement $V_\infty=0$ iff $c_1c_2(p-g)=0$) passes on the current text.
 
 \concern{R7}{Inference scope, weighting and multiplicity.}
@@ -104,7 +110,7 @@ non-superiority test of SSA-VNS vs.\ RSD-VNS it gives 15.0\%, because of one out
 null, both primary claims still hold ($p=0.015$ and $0.007$; M 6.2, Table~S67, S6.4).
 \item \emph{Synchronized seeds (B4).} Seed~$k$ gives identical initial populations across cases. Joint resampling of
 one seed vector for all cases leaves PSO-VNS vs.\ PSO unchanged. The seed-level equivalence of SSA-VNS vs.\ RSD-VNS is
-then lost, but its non-superiority holds; Table~7 now says so (Table~S68).
+then lost, but its non-superiority holds; Table~8 now says so (Table~S68).
 \item \emph{Equal-cluster target (B7).} Recomputed from the records, it now has wild-cluster bootstrap intervals; no
 verdict changes (Table~S70).
 \end{itemize}
@@ -123,9 +129,10 @@ Table~S79).
 \end{itemize}
 \item \emph{GA layouts under other evaluators (C3).} The stored GA Horns Rev~1 layouts were re-evaluated at 1$^\circ$
 and with PyWake. GA's lead at 30,030 evaluations holds under both (Table~S73).
-\item \emph{Lillgrund at 1$^\circ$ (C3).} The Lillgrund layouts were re-evaluated at 1$^\circ$ as well. PSO-VNS keeps
-the highest mean at 30,030, but its lead over VNS and MS-SLSQP is then not significant; the text says so (M 9.4,
-Table~S74).
+\item \emph{Lillgrund at 1$^\circ$ (C3).} The Lillgrund layouts were re-evaluated at 1$^\circ$ and with PyWake as well.
+At 1$^\circ$, PSO-VNS keeps the highest mean at 30,030, but its lead over the runners-up (SSA-VNS, VNS, MS-SLSQP) is
+not significant, and at 6,030 MS-SLSQP is better ($p_{\rm Holm}=0.0014$); under PyWake, MS-SLSQP has the highest mean
+at both budgets. The text says so (M 9.4, Table~S74).
 \end{itemize}
 
 \concern{R9}{Charged evaluations versus elapsed time.}
@@ -134,13 +141,14 @@ Table~S74).
 \item \emph{MS-SLSQP per-evaluation time.} The value we reported (0.53~ms, 2.3$\times$ PSO; median) is the typical
 cost. The previously printed mean (1.82~ms) reflects thread contention in one run batch for $N\ge8$: single-threaded
 re-timing gives 4--7~s instead of 16--22~s per run.
-\item \emph{Feasibility-preserving initialization.} It is not charged to the budget. It takes a median of 4.8~s per run,
-more than a 6,030-evaluation PSO-VNS run.
+\item \emph{Feasibility-preserving initialization.} It is not charged to the budget. It takes a median of 3.85~s of CPU
+time per run (4.8~s wall time on a loaded machine), more than a 6,030-evaluation PSO-VNS run.
+\item \emph{Exact gradients.} Per run, the exact-gradient methods take 2.3--5.6 times as long as PSO-VNS (medians).
 \item \emph{Total compute.} The 36,190 original runs took 101 CPU-hours, run as four parallel processes.
 \end{itemize}
 
 \concern{R10}{Attribution, scope and table density.}
-\emph{Resolved.} The attribution and scope changes of the previous revision are kept.
+\emph{Resolved.} The attribution and scope changes of the first revision are kept.
 \begin{itemize}
 \item The principal tables name their method pools and mark the best method.
 \item The IEA37 means table is half its former height.
@@ -159,21 +167,21 @@ A3 & author & Two primary equivalence questions stated (M 6.2); co-author agreem
 A4 & author & AI declaration names Claude and ChatGPT; authors confirm the list. \\
 A5 & partly & Solanki and Deep (2023) is still Online First (no volume/pages assigned); entry updated accordingly. \\
 A6 & done & All 88 main and 23 supplementary references audited; corrections applied; renumbered by first citation. Crossref/publisher pages were not reachable from the audit environment; search-engine records of them were used. \\
-A7 & partly & Abstract 239 words ($\le$250), 5 highlights of 64--76 characters ($\le$85), 7 keywords; live Guide for Authors not reachable — authors to confirm. \\
+A7 & partly & Abstract 247 words ($\le$250; counted on the source, each inline formula as one word and each tie as a space; 249 in the PDF text, where formulas split), 5 highlights of 64--76 characters ($\le$85), 7 keywords; live Guide for Authors not reachable — authors to confirm. \\
 A8 & done/author & Archive and precision items resolved (this revision); author checks remain. \\
 B1 & done & All-run endpoint on 68 cases (M 9.6, S66). \\
 B2 & done & Horns Rev~1 and IEA37 pools with GA and exact gradients (M 9.3, 9.5; S71, S72). \\
 B3 & done & TOST audit and null simulation (M 6.2; S67; S6.4). \\
-B4 & done & Synchronized seed resampling (M 6.2, Table~7; S68). \\
+B4 & done & Synchronized seed resampling (M 6.2, Table~8; S68). \\
 B5 & done & Imputation sensitivity (M 6.2; S69). \\
 B6 & done & Elapsed times from original records; initialization timing (M 9.7; S75, S76). \\
 B7 & done & Wild-cluster bootstrap for the equal-cluster target (S70). \\
 C1 & done & Constraint-handling study, 2,700 runs (M 10.4; S77, S78). \\
 C2 & done & Direct 1$^\circ$ optimization, 1,200 runs + 1,200-run control (M 10.5; S79). \\
 C3 & done & GA (and Lillgrund) layouts at 1$^\circ$ and PyWake (M 9.3, 9.4; S73, S74). \\
-C4 & done & All 56,540 stored records audited with the correct site geometry: 50,826 labels confirmed from the rounded coordinates, none contradicted, 5,714 undecidable within the rounding bound; \TBD{C4 rerun: N bit-identical, labels confirmed/changed} (M 9.6; S80, S12.2). \\
+C4 & done/lead & All 56,540 stored records audited with the correct site geometry: 50,826 labels confirmed from the rounded coordinates, none contradicted, 5,714 undecidable within the rounding bound. All 5,714 rerun with a 17-digit writer: 1,160\,+\,$B_c$ bit-identical, 412\,+\,$F_c$ to float noise, all with confirmed labels (1,572\,+\,$C_c$ confirmed, 0\,+\,$X_c$ changed); 77\,+\,$U_c$ SLSQP-based reruns are not bit-reproducible across platforms, and their labels stay undecidable \TBD{C4: enter the cloud counts $B_c$, $F_c$, $C_c$, $X_c$, $U_c$}. Replay error of the rounded coordinates and its effect on the re-evaluations stated (M 9.6; S80, S11.11). \\
 D & done/author & Reproducibility package built and verified; public DOI pending (author action). \\
-E1 & done & Length pass: Sections 2, 3, 6, 7, 11--13 shortened; the new results are reported in single sentences with supplementary tables; the manuscript stays at 50 pages despite five new analyses. \\
+E1 & done & Length pass: Sections 2, 3, 6, 7, 11--13 shortened; the new results are reported in single sentences with supplementary tables, and repeated statements (e.g., the 68-case all-run numbers, now only in M 9.6) were reduced to pointers; the manuscript stays at 50 pages despite five new analyses. \\
 E2 & done & Tables name their pools and mark the best method; no overfull boxes. \\
 E3 & done & Supplement has 0 overfull boxes. \\
 E4 & done & All PDFs rebuilt from the final sources. \\
@@ -190,6 +198,8 @@ eight cases (M 12).
 $p$ values describe this benchmark, not a population of farms (M 6.2, 12).
 \item The pool lacks CMA-ES, L-SHADE and tuned DE. The 64-turbine IEA37 scenario and the full Horns Rev~1 and
 Lillgrund farms were not run (M 12, 13).
+\item SLSQP-based runs are not bit-reproducible across CPU and BLAS builds; the labels of these reruns stay
+undecidable from the stored coordinates (M 6.4, 9.6).
 \item The public deposit, the author confirmations and the volume and pages of Solanki and Deep (2023) are author
 actions.
 \end{itemize}

@@ -37,7 +37,10 @@ See `validation/archive_audit.json`, `focused_checks.json` and `revision_verific
 
 ---
 
-# Revision 3 (4 October 2026)
+# Revision 3 (4 October 2026) — the "second revision"
+
+Naming in the submitted documents: "first revision" = internal revision 2 (GA, Laplace, spacing, exact-gradient and
+Lillgrund experiments); "this revision" = internal revision 3.
 
 This section is appended to the record above; the earlier sections are kept unchanged as history.
 
@@ -67,13 +70,13 @@ The deterministic full-precision reruns of the stored records come on top of the
 | Item | What was done | Where |
 |---|---|---|
 | R1 / A1 | Declarations complete. The generative-AI statement now follows the Elsevier template and names all tools and their uses (D14). Facts still need author confirmation. | Back matter; `declarations_content.tex`; `AUTHOR_CONFIRMATION.md` items 5–6 |
-| R2 / A2 / D | Deposit-ready reproducibility package built and verified: README map, `MANIFEST.sha256`, requirements, `Dockerfile`, `CITATION.cff`. The complete pipeline was re-executed: 91 outputs identical apart from time stamps; all checks pass (62 C, 57 X, 22 D, 41 F, 15 S, 57 T); reruns of stored runs are bit-identical except elapsed time. Data availability rewritten (D1). Public DOI: pending author action (`\TBD{DOI}`). | `repro_package_build/` (+ `verification/`); Data availability; §6.4; supplement Reproducibility Map and archive section; `latex_source/analysis/README_reproduce.md` |
+| R2 / A2 / D | Deposit-ready reproducibility package built and verified: README map, `MANIFEST.sha256`, requirements, `Dockerfile`, `CITATION.cff`. The complete pipeline was re-executed: 91 outputs identical apart from time stamps; all checks pass (62 C, 57 X, 22 D, 41 F, 15 S, 57 T); reruns of stored gradient-free runs are bit-identical except elapsed time (SLSQP-based runs are not bit-reproducible across CPU/BLAS builds). Data availability rewritten (D1): release 1.0.0, to be created from the release candidate 1.0.0-rc after a rebuild with the revision-3 records. Public DOI: pending author action (`\TBD{DOI}`). | `repro_package_build/` (+ `verification/`); Data availability; §6.4; supplement Reproducibility Map and archive section; `latex_source/analysis/README_reproduce.md` |
 | R3 / B2 | Site pools recomputed with GA and exact gradients (D9). Horns Rev 1, pool of 11: PSO-VNS best at 6,030 evaluations, GA best at 30,030. IEA37, pool of 13: an exact-gradient method ranks first in every scenario and budget. | §9.3, §9.5; `tab:S-r3-hr-pool`, `tab:S-r3-iea-pool` |
 | R4 / B1, B5 | All-run endpoint on the 68 cases (D4). PSO-VNS vs PSO: 950/348/742 of 2,040 seed pairs, score 0.551 [0.516, 0.587]. Against the other six main methods: 0.73–0.90. Imputation sensitivity: no verdict changes (D7). | §6.2, §7.3, §8; `tab:S-r3-allrun`, `tab:S-r3-imputation` |
 | R5 / C1 | Constraint-handling study, 2,700 runs (D10). The conclusions depend partly on constraint handling. With projection repair the rank order is unchanged, but PSO-VNS no longer beats PSO significantly; with Deb's rules and box clipping, PSO-VNS's all-run advantage over GA and SSA-VNS is lost. | §3.4, §10.4, §11, §12, §13; `tab:S-r3-constraint`, `tab:S-r3-constraint-cases` |
 | R6 | Proposition 1(c), corrected in revision 2. Verified by the theory checks (T01–T13). | — |
-| R7 / B3, B4, B7 | TOST calibration by null simulation: both primary claims hold (D5). Synchronized-seed resampling: SSA-VNS vs RSD-VNS seed-level equivalence is not robust; its non-superiority is (D6; Table 7 footnote b). Equal-cluster target with a wild-cluster bootstrap: no verdict changes (D8). | §6.2; `tab:S-r3-tostaudit`, `tab:S-r3-syncseed`, `tab:S-r3-eqclus` |
-| R8 / C2, C3 | Direct 1-degree optimization, 1,200 runs plus a 1,200-run 15-degree control arm (D11). The leader PSO-VNS is unchanged, and its advantage over PSO grows beyond the margin. GA (Horns Rev 1) and Lillgrund layouts re-evaluated with 1-degree bins and PyWake NOJ: GA's Horns Rev lead holds; at Lillgrund, PSO-VNS is no longer significantly better than VNS or MS-SLSQP (D9). | §9.3, §9.4, §10.5; `tab:S-r3-fine`, `tab:S-r3-hr-eval`, `tab:S-r3-lg-eval` |
+| R7 / B3, B4, B7 | TOST calibration by null simulation: both primary claims hold (D5). Synchronized-seed resampling: SSA-VNS vs RSD-VNS seed-level equivalence is not robust; its non-superiority is (D6; footnote b of `tab:equiv-main`, now Table 8). Equal-cluster target with a wild-cluster bootstrap: no verdict changes (D8). | §6.2; `tab:S-r3-tostaudit`, `tab:S-r3-syncseed`, `tab:S-r3-eqclus` |
+| R8 / C2, C3 | Direct 1-degree optimization, 1,200 runs plus a 1,200-run 15-degree control arm (D11). The leader PSO-VNS is unchanged, and its advantage over PSO grows beyond the margin. GA (Horns Rev 1) and Lillgrund layouts re-evaluated with 1-degree bins and PyWake NOJ: GA's Horns Rev lead holds; at Lillgrund, PSO-VNS's lead over the runners-up (SSA-VNS, VNS, MS-SLSQP) is not significant at 1 degree, MS-SLSQP wins at 6,030, and under PyWake MS-SLSQP has the highest mean at both budgets (D9). | §9.3, §9.4, §10.5; `tab:S-r3-fine`, `tab:S-r3-hr-eval`, `tab:S-r3-lg-eval` |
 | R9 / B6 | Per-evaluation cost given as medians. The MS-SLSQP time jump at N >= 8 is attributed to thread contention (re-timed single-threaded). Initialization time and total CPU time added (D2). | §9.7; `tab:S-r3-time`, `tab:S-r3-time-sites` |
 | R10 / E1–E4 | Length and repetition pass: new results in one or two sentences with a pointer to the supplement, repeated caveats removed. Number fixes (D3). Main bibliography corrected and renumbered in order of first citation (D13). | All sections; `analysis/rev3_numbers_report.md`; `analysis/rev3_bib_order.py` |
 
@@ -102,8 +105,10 @@ The deterministic full-precision reruns of the stored records come on top of the
   - 0 contradicted;
   - 5,714 undecidable within the rounding bound.
 
-  These undecidable records are rerun deterministically at full precision. Result:
-  `\TBD{C4 rerun: N bit-identical, labels confirmed/changed}`. The revision-2 statement that the Horns Rev 1
+  These undecidable records are rerun deterministically at full precision. Result (template of
+  `analysis/rev3_precision_notes.md`): 1,160 + B_c bit-identical, 412 + F_c float noise, 1,572 + C_c confirmed,
+  0 + X_c changed, 77 + U_c SLSQP-based undecided; the cloud counts are marked
+  `\TBD{C4: enter the cloud counts $B_c$, $F_c$, $C_c$, $X_c$, $U_c$}`. The revision-2 statement that the Horns Rev 1
   boundary could not be audited is withdrawn; `hornsrev_model.py` is present.
 - **D.** See R2. Remaining: the public deposit, the DOI and the licence choice (author action).
 - **E1–E4.** See R10. Documents rebuilt with `latex_source/analysis/build_swevo.sh`.
@@ -117,3 +122,25 @@ The deterministic full-precision reruns of the stored records come on top of the
 - **A11:** closed apart from author confirmation and the DOI.
 - **A12:** open only for the authors' final read of the rebuilt PDFs and any further shortening.
 - **Still open, author action only:** confirmations, the public DOI, the final C4 rerun count.
+
+## Fixes after the adversarial review (`analysis/rev3_review_report.md`, 4 October 2026)
+
+- Reproducibility claims qualified: bit-identical reruns only for the gradient-free methods; SLSQP-based runs are not
+  bit-reproducible across CPU/BLAS builds (§6.4, §9.6, S9, S11.11, S12.1, cover letter, response letter). The C4
+  placeholders follow the template of `analysis/rev3_precision_notes.md` with one `\TBD` per place (§9.6, S11.11,
+  response C4 row, `README_reproduce.md`); S12.2 now points to S11.11.
+- Package version: release 1.0.0, to be created from 1.0.0-rc; the response (R2) keeps
+  `\TBD{lead: confirm after package rebuild}` for the rebuilt package.
+- §6.4: the calibration of the original code is recomputed from stored outputs, not re-executed.
+- Lillgrund at 1 degree (§9.4, S10.5, S11.7, §11.2, §13): not significant against SSA-VNS (0.16), MS-SLSQP (0.58)
+  and, as at 5 degrees, VNS; MS-SLSQP wins at 6,030 (0.0014); PyWake: MS-SLSQP highest at both budgets, 16 layouts
+  above the installed block.
+- Overclaiming: "(eight cases)" for direct 1-degree claims, "(six cases, five methods)" for the constraint study, the
+  projection result rephrased; Table 1 "on the benchmark".
+- Precision: 56,540 vs 52,930 reconciled; replay error and its effect on re-evaluations quantified (§9.6, S11.11).
+- Timing: exact-gradient ratio 2.3–5.6 (medians, Table S76); initialization CPU median 3.85 s (wall 4.8 s);
+  `latex_source/analysis/mpce_numbers.tex` restored to the pipeline values.
+- Stale text: 52,930 runs (§3.2), 13-method IEA37 pool (§6.3), GA pointers (§6.1), "favor"; 68-case all-run
+  numbers only in §9.6; Threats count "the last two on six and eight cases".
+- Formatting: Table "Expanded nine-method benchmark pool" moved to §7.2 and its best method bolded; the IEA37 means
+  table without the feasibility columns (counts in its note).

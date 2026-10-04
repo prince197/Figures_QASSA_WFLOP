@@ -12,7 +12,8 @@ every open value; each one prints in red.
    - all 91 regenerated or compared outputs are identical apart from time stamps;
    - all checks pass (62 C, 57 X, 22 D, 41 F, 15 S, 57 T);
    - `rev2_analysis.py` reproduces its 4,670 values;
-   - reruns of stored runs are bit-identical except for the elapsed time.
+   - reruns of stored gradient-free runs are bit-identical except for the elapsed time; SLSQP-based runs are not
+     bit-reproducible across CPU/BLAS builds.
 
    The deposit-ready package is `repro_package_build/` (README, `MANIFEST.sha256`, requirements, `Dockerfile`,
    `CITATION.cff`); see `repro_package_build/verification/verification_summary.txt`. The public deposit is still
@@ -26,7 +27,7 @@ every open value; each one prints in red.
 
    The undecidable records are rerun deterministically with the 17-digit writer (`analysis/rev3_precision_rerun.py`;
    prespecified in `rev3_precision_manifest.md`). No coordinates were inferred by projecting the rounded layouts.
-   **Open:** the lead enters the final result in place of `\TBD{C4 rerun: N bit-identical, labels confirmed/changed}`
+   **Open:** the lead enters the cloud counts in place of `\TBD{C4: enter the cloud counts $B_c$, $F_c$, $C_c$, $X_c$, $U_c$}`
    and `\TBD{C4 rerun count}` (Data availability).
 3. **Complete benchmark reliability analysis. — RESOLVED (revision 3).** The all-run endpoint (feasible beats
    infeasible, then the objective) is applied to all 68 benchmark cases (`tab:S-r3-allrun`):

@@ -11,11 +11,13 @@ results are regenerated from the **reproducibility package**, which contains the
   `count_records.py`, `inventory.csv`, verification logs in `verification/`). The release candidate archive is
   `repro_package_build/dist/SWEVO_repro_1.0.0-rc.zip` (+ `.sha256`).
 - **Contents:** the per-run records of every optimization run with final coordinates and convergence curves
-  (36,190 runs of the original study, 11,640 runs of revision 2 and the revision-3 studies `analysis/rev3_*`), all
+  (36,190 runs of the original study, 11,640 runs of the first revision (internal: revision 2) and the studies of
+  this revision (internal: revision 3, `analysis/rev3_*`)), all
   models and evaluators (benchmark, Horns Rev 1, IEA37, Lillgrund), all optimizers, the experiment drivers and the
   analysis and check scripts. The package README maps every table, figure and number to its script, command, input
   files and run time, and every run file to the command that produced it.
-- **Public deposit:** pending author action. No DOI exists yet; the authors create the versioned public deposit and
+- **Public deposit:** pending author action. The deposit is release 1.0.0, to be created from the release candidate
+  1.0.0-rc after rebuilding it with the revision-3 records and full-precision reruns. No DOI exists yet; the authors create the versioned public deposit and
   enter the DOI in `CITATION.cff` and in the Data availability statement (`optA/swevo_back.tex`,
   `declarations_content.tex`).
 
@@ -41,12 +43,14 @@ generation time stamps, PDF creation dates or recorded versions) or DIFFERENT.
 Verification of this revision (`repro_package_build/verification/verification_summary.txt`): 91 regenerated or
 compared outputs, 0 different; all checks pass (CHECK-FINAL 62, CHECK-EXTRA 57, CHECK-DIAG 22, CHECK-DIR 41,
 CHECK-CSWEEP 15, theory checks 57); `rev2_analysis.py` reproduces its summary (4,670 values) and tables;
-`audit_archive.py` and `check_revision.py` pass; reruns of stored runs with the archived drivers are bit-identical to
-the records in every field except the elapsed time. Not re-executed: the optimization studies themselves (about 126
+`audit_archive.py` and `check_revision.py` pass; reruns of stored PSO-VNS and SSA-VNS runs with the archived drivers
+are bit-identical to the records in every field except the elapsed time. The C4 reruns show the same for the
+gradient-free methods (bit-identical or float noise), whereas SLSQP-based runs (MS-SLSQP, exact-gradient SLSQP) are not
+bit-reproducible across CPU/BLAS builds. Not re-executed: the optimization studies themselves (about 126
 CPU-hours; commands in Section 6 of the package README), the instrumented diagnostic reruns (stored outputs checked
-by D01–D22) and the calibration reruns of the reused code.
+by D01–D22) and the calibration reruns of the reused code (`calibration_vs_recorded.csv` is recomputed from their stored outputs).
 
-## Revision-3 studies
+## Studies of this revision (internal: revision 3)
 
 Prespecified in `analysis/rev3_*_manifest.md`; drivers, records, analyses and tables in `analysis/rev3_*`:
 constraint handling (`rev3_constraint*`, 2,700 runs), direct 1-degree optimization with a seed-paired 15-degree arm
@@ -55,13 +59,16 @@ timing (`rev3_sites*`), numbers audit (`rev3_numbers*`) and coordinate precision
 
 ## Coordinate precision
 
-Run files written before revision 3 store final coordinates rounded to 1 mm (benchmark, IEA37) or 1 cm (Horns Rev 1,
+Run files written before this revision store final coordinates rounded to 1 mm (benchmark, IEA37) or 1 cm (Horns Rev 1,
 Lillgrund); objective, feasibility label and minimum spacing are stored at full precision from the unrounded layout.
 The audit of all 56,540 stored records (`rev3_precision_audit.json`) confirms 50,826 labels from the rounded
 coordinates, contradicts none and leaves 5,714 undecidable within the rounding bound. These are rerun
 deterministically with the 17-digit writer (`record_io.encode_coordinates`; `rev3_precision_rerun.py`, side files
-`rev3_fullprec_*.csv`); result: [TBD: C4 rerun — N bit-identical, labels confirmed/changed]. New runs store 17
-significant digits.
+`rev3_fullprec_*.csv`; 1,649 locally, 4,065 on cloud workers): 1,160 + B_c bit-identical, 412 + F_c float noise,
+1,572 + C_c labels confirmed, 0 + X_c changed; 77 + U_c SLSQP-based records not reproducible (labels stay
+undecidable) [TBD: C4 — enter the cloud counts B_c, F_c, C_c, X_c, U_c]. New runs store 17 significant digits.
+The re-evaluations use the rounded coordinates: 905 of 51,810 feasible audited records replay more than 0.05 pp off
+their stored objective, 233 of the 21,716 re-evaluated benchmark layouts (ranking effect: manuscript Section 9.6).
 
 ## Build the documents
 
