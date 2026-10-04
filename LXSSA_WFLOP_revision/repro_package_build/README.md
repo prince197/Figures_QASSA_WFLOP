@@ -31,7 +31,8 @@ supplement from the stored per-run records, and to rerun every optimization stud
 
 Files of the repository that belong to earlier papers or superseded versions (manuscript builders of earlier
 papers, `superseded_linear_penalty/`, `final_*`, `hybrid_*`, `bvns_*`, `fresh_results.py`, `extra_*`, the
-earlier `figures_final/` content, ...) are excluded; `inventory.csv` lists every candidate file with its decision
+earlier `figures_final/` content, ...) are excluded, except the superseded run files that the precision audit covers
+(`fresh_{bsplit,hgrid,hsplit,hr80,vhr80,bhr80,hhr16,hhr80}.csv`, category `runs-audited`); `inventory.csv` lists every candidate file with its decision
 (include / exclude / pending) and the reason.
 
 ## 2. Layout
