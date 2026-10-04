@@ -18,7 +18,7 @@ every open value; each one prints in red.
    The deposit-ready package is `repro_package_build/` (README, `MANIFEST.sha256`, requirements, `Dockerfile`,
    `CITATION.cff`); see `repro_package_build/verification/verification_summary.txt`. The public deposit is still
    open, see item 7.
-2. **Recover full-precision coordinates. — RESOLVED BY AUDIT AND RERUN; final count pending.** All 56,540 stored
+2. **Recover full-precision coordinates. — RESOLVED BY AUDIT AND RERUN.** All 56,540 stored
    records were audited with the correct site geometry, including Horns Rev 1 (`analysis/rev3_precision_audit.json`,
    supplementary table `tab:S-r3-precision`):
    - 50,826 labels are confirmed from the rounded coordinates;
@@ -59,7 +59,7 @@ every open value; each one prints in red.
 7. **Confirm submission eligibility and make the public deposit.**
    - Confirm author approval, originality, concurrent-submission status, third-party and data permissions, and any
      statements the submission system requires.
-   - Create the versioned public deposit of `repro_package_build/` (for example a GitHub release archived by Zenodo)
+   - Create the versioned public deposit of release 1.0.0 (`repro_package_build/dist/SWEVO_repro_1.0.0.zip`) (for example a GitHub release archived by Zenodo)
      and choose the licence (`LICENSE_SUGGESTION.md`: MIT for code, CC-BY-4.0 for data, suggestion only).
    - Enter the DOI in `CITATION.cff` and replace `\TBD{DOI}` in the Data availability statement (both copies).
    - Supply the volume, issue and pages of Solanki and Deep (2023) if they have been assigned. The entry now reads

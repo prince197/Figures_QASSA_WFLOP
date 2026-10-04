@@ -6,7 +6,7 @@ type: software
 title: >-
   Reproducibility package for "Baseline Configuration and Random-Sampling Controls in Metaheuristic
   Comparisons for Wind Farm Layout Optimization"
-version: 1.0.0-rc
+version: 1.0.0
 date-released: "2026-10-04"
 authors:
   - family-names: Solanki

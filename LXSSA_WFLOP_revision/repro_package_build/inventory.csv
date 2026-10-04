@@ -9,13 +9,13 @@ SWEVO_rev2/validation/focused_checks.json,output,include,753,"revision-2 audit o
 SWEVO_rev2/validation/paired_outcomes.csv,output,include,1861,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
 SWEVO_rev2/validation/raw_data_checksums.json,output,include,22429,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
 SWEVO_rev2/validation/reliability.csv,output,include,1619,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
-SWEVO_rev2/validation/reliability_tables.tex,output,include,3272,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+SWEVO_rev2/validation/reliability_tables.tex,output,include,3283,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
 SWEVO_rev2/validation/revision_verification.json,output,include,1657,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
 analysis/README.md,legacy-doc,exclude,10509,history of all analysis versions; superseded for SWEVO by README_reproduce.md and the package README
 analysis/README_reproduce.md,doc,include,16140,repository reproduction notes (MPCE/SWEVO pipeline)
 analysis/analyze_authors_runs.py,analysis,include,12602,authors_tables.tex (spacing table) and calibration table
 analysis/analyze_extra_runs.py,legacy,exclude,7541,earlier paper
-analysis/audit_archive.py,check,include,11529,archive audit of the revision-2 records (expects the experiments/ + validation/ layout)
+analysis/audit_archive.py,check,include,11540,archive audit of the revision-2 records (expects the experiments/ + validation/ layout)
 analysis/authors_experiments.log,log,include,1407,launcher log of authors_experiments.py
 analysis/authors_experiments.py,driver,include,3761,runs authors_runs_*.csv (spacing table tab:spacing-authors)
 analysis/authors_objective.py,model,include,1382,penalized objective (exact quadratic penalty of the original objective.py)
@@ -434,21 +434,155 @@ analysis/rev2_spacing_s6of40.csv,runs-rev2,include,271620,revision-2 per-run rec
 analysis/rev2_spacing_s7of40.csv,runs-rev2,include,272467,revision-2 per-run records
 analysis/rev2_spacing_s8of40.csv,runs-rev2,include,272237,revision-2 per-run records
 analysis/rev2_spacing_s9of40.csv,runs-rev2,include,267998,revision-2 per-run records
+analysis/rev3_bib_order.py,rev3-code,include,5299,revision-3 script
+analysis/rev3_constraint.json,rev3-output,include,100208,revision-3 output
 analysis/rev3_constraint.py,rev3-code,include,17631,revision-3 script
-analysis/rev3_constraint_analysis.py,rev3-code,include,23995,revision-3 script
-analysis/rev3_constraint_manifest.md,rev3-doc,include,9381,revision-3 manifest / prespecification
-analysis/rev3_constraint_pen.csv.partial,unclassified,exclude,941469,revision-3 file of an unexpected type (check by hand)
-analysis/rev3_constraint_run_pen.log,rev3-log,include,760,revision-3 log
+analysis/rev3_constraint_analysis.log,rev3-log,include,5004,revision-3 log
+analysis/rev3_constraint_analysis.py,rev3-code,include,24464,revision-3 script
+analysis/rev3_constraint_deb.csv,rev3-data,include,1933025,revision-3 run records / outputs
+analysis/rev3_constraint_manifest.md,rev3-doc,include,10721,revision-3 manifest / prespecification
+analysis/rev3_constraint_pen.csv,rev3-data,include,1982983,revision-3 run records / outputs
+analysis/rev3_constraint_proj.csv,rev3-data,include,2223287,revision-3 run records / outputs
+analysis/rev3_constraint_run_deb.log,rev3-log,include,1752,revision-3 log
+analysis/rev3_constraint_run_pen.log,rev3-log,include,1781,revision-3 log
+analysis/rev3_constraint_run_proj.log,rev3-log,include,1787,revision-3 log
+analysis/rev3_constraint_tables.tex,rev3-output,include,6035,revision-3 table
 analysis/rev3_constraint_validate.csv,rev3-data,include,5332,revision-3 run records / outputs
 analysis/rev3_constraint_validate.json,rev3-output,include,2699,revision-3 output
 analysis/rev3_constraint_validate.log,rev3-log,include,2700,revision-3 log
+analysis/rev3_fine.json,rev3-output,include,69928,revision-3 output
 analysis/rev3_fine.py,rev3-code,include,22249,revision-3 script
+analysis/rev3_fine15_s0of1.csv,rev3-data,include,2874151,revision-3 run records / outputs
+analysis/rev3_fine15_s0of1.log,rev3-log,include,114654,revision-3 log
+analysis/rev3_fine_analysis.log,rev3-log,include,4320,revision-3 log
 analysis/rev3_fine_analysis.py,rev3-code,include,25171,revision-3 script
 analysis/rev3_fine_manifest.md,rev3-doc,include,9994,revision-3 manifest / prespecification
+analysis/rev3_fine_s0of10.csv,rev3-data,include,288810,revision-3 run records / outputs
+analysis/rev3_fine_s0of10.log,rev3-log,include,11478,revision-3 log
+analysis/rev3_fine_s1of10.csv,rev3-data,include,289419,revision-3 run records / outputs
+analysis/rev3_fine_s1of10.log,rev3-log,include,11502,revision-3 log
+analysis/rev3_fine_s2of10.csv,rev3-data,include,287263,revision-3 run records / outputs
+analysis/rev3_fine_s2of10.log,rev3-log,include,11479,revision-3 log
+analysis/rev3_fine_s3of10.csv,rev3-data,include,285927,revision-3 run records / outputs
+analysis/rev3_fine_s3of10.log,rev3-log,include,11508,revision-3 log
+analysis/rev3_fine_s4of10.csv,rev3-data,include,285925,revision-3 run records / outputs
+analysis/rev3_fine_s4of10.log,rev3-log,include,11484,revision-3 log
+analysis/rev3_fine_s5of10.csv,rev3-data,include,287218,revision-3 run records / outputs
+analysis/rev3_fine_s5of10.log,rev3-log,include,11474,revision-3 log
+analysis/rev3_fine_s6of10.csv,rev3-data,include,290559,revision-3 run records / outputs
+analysis/rev3_fine_s6of10.log,rev3-log,include,11481,revision-3 log
+analysis/rev3_fine_s7of10.csv,rev3-data,include,284157,revision-3 run records / outputs
+analysis/rev3_fine_s7of10.log,rev3-log,include,11752,revision-3 log
+analysis/rev3_fine_s8of10.csv,rev3-data,include,286435,revision-3 run records / outputs
+analysis/rev3_fine_s8of10.log,rev3-log,include,11479,revision-3 log
+analysis/rev3_fine_s9of10.csv,rev3-data,include,286485,revision-3 run records / outputs
+analysis/rev3_fine_s9of10.log,rev3-log,include,11516,revision-3 log
+analysis/rev3_fine_tables.tex,rev3-output,include,4005,revision-3 table
 analysis/rev3_fine_timing.log,rev3-log,include,4028,revision-3 log
 analysis/rev3_fine_validate.log,rev3-log,include,2928,revision-3 log
-analysis/rev3_inference.log,rev3-log,include,5036,revision-3 log
-analysis/rev3_inference.py,rev3-code,include,52096,revision-3 script
+analysis/rev3_fullprec_fresh_bgrid.csv,rev3-data,include,101113,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_bgrid_local.csv,rev3-data,include,89002,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_bsplit.csv,rev3-data,include,25460,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_bsplit_local.csv,rev3-data,include,22765,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_grid.csv,rev3-data,include,992429,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_grid_local.csv,rev3-data,include,2875,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_grid_s0of2.csv,rev3-data,include,432239,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_grid_s1of2.csv,rev3-data,include,432797,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_hgrid.csv,rev3-data,include,25063,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_hgrid_local.csv,rev3-data,include,21816,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_hr.csv,rev3-data,include,61800,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_hr_local.csv,rev3-data,include,57342,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_hsplit.csv,rev3-data,include,16511,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_hsplit_local.csv,rev3-data,include,14600,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_vgrid.csv,rev3-data,include,1506,revision-3 run records / outputs
+analysis/rev3_fullprec_fresh_vgrid_local.csv,rev3-data,include,1268,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k.csv,rev3-data,include,621235,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_local.csv,rev3-data,include,14723,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s0of19.csv,rev3-data,include,28506,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s10of19.csv,rev3-data,include,30276,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s11of19.csv,rev3-data,include,29700,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s12of19.csv,rev3-data,include,28828,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s13of19.csv,rev3-data,include,30488,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s14of19.csv,rev3-data,include,30298,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s15of19.csv,rev3-data,include,29522,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s16of19.csv,rev3-data,include,29488,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s17of19.csv,rev3-data,include,28896,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s18of19.csv,rev3-data,include,29707,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s1of19.csv,rev3-data,include,28989,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s2of19.csv,rev3-data,include,29125,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s3of19.csv,rev3-data,include,28924,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s4of19.csv,rev3-data,include,28996,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s5of19.csv,rev3-data,include,29773,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s6of19.csv,rev3-data,include,28320,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s7of19.csv,rev3-data,include,29269,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s8of19.csv,rev3-data,include,28482,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120k_s9of19.csv,rev3-data,include,29273,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120kp.csv,rev3-data,include,43523,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120kp_local.csv,rev3-data,include,1916,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b120kp_s0of1.csv,rev3-data,include,37891,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30k.csv,rev3-data,include,334279,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30k_local.csv,rev3-data,include,14429,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30k_s0of4.csv,rev3-data,include,72447,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30k_s1of4.csv,rev3-data,include,73034,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30k_s2of4.csv,rev3-data,include,73508,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30k_s3of4.csv,rev3-data,include,72145,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30kp.csv,rev3-data,include,10688,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_b30kp_local.csv,rev3-data,include,9682,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_csweep.csv,rev3-data,include,25883,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_csweep_local.csv,rev3-data,include,23323,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_feas.csv,rev3-data,include,246823,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_feas_local.csv,rev3-data,include,13323,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_feas_s0of1.csv,rev3-data,include,210854,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_feasp.csv,rev3-data,include,20814,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_feasp_local.csv,rev3-data,include,18873,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hr16new.csv,rev3-data,include,11211,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hr16new_local.csv,rev3-data,include,10264,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hrfix.csv,rev3-data,include,271647,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hrfix_local.csv,rev3-data,include,9340,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hrfix_s0of4.csv,rev3-data,include,60143,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hrfix_s1of4.csv,rev3-data,include,59230,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hrfix_s2of4.csv,rev3-data,include,60156,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_hrfix_s3of4.csv,rev3-data,include,60127,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_iea.csv,rev3-data,include,279623,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_iea_local.csv,rev3-data,include,262925,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_omega90.csv,rev3-data,include,1969,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_omega90_local.csv,rev3-data,include,1721,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_psobv.csv,rev3-data,include,6934,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_psobv_local.csv,rev3-data,include,6091,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_psoc.csv,rev3-data,include,13219,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_psoc_local.csv,rev3-data,include,11279,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_psosplit.csv,rev3-data,include,2690,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_psosplit_local.csv,rev3-data,include,2382,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_rsdisc.csv,rev3-data,include,2466,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_rsdisc_local.csv,rev3-data,include,2132,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_rsvns.csv,rev3-data,include,1788,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_rsvns_local.csv,rev3-data,include,1559,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_slsqp.csv,rev3-data,include,293227,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_slsqp_local.csv,rev3-data,include,730,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_slsqp_s0of2.csv,rev3-data,include,124436,revision-3 run records / outputs
+analysis/rev3_fullprec_mpce_slsqp_s1of2.csv,rev3-data,include,123640,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_ga.csv,rev3-data,include,2230,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_ga_local.csv,rev3-data,include,1921,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_gahr.csv,rev3-data,include,1436,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_gahr_local.csv,rev3-data,include,1271,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_gaiea.csv,rev3-data,include,1444,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_gaiea_local.csv,rev3-data,include,1282,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_grad.csv,rev3-data,include,334935,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_grad_local.csv,rev3-data,include,38313,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_grad_s0of2.csv,rev3-data,include,139215,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_grad_s1of2.csv,rev3-data,include,134758,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_laplace.csv,rev3-data,include,179872,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_laplace_local.csv,rev3-data,include,160423,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_lg16.csv,rev3-data,include,32527,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_lg16_local.csv,rev3-data,include,30047,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_lg16b.csv,rev3-data,include,100921,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_lg16b_local.csv,rev3-data,include,92924,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_spacing.csv,rev3-data,include,364563,revision-3 run records / outputs
+analysis/rev3_fullprec_rev2_spacing_local.csv,rev3-data,include,325201,revision-3 run records / outputs
+analysis/rev3_inference.json,rev3-output,include,86351,revision-3 output
+analysis/rev3_inference.log,rev3-log,include,6185,revision-3 log
+analysis/rev3_inference.py,rev3-code,include,52242,revision-3 script
+analysis/rev3_inference_tables.tex,rev3-output,include,15339,revision-3 table
 analysis/rev3_numbers_audit.json,rev3-output,include,3698669,revision-3 output
 analysis/rev3_numbers_audit.py,rev3-code,include,66312,revision-3 script
 analysis/rev3_numbers_checks.log,rev3-log,include,65190,revision-3 log
@@ -456,18 +590,94 @@ analysis/rev3_numbers_report.md,rev3-doc,include,17486,revision-3 manifest / pre
 analysis/rev3_numbers_theory_check.py,rev3-code,include,17821,revision-3 script
 analysis/rev3_precision_audit.json,rev3-output,include,63747,revision-3 output
 analysis/rev3_precision_audit.py,rev3-code,include,18326,revision-3 script
-analysis/rev3_precision_audit_records.csv,rev3-data,include,15705198,revision-3 run records / outputs
+analysis/rev3_precision_audit_records.csv,rev3-data,include,12116900,revision-3 run records / outputs
 analysis/rev3_precision_manifest.md,rev3-doc,include,2866,revision-3 manifest / prespecification
-analysis/rev3_precision_rerun.py,rev3-code,include,27663,revision-3 script
-analysis/rev3_refs_corrections.tex,rev3-output,include,4729,revision-3 table
-analysis/rev3_refs_report.md,rev3-doc,include,19546,revision-3 manifest / prespecification
+analysis/rev3_precision_notes.md,rev3-doc,include,1828,revision-3 manifest / prespecification
+analysis/rev3_precision_plan.json,rev3-output,include,232799,revision-3 output
+analysis/rev3_precision_rerun.py,rev3-code,include,36968,revision-3 script
+analysis/rev3_precision_rerun_summary.json,rev3-output,include,375338,revision-3 output
+analysis/rev3_precision_results/fresh_grid_s0of2.jsonl,rev3-data,include,873268,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/fresh_grid_s1of2.jsonl,rev3-data,include,874354,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s0of19.jsonl,rev3-data,include,48191,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s10of19.jsonl,rev3-data,include,50489,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s11of19.jsonl,rev3-data,include,49385,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s12of19.jsonl,rev3-data,include,48513,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s13of19.jsonl,rev3-data,include,50701,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s14of19.jsonl,rev3-data,include,50511,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s15of19.jsonl,rev3-data,include,49207,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s16of19.jsonl,rev3-data,include,49173,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s17of19.jsonl,rev3-data,include,48581,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s18of19.jsonl,rev3-data,include,49920,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s1of19.jsonl,rev3-data,include,48674,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s2of19.jsonl,rev3-data,include,48810,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s3of19.jsonl,rev3-data,include,48609,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s4of19.jsonl,rev3-data,include,48681,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s5of19.jsonl,rev3-data,include,49986,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s6of19.jsonl,rev3-data,include,48005,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s7of19.jsonl,rev3-data,include,49482,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s8of19.jsonl,rev3-data,include,48167,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120k_s9of19.jsonl,rev3-data,include,49486,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b120kp_s0of1.jsonl,rev3-data,include,63912,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b30k_s0of4.jsonl,rev3-data,include,122228,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b30k_s1of4.jsonl,rev3-data,include,122815,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b30k_s2of4.jsonl,rev3-data,include,123289,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_b30k_s3of4.jsonl,rev3-data,include,121398,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_feas_s0of1.jsonl,rev3-data,include,354619,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_hrfix_s0of4.jsonl,rev3-data,include,95140,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_hrfix_s1of4.jsonl,rev3-data,include,93699,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_hrfix_s2of4.jsonl,rev3-data,include,95153,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_hrfix_s3of4.jsonl,rev3-data,include,95124,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_slsqp_s0of2.jsonl,rev3-data,include,251305,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/mpce_slsqp_s1of2.jsonl,rev3-data,include,251037,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/rev2_grad_s0of2.jsonl,rev3-data,include,194276,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_results/rev2_grad_s1of2.jsonl,rev3-data,include,190347,"raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"
+analysis/rev3_precision_tables.tex,rev3-output,include,5302,revision-3 table
+analysis/rev3_refs_corrections.tex,rev3-editorial,exclude,4729,internal reference-list check of the manuscript
+analysis/rev3_refs_report.md,rev3-editorial,exclude,19546,internal reference-list check of the manuscript
+analysis/rev3_review_report.md,rev3-editorial,exclude,16584,internal editorial review notes on the manuscript text
 analysis/rev3_sites.json,rev3-output,include,201496,revision-3 output
 analysis/rev3_sites.log,rev3-log,include,11823,revision-3 log
-analysis/rev3_sites.py,rev3-code,include,75919,revision-3 script
+analysis/rev3_sites.py,rev3-code,include,75939,revision-3 script
 analysis/rev3_sites_inittime.csv,rev3-data,include,21796,revision-3 run records / outputs
 analysis/rev3_sites_reeval.csv,rev3-data,include,173817,revision-3 run records / outputs
 analysis/rev3_sites_slsqp_probe.csv,rev3-data,include,370,revision-3 run records / outputs
-analysis/rev3_sites_tables.tex,rev3-output,include,22418,revision-3 table
+analysis/rev3_sites_tables.tex,rev3-output,include,22431,revision-3 table
+analysis/rev3_suggested_text.md,rev3-editorial,exclude,11719,internal drafting notes for the manuscript text
+analysis/rev3p_fresh_grid_s0of2.log,rev3-log,include,4162,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_fresh_grid_s1of2.log,rev3-log,include,4144,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s0of19.log,rev3-log,include,401,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s10of19.log,rev3-log,include,405,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s11of19.log,rev3-log,include,408,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s12of19.log,rev3-log,include,401,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s13of19.log,rev3-log,include,404,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s14of19.log,rev3-log,include,405,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s15of19.log,rev3-log,include,403,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s16of19.log,rev3-log,include,400,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s17of19.log,rev3-log,include,402,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s18of19.log,rev3-log,include,402,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s1of19.log,rev3-log,include,397,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s2of19.log,rev3-log,include,401,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s3of19.log,rev3-log,include,398,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s4of19.log,rev3-log,include,404,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s5of19.log,rev3-log,include,399,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s6of19.log,rev3-log,include,401,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s7of19.log,rev3-log,include,405,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s8of19.log,rev3-log,include,401,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120k_s9of19.log,rev3-log,include,397,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b120kp_s0of1.log,rev3-log,include,453,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b30k_s0of4.log,rev3-log,include,679,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b30k_s1of4.log,rev3-log,include,688,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b30k_s2of4.log,rev3-log,include,684,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_b30k_s3of4.log,rev3-log,include,684,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_feas_s0of1.log,rev3-log,include,1617,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_hrfix_s0of4.log,rev3-log,include,561,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_hrfix_s1of4.log,rev3-log,include,556,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_hrfix_s2of4.log,rev3-log,include,558,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_hrfix_s3of4.log,rev3-log,include,557,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_slsqp_s0of2.log,rev3-log,include,1554,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_mpce_slsqp_s1of2.log,rev3-log,include,1547,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_rev2_grad_s0of2.log,rev3-log,include,769,worker logs of the 35 cloud shards of the full-precision reruns (C4)
+analysis/rev3p_rev2_grad_s1of2.log,rev3-log,include,770,worker logs of the 35 cloud shards of the full-precision reruns (C4)
 analysis/robustness_final.py,legacy,exclude,4308,earlier paper; its output final_reevaluation.csv is kept as the cache seed of mpce_robustness.py
 analysis/robustness_fresh.py,legacy,exclude,4105,earlier paper
 analysis/robustness_hybrid.py,legacy,exclude,4296,superseded intermediate hybrid version
@@ -628,4 +838,3 @@ figures_mpce/theory_stability.pdf,figure,include,34942,"generated figures (mpce_
 figures_mpce/wakeloss_vs_n.pdf,figure,include,42852,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
 figures_mpce/wakeloss_vs_n.png,figure,include,192732,PNG previews of the generated figures
 selected_30_run_data.csv,runs-archived,include,249641,"720 archived runs of the original code (evaluator validation, calibration, boundary-rule check)"
-analysis/rev3_fullprec_*.csv,rev3-pending,pending,0,not present when the inventory was built: full-precision (17 significant digits) side files of the legacy coordinates (C4)

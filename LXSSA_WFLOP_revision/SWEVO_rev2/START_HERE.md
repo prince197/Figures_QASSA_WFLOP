@@ -5,19 +5,19 @@ This package contains the second revision of the SWEVO manuscript (internal name
 original run records, the 11,640 revision-2 records and the revision-3 records are in the repository together with
 all model, optimizer, driver, analysis and check scripts. The revision-2 statement that the original records and
 fifteen core modules were missing was wrong (they are in `analysis/`). For revision 3 the complete analysis pipeline
-was re-executed from a deposit-ready reproducibility package (`repro_package_build/`). All regenerated outputs are
-identical to the stored pipeline outputs apart from time stamps, all automated checks pass, and reruns of stored
-gradient-free runs are bit-identical except for the elapsed time (SLSQP-based runs are not bit-reproducible across
-CPU/BLAS builds). The release candidate `1.0.0-rc` does not yet contain the revision-3 records; release 1.0.0 is to
-be built from it after the C4 reruns finish.
+was re-executed from a deposit-ready reproducibility package (`repro_package_build/`). Release 1.0.0 of the package
+contains all records, including the 5,100 revision-3 runs and the 5,744 full-precision reruns. It was verified from a
+clean unpack: all checksums pass, all regenerated outputs are identical to the stored ones apart from time stamps,
+all automated checks pass, and reruns of stored gradient-free runs are bit-identical except for the elapsed time
+(SLSQP-based runs are not bit-reproducible across CPU/BLAS builds). The archive is
+`repro_package_build/dist/SWEVO_repro_1.0.0.zip` (rebuild with `sh repro_package_build/make_package.sh 1.0.0`).
 
-Open before submission (details in `AUTHOR_CONFIRMATION.md`):
-- the public, versioned deposit and its DOI (author action);
-- author confirmations (facts, declarations, AI-tool list, eligibility);
-- the cloud counts of the full-precision reruns (`\TBD{C4 rerun count}`, `\TBD{C4: enter the cloud counts ...}`) and
-  the rebuilt package (`\TBD{lead: confirm after package rebuild}` in the response letter). The lead fills these in
-  when the reruns finish.
+Open before submission (author actions only; details in `AUTHOR_CONFIRMATION.md`):
+- the public, versioned deposit of release 1.0.0, its DOI (`\TBD{DOI}`, two copies) and the licence;
+- author confirmations: facts, declarations, the AI-tool list (`\TBD{authors: confirm the list of tools}`), submission
+  eligibility (cover letter), agreement on the primary equivalence questions.
 
+`REV3_TRIAGE.md` gives the verdict on every item of the remaining-work report.
 `REVISION_CHANGELOG.md` records what was done in each revision; its "Revision 3" section maps reviewer items R1–R10
 and work items A–E to the changes. Search the sources for `\TBD` to find every value still to be supplied; each one
 prints in red in the PDFs.

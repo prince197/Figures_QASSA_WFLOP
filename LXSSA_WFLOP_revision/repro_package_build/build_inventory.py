@@ -86,6 +86,11 @@ RULES = [
     ("analysis/hornsrev_site_text.tex", "legacy", "exclude", "manuscript text of an earlier paper"),
     ("analysis/README.md", "legacy-doc", "exclude", "history of all analysis versions; superseded for SWEVO by README_reproduce.md and the package README"),
     # ---- revision 3 (other work packages; included automatically when present) -------------------------------
+    ("analysis/rev3_precision_results/*.jsonl", "rev3-data", "include", "raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"),
+    ("analysis/rev3p_*.log", "rev3-log", "include", "worker logs of the 35 cloud shards of the full-precision reruns (C4)"),
+    ("analysis/rev3_review_report.md", "rev3-editorial", "exclude", "internal editorial review notes on the manuscript text"),
+    ("analysis/rev3_suggested_text.md", "rev3-editorial", "exclude", "internal drafting notes for the manuscript text"),
+    ("analysis/rev3_refs_*", "rev3-editorial", "exclude", "internal reference-list check of the manuscript"),
     ("analysis/rev3_*.py", "rev3-code", "include", "revision-3 script"),
     ("analysis/rev3_*.csv", "rev3-data", "include", "revision-3 run records / outputs"),
     ("analysis/rev3_*.csv.gz", "rev3-data", "include", "revision-3 run records / outputs"),

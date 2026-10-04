@@ -69,7 +69,7 @@ The deterministic full-precision reruns of the stored records come on top of the
 | Item | What was done | Where |
 |---|---|---|
 | R1 / A1 | Declarations complete. The generative-AI statement now follows the Elsevier template and names all tools and their uses (D14). Facts still need author confirmation. | Back matter; `declarations_content.tex`; `AUTHOR_CONFIRMATION.md` items 5–6 |
-| R2 / A2 / D | Deposit-ready reproducibility package built and verified: README map, `MANIFEST.sha256`, requirements, `Dockerfile`, `CITATION.cff`. The complete pipeline was re-executed: 91 outputs identical apart from time stamps; all checks pass (62 C, 57 X, 22 D, 41 F, 15 S, 57 T); reruns of stored gradient-free runs are bit-identical except elapsed time (SLSQP-based runs are not bit-reproducible across CPU/BLAS builds). Data availability rewritten (D1): release 1.0.0, to be created from the release candidate 1.0.0-rc after a rebuild with the revision-3 records. Public DOI: pending author action (`\TBD{DOI}`). | `repro_package_build/` (+ `verification/`); Data availability; §6.4; supplement Reproducibility Map and archive section; `latex_source/analysis/README_reproduce.md` |
+| R2 / A2 / D | Deposit-ready reproducibility package built and verified: README map, `MANIFEST.sha256`, requirements, `Dockerfile`, `CITATION.cff`. The complete pipeline was re-executed: 91 outputs identical apart from time stamps; all checks pass (62 C, 57 X, 22 D, 41 F, 15 S, 57 T); reruns of stored gradient-free runs are bit-identical except elapsed time (SLSQP-based runs are not bit-reproducible across CPU/BLAS builds). Data availability rewritten (D1). Release 1.0.0, rebuilt with all revision-3 records and reruns, was verified from a clean unpack (checksums, full regeneration including the revision-3 analyses, determinism; `repro_package_build/verification/verification_summary.txt`, Part B). Public DOI: pending author action (`\TBD{DOI}`). | `repro_package_build/` (+ `verification/`); Data availability; §6.4; supplement Reproducibility Map and archive section; `latex_source/analysis/README_reproduce.md` |
 | R3 / B2 | Site pools recomputed with GA and exact gradients (D9). Horns Rev 1, pool of 11: PSO-VNS best at 6,030 evaluations, GA best at 30,030. IEA37, pool of 13: an exact-gradient method ranks first in every scenario and budget. | §9.3, §9.5; `tab:S-r3-hr-pool`, `tab:S-r3-iea-pool` |
 | R4 / B1, B5 | All-run endpoint on the 68 cases (D4). PSO-VNS vs PSO: 950/348/742 of 2,040 seed pairs, score 0.551 [0.516, 0.587]. Against the other six main methods: 0.73–0.90. Imputation sensitivity: no verdict changes (D7). | §6.2, §7.3, §8; `tab:S-r3-allrun`, `tab:S-r3-imputation` |
 | R5 / C1 | Constraint-handling study, 2,700 runs (D10). The conclusions depend partly on constraint handling. With projection repair the rank order is unchanged, but PSO-VNS no longer beats PSO significantly; with Deb's rules and box clipping, PSO-VNS's all-run advantage over GA and SSA-VNS is lost. | §3.4, §10.4, §11, §12, §13; `tab:S-r3-constraint`, `tab:S-r3-constraint-cases` |
@@ -127,8 +127,8 @@ The deterministic full-precision reruns of the stored records come on top of the
   bit-reproducible across CPU/BLAS builds (§6.4, §9.6, S9, S11.11, S12.1, cover letter, response letter). The C4
   placeholders follow the template of `analysis/rev3_precision_notes.md` with one `\TBD` per place (§9.6, S11.11,
   response C4 row, `README_reproduce.md`); S12.2 now points to S11.11.
-- Package version: release 1.0.0, to be created from 1.0.0-rc; the response (R2) keeps
-  `\TBD{lead: confirm after package rebuild}` for the rebuilt package.
+- Package version: release 1.0.0, rebuilt with the revision-3 records and verified; the response (R2) states the
+  verification.
 - §6.4: the calibration of the original code is recomputed from stored outputs, not re-executed.
 - Lillgrund at 1 degree (§9.4, S10.5, S11.7, §11.2, §13): not significant against SSA-VNS (0.16), MS-SLSQP (0.58)
   and, as at 5 degrees, VNS; MS-SLSQP wins at 6,030 (0.0014); PyWake: MS-SLSQP highest at both budgets, 16 layouts
@@ -142,3 +142,13 @@ The deterministic full-precision reruns of the stored records come on top of the
   numbers only in §9.6; Threats count "the last two on six and eight cases".
 - Formatting: Table "Expanded nine-method benchmark pool" moved to §7.2 and its best method bolded; the IEA37 means
   table without the feasibility columns (counts in its note).
+
+## Final pass (4 October 2026)
+
+- Reproducibility package release 1.0.0: revision-3 records, full-precision reruns (raw `.jsonl` and merged CSVs),
+  cloud worker logs; revision-3 analyses added to `regenerate_all.sh` and to the README map; internal editorial notes
+  excluded. Verified from a clean unpack.
+- `analysis/rev3_sites_tables.tex` (both copies): a corrupted `\ref` (carriage return in place of `\r`) printed
+  "Section ef{...}" in a note of the IEA37 pool table; replaced by the regenerated file.
+- Main bibliography re-sorted in order of first citation after the final edits (Solanki2023 moved).
+- `REV3_TRIAGE.md`: verdict and outcome for every item.

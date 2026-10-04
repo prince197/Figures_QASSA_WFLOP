@@ -8,16 +8,18 @@ results are regenerated from the **reproducibility package**, which contains the
 
 - **Package:** `repro_package_build/` of the project repository (README, `MANIFEST.sha256`, `requirements.txt`,
   `requirements-pywake.txt`, `Dockerfile`, `CITATION.cff`, `regenerate_all.sh`, `verify_determinism.py`,
-  `count_records.py`, `inventory.csv`, verification logs in `verification/`). The release candidate archive is
-  `repro_package_build/dist/SWEVO_repro_1.0.0-rc.zip` (+ `.sha256`).
+  `count_records.py`, `inventory.csv`, verification logs in `verification/`). The release archive is
+  `repro_package_build/dist/SWEVO_repro_1.0.0.zip` (+ `.sha256`), built by `sh repro_package_build/make_package.sh 1.0.0`
+  (`dist/` is not tracked in git; the archive is also shipped with the revision package).
 - **Contents:** the per-run records of every optimization run with final coordinates and convergence curves
   (36,190 runs of the original study, 11,640 runs of the first revision (internal: revision 2) and the studies of
   this revision (internal: revision 3, `analysis/rev3_*`)), all
   models and evaluators (benchmark, Horns Rev 1, IEA37, Lillgrund), all optimizers, the experiment drivers and the
   analysis and check scripts. The package README maps every table, figure and number to its script, command, input
   files and run time, and every run file to the command that produced it.
-- **Public deposit:** pending author action. The deposit is release 1.0.0, to be created from the release candidate
-  1.0.0-rc after rebuilding it with the revision-3 records and full-precision reruns. No DOI exists yet; the authors create the versioned public deposit and
+- **Public deposit:** pending author action. The package to deposit is release 1.0.0 (built with
+  `sh repro_package_build/make_package.sh 1.0.0`; it contains the revision-3 records and full-precision reruns and was
+  verified from a clean unpack). No DOI exists yet; the authors create the versioned public deposit and
   enter the DOI in `CITATION.cff` and in the Data availability statement (`optA/swevo_back.tex`,
   `declarations_content.tex`).
 

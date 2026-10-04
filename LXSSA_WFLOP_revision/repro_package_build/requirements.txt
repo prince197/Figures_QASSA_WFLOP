@@ -1,4 +1,4 @@
-# SWEVO reproducibility package 1.0.0-rc -- environment in which every regeneration of this package was verified
+# SWEVO reproducibility package 1.0.0 -- environment in which every regeneration of this package was verified
 # (2026-10-04; Linux x86_64, Ubuntu 24.04, CPython 3.11.15, NumPy/SciPy wheels with the bundled OpenBLAS 0.3.31).
 # These are the versions of the container that produced the revision-2/3 runs and reproduced all stored outputs.
 # Install:  python3.11 -m pip install -r requirements.txt
