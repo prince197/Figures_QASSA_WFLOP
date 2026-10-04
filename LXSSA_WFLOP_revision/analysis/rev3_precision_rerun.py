@@ -276,6 +276,23 @@ def study_keys(study, all_classes=False):
 
 
 # ------------------------------------------------------------------ plan
+DRIVER = {
+    "fresh_grid": "full_grid_experiments.py grid (run_grid)", "fresh_bgrid": "full_grid_experiments.py bgrid",
+    "fresh_vgrid": "full_grid_experiments.py vgrid", "fresh_bsplit": "full_grid_experiments.py bsplit",
+    "fresh_hgrid": "full_grid_experiments.py hgrid", "fresh_hsplit": "full_grid_experiments.py hsplit",
+    "fresh_hr": "full_grid_experiments.py hr16/hr80/bhr16/bhr80/vhr16/vhr80/hhr16/hhr80 (run_hr, pre-fix HR bins)",
+    "mpce_psobv": "mpce_experiments.py psobv", "mpce_psoc": "mpce_experiments.py psoc",
+    "mpce_slsqp": "mpce_experiments.py slsqp", "mpce_rsvns": "mpce_experiments.py rsvns",
+    "mpce_rsdisc": "mpce_experiments.py rsdisc (run_grid_x)", "mpce_psosplit": "mpce_experiments.py psosplit",
+    "mpce_omega90": "mpce_experiments.py omega90 (run_grid_x)", "mpce_csweep": "mpce_experiments.py csweep (run_grid_cs)",
+    "mpce_feas": "mpce_experiments.py feasx 0..7 8", "mpce_feasp": "mpce_experiments.py feasp",
+    "mpce_b30k": "mpce_experiments.py b30k 0..2 3", "mpce_b30kp": "mpce_experiments.py b30kp",
+    "mpce_b120k": "mpce_experiments.py b120k (8 shards)", "mpce_b120kp": "mpce_experiments.py b120kp (4 shards)",
+    "mpce_hr16new": "mpce_experiments.py hr16new", "mpce_hrfix": "mpce_experiments.py hrfix 0..23 24",
+    "mpce_iea": "iea37_experiments.py iea16/iea36/iea16p/iea36p", "rev2_ga": "rev2_ga.py ga",
+    "rev2_gahr": "rev2_ga.py gahr", "rev2_gaiea": "rev2_ga.py gaiea", "rev2_grad": "rev2_gradient.py grad",
+    "rev2_laplace": "rev2_laplace.py laplace", "rev2_spacing": "rev2_spacing.py spacing",
+    "rev2_lg16": "rev2_site.py lg16", "rev2_lg16b": "rev2_site.py lg16b"}
 ORDER_PRIORITY = ["rev2_grad", "rev2_lg16", "rev2_lg16b", "rev2_laplace", "rev2_spacing"]
 
 
@@ -293,7 +310,13 @@ def plan():
         keys = [(f, int(i)) for f, i in zip(g.File, g.Row)]
         rem = [k for k in keys if k not in done]
         gr = g[[(f, int(i)) not in done for f, i in zip(g.File, g.Row)]]
-        studies.append(dict(study=st, role=g.Role.iloc[0], records_class_ii_iii=len(keys), done_locally=len(keys) - len(rem),
+        hrs = gr.Seconds.sum() / 3600
+        nsh = max(1, int(math.ceil(hrs / 1.0)))
+        studies.append(dict(study=st, role=g.Role.iloc[0], driver=DRIVER.get(st, ""),
+                            suggested_shards=nsh,
+                            shard_commands=[f"REV3_PRECISION_RESDIR=rev3_precision_results python3 rev3_precision_rerun.py "
+                                            f"run {st} {i} {nsh} --procs=P" for i in range(nsh)] if rem else [],
+                            records_class_ii_iii=len(keys), done_locally=len(keys) - len(rem),
                             remaining=len(rem), cpu_hours_stored_seconds=round(g.Seconds.sum() / 3600, 3),
                             cpu_hours_remaining=round(gr.Seconds.sum() / 3600, 3),
                             command=f"python3 rev3_precision_rerun.py run {st} SHARD NSHARDS --procs=P",
@@ -353,14 +376,42 @@ def load_results():
     m_bad = -np.minimum(res.SpacingSlackFull, res.BoundarySlackFull)         # > 0: infeasible by m_bad
     res["Margin"] = np.where(res.StrictLabel, m_ok, m_bad)
     res["LabelDecided"] = (res.Reproduction == "bit") | ((res.Reproduction == "noise") & (res.Margin > DELTA))
+    from record_io import decode_coordinates
+    res["WakeFlips"] = [wake_flips(np.array(decode_coordinates(c)), k, h) for c, k, h in
+                        zip(res.CoordinatesFull, res.Kind, res.HRModel)]
     return res, err
+
+
+def wake_flips(full, kind, hrm):
+    """Number of (direction, turbine pair) in-wake indicators that differ between the full-precision layout and its
+    rounding to the stored decimals (top-hat models: benchmark Jensen, Horns Rev 1, Lillgrund; NaN for the IEA37
+    Gaussian wake, which has no in-wake switch)."""
+    if kind == "iea":
+        return np.nan
+    d = 3 if kind == "grid" else 2
+    rnd = np.array([[float(f"{v:.{d}f}") for v in p] for p in full])
+
+    def ind(xy):
+        dx = xy[:, 0][:, None] - xy[:, 0][None]; dy = xy[:, 1][:, None] - xy[:, 1][None]
+        if kind == "grid":
+            th = wm.THETA; c, s = np.cos(th)[:, None, None], np.sin(th)[:, None, None]; A = wm.R / wm.K
+            beta = np.arccos(np.clip((dx * c + dy * s + A) / np.sqrt((dx + A * c) ** 2 + (dy + A * s) ** 2), -1, 1))
+            return beta < np.arctan(wm.K)
+        if kind == "lg":
+            tow, rr, kw = np.deg2rad(270.0 - lgm.WD), lgm.RR, lgm.KW
+        else:
+            tow, rr, kw = (aud._TOW_OLD if hrm == "old" else hr.TOWARD), hr.RR, hr.KW
+        c = np.cos(tow)[:, None, None]; s = np.sin(tow)[:, None, None]
+        x = dx * c + dy * s
+        return (x > 0) & (np.abs(-dx * s + dy * c) < rr + kw * x)
+    return int((ind(full) != ind(rnd)).sum())
 
 
 COLS = ["File", "Row", "Study", "Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init", "Spacing",
         "SMin", "Class", "CoordinatesFull", "MinSpacingFull", "SpacingSlackFull", "BoundarySlackFull", "Margin",
         "StrictLabel", "StoredLabel", "RerunLabel", "LabelChanged", "LabelDecided", "ObjectiveReplayFull",
         "ObjectiveStored", "ObjectiveRerun", "BitIdentical", "Reproduction", "ReplayBitIdentical", "ReplayDiffFull",
-        "ReplayDiffRounded", "CallsMatch", "MinSpacingMatch", "RoundedCoordsMatch", "CurveMatch", "CaptureVerified",
+        "ReplayDiffRounded", "WakeFlips", "CallsMatch", "MinSpacingMatch", "RoundedCoordsMatch", "CurveMatch", "CaptureVerified",
         "AllMatch", "HRModel", "SecondsStored", "SecondsRerun"]
 
 
@@ -387,6 +438,11 @@ def collect():
                         min_margin=float(g.Margin.min()),
                         margins_below_1e_8=int((g.Margin <= DELTA).sum()),
                         replay_full_bit_identical=int(g.ReplayBitIdentical.sum()),
+                        replay_rounded_nonzero=int((g.ReplayDiffRounded != 0).sum()),
+                        replay_rounded_gt_1e_4_pp=int((100 * g.ReplayDiffRounded.abs() / g.Ideal > 1e-4).sum()),
+                        replay_rounded_gt_1e_4_pp_with_wake_flip=int(((100 * g.ReplayDiffRounded.abs() / g.Ideal > 1e-4)
+                                                                      & (g.WakeFlips > 0)).sum()),
+                        max_abs_replay_diff_rounded_pp=float((100 * g.ReplayDiffRounded / g.Ideal).abs().max()),
                         max_abs_replay_diff_full=float(g.ReplayDiffFull.abs().max()),
                         max_abs_replay_diff_full_pp=float((100 * g.ReplayDiffFull / g.Ideal).abs().max()),
                         seconds_rerun=float(g.SecondsRerun.sum()), seconds_stored=float(g.SecondsStored.sum()),
@@ -408,19 +464,19 @@ def collect():
 
 # ------------------------------------------------------------------ LaTeX table
 SHORT = {
-    "fresh_grid": "Benchmark, 6 methods$^a$", "fresh_bgrid": "Benchmark, LX-SSA-VNS, SSA-VNS",
-    "fresh_vgrid": "Benchmark, VNS", "fresh_bsplit": "Split, LX-SSA-VNS", "fresh_hgrid": "Benchmark, LX-VNS$^s$",
-    "fresh_hsplit": "Split, LX-VNS$^s$", "fresh_hr": "Horns Rev 1, earlier$^{s,h}$",
-    "mpce_psobv": "Benchmark, PSO-VNS$^h$", "mpce_psoc": "Benchmark, PSO", "mpce_slsqp": "Benchmark, MS-SLSQP",
-    "mpce_rsvns": "Benchmark, RS-VNS", "mpce_rsdisc": "Benchmark, RSD-VNS", "mpce_psosplit": "Split, PSO-VNS",
-    "mpce_omega90": "Split, PSO-VNS $\\omega=0.9$", "mpce_csweep": "PSO coefficient sweep",
-    "mpce_feas": "Feasible init., 8 methods$^h$", "mpce_feasp": "Feasible init., PSO-VNS$^h$",
+    "fresh_grid": "Bench., 6 methods$^a$", "fresh_bgrid": "Bench., LX-SSA-VNS/SSA-VNS",
+    "fresh_vgrid": "Bench., VNS", "fresh_bsplit": "Split, LX-SSA-VNS", "fresh_hgrid": "Bench., LX-VNS$^s$",
+    "fresh_hsplit": "Split, LX-VNS$^s$", "fresh_hr": "HR1, earlier$^{s,h}$",
+    "mpce_psobv": "Bench., PSO-VNS$^h$", "mpce_psoc": "Bench., PSO", "mpce_slsqp": "Bench., MS-SLSQP",
+    "mpce_rsvns": "Bench., RS-VNS", "mpce_rsdisc": "Bench., RSD-VNS", "mpce_psosplit": "Split, PSO-VNS",
+    "mpce_omega90": "Split, PSO-VNS, $\\omega=0.9$", "mpce_csweep": "PSO coeff. sweep",
+    "mpce_feas": "Feas. init., 8 methods$^h$", "mpce_feasp": "Feas. init., PSO-VNS$^h$",
     "mpce_b30k": "30,030 eval., 9 methods$^h$", "mpce_b30kp": "30,030 eval., PSO-VNS$^h$",
     "mpce_b120k": "120,030 eval., 9 methods$^h$", "mpce_b120kp": "120,030 eval., PSO-VNS$^h$",
-    "mpce_hr16new": "Horns Rev 1, PSO, RS-VNS$^{s,h}$", "mpce_hrfix": "Horns Rev 1 (all budgets)",
-    "mpce_iea": "IEA37, 10 methods", "rev2_ga": "GA, benchmark", "rev2_gahr": "GA, Horns Rev 1",
+    "mpce_hr16new": "HR1, PSO, RS-VNS$^{s,h}$", "mpce_hrfix": "HR1, 10 methods",
+    "mpce_iea": "IEA37, 10 methods", "rev2_ga": "GA, bench.", "rev2_gahr": "GA, HR1",
     "rev2_gaiea": "GA, IEA37", "rev2_grad": "Exact gradients, IEA37", "rev2_laplace": "Laplace ablation",
-    "rev2_spacing": "Spacing $5D$/$6D$", "rev2_lg16": "Lillgrund, 6,030 eval.", "rev2_lg16b": "Lillgrund, 30,030 eval.",
+    "rev2_spacing": "Spacing $5D$/$6D$", "rev2_lg16": "Lillgrund, 6,030", "rev2_lg16b": "Lillgrund, 30,030",
 }
 
 
@@ -458,14 +514,14 @@ rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open
 decided (reruns pending, see \texttt{rev3\_precision\_plan.json}). Replay: maximum $|$objective recomputed from
 the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
 $^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Superseded, not used in the manuscript.
-$^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
+Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
 \label{tab:S-r3-precision}
-\scriptsize\setlength{\tabcolsep}{2.5pt}
+\scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lrrrrrrrrrrrr}
 \toprule
 & & & \multicolumn{3}{c}{Rounded coordinates} & \multicolumn{3}{c}{Reruns} & \multicolumn{2}{c}{Strict label} & & \\
 \cmidrule(lr){4-6}\cmidrule(lr){7-9}\cmidrule(lr){10-11}
-Study & Records & Feas. & (i) & (ii) & (iii) & Rerun & Bit & Noise & Conf. & Changed & Open & Replay (pp) \\
+Study & Rec. & Feas. & (i) & (ii) & (iii) & Rerun & Bit & Noise & Conf. & Chg. & Open & Replay \\
 \midrule
 """ + body + r"""
 \midrule

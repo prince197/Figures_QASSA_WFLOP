@@ -103,3 +103,17 @@ including unfavourable ones.
 MaxSpacingDeficit, FeasEvalPct, FirstFeasCall, Projections; coordinates with 17 significant digits),
 `rev3_constraint_validate.{csv,json}`, `rev3_constraint.json`, `rev3_constraint_tables.tex`
 (`tab:S-r3-constraint`), `rev3_constraint_*.log`.
+
+## Post-run addendum (2026-10-04, after all runs; nothing above was changed)
+- Validation (before the study runs): variant (i), seeds 1-2, 60 runs: objective, wake loss, feasibility, calls,
+  convergence curve and coordinates (at the stored 3-decimal precision) identical to the stored runs in 60/60
+  (stored CSVs parsed with exact round-trip float parsing; pandas' default parser is off by 1 ulp in some values).
+  Deb-surrogate order check: 0 reversed pairs, 0 introduced ties in 6 x 7,998,000 pairs (the sampled violations
+  were >= 6e-4, so the 2.9e-11 tie bound is not exercised by the sample; it follows from the construction).
+  In-place projection: all five methods return positions inside the disc (max |p| - r <= 5.7e-14 m).
+- Added post hoc (diagnostic only, not in the comparison family): share of runs with a feasible layout by
+  evaluation 3,030 (curve checkpoint 100, the PSO-VNS / SSA-VNS switch), and the type of violation of infeasible
+  finals (boundary only / spacing only / both).
+- Observed property of the design: final feasibility is identical per seed in data sets I and II for the same
+  (r, N) (100% of runs in all variants), because before the first feasible layout the comparisons depend only on the
+  violations (geometry), not on the wind data. For feasibility the six cases are therefore three geometries.

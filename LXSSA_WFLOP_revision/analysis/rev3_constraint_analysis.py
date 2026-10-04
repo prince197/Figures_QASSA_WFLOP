@@ -152,7 +152,11 @@ def analyse_variant(d, seeds, boot):
             feas_eval_pct_mean=float(dm.FeasEvalPct.mean()),
             first_feas_call_median=float(dm.FirstFeasCall[dm.FirstFeasCall > 0].median()) if (dm.FirstFeasCall > 0).any() else None,
             runs_without_feasible_eval=int((dm.FirstFeasCall < 0).sum()),
-            projections_mean=float(dm.Projections.mean()), seconds_median=float(dm.Seconds.median()))
+            projections_mean=float(dm.Projections.mean()), seconds_median=float(dm.Seconds.median()),
+            # checkpoint 100 of the curve = evaluation 3,030 (the PSO-VNS / SSA-VNS switch): a feasible layout found by then
+            feasible_by_3030_pct=float(100 * np.mean([np.isfinite(float(c.split(";")[100])) for c in dm.Curve])),
+            feasible_by_3030_case_pct={CLAB[c]: float(100 * np.mean([np.isfinite(float(x.split(";")[100])) for x in dm[
+                (dm.Dataset == c[0]) & (dm.Radius == c[1]) & (dm.Turbines == c[2])].Curve])) for c in CASES})
     # 3-4 paired comparisons
     fi = METH.index(FOCUS)
     tests_s, tests_w = [], []

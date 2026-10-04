@@ -1,0 +1,61 @@
+% rev3_constraint_tables.tex -- written by analysis/rev3_constraint_analysis.py (do not edit by hand)
+\begin{table}[!htbp]
+\centering
+\caption{Alternative constraint handling (item C1): five methods under (i) the implemented penalty $F_p$ ($\mu=10^{10}$, $g^{\rm b}$ in m$^2$, $g^{\rm s}$ in m) with box clipping, (ii) Deb's feasibility rules on dimensionless violations ($g^{\rm b}/r^2$, $g^{\rm s}/\ell_{\min}$) with box clipping, and (iii) Deb's rules with radial projection onto the circle; six cases (data sets I and II; $r=500$~m, $N=10$; $r=750$~m, $N=6$; $r=1000$~m, $N=15$), new seeds 31--60 (identical in all variants), 6,030 evaluations, random starts, $N_p=30$. Feas.: feasible final layouts (\%, 180 runs). Loss: mean wake loss of the feasible runs (\% of ideal; mean of the case means). W/T/L and Score $=(W+T/2)/180$: all-run paired outcome of PSO-VNS against the method (feasible beats infeasible; two feasible runs by wake loss; two infeasible runs tie), 95\% two-stage bootstrap interval over cases and seeds; $p_{\rm H}$: exact sign test, Holm-adjusted over the 28 tests of each variant (4 methods $\times$ 6 cases and pooled). $\Delta L$: PSO-VNS minus method (pp; negative = PSO-VNS better) over seed pairs with both runs feasible, 95\% interval. Rank: feasibility-aware average rank over the 180 (case, seed) blocks (1 = best; infeasible runs tied below feasible ones) and, in parentheses, the paper's case-level rule.}
+\label{tab:S-r3-constraint}
+\scriptsize\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{@{}llrrcccrc@{}}
+\toprule
+Variant & Method & Feas. & Loss & W/T/L & Score [95\% CI] & $p_{\rm H}$ & $\Delta L$ [95\% CI] & Rank \\
+\midrule
+(i) & PSO-VNS & 100.0 & 3.126 & -- & -- & -- & -- & 2.01 (1.67) \\
+ & PSO & 98.9 & 3.237 & 122/0/58 & 0.678 [0.517, 0.833] & $<$0.001 & -0.126 [-0.281, 0.018] & 2.49 (2.00) \\
+ & GA & 94.4 & 3.307 & 113/0/67 & 0.628 [0.483, 0.767] & 0.012 & -0.153 [-0.438, 0.046] & 2.62 (2.50) \\
+ & SSA-VNS & 100.0 & 3.502 & 124/0/56 & 0.689 [0.589, 0.789] & $<$0.001 & -0.376 [-0.611, -0.184] & 2.97 (3.83) \\
+ & DE & 33.3 & 0.994$^{2}$ & 179/0/1 & 0.994 [0.978, 1.000] & $<$0.001 & -0.607 [-1.098, -0.188] & 4.91 (5.00) \\
+\midrule
+(ii) & PSO-VNS & 100.0 & 3.353 & -- & -- & -- & -- & 2.19 (2.17) \\
+ & PSO & 73.3 & 3.273 & 130/0/50 & 0.722 [0.583, 0.839] & $<$0.001 & -0.146 [-0.340, 0.023] & 3.12 (3.17) \\
+ & GA & 96.7 & 3.110 & 93/0/87 & 0.517 [0.372, 0.661] & 1.000 & +0.248 [-0.024, 0.564] & 2.28 (1.83) \\
+ & SSA-VNS & 97.8 & 3.282 & 105/0/75 & 0.583 [0.472, 0.694] & 0.395 & +0.068 [-0.174, 0.396] & 2.62 (2.83) \\
+ & DE & 37.8 & 4.313 & 178/0/2 & 0.989 [0.967, 1.000] & $<$0.001 & -0.621 [-1.196, -0.098] & 4.78 (5.00) \\
+\midrule
+(iii) & PSO-VNS & 98.9 & 2.332 & -- & -- & -- & -- & 2.06 (1.33) \\
+ & PSO & 100.0 & 2.460 & 101/0/79 & 0.561 [0.461, 0.661] & 1.000 & -0.095 [-0.162, -0.037] & 2.36 (2.50) \\
+ & GA & 100.0 & 2.550 & 123/0/57 & 0.683 [0.556, 0.806] & $<$0.001 & -0.217 [-0.394, -0.061] & 2.81 (2.67) \\
+ & SSA-VNS & 100.0 & 3.044 & 153/0/27 & 0.850 [0.756, 0.933] & $<$0.001 & -0.711 [-1.171, -0.304] & 3.76 (4.67) \\
+ & DE & 80.0 & 3.482 & 152/0/28 & 0.844 [0.683, 0.967] & $<$0.001 & -1.155 [-2.276, -0.182] & 4.01 (3.83) \\
+\bottomrule
+\end{tabular}
+\par\smallskip\parbox{\textwidth}{\scriptsize Superscript at Loss: number of cases (of 6) with at least one feasible run. Run-level rank order: (i) PSO-VNS $<$ PSO $<$ GA $<$ SSA-VNS $<$ DE; (ii) PSO-VNS $<$ GA $<$ SSA-VNS $<$ PSO $<$ DE; (iii) PSO-VNS $<$ PSO $<$ GA $<$ SSA-VNS $<$ DE.}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\caption{Alternative constraint handling (item C1), per case: feasible runs (of 30) and all-run paired score of PSO-VNS against each method, $(W+T/2)/30$, for the variants (i) penalty with box clipping, (ii) Deb's rules with box clipping and (iii) Deb's rules with radial projection; seeds 31--60, 6,030 evaluations, random starts. $^{*}$: Holm-adjusted exact sign test $p<0.05$ (family of 28 tests per variant). Case: data set / $r$ (m) / $N$.}
+\label{tab:S-r3-constraint-cases}
+\scriptsize\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}lccccccccccccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{PSO-VNS} & \multicolumn{3}{c}{PSO} & \multicolumn{3}{c}{GA} & \multicolumn{3}{c}{SSA-VNS} & \multicolumn{3}{c}{DE} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}\cmidrule(lr){14-16}
+Case & (i) & (ii) & (iii) & (i) & (ii) & (iii) & (i) & (ii) & (iii) & (i) & (ii) & (iii) & (i) & (ii) & (iii) \\
+\midrule
+\multicolumn{16}{@{}l}{\emph{Feasible runs (of 30)}} \\
+I/500/10 & 30 & 30 & 29 & 29 & 9 & 30 & 25 & 27 & 30 & 30 & 28 & 30 & 0 & 3 & 17 \\
+I/750/6 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 \\
+I/1000/15 & 30 & 30 & 30 & 30 & 27 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 0 & 1 & 25 \\
+II/500/10 & 30 & 30 & 29 & 29 & 9 & 30 & 25 & 27 & 30 & 30 & 28 & 30 & 0 & 3 & 17 \\
+II/750/6 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 30 \\
+II/1000/15 & 30 & 30 & 30 & 30 & 27 & 30 & 30 & 30 & 30 & 30 & 30 & 30 & 0 & 1 & 25 \\
+\midrule
+\multicolumn{16}{@{}l}{\emph{Score of PSO-VNS against the method}} \\
+I/500/10 & -- & -- & -- & 0.57 & 0.87$^{*}$ & 0.63 & 0.53 & 0.50 & 0.47 & 0.60 & 0.40 & 0.83$^{*}$ & 1.00$^{*}$ & 0.97$^{*}$ & 0.77 \\
+I/750/6 & -- & -- & -- & 0.70 & 0.67 & 0.50 & 0.80$^{*}$ & 0.80$^{*}$ & 0.80$^{*}$ & 0.73 & 0.73 & 0.77 & 1.00$^{*}$ & 1.00$^{*}$ & 0.90$^{*}$ \\
+I/1000/15 & -- & -- & -- & 0.67 & 0.73 & 0.60 & 0.40 & 0.27 & 0.57 & 0.63 & 0.53 & 0.90$^{*}$ & 1.00$^{*}$ & 1.00$^{*}$ & 1.00$^{*}$ \\
+II/500/10 & -- & -- & -- & 0.80$^{*}$ & 0.83$^{*}$ & 0.43 & 0.83$^{*}$ & 0.50 & 0.67 & 0.77 & 0.53 & 0.93$^{*}$ & 1.00$^{*}$ & 0.97$^{*}$ & 0.90$^{*}$ \\
+II/750/6 & -- & -- & -- & 0.37 & 0.43 & 0.50 & 0.67 & 0.60 & 0.73 & 0.83$^{*}$ & 0.70 & 0.70 & 0.97$^{*}$ & 1.00$^{*}$ & 0.50 \\
+II/1000/15 & -- & -- & -- & 0.97$^{*}$ & 0.80$^{*}$ & 0.70 & 0.53 & 0.43 & 0.87$^{*}$ & 0.57 & 0.60 & 0.97$^{*}$ & 1.00$^{*}$ & 1.00$^{*}$ & 1.00$^{*}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
