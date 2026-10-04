@@ -1,0 +1,3 @@
+rev3_fine shard 3/5: 240 runs, 0 already in rev3_fine_s3of5.csv, 240 to do; procs 1; python 3.11.15, numpy 2.4.6, scipy 1.17.1, pandas 3.0.6, cpu Intel(R) Xeon(R) Processor @ 2.10GHz, numpy SIMD AVX2,AVX512F,AVX512_SKX
+  [1/240] PSOBV ds1 r1000 N15 seed 34: loss 1.8382% feas True calls 6030 7.8s (elapsed 8s)
+  [2/240] PSOBV ds1 r1000 N15 seed 39: loss 2.1464% feas True calls 6030 8.0s (elapsed 16s)
