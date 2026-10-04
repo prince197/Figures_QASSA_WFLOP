@@ -1,0 +1,28 @@
+mpce_slsqp_s0of2: 241 keys, 241 to run, procs=1
+  10/241 29s last mpce_slsqp_s0of1.csv:1281 MISMATCH
+  20/241 56s last mpce_slsqp_s0of1.csv:1910 MISMATCH
+  30/241 83s last mpce_slsqp_s0of1.csv:530 MISMATCH
+  40/241 112s last mpce_slsqp_s0of1.csv:1881 MISMATCH
+  50/241 141s last mpce_slsqp_s0of1.csv:1492 MISMATCH
+  60/241 163s last mpce_slsqp_s0of1.csv:1478 MISMATCH
+  70/241 185s last mpce_slsqp_s0of1.csv:790 MISMATCH
+  80/241 207s last mpce_slsqp_s0of1.csv:766 MISMATCH
+  90/241 228s last mpce_slsqp_s0of1.csv:1756 MISMATCH
+  100/241 249s last mpce_slsqp_s0of1.csv:428 MISMATCH
+  110/241 271s last mpce_slsqp_s0of1.csv:749 MISMATCH
+  120/241 293s last mpce_slsqp_s0of1.csv:1356 MISMATCH
+  130/241 313s last mpce_slsqp_s0of1.csv:124 MISMATCH
+  140/241 333s last mpce_slsqp_s0of1.csv:102 MISMATCH
+  150/241 353s last mpce_slsqp_s0of1.csv:1678 MISMATCH
+  160/241 372s last mpce_slsqp_s0of1.csv:63 MISMATCH
+  170/241 391s last mpce_slsqp_s0of1.csv:1386 MISMATCH
+  180/241 410s last mpce_slsqp_s0of1.csv:1044 MISMATCH
+  190/241 429s last mpce_slsqp_s0of1.csv:1353 MISMATCH
+  200/241 447s last mpce_slsqp_s0of1.csv:1058 MISMATCH
+  210/241 466s last mpce_slsqp_s0of1.csv:1063 MISMATCH
+  220/241 484s last mpce_slsqp_s0of1.csv:617 MISMATCH
+  230/241 502s last mpce_slsqp_s0of1.csv:1059 MISMATCH
+  240/241 520s last mpce_slsqp_s0of1.csv:1307 MISMATCH
+  241/241 521s last mpce_slsqp_s0of1.csv:1025 MISMATCH
+mpce_slsqp_s0of2: done in 521s
+wrote /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/rev3_fullprec_mpce_slsqp_s0of2.csv: 241 of 241 records
