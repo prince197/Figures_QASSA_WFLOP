@@ -134,3 +134,12 @@ D14 AI declaration (A4): "During the preparation of this work the authors used C
 ## Report to the lead
 Files changed; for each reviewer item (R1–R10, B1–B7, C1–C4, E1–E6) what you changed and where; before/after word
 counts; compile result of your scratch build (errors, undefined refs other than the expected S-tab:S-r3-*, overfull).
+
+## Update (final C2 numbers, control arm complete; analysis/rev3_fine.json, rev3_fine_tables.tex)
+Direct 1-deg optimization (seeds 31–60): ranks PSO-VNS 1.12, PSO 2.62, GA 3.38, RSD-VNS 3.62, MS-SLSQP 4.25; PSO-VNS - PSO
+-0.194 pp (seed 90% [-0.234, -0.152], case 90% [-0.272, -0.114], p_W = 0.0078, 8 cases). Seed-paired 15-deg control arm
+(same seeds, optimized at 15 deg): ranks PSO-VNS 1.88, PSO 2.25, GA 2.62, MS-SLSQP 4.00, RSD-VNS 4.25; re-evaluated at 1 deg:
+PSO-VNS 2.25, MS-SLSQP 2.62, PSO 2.88, GA 3.12, RSD-VNS 4.12 (leader unchanged, as for the stored seeds 1–30). Optimizing at
+1 deg instead of 15 deg lowers the 1-deg wake loss on the same seeds by 1.12 pp (PSO-VNS), 1.01 (PSO), 1.09 (RSD-VNS),
+0.84 (GA) and 0.33 pp (MS-SLSQP). The leader does not change; PSO-VNS's advantage over PSO is about twice that of the
+re-evaluated layouts (-0.086 pp, control arm at 1 deg) and lies beyond the 0.05 pp margin.

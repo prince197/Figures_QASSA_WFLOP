@@ -1,0 +1,60 @@
+\begin{table}[!htbp]
+\centering
+\caption{Verification of the strict feasibility labels ($10^{-6}$~m) of all stored run records with coordinates
+(original and revision studies; all cases, methods, seeds 1--30 or 1--10 and budgets as stored).
+Class (i): label confirmed from the rounded coordinates with slack beyond the rounding bound
+($2\sqrt2\,\varepsilon$ for spacing, $\sqrt2\,\varepsilon$ for the boundary, $\varepsilon=0.5\cdot10^{-d}$~m for $d$
+stored decimals); (ii): contradicted beyond the bound; (iii): undecidable within the bound. Rerun: class (ii)/(iii)
+records rerun through the unchanged drivers with a 17-digit writer; bit: objective, minimum spacing, evaluations,
+rounded coordinates and convergence curve identical to the stored record; noise: identical except for float noise
+($\le10^{-9}$ relative in the objective). Strict: label decided from the full-precision layout (bit-identical
+rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open: class (ii)/(iii) labels not yet
+decided (reruns pending, see \texttt{rev3\_precision\_plan.json}). Replay: maximum $|$objective recomputed from
+the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
+$^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Superseded, not used in the manuscript.
+Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
+\label{tab:S-r3-precision}
+\scriptsize\setlength{\tabcolsep}{2pt}
+\begin{tabular}{lrrrrrrrrrrrr}
+\toprule
+& & & \multicolumn{3}{c}{Rounded coordinates} & \multicolumn{3}{c}{Reruns} & \multicolumn{2}{c}{Strict label} & & \\
+\cmidrule(lr){4-6}\cmidrule(lr){7-9}\cmidrule(lr){10-11}
+Study & Rec. & Feas. & (i) & (ii) & (iii) & Rerun & Bit & Noise & Conf. & Chg. & Open & Replay \\
+\midrule
+Bench., 6 methods$^a$ & 12,240 & 11,247 & 10,561 & 0 & 1,679 & 6 & 5 & 1 & 6 & 0 & 1,673 & 0.941 \\
+Bench., LX-SSA-VNS/SSA-VNS & 4,080 & 4,069 & 3,917 & 0 & 163 & 2 & 2 & 0 & 2 & 0 & 161 & 0.553 \\
+Bench., VNS & 2,040 & 2,040 & 2,038 & 0 & 2 & 1 & 1 & 0 & 1 & 0 & 1 & 0.000 \\
+Split, LX-SSA-VNS & 720 & 701 & 685 & 0 & 35 & 2 & 1 & 1 & 2 & 0 & 33 & 1.278 \\
+Bench., LX-VNS$^s$ & 2,040 & 2,002 & 1,997 & 0 & 43 & 1 & 1 & 0 & 1 & 0 & 42 & 0.261 \\
+Split, LX-VNS$^s$ & 720 & 649 & 697 & 0 & 23 & 1 & 1 & 0 & 1 & 0 & 22 & 0.031 \\
+HR1, earlier$^{s,h}$ & 390 & 245 & 344 & 0 & 46 & 6 & 5 & 0 & 5 & 0 & 41 & 0.075 \\
+Bench., PSO-VNS$^h$ & 2,070 & 2,070 & 2,061 & 0 & 9 & 1 & 1 & 0 & 1 & 0 & 8 & 0.174 \\
+Bench., PSO & 2,040 & 2,040 & 2,015 & 0 & 25 & 1 & 0 & 1 & 1 & 0 & 24 & 0.000 \\
+Bench., MS-SLSQP & 2,040 & 2,039 & 1,556 & 0 & 484 & 1 & 0 & 1 & 1 & 0 & 483 & 0.656 \\
+Bench., RS-VNS & 2,040 & 2,028 & 2,038 & 0 & 2 & 1 & 1 & 0 & 1 & 0 & 1 & 0.062 \\
+Bench., RSD-VNS & 2,040 & 2,036 & 2,037 & 0 & 3 & 1 & 1 & 0 & 1 & 0 & 2 & 0.200 \\
+Split, PSO-VNS & 720 & 720 & 717 & 0 & 3 & 2 & 2 & 0 & 2 & 0 & 1 & 0.000 \\
+Split, PSO-VNS, $\omega=0.9$ & 360 & 360 & 358 & 0 & 2 & 1 & 1 & 0 & 1 & 0 & 1 & 0.000 \\
+PSO coeff. sweep & 3,240 & 2,786 & 3,208 & 0 & 32 & 8 & 6 & 2 & 8 & 0 & 24 & 0.552 \\
+Feas. init., 8 methods$^h$ & 1,680 & 1,680 & 1,391 & 0 & 289 & 16 & 15 & 1 & 16 & 0 & 273 & 0.527 \\
+Feas. init., PSO-VNS$^h$ & 210 & 210 & 188 & 0 & 22 & 2 & 1 & 1 & 2 & 0 & 20 & 0.063 \\
+30,030 eval., 9 methods$^h$ & 1,890 & 1,834 & 1,497 & 0 & 393 & 14 & 13 & 1 & 14 & 0 & 379 & 0.745 \\
+30,030 eval., PSO-VNS$^h$ & 210 & 210 & 199 & 0 & 11 & 2 & 2 & 0 & 2 & 0 & 9 & 0.000 \\
+120,030 eval., 9 methods$^h$ & 1,710 & 1,708 & 968 & 0 & 742 & 13 & 9 & 4 & 13 & 0 & 729 & 2.698 \\
+120,030 eval., PSO-VNS$^h$ & 190 & 190 & 138 & 0 & 52 & 2 & 2 & 0 & 2 & 0 & 50 & 0.944 \\
+HR1, PSO, RS-VNS$^{s,h}$ & 60 & 47 & 50 & 0 & 10 & 1 & 1 & 0 & 1 & 0 & 9 & 0.000 \\
+HR1, 10 methods & 970 & 901 & 694 & 0 & 276 & 9 & 8 & 1 & 9 & 0 & 267 & 0.354 \\
+IEA37, 10 methods & 1,200 & 1,076 & 986 & 0 & 214 & 7 & 5 & 2 & 7 & 0 & 207 & 0.000 \\
+GA, bench. & 2,040 & 2,012 & 2,037 & 0 & 3 & 1 & 1 & 0 & 1 & 0 & 2 & 0.000 \\
+GA, HR1 & 60 & 60 & 59 & 0 & 1 & 1 & 1 & 0 & 1 & 0 & 0 & 0.000 \\
+GA, IEA37 & 120 & 120 & 120 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0.000 \\
+Exact gradients, IEA37 & 240 & 240 & 0 & 0 & 240 & 2 & 2 & 0 & 2 & 0 & 238 & 0.000 \\
+Laplace ablation & 2,160 & 1,922 & 1,901 & 0 & 259 & 6 & 5 & 1 & 6 & 0 & 253 & 0.886 \\
+Spacing $5D$/$6D$ & 6,480 & 4,259 & 5,958 & 0 & 522 & 8 & 7 & 1 & 8 & 0 & 514 & 0.642 \\
+Lillgrund, 6,030 & 270 & 77 & 241 & 0 & 29 & 9 & 7 & 2 & 9 & 0 & 20 & 0.100 \\
+Lillgrund, 30,030 & 270 & 232 & 170 & 0 & 100 & 6 & 4 & 2 & 6 & 0 & 94 & 0.161 \\
+\midrule
+Total & 56,540 & 51,810 & 50,826 & 0 & 5,714 & 134 & 111 & 22 & 133 & 0 & 5,581 & 2.698 \\
+\bottomrule
+\end{tabular}
+\end{table}

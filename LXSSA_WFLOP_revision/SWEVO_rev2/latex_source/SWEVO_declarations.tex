@@ -10,6 +10,8 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em}
 \pagestyle{empty}
+% compact section headings, so that the declarations fit on one page
+\makeatletter\renewcommand\section{\@startsection{section}{1}{\z@}{-2ex plus -.5ex minus -.2ex}{0.8ex}{\normalfont\large\bfseries}}\makeatother
 % Declarations for the Swarm and Evolutionary Computation submission. The wording matches the back matter of
 % the manuscript (optA/swevo_back.tex); if one is changed, change the other.
 \begin{document}

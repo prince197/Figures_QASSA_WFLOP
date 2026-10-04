@@ -34,3 +34,86 @@ At 10^-6 m tolerance, rounded positions contradict feasibility labels in 236 exa
 ## Verification completed for this revision
 
 See `validation/archive_audit.json`, `focused_checks.json` and `revision_verification.json` for machine-readable evidence. The supported scope is stored-record and document verification. Historical 200+ claim checks, diagnostic reruns, external-model checks and full-study statistics were not rerun from unavailable code/data.
+
+---
+
+# Revision 3 (4 October 2026)
+
+This section is appended to the record above; the earlier sections are kept unchanged as history.
+
+**Basis.** This revision answers the remaining-work report on revision 2 (reviewer items R1–R10; work items A1–A8,
+B1–B7, C1–C4, D, E1–E6). Triage: `REV3_TRIAGE.md`. Decisions D1–D14: `REV3_INTEGRATION.md`.
+
+**Premise corrected.** Revision 2 assumed that the 36,190 original run records and fifteen core modules were
+missing. They were not: they are in `analysis/`, and `rev2_analysis.py` reproduces the revision-2 summary exactly
+(4,670 values). The statements built on that premise were deleted from the manuscript, the supplement, the Data
+availability statement, the cover letter, `START_HERE.md`, `AUTHOR_CONFIRMATION.md` and
+`latex_source/analysis/README_reproduce.md`. These statements had said the material was missing, "historical",
+"author-reported" or "cannot be rerun". Areas A2, A3, A5, A6 and A10 of the table above are therefore closed by this
+revision, as listed below.
+
+**New runs.** 5,100 optimization runs, all with new seeds 31–60, prespecified in `analysis/rev3_*_manifest.md`,
+with coordinates written to 17 significant digits:
+- 2,700 runs of the constraint-handling study;
+- 1,200 runs of direct 1-degree optimization;
+- 1,200 seed-paired 15-degree control runs.
+
+The deterministic full-precision reruns of the stored records come on top of these (C4, count
+`\TBD{C4 rerun count}`). All other revision-3 results are re-analyses of stored records. The supplementary tables
+`tab:S-r3-*` come from `analysis/rev3_*_tables.tex`. Section numbers below refer to the revision-3 build.
+
+## Reviewer items
+
+| Item | What was done | Where |
+|---|---|---|
+| R1 / A1 | Declarations complete. The generative-AI statement now follows the Elsevier template and names all tools and their uses (D14). Facts still need author confirmation. | Back matter; `declarations_content.tex`; `AUTHOR_CONFIRMATION.md` items 5–6 |
+| R2 / A2 / D | Deposit-ready reproducibility package built and verified: README map, `MANIFEST.sha256`, requirements, `Dockerfile`, `CITATION.cff`. The complete pipeline was re-executed: 91 outputs identical apart from time stamps; all checks pass (62 C, 57 X, 22 D, 41 F, 15 S, 57 T); reruns of stored runs are bit-identical except elapsed time. Data availability rewritten (D1). Public DOI: pending author action (`\TBD{DOI}`). | `repro_package_build/` (+ `verification/`); Data availability; §6.4; supplement Reproducibility Map and archive section; `latex_source/analysis/README_reproduce.md` |
+| R3 / B2 | Site pools recomputed with GA and exact gradients (D9). Horns Rev 1, pool of 11: PSO-VNS best at 6,030 evaluations, GA best at 30,030. IEA37, pool of 13: an exact-gradient method ranks first in every scenario and budget. | §9.3, §9.5; `tab:S-r3-hr-pool`, `tab:S-r3-iea-pool` |
+| R4 / B1, B5 | All-run endpoint on the 68 cases (D4). PSO-VNS vs PSO: 950/348/742 of 2,040 seed pairs, score 0.551 [0.516, 0.587]. Against the other six main methods: 0.73–0.90. Imputation sensitivity: no verdict changes (D7). | §6.2, §7.3, §8; `tab:S-r3-allrun`, `tab:S-r3-imputation` |
+| R5 / C1 | Constraint-handling study, 2,700 runs (D10). The conclusions depend partly on constraint handling. With projection repair the rank order is unchanged, but PSO-VNS no longer beats PSO significantly; with Deb's rules and box clipping, PSO-VNS's all-run advantage over GA and SSA-VNS is lost. | §3.4, §10.4, §11, §12, §13; `tab:S-r3-constraint`, `tab:S-r3-constraint-cases` |
+| R6 | Proposition 1(c), corrected in revision 2. Verified by the theory checks (T01–T13). | — |
+| R7 / B3, B4, B7 | TOST calibration by null simulation: both primary claims hold (D5). Synchronized-seed resampling: SSA-VNS vs RSD-VNS seed-level equivalence is not robust; its non-superiority is (D6; Table 7 footnote b). Equal-cluster target with a wild-cluster bootstrap: no verdict changes (D8). | §6.2; `tab:S-r3-tostaudit`, `tab:S-r3-syncseed`, `tab:S-r3-eqclus` |
+| R8 / C2, C3 | Direct 1-degree optimization, 1,200 runs plus a 1,200-run 15-degree control arm (D11). The leader PSO-VNS is unchanged, and its advantage over PSO grows beyond the margin. GA (Horns Rev 1) and Lillgrund layouts re-evaluated with 1-degree bins and PyWake NOJ: GA's Horns Rev lead holds; at Lillgrund, PSO-VNS is no longer significantly better than VNS or MS-SLSQP (D9). | §9.3, §9.4, §10.5; `tab:S-r3-fine`, `tab:S-r3-hr-eval`, `tab:S-r3-lg-eval` |
+| R9 / B6 | Per-evaluation cost given as medians. The MS-SLSQP time jump at N >= 8 is attributed to thread contention (re-timed single-threaded). Initialization time and total CPU time added (D2). | §9.7; `tab:S-r3-time`, `tab:S-r3-time-sites` |
+| R10 / E1–E4 | Length and repetition pass: new results in one or two sentences with a pointer to the supplement, repeated caveats removed. Number fixes (D3). Main bibliography corrected and renumbered in order of first citation (D13). | All sections; `analysis/rev3_numbers_report.md`; `analysis/rev3_bib_order.py` |
+
+## Work items A–E
+
+- **A1, A2, A4.** Author confirmations remain; see `AUTHOR_CONFIRMATION.md` items 5–7. The AI declaration is
+  identical in the manuscript back matter and `declarations_content.tex`, with `\TBD{authors: confirm the list of
+  tools}`.
+- **A3.** The primary equivalence questions are unchanged and their team agreement is still pending
+  (`AUTHOR_CONFIRMATION.md` item 4).
+- **A5.** Solanki and Deep (2023) now reads "published online May 18, 2023 (Online First)". Volume, issue and pages
+  have not been assigned yet.
+- **A6.** Reference audit: 85 entries OK, Thomas2023 corrected (no issue number), Solanki2023 corrected, IEA37repo
+  comment corrected (`analysis/rev3_refs_report.md`, `rev3_refs_corrections.tex`). The main list is in
+  first-citation order: 88 entries, all cited, none missing. The supplement list is ordered by I5, with uncited
+  Benavoli2016 and Cleghorn2018 deleted.
+- **A7.** SWEVO guide check: abstract ≤ 250 words, highlights, keywords, declarations and reference order. The
+  length limit and the live guide could not be verified (`rev3_refs_report.md` Section 6).
+- **A8.** `AUTHOR_CONFIRMATION.md` items 1 and 3 are resolved. Item 2 is resolved by audit and rerun, with the
+  final count `\TBD{C4 rerun count}`.
+- **B1–B7, C1–C3.** See the reviewer items above. All outcomes are reported, including unfavourable ones: the
+  constraint-handling sensitivity, the Lillgrund 1-degree result, the 15.0% case-level size of the SSA-VNS
+  non-superiority test before calibration, and the non-robust seed-level equivalence of SSA-VNS vs RSD-VNS.
+- **C4.** All 56,540 stored records were audited (D12):
+  - 50,826 labels confirmed from the rounded coordinates;
+  - 0 contradicted;
+  - 5,714 undecidable within the rounding bound.
+
+  These undecidable records are rerun deterministically at full precision. Result:
+  `\TBD{C4 rerun: N bit-identical, labels confirmed/changed}`. The revision-2 statement that the Horns Rev 1
+  boundary could not be audited is withdrawn; `hornsrev_model.py` is present.
+- **D.** See R2. Remaining: the public deposit, the DOI and the licence choice (author action).
+- **E1–E4.** See R10. Documents rebuilt with `latex_source/analysis/build_swevo.sh`.
+- **E5–E6.** Highlights and cover letter are revised against the final text (`latex_source/SWEVO_highlights.txt`,
+  `SWEVO_cover_letter.tex`). The point-by-point response to the reviewers should map R1–R10 to the rows of the table
+  above and should state that only the author-action items are disclosed rather than resolved.
+
+## Status of the revision-2 audit areas after revision 3
+
+- **A2, A3, A5, A6, A10:** closed by revision 3, at the scope stated above.
+- **A11:** closed apart from author confirmation and the DOI.
+- **A12:** open only for the authors' final read of the rebuilt PDFs and any further shortening.
+- **Still open, author action only:** confirmations, the public DOI, the final C4 rerun count.
