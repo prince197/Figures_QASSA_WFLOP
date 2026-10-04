@@ -1,0 +1,13 @@
+mpce_b30k_s1of4: 95 keys, 95 to run, procs=1
+  10/95 187s last mpce_b30k_s0of3.csv:265 MISMATCH
+  20/95 375s last mpce_b30k_s1of3.csv:409 MISMATCH
+  30/95 546s last mpce_b30k_s1of3.csv:592 match
+  40/95 733s last mpce_b30k_s1of3.csv:454 match
+  50/95 843s last mpce_b30k_s0of3.csv:130 match
+  60/95 976s last mpce_b30k_s0of3.csv:229 match
+  70/95 1085s last mpce_b30k_s0of3.csv:336 MISMATCH
+  80/95 1190s last mpce_b30k_s2of3.csv:502 match
+  90/95 1291s last mpce_b30k_s2of3.csv:321 match
+  95/95 1339s last mpce_b30k_s2of3.csv:330 match
+mpce_b30k_s1of4: done in 1339s
+wrote /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/rev3_fullprec_mpce_b30k_s1of4.csv: 95 of 95 records
