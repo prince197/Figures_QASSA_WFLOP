@@ -1,0 +1,4 @@
+mpce_b120k_s10of19: 39 keys, 39 to run, procs=1
+  10/39 659s last mpce_b120k_s7of8.csv:193 match
+  20/39 1058s last mpce_b120k_s0of8.csv:201 match
+  30/39 1530s last mpce_b120k_s3of8.csv:29 MISMATCH
