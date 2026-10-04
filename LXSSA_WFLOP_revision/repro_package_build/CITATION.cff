@@ -1,0 +1,49 @@
+cff-version: 1.2.0
+message: >-
+  If you use this code or these run records, please cite the article (once published) and this
+  reproducibility package.
+type: software
+title: >-
+  Reproducibility package for "Baseline Configuration and Random-Sampling Controls in Metaheuristic
+  Comparisons for Wind Farm Layout Optimization"
+version: 1.0.0-rc
+date-released: "2026-10-04"
+authors:
+  - family-names: Solanki
+    given-names: Prince
+    email: prince@iilm.edu
+    affiliation: "Department of Mathematics, School of Computer Science & Engineering, IILM University, Gurugram, Haryana, India"
+  - family-names: Dwivedi
+    given-names: Pulkit
+    affiliation: "Department of Computer Science and Engineering, Bennett University, Greater Noida, Uttar Pradesh, India"
+  - family-names: Garg
+    given-names: Vanita
+    affiliation: "Amity University, Noida, Uttar Pradesh, India"
+  - family-names: Shukla
+    given-names: Vinay
+    affiliation: "School of Mathematical Sciences, Shanghai Jiao Tong University, Shanghai, China; Department of Mathematics, School of Computer Science Engineering and Technology, Bennett University, Greater Noida, Uttar Pradesh, India"
+contact:
+  - family-names: Solanki
+    given-names: Prince
+    email: prince@iilm.edu
+abstract: >-
+  Code (benchmark, Horns Rev 1, IEA37 and Lillgrund evaluators; PSO, PSO-VNS, SSA, LX-SSA, DE, GA, VNS,
+  SSA-VNS, LX-SSA-VNS, RS-VNS, RSD-VNS, MS-SLSQP and exact-gradient variants; experiment drivers; analysis
+  and check scripts), all per-run records of the study (36,190 original, 11,640 revision-2 and the
+  revision-3 records) and the generated tables, figures and number macros of the article and its supplement.
+keywords:
+  - wind farm layout optimization
+  - metaheuristics
+  - benchmarking
+  - particle swarm optimization
+  - variable neighborhood search
+  - reproducibility
+# license: TO BE CONFIRMED BY THE AUTHORS (suggestion: MIT for the code, CC-BY-4.0 for the data; see README.md)
+# license: MIT
+# Fill in after the public deposit (author action), e.g. Zenodo via a GitHub release:
+# doi: 10.5281/zenodo.XXXXXXX
+# repository-code: https://github.com/<owner>/<repository>
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.XXXXXXX
+#     description: Versioned deposit of release 1.0.0

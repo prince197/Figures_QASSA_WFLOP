@@ -1,0 +1,23 @@
+# Optional, only for the PyWake cross-checks of the Horns Rev 1 and Lillgrund models:
+#   python3 analysis/pywake_check.py [--layouts]       (writes pywake_check*.csv/json, which the analysis reads as stored inputs)
+#   python3 analysis/rev2_site_model.py --pywake       (Lillgrund model vs PyWake)
+# The tables, figures and numbers of the paper do NOT need PyWake: its reference values are stored in
+# analysis/pywake_check.csv, pywake_check_hr16runs.csv/.json.
+# Install after requirements.txt:  python3.11 -m pip install -r requirements-pywake.txt
+-r requirements.txt
+py_wake==2.6.20
+autograd==1.9.1
+xarray==2026.9.0
+h5netcdf==1.8.1
+netCDF4==1.7.4
+cftime==1.6.6
+joblib==1.6.0
+pooch==1.9.0
+platformdirs==4.12.3
+requests==2.33.1
+charset-normalizer==3.4.6
+idna==3.11
+urllib3==2.6.3
+certifi==2026.2.25
+tqdm==4.70.1
+git-lfs==1.6

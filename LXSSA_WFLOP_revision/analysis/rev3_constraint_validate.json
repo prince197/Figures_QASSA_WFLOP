@@ -1,0 +1,147 @@
+{
+ "bitwise": {
+  "runs": 60,
+  "all_found": true,
+  "objective_equal": 48,
+  "wakeloss_equal": 52,
+  "coordinates_equal": 60,
+  "feasible_equal": 60,
+  "calls_equal": 60,
+  "curve_equal": 60,
+  "per_method": {
+   "DE": {
+    "ObjectiveEqual": 10,
+    "CoordinatesEqual": 12,
+    "CurveEqual": 12
+   },
+   "GA": {
+    "ObjectiveEqual": 9,
+    "CoordinatesEqual": 12,
+    "CurveEqual": 12
+   },
+   "PSOBV": {
+    "ObjectiveEqual": 9,
+    "CoordinatesEqual": 12,
+    "CurveEqual": 12
+   },
+   "PSOC": {
+    "ObjectiveEqual": 11,
+    "CoordinatesEqual": 12,
+    "CurveEqual": 12
+   },
+   "SSABV": {
+    "ObjectiveEqual": 9,
+    "CoordinatesEqual": 12,
+    "CurveEqual": 12
+   }
+  }
+ },
+ "deb_order": [
+  {
+   "Dataset": 1,
+   "Radius": 500,
+   "Turbines": 10,
+   "Samples": 4000,
+   "Feasible": 0,
+   "Pairs": 7998000,
+   "Reversed": 0,
+   "TiesIntroduced": 0,
+   "OtherMismatch": 0,
+   "MinV": 0.0035984536215509007,
+   "MaxL": NaN
+  },
+  {
+   "Dataset": 1,
+   "Radius": 750,
+   "Turbines": 6,
+   "Samples": 4000,
+   "Feasible": 2034,
+   "Pairs": 7998000,
+   "Reversed": 0,
+   "TiesIntroduced": 0,
+   "OtherMismatch": 0,
+   "MinV": 0.0006055436425018642,
+   "MaxL": 3407.7988496334583
+  },
+  {
+   "Dataset": 1,
+   "Radius": 1000,
+   "Turbines": 15,
+   "Samples": 4000,
+   "Feasible": 2000,
+   "Pairs": 7998000,
+   "Reversed": 0,
+   "TiesIntroduced": 0,
+   "OtherMismatch": 0,
+   "MinV": 0.6304212691621258,
+   "MaxL": 7989.021547209064
+  },
+  {
+   "Dataset": 2,
+   "Radius": 500,
+   "Turbines": 10,
+   "Samples": 4000,
+   "Feasible": 0,
+   "Pairs": 7998000,
+   "Reversed": 0,
+   "TiesIntroduced": 0,
+   "OtherMismatch": 0,
+   "MinV": 0.005220263383037604,
+   "MaxL": NaN
+  },
+  {
+   "Dataset": 2,
+   "Radius": 750,
+   "Turbines": 6,
+   "Samples": 4000,
+   "Feasible": 2040,
+   "Pairs": 7998000,
+   "Reversed": 0,
+   "TiesIntroduced": 0,
+   "OtherMismatch": 0,
+   "MinV": 0.0035669504766255205,
+   "MaxL": 3527.500294588208
+  },
+  {
+   "Dataset": 2,
+   "Radius": 1000,
+   "Turbines": 15,
+   "Samples": 4000,
+   "Feasible": 2000,
+   "Pairs": 7998000,
+   "Reversed": 0,
+   "TiesIntroduced": 0,
+   "OtherMismatch": 0,
+   "MinV": 0.52280231174699,
+   "MaxL": 6712.698231862392
+  }
+ ],
+ "inplace_projection": [
+  {
+   "Algorithm": "PSOBV",
+   "Projections": 14877,
+   "MaxRadiusMinusR": 0.0
+  },
+  {
+   "Algorithm": "PSOC",
+   "Projections": 21159,
+   "MaxRadiusMinusR": 5.684341886080802e-14
+  },
+  {
+   "Algorithm": "GA",
+   "Projections": 4249,
+   "MaxRadiusMinusR": 0.0
+  },
+  {
+   "Algorithm": "SSABV",
+   "Projections": 4630,
+   "MaxRadiusMinusR": -5.684341886080802e-14
+  },
+  {
+   "Algorithm": "DE",
+   "Projections": 20046,
+   "MaxRadiusMinusR": 5.684341886080802e-14
+  }
+ ],
+ "seconds": 172.8
+}

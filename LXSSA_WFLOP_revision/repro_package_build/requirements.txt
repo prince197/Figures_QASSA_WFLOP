@@ -1,0 +1,21 @@
+# SWEVO reproducibility package 1.0.0-rc -- environment in which every regeneration of this package was verified
+# (2026-10-04; Linux x86_64, Ubuntu 24.04, CPython 3.11.15, NumPy/SciPy wheels with the bundled OpenBLAS 0.3.31).
+# These are the versions of the container that produced the revision-2/3 runs and reproduced all stored outputs.
+# Install:  python3.11 -m pip install -r requirements.txt
+# Direct imports of the code (numpy, scipy, pandas, matplotlib, PyYAML), pinned, with their run-time dependencies.
+numpy==2.4.6
+scipy==1.17.1
+pandas==3.0.6
+matplotlib==3.11.2
+PyYAML==6.0.1
+# dependencies of pandas / matplotlib (pinned to the versions of the verification environment)
+python-dateutil==2.9.0.post0
+six==1.16.0
+contourpy==1.3.3
+cycler==0.12.1
+fonttools==4.66.0
+kiwisolver==1.5.1
+packaging==26.3
+pillow==12.3.0
+pyparsing==3.1.1
+# Optional: PyWake cross-checks (pywake_check.py, rev2_site_model.py --pywake) -> requirements-pywake.txt
