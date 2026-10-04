@@ -513,7 +513,9 @@ Class (i): label confirmed from the rounded coordinates with slack beyond the ro
 stored decimals); (ii): contradicted beyond the bound; (iii): undecidable within the bound. Rerun: class (ii)/(iii)
 records rerun through the unchanged drivers with a 17-digit writer; bit: objective, minimum spacing, evaluations,
 rounded coordinates and convergence curve identical to the stored record; noise: identical except for float noise
-($\le10^{-9}$ relative in the objective). Strict: label decided from the full-precision layout (bit-identical
+($\le10^{-9}$ relative in the objective); near: rounded coordinates, label and objective ($\le10^{-9}$ relative)
+reproduced but convergence curve or minimum spacing not (SLSQP-based methods; platform dependent), not used to
+decide labels. Strict: label decided from the full-precision layout (bit-identical
 rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open: class (ii)/(iii) labels not yet
 decided (reruns pending, see \texttt{rev3\_precision\_plan.json}). Replay: maximum $|$objective recomputed from
 the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
