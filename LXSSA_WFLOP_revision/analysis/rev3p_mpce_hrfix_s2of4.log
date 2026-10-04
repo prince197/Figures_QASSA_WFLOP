@@ -1,0 +1,10 @@
+mpce_hrfix_s2of4: 67 keys, 67 to run, procs=1
+  10/67 948s last mpce_hrfix_s19of24.csv:3 match
+  20/67 1252s last mpce_hrfix_s10of24.csv:10 MISMATCH
+  30/67 1497s last mpce_hrfix_s3of24.csv:11 match
+  40/67 1564s last mpce_hrfix_s9of24.csv:38 MISMATCH
+  50/67 1611s last mpce_hrfix_s16of24.csv:35 MISMATCH
+  60/67 1658s last mpce_hrfix_s3of24.csv:34 match
+  67/67 1690s last mpce_hrfix_s2of24.csv:22 match
+mpce_hrfix_s2of4: done in 1690s
+wrote /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/rev3_fullprec_mpce_hrfix_s2of4.csv: 67 of 67 records
