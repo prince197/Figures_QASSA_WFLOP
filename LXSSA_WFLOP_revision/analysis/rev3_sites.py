@@ -21,7 +21,7 @@ Blocks
                exact analytic gradient (rev2_grad). Same statistics per scenario x budget; families (Holm within each):
                F_best(n, b) = best method vs the other 12; F_PV(n, b) = PSO-VNS vs the other 12 (reported in the JSON);
                F_free(n, b) = best gradient-free method vs the other gradient-free methods (10 comparisons; JSON).
-               Feasibility = the stored labels (rounded coordinates cannot re-verify them; supplement S11).
+               Feasibility = the stored labels (audited at full precision in rev3_precision_*; supplement S11.11).
   eval  C3     Horns Rev 1: every stored layout of mpce_hrfix (970) and rev2_gahr (60) re-evaluated (not re-optimized)
                with the paper's 5-deg bins (replay of the stored AEP), 1-deg bins centred at 0.5, 1.5, ... (primary, as
                mpce_direction.py), the phase checks 1 deg at integer centres and 5 deg at 0, 5, ..., and PyWake 2.6.20
@@ -289,7 +289,7 @@ def block_iea(summ, tex):
             "MS-SLSQP and PSO-SLSQP with the exact analytic gradient (each gradient charged $c_g=3$ evaluations); random "
             "initialization, 30 seed-paired runs (seeds 1--30). AEP in MWh, rounded to integers (official IEA37 Gaussian-wake model); Mean: over "
             "the feasible runs (bold: best method); Best: best feasible run; Feas.: feasible runs as originally labelled (the "
-            "rounded stored coordinates cannot re-verify the strict $10^{-6}$~m labels; Section~\\ref{sec:S-archive}). Rank: "
+            "labels checked at full precision where the rounded coordinates cannot decide them; Section~\\ref{sec:S-r3-precision}). Rank: "
             "feasibility-aware rank of the mean AEP within this pool (rule of Table~\\ref{M-tab:friedman68}). $p_{\\rm best}$: "
             "seed-paired Wilcoxon signed-rank test of the best method (Rank 1) against the method (infeasible runs below every "
             "feasible run), Holm-adjusted within the family of its 12 comparisons in that scenario and budget; $^{\\ast}$: "

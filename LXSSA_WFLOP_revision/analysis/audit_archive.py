@@ -119,13 +119,13 @@ def reliability(frames):
 
 def latex_reliability(rows,pairs):
     by={(r['algorithm'],r['budget']):r for r in rows}
-    text=[r'\begin{table}[!htbp]',r'\centering',r'\caption{Lillgrund reliability and conditional AEP from the supplied run records.}',r'\label{tab:archive-reliability}',r'\small\setlength{\tabcolsep}{4pt}',r'\begin{tabular}{lcccccc}',r'\toprule',r'& \multicolumn{3}{c}{6,030 evaluations} & \multicolumn{3}{c}{30,030 evaluations} \\',r'Method & Feas. & 95\% CI & Mean AEP & Feas. & 95\% CI & Mean AEP \\',r'\midrule']
+    text=[r'\begin{table}[!htbp]',r'\centering',r'\caption{Lillgrund reliability and conditional AEP from the stored run records.}',r'\label{tab:archive-reliability}',r'\small\setlength{\tabcolsep}{4pt}',r'\begin{tabular}{lcccccc}',r'\toprule',r'& \multicolumn{3}{c}{6,030 evaluations} & \multicolumn{3}{c}{30,030 evaluations} \\',r'Method & Feas. & 95\% CI & Mean AEP & Feas. & 95\% CI & Mean AEP \\',r'\midrule']
     for alg in ['PSOBV','SLSQP','PSOC','BVNS','SSABV','RSDVNS','SSA','LXSSA','DE']:
         cells=[LABELS[alg]]
         for b in (6030,30030):
             r=by[alg,b];cells.extend([f"{r['feasible']}/{r['runs']}",f"[{r['wilson95_lower']:.2f}, {r['wilson95_upper']:.2f}]",f"{r['conditional_mean_GWh']:.3f}" if r['conditional_mean_GWh'] is not None else '--'])
         text.append(' & '.join(cells)+r' \\')
-    text.extend([r'\bottomrule',r'\end{tabular}',r'\par\smallskip\parbox{\textwidth}{\footnotesize Feas.: archived feasible labels; CI: marginal Wilson interval for success probability; mean AEP: conditional on those labels, GWh/yr. These intervals concern independent seeds at this block, not variation over sites. Rounded archival coordinates do not independently reproduce all labels; Section~\ref{sec:archive-precision}.}',r'\end{table}'])
+    text.extend([r'\bottomrule',r'\end{tabular}',r'\par\smallskip\parbox{\textwidth}{\footnotesize Feas.: archived feasible labels; CI: marginal Wilson interval for success probability; mean AEP: conditional on those labels, GWh/yr. These intervals concern independent seeds at this block, not variation over sites. Labels that the rounded coordinates cannot decide are checked by full-precision reruns; Section~\ref{sec:S-r3-precision}.}',r'\end{table}'])
     text.extend([r'\begin{table}[!htbp]',r'\centering',r'\caption{All-run paired outcomes for PSO-VNS on Lillgrund, using the archived feasibility labels.}',r'\label{tab:archive-paired}',r'\small\setlength{\tabcolsep}{4pt}',r'\begin{tabular}{rlcccc}',r'\toprule',r'Budget & Compared with & W/T/L & Superiority & 95\% CI & Holm $p$ \\',r'\midrule'])
     for p in pairs:
         text.append(f"{p['budget']:,} & {p['label']} & {p['wins']}/{p['ties']}/{p['losses']} & {p['superiority']:.3f} & [{p['bootstrap95_lower']:.3f}, {p['bootstrap95_upper']:.3f}] & {p['holm16_p']:.3g}"+r' \\')
