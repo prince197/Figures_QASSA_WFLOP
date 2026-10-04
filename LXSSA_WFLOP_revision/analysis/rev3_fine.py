@@ -385,7 +385,9 @@ def validate():
 
 
 def timing(seeds=(31, 32)):
-    """Times runs of every method at the largest N (data set II, 1000 m, N = 15) with both roses (scratch only)."""
+    """Objective cost per evaluation (15-deg, fast 1-deg, reference 1-deg) and run times of every method with the
+    1-deg objective: seeds `seeds` at the largest N (data set II, 1000 m, N = 15) and the first seed at the other
+    case sizes (scratch output only; these runs are not part of the study files)."""
     import mpce_direction as MD
     rng = np.random.default_rng(1)
     for ds in (1, 2):
@@ -404,11 +406,13 @@ def timing(seeds=(31, 32)):
                   f"{tt['fine1']:.3f} ms ({tt['fine1'] / tt['legacy15']:.1f}x), reference bench_objective(15) "
                   f"{tt['ref1']:.3f} ms ({tt['ref1'] / tt['legacy15']:.1f}x)", flush=True)
     rows = []
-    for alg in METHODS:
-        for s in seeds:
-            row = run_case((alg, 2, 1000, 15, s, BUDGET, "1deg"))
+    runs = [(2, 1000, 15, s) for s in seeds] + [(ds, r, n, seeds[0]) for ds, r, n in ((1, 1000, 15), (2, 750, 12),
+                                                                                    (2, 500, 10), (2, 750, 6))]
+    for ds, r, n, s in runs:
+        for alg in METHODS:
+            row = run_case((alg, ds, r, n, s, BUDGET, "1deg"))
             rows.append(row)
-            print(f"  run {alg:7s} ds2 r1000 N15 seed {s}: {row['Seconds']:.1f} s, loss "
+            print(f"  run {alg:7s} ds{ds} r{r} N{n} seed {s}: {row['Seconds']:.1f} s, loss "
                   f"{100 * row['WakeLoss'] / row['Ideal']:.4f}%, feasible {row['Feasible']}, calls {row['Calls']}",
                   flush=True)
     return pd.DataFrame(rows)

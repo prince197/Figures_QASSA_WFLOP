@@ -301,7 +301,9 @@ def main():
             rows += audit_file(f, st, role)
         print(st, len(files), "files", flush=True)
     rec = pd.DataFrame(rows)
-    rec.to_csv(os.path.join(a.out_dir, "rev3_precision_audit_records.csv"), index=False, float_format="%.10g")
+    drop = ["Eps", "BoundSpacing", "BoundBoundary", "MinSpacingRounded", "ObjectiveReplayRounded"]   # derivable
+    rec.drop(columns=drop).to_csv(os.path.join(a.out_dir, "rev3_precision_audit_records.csv"), index=False,
+                                  float_format="%.10g")
     summ = summarize(rec)
     cnt = rec[rec.Role != "duplicate"]
     tot = dict(records=int(len(cnt)), original=int(cnt.File.str.match(r"(fresh|mpce)_").sum()),

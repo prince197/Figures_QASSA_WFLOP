@@ -238,7 +238,7 @@ def null_case(d, m_true, R, Bi, rng):
     """case-level null simulation: population = observed case differences shifted to mean m_true; a replicate draws n
     cases iid from it and applies the case-level percentile bootstrap TOST (Bi resamples)."""
     d0 = d - d.mean() + m_true; n = len(d0)
-    out = dict(eq_ci=0, eq_p=0, rej_low=0, rej_high=0, rej_low_p=0, rej_high_p=0, t_eq=0)
+    out = dict(eq_ci=0, eq_p=0, rej_low=0, rej_high=0, rej_low_p=0, rej_high_p=0, t_eq=0); LIM = []
     for _ in range(R):
         x = d0[rng.integers(0, n, n)]
         bm = x[rng.integers(0, n, (Bi, n))].mean(1)
@@ -248,10 +248,11 @@ def null_case(d, m_true, R, Bi, rng):
         out["eq_ci"] += bool(-M < lo and hi < M); out["eq_p"] += bool(max(pl, ph) <= 0.05)
         out["rej_low"] += bool(lo > -M); out["rej_high"] += bool(hi < M)
         out["rej_low_p"] += bool(pl <= 0.05); out["rej_high_p"] += bool(ph <= 0.05)
+        LIM.append((float(lo), float(hi)))
         se = x.std(ddof=1) / math.sqrt(n)
         pt = max(t_dist.sf((x.mean() + M) / se, n - 1), t_dist.cdf((x.mean() - M) / se, n - 1))
         out["t_eq"] += bool(pt <= 0.05)
-    return out
+    return out, np.array(LIM)
 
 
 def null_seed(Ra_loss, Ra_f, Rb_loss, Rb_f, m_true, R, Bi, rng, chunk=500):
@@ -267,7 +268,7 @@ def null_seed(Ra_loss, Ra_f, Rb_loss, Rb_f, m_true, R, Bi, rng, chunk=500):
     FLa, FLb = np.where(Ra_f, La, 0.0), np.where(Rb_f, Rb_loss, 0.0)
     Fa, Fb = Ra_f.astype(float), Rb_f.astype(float)
     off = (np.arange(nc) * ns)[:, None]
-    out = dict(eq_ci=0, eq_p=0, rej_low=0, rej_high=0, rej_low_p=0, rej_high_p=0, fallback=0)
+    out = dict(eq_ci=0, eq_p=0, rej_low=0, rej_high=0, rej_low_p=0, rej_high_p=0, fallback=0); LIM = []
     t0 = time.time()
     for rep in range(R):
         if rep and rep % 250 == 0:
@@ -290,7 +291,8 @@ def null_seed(Ra_loss, Ra_f, Rb_loss, Rb_f, m_true, R, Bi, rng, chunk=500):
         out["eq_ci"] += bool(-M < lo and hi < M); out["eq_p"] += bool(max(pl, ph) <= 0.05)
         out["rej_low"] += bool(lo > -M); out["rej_high"] += bool(hi < M)
         out["rej_low_p"] += bool(pl <= 0.05); out["rej_high_p"] += bool(ph <= 0.05)
-    return out
+        LIM.append((float(lo), float(hi)))
+    return out, np.array(LIM)
 
 
 def cp(k, n):
@@ -300,6 +302,11 @@ def cp(k, n):
 
 def null_block(G, S, RM_all, R, Bc, Bs, cases, Rc=None):
     res = {}
+    OBS = {}
+    for a, b in PRIMARY:
+        d = X.case_diffs(S, a, b)
+        OBS[(pk(a, b), "case")] = tuple(float(v) for v in np.quantile(X.case_boot_means(d.values), [0.05, 0.95]))
+        OBS[(pk(a, b), "seed")] = tuple(X.seed_level(G, a, b, d)[0]["ci90"])
     for j, (a, b) in enumerate(PRIMARY):
         d = X.case_diffs(S, a, b)
         assert len(d) == len(cases)
@@ -310,10 +317,18 @@ def null_block(G, S, RM_all, R, Bc, Bs, cases, Rc=None):
                 t0 = time.time()
                 if lev == "case":
                     reps = Rc or R
-                    o = null_case(d.values, mt, reps, Bc, rng); Bi = Bc
+                    o, LIM = null_case(d.values, mt, reps, Bc, rng); Bi = Bc
+                    obs = OBS[(pk(a, b), "case")]
                 else:
                     reps = R
-                    o = null_seed(Ra["loss"], Ra["feas"], Rb["loss"], Rb["feas"], mt, R, Bs, rng); Bi = Bs
+                    o, LIM = null_seed(Ra["loss"], Ra["feas"], Rb["loss"], Rb["feas"], mt, R, Bs, rng); Bi = Bs
+                    obs = OBS[(pk(a, b), "seed")]
+                # null-calibrated one-sided p: share of null replicates whose 90% limit is at least as favourable to
+                # rejection as the observed one (lower limit >= observed at -m; upper limit <= observed at +m)
+                k = int((LIM[:, 0] >= obs[0]).sum()) if side == "minus" else int((LIM[:, 1] <= obs[1]).sum())
+                o["observed_ci90"] = list(obs); o["p_calibrated_binding"] = (k + 1) / (reps + 1)
+                o["null_limit_quantiles"] = dict(lo=[float(v) for v in np.quantile(LIM[:, 0], [0.05, 0.5, 0.95])],
+                                                 hi=[float(v) for v in np.quantile(LIM[:, 1], [0.05, 0.5, 0.95])])
                 binding = "rej_low" if side == "minus" else "rej_high"
                 r = dict(reps=reps, inner_resamples=Bi, true_mean=mt, seconds=round(time.time() - t0, 1), **o,
                          rate_eq_ci=o["eq_ci"] / reps, rate_eq_p=o["eq_p"] / reps, ci95_eq_ci=cp(o["eq_ci"], reps),
@@ -322,7 +337,7 @@ def null_block(G, S, RM_all, R, Bc, Bs, cases, Rc=None):
                     r["rate_eq_t"] = o["t_eq"] / reps; r["ci95_eq_t"] = cp(o["t_eq"], reps)
                 res[f"{pk(a, b)}|{lev}|{side}"] = r
                 print(f"NULL {pk(a, b)} {lev:4s} {side:5s}: TOST rejection (CI rule) {r['rate_eq_ci']:.4f} {np.round(r['ci95_eq_ci'], 4)}"
-                      f" p-rule {r['rate_eq_p']:.4f} binding one-sided {r['rate_binding']:.4f} [{r['seconds']} s]", flush=True)
+                      f" p-rule {r['rate_eq_p']:.4f} binding one-sided {r['rate_binding']:.4f} calibrated p {o['p_calibrated_binding']:.4f} [{r['seconds']} s]", flush=True)
     return res
 
 
@@ -452,6 +467,8 @@ def ci(v, d=3):
 
 
 def ptex(p):
+    if p < 1e-300:
+        return "$<10^{-300}$"
     if p < 1e-3:
         m_, e = f"{p:.1e}".split("e")
         return f"${m_}\\times10^{{{int(e)}}}$"
@@ -465,13 +482,13 @@ def tables(R):
     L = []
     for k in [pk("PSOBV", b) for b in MAIN7] + ["mid"] + [pk(a, b) for a, b in CTRL5]:
         if k == "mid":
-            L.append("\\midrule\n\\multicolumn{10}{@{}l}{\\emph{Primary pair SSA-VNS vs.\\ RSD-VNS and the other sampling-control contrasts of Table~\\ref{M-tab:equiv-main}}} \\\\")
+            L.append("\\midrule\n\\multicolumn{9}{@{}l}{\\emph{Primary pair SSA-VNS vs.\\ RSD-VNS and the other sampling-control contrasts of Table~\\ref{M-tab:equiv-main}}} \\\\")
             continue
         r = b1[k]; m = r["main"]; v = r["violation"]
         fam = "p_sign_holm_main7" if k.startswith("PSOBV-") and k.split("-")[1] in MAIN7 else "p_sign_holm_controls5"
         L.append(f"{plab(r['a'], r['b'])} & {r['feas_a_pct']:.1f}/{r['feas_b_pct']:.1f} & {f3(r['cond_mean_dloss_pp'], True)} & "
                  f"{m['W']}/{m['T']}/{m['L']} & {m['score']:.3f} & {ci(m['ci95']['case'])} & {ci(m['ci95']['two_stage'])} & "
-                 f"{ptex(m[fam])} & {v['score']:.3f} & {ci(v['ci95']['case'])} \\\\")
+                 f"{ptex(m[fam])} & {v['score']:.3f} \\\\")
     out += ["\\begin{table}[!htbp]", "\\centering",
             "\\caption{All-run paired outcome on the 68 benchmark cases (6,030 evaluations, random starts, seeds 1--30; "
             "$n=2{,}040$ seed pairs per comparison). Per case and seed, a feasible run beats an infeasible one, two feasible runs "
@@ -484,13 +501,13 @@ def tables(R):
             "wake-loss difference (pp, first minus second; negative = first better) over the cases in which both are qualified "
             "(Table~\\ref{M-tab:friedman68}). Last two columns: two infeasible runs ordered by the normalized violation "
             "$V=\\sum_i\\max(0,x_i^2+y_i^2-r^2)/r^2+\\sum_{i<j}\\max(0,\\ell_{\\min}-\\ell_{ij})/\\ell_{\\min}$ recomputed from "
-            "the stored coordinates (rounded to $10^{-3}$~m; tie if $|\\Delta V|\\le10^{-5}$), with the case-bootstrap interval.}",
-            "\\label{tab:S-r3-allrun}", "\\scriptsize\\setlength{\\tabcolsep}{2pt}",
-            "\\begin{tabular}{@{}lccccccccc@{}}", "\\toprule",
-            "& & & \\multicolumn{5}{c}{Infeasible pairs tie} & \\multicolumn{2}{c}{Ordered by $V$} \\\\",
-            "\\cmidrule(lr){4-8}\\cmidrule(l){9-10}",
-            "Pair (first vs.\\ second) & Feas.\\ (\\%) & $\\overline{\\Delta L}$ & $W/T/L$ & Score & Case 95\\% CI & Two-stage 95\\% CI & $p_{\\rm sign}$ & Score & Case 95\\% CI \\\\",
-            "\\midrule", "\\multicolumn{10}{@{}l}{\\emph{Main comparison: PSO-VNS vs.\\ each method (Holm over 7)}} \\\\"] + L + [
+            "the stored coordinates (rounded to $10^{-3}$~m; tie if $|\\Delta V|\\le10^{-5}$); its intervals are in rev3\\_inference.json.}",
+            "\\label{tab:S-r3-allrun}", "\\scriptsize\\setlength{\\tabcolsep}{1.5pt}",
+            "\\begin{tabular}{@{}lcccccccc@{}}", "\\toprule",
+            "& & & \\multicolumn{5}{c}{Infeasible pairs tie} & By $V$ \\\\",
+            "\\cmidrule(lr){4-8}\\cmidrule(l){9-9}",
+            "Pair (first vs.\\ second) & Feas.\\ (\\%) & $\\overline{\\Delta L}$ & $W/T/L$ & Score & Case 95\\% CI & Two-stage 95\\% CI & $p_{\\rm sign}$ & Score \\\\",
+            "\\midrule", "\\multicolumn{9}{@{}l}{\\emph{Main comparison: PSO-VNS vs.\\ each method (Holm over 7)}} \\\\"] + L + [
             "\\bottomrule", "\\end{tabular}", "\\end{table}", ""]
     # ---- B3
     A = R["B3"]["audit_summary"]; NS = R["B3"]["null"]
@@ -507,9 +524,10 @@ def tables(R):
             for side in ("minus", "plus"):
                 r = NS[f"{pk(a, b)}|{lev}|{side}"]
                 cells.append(f"{100 * r['rate_eq_ci']:.2f} [{100 * r['ci95_eq_ci'][0]:.2f}, {100 * r['ci95_eq_ci'][1]:.2f}]")
-            r0 = NS[f"{pk(a, b)}|{lev}|minus"]
+            r0 = NS[f"{pk(a, b)}|{lev}|minus"]; r1 = NS[f"{pk(a, b)}|{lev}|plus"]
+            cells.append(f"{r0['p_calibrated_binding']:.3f} / {r1['p_calibrated_binding']:.3f}")
             th = lambda v: f"{v:,}".replace(",", "{,}")
-            L2.append(f"{plab(a, b)} & {lev} & {th(r0['reps'])} & {th(r0['inner_resamples'])} & {cells[0]} & {cells[1]} \\\\")
+            L2.append(f"{plab(a, b)} & {lev} & {th(r0['reps'])} & {th(r0['inner_resamples'])} & {cells[0]} & {cells[1]} & {cells[2]} \\\\")
     out += ["\\begin{table}[!htbp]", "\\centering",
             "\\caption{Audit of the bootstrap TOST (margin $m=0.05$~pp; 68 cases, 6,030 evaluations, random starts, seeds 1--30; "
             "$\\Delta L$ first minus second method). Top: the 18 pairs of Tables~\\ref{tab:equivalence} and~\\ref{tab:X-equiv-levels} "
@@ -520,13 +538,15 @@ def tables(R):
             "the observed case differences shifted to mean $\\pm m$, 68 cases drawn with replacement per replication; seed "
             "level: the first method's run losses shifted by a constant so that the benchmark mean of the case-mean "
             "differences is $\\pm m$, 30 seed pairs drawn with replacement within every case; each replication then applies "
-            "the procedure of the paper with the stated number of inner resamples.}",
+            "the procedure of the paper with the stated number of inner resamples. Calibrated $p_-$ ($p_+$): share of the "
+            "replications at $\\Delta=-m$ ($+m$) whose lower (upper) 90\\% limit is at least as far inside the margin as the "
+            "observed one (add-one), a null-calibrated $p$ for $H_0^-$ ($H_0^+$).}",
             "\\label{tab:S-r3-tostaudit}", "\\scriptsize\\setlength{\\tabcolsep}{3pt}",
             "\\begin{tabular}{@{}lcccc@{}}", "\\toprule",
             "Level & Pairs & Eq.\\ (CI) & $p_{\\rm TOST}\\le0.05$ & Discordant \\\\", "\\midrule"] + L + [
             "\\bottomrule", "\\end{tabular}", "\\par\\medskip",
-            "\\begin{tabular}{@{}llcccc@{}}", "\\toprule",
-            "Pair & Level & Replications & Inner resamples & Size at $\\Delta=-m$ (\\%) & Size at $\\Delta=+m$ (\\%) \\\\", "\\midrule"] + L2 + [
+            "\\begin{tabular}{@{}llccccc@{}}", "\\toprule",
+            "Pair & Level & Repl. & Inner $B$ & Size at $\\Delta=-m$ (\\%) & Size at $\\Delta=+m$ (\\%) & Calibrated $p_-$ / $p_+$ \\\\", "\\midrule"] + L2 + [
             "\\bottomrule", "\\end{tabular}", "\\end{table}", ""]
     # ---- B4
     S4 = R["B4"]["pairs"]; D4 = R["B4"]["dependence"]
@@ -539,8 +559,9 @@ def tables(R):
                  f"{'yes' if r['joint']['eq'] else 'no'} & " + (f"{ci(pst['ci90'])}" if pst else "--") + " \\\\")
         if key == "RSDVNS-RSVNS":
             L.append("\\midrule")
-    dd = "; ".join(f"{plab(*k.split('-'))}: variance ratio {v['variance_ratio']:.2f} (permutation $p={v['p_variance_ratio']:.3f}$), "
-                   f"mean twin correlation {v['twin_mean_corr']:+.3f} ($p={v['p_twin_corr']:.3f}$, {v['twin_pairs']} twins)".replace("-", "$-$", 0)
+    dd = "; ".join(f"{plab(*k.split('-'))}: variance ratio of the per-seed benchmark average {v['variance_ratio']:.2f} (1 under "
+                   f"independence; permutation $p={v['p_variance_ratio']:.3f}$), mean correlation of the seed effects of the data-set "
+                   f"I/II twin cases {f3(v['twin_mean_corr'], True)} ($p={v['p_twin_corr']:.3f}$, {v['twin_pairs']} twins)"
                    for k, v in D4.items())
     out += ["\\begin{table}[!htbp]", "\\centering",
             "\\caption{Seed-level (fixed-benchmark) equivalence with independent and with synchronized seed resampling (68 cases, "
@@ -595,8 +616,8 @@ def tables(R):
     for a, b in EQCLUS_PAIRS:
         r = E[pk(a, b)]; cw, eq = r["case_weighted"], r["equal_cluster"]
         L.append(f"{plab(a, b)} & {f3(cw['mean'], True)} & {ci(cw['cr2_ci90'])} & {ci(cw['wild_ci90'])} & {f3(eq['mean'], True)} & "
-                 f"{ci(eq['t5_ci90'])} & {ci(eq['wild_ci90'])} & {eq['wild_p_tost']:.3f} \\\\")
-        L.append(f"\\multicolumn{{8}}{{@{{}}r@{{}}}}{{\\emph{{cluster means:}} " + ", ".join(f3(v) for v in eq["cluster_means"]) + "} \\\\")
+                 f"{ci(eq['t5_ci90'])} & {ci(eq['wild_ci90'])} \\\\")
+        L.append(f"\\multicolumn{{7}}{{@{{}}r@{{}}}}{{\\emph{{cluster means:}} " + ", ".join(f3(v) for v in eq["cluster_means"]) + "} \\\\")
     out += ["\\begin{table}[!htbp]", "\\centering",
             "\\caption{Case-weighted and equal-cluster estimates at the cluster level, recomputed from the run records (68 "
             "cases in six (data set, radius) clusters, 6,030 evaluations, random starts, seeds 1--30; $\\overline{\\Delta L}$ first "
@@ -604,13 +625,13 @@ def tables(R):
             "the CR2 $t_5$ interval and the restricted wild-cluster bootstrap-$t$ interval of Table~\\ref{tab:X-equiv-levels}. "
             "Equal-cluster: mean of the six cluster means with the $t_5$ interval over these means (this equals the CR2 interval "
             "for the equal-cluster weighting) and the restricted wild-cluster bootstrap-$t$ interval (CR2-studentized, all "
-            "$6^6=46{,}656$ Webb six-point draws enumerated; interval by test inversion); $p_{\\rm TOST}$ of the wild bootstrap. "
+            "$6^6=46{,}656$ Webb six-point draws enumerated; interval by test inversion). "
             "Cluster means in the order Data Set~I, $r=500$, 750, 1000~m; Data Set~II, $r=500$, 750, 1000~m.}",
             "\\label{tab:S-r3-eqclus}", "\\scriptsize\\setlength{\\tabcolsep}{2.5pt}",
-            "\\begin{tabular}{@{}lccccccc@{}}", "\\toprule",
-            "& \\multicolumn{3}{c}{Case-weighted} & \\multicolumn{4}{c}{Equal-cluster} \\\\",
-            "\\cmidrule(lr){2-4}\\cmidrule(l){5-8}",
-            "Pair (first vs.\\ second) & $\\overline{\\Delta L}$ & CR2 90\\% CI & Wild 90\\% CI & $\\overline{\\Delta L}$ & $t_5$ 90\\% CI & Wild 90\\% CI & Wild $p_{\\rm TOST}$ \\\\",
+            "\\begin{tabular}{@{}lcccccc@{}}", "\\toprule",
+            "& \\multicolumn{3}{c}{Case-weighted} & \\multicolumn{3}{c}{Equal-cluster} \\\\",
+            "\\cmidrule(lr){2-4}\\cmidrule(l){5-7}",
+            "Pair (first vs.\\ second) & $\\overline{\\Delta L}$ & CR2 90\\% CI & Wild 90\\% CI & $\\overline{\\Delta L}$ & $t_5$ 90\\% CI & Wild 90\\% CI \\\\",
             "\\midrule"] + L + ["\\bottomrule", "\\end{tabular}", "\\end{table}", ""]
     return "\n".join(out)
 

@@ -237,7 +237,8 @@ class Pool:
 
 
 def build_pools(rev2_out):
-    prim, sec, macro = Pool(), Pool(), Pool()
+    prim, sec, macro, pj = Pool(), Pool(), Pool(), Pool()     # prim: printed (tex), pj: json / csv values
+    r2 = Pool()                                               # revision-2 sources only (rev2 outputs, validation, archive)
     repo_macro_files = sorted(glob.glob(os.path.join(HERE, "mpce_numbers*.tex")))
     M = load_macros(repo_macro_files)
     for name, val in M.items():
@@ -251,17 +252,21 @@ def build_pools(rev2_out):
         if os.path.exists(fn):
             lab = "rev2_tables.tex(regenerated)" if fn.startswith(rev2_out) else os.path.relpath(fn, ROOT)
             prim.add_text(open(fn, encoding="utf-8").read(), lab)
+            r2.add_text(open(fn, encoding="utf-8").read(), lab)
     jsons = [(os.path.join(rev2_out, "rev2_summary.json"), "rev2_summary.json(regenerated)")]
     jsons += [(f, os.path.relpath(f, ROOT)) for f in sorted(glob.glob(os.path.join(VAL, "*.json")))
               if not f.endswith("raw_data_checksums.json")]
     jsons += [(f, os.path.relpath(f, ROOT)) for f in sorted(glob.glob(os.path.join(HERE, "mpce_summary*.json")))]
     for fn, lab in jsons:
         for p, x in walk_json(json.load(open(fn))):
-            prim.add_float(x, f"{lab}{p}")
+            pj.add_float(x, f"{lab}{p}")
+            if "mpce_summary" not in lab:
+                r2.add_float(x, f"{lab}{p}")
     for fn in sorted(glob.glob(os.path.join(VAL, "*.csv"))):
         for i, row in enumerate(csv.DictReader(open(fn)), 2):
             for k, v in row.items():
-                prim.add_float(v, f"{os.path.relpath(fn, ROOT)}:{i}:{k}")
+                pj.add_float(v, f"{os.path.relpath(fn, ROOT)}:{i}:{k}")
+                r2.add_float(v, f"{os.path.relpath(fn, ROOT)}:{i}:{k}")
     # secondary: other generated tex / json of the repository, small non-run csv
     for fn in sorted(glob.glob(os.path.join(HERE, "*.tex"))):
         b = os.path.basename(fn)
@@ -288,7 +293,23 @@ def build_pools(rev2_out):
                         sec.add_float(v, f"{os.path.relpath(fn, ROOT)}:{k}")
         except Exception:
             pass
-    return M, macro, prim, sec
+    return M, macro, prim, pj, sec, r2
+
+
+def density(n, *pools):
+    """How many of the 10 neighbours v +- j * 10^-dec (j = 1..5) of a printed number are also in the pools: a value
+    found in a pool that also holds most of its neighbours is not specifically traced."""
+    if n["exp"]:
+        return 0
+    v, d = abs(n["value"]), n["dec"]
+    c = 0
+    for j in (-5, -4, -3, -2, -1, 1, 2, 3, 4, 5):
+        w = v + j * 10 ** -d
+        if w < 0:
+            continue
+        k = f"{w:.{d}f}" if d else str(int(round(w)))
+        c += any(p.get(k) for p in pools)
+    return c
 
 
 # ------------------------------------------------------------------------------------------------ part 1
@@ -473,6 +494,11 @@ def align(rel, M_repo, M_rev2):
     sm = difflib.SequenceMatcher(None, ot, nt, autojunk=False)
     ops = sm.get_opcodes()
     new_owner = [None] * len(nt)        # for new tokens: ("equal", macro) if aligned to a macro token
+    new_tag = ["new"] * len(nt)         # "repo": token aligned (equal) with the repository text, "new": revision-2 text
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        if tag == "equal":
+            for k in range(j1, j2):
+                new_tag[k] = "repo"
     # group old macro occurrences: consecutive tokens with the same owner and same line
     occ = []
     i = 0
@@ -522,7 +548,7 @@ def align(rel, M_repo, M_rev2):
             status = "replaced_text_macro"
         results.append(dict(macro=nm, status=status, old=old_txt, old_block=old_blk[:300], new_block=new_txt[:300],
                             old_line=ol[a], new_line=nline, context=ctx[:400]))
-    return results, nt, new_owner, nl
+    return results, nt, new_owner, nl, new_tag
 
 
 # ------------------------------------------------------------------------------------------------ part 2b (all numbers)
@@ -534,21 +560,37 @@ STRUCT_DEC = {"0.5", "0.05", "0.95", "0.9", "0.75", "0.25", "1.5", "2.5", "0.7",
               "0.01", "0.1", "0.2", "0.04", "0.075", "0.3", "0.6", "0.8", "0.4", "1.0", "0.0", "0.001"}
 
 
+SKIP_LINE = re.compile(r"\\(?:address|ead|author|cortext|fntext|tnotetext|thanks|bibitem)\b|postcode")
+
+
 def scan_numbers(rel, M_rev2, pools, align_info):
-    M_unused, macro, prim, sec = pools
+    M_unused, macro, prim, pj, sec, r2 = pools
+    inl = {}                                         # line -> verified inlined generated table
+    for t in INLINED:
+        if t["file"] == rel:
+            for l in range(t["lines"][0], t["lines"][1] + 1):
+                inl[l] = t
     fn = os.path.join(R2, rel)
     text = open(fn, encoding="utf-8").read()
     out = []
-    # per line plain text (macros expanded with the printed = rev2 values)
-    nt, new_owner, nl = (align_info[1], align_info[2], align_info[3]) if align_info else (None, None, None)
+    nt, new_owner, nl, ntag = align_info[1:5] if align_info else (None, None, None, None)
     anchored = defaultdict(list)    # line -> [(token, macro)]
+    origin = defaultdict(lambda: defaultdict(list))   # line -> token -> [origin tags]
     if nt is not None:
-        for t, o, l in zip(nt, new_owner, nl):
+        for t, o, l, g in zip(nt, new_owner, nl, ntag):
             if o and re.match(r"\d", t):
                 anchored[l].append((t, o))
+            if re.match(r"\d", t):
+                origin[l][t].append("macro" if o else g)
+    in_bib = False
     for no, line in enumerate(text.split("\n"), 1):
         code = strip_comment(line)
-        if not code.strip():
+        if "\\begin{thebibliography}" in code:
+            in_bib = True
+        if "\\end{thebibliography}" in code:
+            in_bib = False
+            continue
+        if not code.strip() or in_bib or SKIP_LINE.search(code):
             continue
         plain = tex_to_plain(expand(code, M_rev2))
         used_macros = [m.group(1) for m in MACRO_USE.finditer(code)]
@@ -561,27 +603,37 @@ def scan_numbers(rel, M_rev2, pools, align_info):
             ctx = plain[max(0, n["pos"] - 70):n["end"] + 50].replace("\n", " ")
             ctx = re.sub(r"\s+", " ", ctx).strip()
             rec = dict(file=rel, line=no, text=(n["sign"] if n["sign"] == "-" else "") + k, context=ctx)
-            if anc.get(k):
+            mvals = {u: [x["key"] for x in extract_numbers(tex_to_plain(expand("\\" + u, M_rev2)))] for u in used_macros}
+            if no in inl:
+                rec.update(cls="inlined_generated_table" if inl[no]["identical_numbers"] else "inlined_table_modified",
+                           source=[inl[no]["source"]], specific=True)
+                if not inl[no]["identical_numbers"]:
+                    rec["in_rev2_sources"] = r2.get(k)[:3]
+            elif anc.get(k):
                 anc[k] -= 1
-                rec.update(cls="anchored_equal", source=["\\" + anc_m[k].pop(0)])
-            elif used_macros and any(k in [x["key"] for x in extract_numbers(tex_to_plain(expand("\\" + u, M_rev2)))]
-                                     for u in used_macros):
-                rec.update(cls="macro_in_rev2_text", source=["\\" + u for u in used_macros
-                                                              if k in [x["key"] for x in extract_numbers(tex_to_plain(expand("\\" + u, M_rev2)))]][:3])
+                rec.update(cls="anchored_equal", source=["\\" + anc_m[k].pop(0)], specific=True)
+            elif any(k in v for v in mvals.values()):
+                rec.update(cls="macro_in_rev2_text", source=["\\" + u for u, v in mvals.items() if k in v][:3], specific=True)
+            elif macro.get(k) or prim.get(k):
+                rec.update(cls="traced", source=(macro.get(k) + prim.get(k))[:4], kind="printed",
+                           specific=density(n, macro, prim) <= 2)
+            elif pj.get(k):
+                rec.update(cls="traced", source=pj.get(k)[:4], kind="json", specific=density(n, pj) <= 2)
+            elif sec.get(k):
+                rec.update(cls="traced_secondary", source=sec.get(k)[:3], specific=density(n, sec) <= 2)
             else:
-                src = macro.get(k) + prim.get(k)
-                if src:
-                    rec.update(cls="traced", source=src[:4])
-                elif sec.get(k):
-                    rec.update(cls="traced_secondary", source=sec.get(k)[:3])
-                else:
-                    v = abs(n["value"])
-                    struct = (not n["exp"] and n["dec"] == 0 and (v in STRUCT_INT or int(v) in YEARS or v <= 12)) \
-                        or k in STRUCT_DEC
-                    rec.update(cls="structural" if struct else "untraced", source=[])
-                    if not struct:
-                        rec["near"] = near_values(n, macro, prim)
+                v = abs(n["value"])
+                struct = (not n["exp"] and n["dec"] == 0 and (v in STRUCT_INT or int(v) in YEARS or v <= 12)) \
+                    or k in STRUCT_DEC
+                rec.update(cls="structural" if struct else "untraced", source=[], specific=False)
+                if not struct:
+                    rec["near"] = near_values(n, macro, prim)
             rec["weak"] = n["sig"] <= 2 and not n["exp"]
+            if rec["cls"] in ("traced", "traced_secondary", "untraced") and r2.get(k):
+                rec["rev2_source"] = r2.get(k)[:3]
+                rec["rev2_specific"] = density(n, r2) <= 2
+            og = origin.get(no, {}).get(k) if nt is not None else None
+            rec["origin"] = og.pop(0) if og else ("unaligned" if nt is not None else "no_repo_counterpart")
             out.append(rec)
     return out
 
@@ -665,12 +717,384 @@ def part3():
     return changed, cost
 
 
+INLINED = []
+
+
+def inlined_tables():
+    """Generated tables copied into the revision-2 section files (between "% >>>>> begin analysis/X.tex" and
+    "% <<<<< end"): number sequence compared with the repository's generated file."""
+    res = []
+    for rel in MAIN_FILES:
+        lines = open(os.path.join(R2, rel), encoding="utf-8").read().split("\n")
+        i = 0
+        while i < len(lines):
+            m = re.match(r"%\s*>>>>> begin (analysis/\S+\.tex)", lines[i])
+            if m:
+                j = i + 1
+                while j < len(lines) and not lines[j].startswith("% <<<<< end"):
+                    j += 1
+                blk = "\n".join(strip_comment(l) for l in lines[i + 1:j])
+                rp = os.path.join(ROOT, m.group(1))
+                ref = "\n".join(strip_comment(l) for l in open(rp, encoding="utf-8").read().split("\n"))
+                a = [x["key"] if x["sign"] != "-" else "-" + x["key"] for x in extract_numbers(tex_to_plain(blk))]
+                b = [x["key"] if x["sign"] != "-" else "-" + x["key"] for x in extract_numbers(tex_to_plain(ref))]
+                diffs = []
+                for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, b, a, autojunk=False).get_opcodes():
+                    if tag != "equal":
+                        diffs.append(dict(op=tag, repo=b[i1:i2], rev2=a[j1:j2]))
+                res.append(dict(file=rel, lines=[i + 1, j + 1], source=m.group(1), n_numbers=len(a), n_repo=len(b),
+                                identical_numbers=not diffs, diffs=diffs))
+                i = j
+            i += 1
+    return res
+
+
+def _table_by_label(text, label):
+    i = text.find("\\label{%s}" % label)
+    if i < 0:
+        return None
+    a = text.rfind("\\begin{table", 0, i)
+    b = text.find("\\end{table", i)
+    return "\n".join(strip_comment(l) for l in text[a:b].split("\n"))
+
+
+def _nums(tex):
+    return [("-" if x["sign"] == "-" else "") + x["key"] for x in extract_numbers(tex_to_plain(tex))]
+
+
+REV2_TABLE_MAP = {"tab:S-rev-laplace": "tab:R2-laplace", "tab:S-rev-ga": "tab:R2-ga", "tab:S-rev-ga-hr": "tab:R2-ga-hr",
+                  "tab:S-rev-ga-iea": "tab:R2-ga-iea", "tab:S-rev-spacing-rank": "tab:R2-spacing-rank",
+                  "tab:S-rev-spacing": "tab:R2-spacing-contrast", "tab:S-rev-grad": "tab:R2-grad",
+                  "tab:S-rev-grad-calls": "tab:R2-grad-calls", "tab:S-rev-site": "tab:R2-site"}
+REV2_SECTIONS = [("sec:S-rev-lap-abl", "sec:S-rev-ga", ["/laplace"], ["tab:R2-laplace"]),
+                 ("sec:S-rev-ga", "sec:S-rev-spacing", ["/ga68", "/ga_hr16", "/ga_iea37"], ["tab:R2-ga", "tab:R2-ga-hr", "tab:R2-ga-iea"]),
+                 ("sec:S-rev-spacing", "sec:S-rev-grad", ["/spacing"], ["tab:R2-spacing-rank", "tab:R2-spacing-contrast"]),
+                 ("sec:S-rev-grad", "sec:S-rev-site", ["/grad_iea37", "/ga_iea37"], ["tab:R2-grad", "tab:R2-grad-calls", "tab:R2-ga-iea"]),
+                 ("sec:S-rev-site", "sec:S-further", ["/lillgrund"], ["tab:R2-site"])]
+
+
+def rev2_tables_and_sections(rev2_out):
+    """(a) The revision-2 tables typed into the supplement vs. the regenerated rev2_tables.tex (number sequences);
+    (b) the prose of the revision-2 supplement sections against a section-scoped pool (the matching subtree of the
+    regenerated rev2_summary.json and the section's regenerated tables): non-weak numbers not found are listed."""
+    sup = open(os.path.join(R2, "SWEVO_supplement.tex"), encoding="utf-8").read()
+    gen = open(os.path.join(rev2_out, "rev2_tables.tex"), encoding="utf-8").read()
+    tabs = []
+    for a, b in REV2_TABLE_MAP.items():
+        x, y = _table_by_label(sup, a), _table_by_label(gen, b)
+        na, nb = _nums(x or ""), _nums(y or "")
+        diffs = [dict(op=t, regenerated=nb[i1:i2], supplement=na[j1:j2])
+                 for t, i1, i2, j1, j2 in difflib.SequenceMatcher(None, nb, na, autojunk=False).get_opcodes() if t != "equal"]
+        tabs.append(dict(supplement_table=a, regenerated_table=b, n_supplement=len(na), n_regenerated=len(nb),
+                         identical_numbers=not diffs, diffs=diffs[:20]))
+    summ = json.load(open(os.path.join(rev2_out, "rev2_summary.json")))
+    flat = list(walk_json(summ))
+    lines = sup.split("\n")
+    lab_line = {m.group(1): i for i, l in enumerate(lines) for m in [re.search(r"\\label\{([^}]*)\}", l)] if m}
+    prose = []
+    for start, end, subtrees, tlabels in REV2_SECTIONS:
+        pool = Pool()
+        for p, x in flat:
+            if any(p.startswith(st + "/") for st in subtrees):
+                pool.add_float(x, p)
+        for tl in tlabels:
+            for k in _nums(_table_by_label(gen, tl) or ""):
+                pool.add_key(k.lstrip("-"), tl)
+        in_tab = False
+        for i in range(lab_line[start], lab_line[end]):
+            code = strip_comment(lines[i])
+            if "\\begin{table" in code:
+                in_tab = True
+            if "\\end{table" in code:
+                in_tab = False
+                continue
+            if in_tab or not code.strip():
+                continue
+            for n in extract_numbers(tex_to_plain(code)):
+                if n["sig"] <= 2 and not n["exp"]:
+                    continue
+                k = n["key"]
+                found = pool.get(k)
+                if not found and n["pct"]:
+                    found = pool.get(k)
+                prose.append(dict(section=start, line=i + 1, text=("-" if n["sign"] == "-" else "") + k,
+                                  found=bool(found), source=found[:2],
+                                  context=re.sub(r"\s+", " ", tex_to_plain(code)[max(0, n["pos"] - 60):n["end"] + 40])))
+    return tabs, prose
+
+
+# ------------------------------------------------------------------------------------------------ part 2c (targeted)
+def _rev2(exp):
+    import pandas as pd
+    fs = sorted(glob.glob(os.path.join(HERE, f"rev2_{exp}_s*of*.csv")))
+    return pd.concat([pd.read_csv(f, usecols=lambda c: c not in ("Coordinates", "Curve")) for f in fs], ignore_index=True)
+
+
+def _claim(out, where, claim, text, recomputed, ok, note=""):
+    out.append(dict(where=where, claim=claim, text=text, recomputed=recomputed, status="OK" if ok else "DIFFERENT", note=note))
+
+
+def targeted():
+    """Recompute numbers of the revision-2 text that are not stored in any generated output (or only loosely)."""
+    import numpy as np, pandas as pd
+    out = []
+    sup, beyond = "SWEVO_supplement.tex", "optA/sw/08_beyond.tex"
+    # ---- elapsed-time table (tab:S-time) and the main-text ratios
+    sp = _rev2("spacing")
+    sp = sp[~((sp.Radius == 500) & (sp.Turbines == 10))]
+    med_sp = sp.groupby("Algorithm").Seconds.median()
+    lg = pd.concat([_rev2("lg16"), _rev2("lg16b")], ignore_index=True)
+    med_lg = lg.groupby(["Budget", "Algorithm"]).Seconds.median()
+    gr = _rev2("grad"); ga = _rev2("gaiea")
+    gi = pd.concat([gr, ga], ignore_index=True)
+    med_gi = gi.groupby(["Turbines", "Budget", "Algorithm"]).Seconds.median()
+    rows = {}
+    for a in ("PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP", "RSDVNS"):
+        rows[a] = (f"{med_sp[a]:.2f} ({med_sp[a] / med_sp['PSOBV']:.2f})",
+                   f"{med_lg[(6030, a)]:.2f} ({med_lg[(6030, a)] / med_lg[(6030, 'PSOBV')]:.2f})",
+                   f"{med_lg[(30030, a)]:.2f} ({med_lg[(30030, a)] / med_lg[(30030, 'PSOBV')]:.2f})")
+    typed = {"PSOBV": ("2.47 (1.00)", "5.68 (1.00)", "27.69 (1.00)"), "PSOC": ("2.07 (0.84)", "5.74 (1.01)", "28.94 (1.05)"),
+             "SSABV": ("2.19 (0.89)", "5.56 (0.98)", "27.35 (0.99)"), "SSA": ("2.11 (0.85)", "5.70 (1.00)", "28.17 (1.02)"),
+             "LXSSA": ("2.23 (0.90)", "5.69 (1.00)", "28.48 (1.03)"), "DE": ("2.90 (1.17)", "6.35 (1.12)", "31.18 (1.13)"),
+             "BVNS": ("1.98 (0.80)", "5.58 (0.98)", "36.75 (1.33)"), "SLSQP": ("4.47 (1.81)", "12.79 (2.25)", "44.21 (1.60)"),
+             "RSDVNS": ("2.14 (0.86)", "5.70 (1.00)", "31.67 (1.14)")}
+    for a, t in typed.items():
+        _claim(out, f"{sup}: tab:S-time", f"median s per run (ratio to PSO-VNS), {a}: spacing / Lillgrund 6,030 / 30,030",
+               " | ".join(t), " | ".join(rows[a]), tuple(t) == rows[a],
+               "spacing: 10 split cases (r=500, N=10 excluded), 5D and 6D pooled, 600 runs per method")
+    for n, lab in ((16, "16"), (36, "36")):
+        g6, g30 = med_gi[(n, 6030, "GA")], med_gi[(n, 30030, "GA")]
+        for a, t in (("SLSQPX", {16: "4.3 / 31.8 (6.7)", 36: "15.4 / 84.8 (6.5)"}),
+                     ("PSOSLSQPX", {16: "3.0 / 18.5 (3.9)", 36: "11.0 / 56.2 (4.3)"})):
+            rec = f"{med_gi[(n, 6030, a)]:.1f} / {med_gi[(n, 30030, a)]:.1f} ({med_gi[(n, 30030, a)] / g30:.1f})"
+            _claim(out, f"{sup}: tab:S-time", f"IEA37 {lab} turbines, {a}: median s 6,030 / 30,030 (ratio to GA at 30,030)",
+                   t[n], rec, t[n] == rec)
+        rec = f"{g6:.2f} / {g30:.2f} (1.00)"
+        t = {16: "0.98 / 4.76 (1.00)", 36: "2.79 / 13.09 (1.00)"}[n]
+        _claim(out, f"{sup}: tab:S-time", f"IEA37 {lab} turbines, GA median s", t, rec, t == rec)
+    r_sp = med_sp["SLSQP"] / med_sp["PSOBV"]
+    r6 = med_lg[(6030, "SLSQP")] / med_lg[(6030, "PSOBV")]; r30 = med_lg[(30030, "SLSQP")] / med_lg[(30030, "PSOBV")]
+    _claim(out, f"{beyond}:271", "MS-SLSQP / PSO-VNS median time, spacing study", "1.8", f"{r_sp:.2f}", f"{r_sp:.1f}" == "1.8")
+    _claim(out, f"{beyond}:271", "MS-SLSQP / PSO-VNS median time, Lillgrund 6,030 and 30,030", "2.3 and 1.6",
+           f"{r6:.2f} and {r30:.2f}", (f"{r6:.1f}", f"{r30:.1f}") == ("2.3", "1.6"))
+    rx = [med_gi[(n, 30030, "SLSQPX")] / med_gi[(n, 30030, "GA")] for n in (16, 36)]
+    rp = [med_gi[(n, 30030, "PSOSLSQPX")] / med_gi[(n, 30030, "GA")] for n in (16, 36)]
+    _claim(out, f"{beyond}:271", "IEA37 30,030: exact-gradient MS-SLSQP and PSO-SLSQP / GA median time", "6.5--6.7 and 3.9--4.3",
+           f"{min(rx):.2f}--{max(rx):.2f} and {min(rp):.2f}--{max(rp):.2f}",
+           (f"{min(rx):.1f}", f"{max(rx):.1f}", f"{min(rp):.1f}", f"{max(rp):.1f}") == ("6.5", "6.7", "3.9", "4.3"))
+    # "Per run, the reported timings are about 3--6 times those of PSO-VNS" (exact-gradient methods, IEA37):
+    # PSO-VNS IEA37 runs are in the repository (mpce_iea16p / mpce_iea36p)
+    pv = pd.concat([pd.read_csv(os.path.join(HERE, f), usecols=lambda c: c not in ("Coordinates", "Curve"))
+                    for f in ("mpce_iea16p_s0of1.csv", "mpce_iea36p_s0of1.csv")], ignore_index=True)
+    pv = pv[(pv.Algorithm == "PSOBV") & (pv.Init == "random")]
+    medp = pv.groupby(["Turbines", "Budget"]).Seconds.median()
+    ratios = {f"{a} {n}T {b}": round(float(med_gi[(n, b, a)] / medp[(n, b)]), 2)
+              for a in ("SLSQPX", "PSOSLSQPX") for n in (16, 36) for b in (6030, 30030)}
+    mean_gi = gi.groupby(["Turbines", "Budget", "Algorithm"]).Seconds.mean()
+    meanp = pv.groupby(["Turbines", "Budget"]).Seconds.mean()
+    ratios_m = {f"{a} {n}T {b}": round(float(mean_gi[(n, b, a)] / meanp[(n, b)]), 2)
+                for a in ("SLSQPX", "PSOSLSQPX") for n in (16, 36) for b in (6030, 30030)}
+    lo, hi = min(ratios_m.values()), max(ratios_m.values())
+    _claim(out, f"{beyond}: gradient paragraph (~l. 200)", "exact-gradient timings per run vs. PSO-VNS (ratio of mean "
+           "times, the basis of sup:775; PSO-VNS IEA37 records mpce_iea16p/36p of the repository)", "about 3--6 times",
+           f"means: {lo:.1f}--{hi:.1f} {ratios_m}; medians: {min(ratios.values()):.1f}--{max(ratios.values()):.1f}",
+           2.5 <= lo and hi <= 6.5, "different batches / machines; the supplement (tab:S-time text) says the PSO-VNS IEA37 "
+                                  "records belong to the missing archive, but they are in analysis/mpce_iea16p_s0of1.csv "
+                                  "and mpce_iea36p_s0of1.csv (and the supplement itself uses them at l. 775)")
+    # ---- gradient accounting
+    g6 = gr[gr.Budget == 6030]
+    for a in ("SLSQPX", "PSOSLSQPX"):
+        for n in (16, 36):
+            x = gr[(gr.Algorithm == a) & (gr.Turbines == n)]
+            ok = ((x.FunCalls + x.CG * x.GradCalls + x.Unused) == x.Budget).all()
+            _claim(out, f"{sup}: rev-grad", f"{a} {n}T: FunCalls + c_g GradCalls + Unused == Budget (all runs)", "yes",
+                   str(bool(ok)), bool(ok))
+    sx = g6[g6.Algorithm == "SLSQPX"]
+    fm = sx.groupby("Turbines").FunCalls.mean(); gm = sx.groupby("Turbines").GradCalls.mean()
+    _claim(out, f"{sup}:771", "exact-gradient MS-SLSQP at 6,030: mean objective / gradient evaluations (16, 36 turbines)",
+           "1,667 and 1,647; 1,454 and 1,461", f"{fm[16]:.1f} and {fm[36]:.1f}; {gm[16]:.1f} and {gm[36]:.1f}",
+           (round(fm[16]), round(fm[36]), round(gm[16]), round(gm[36])) == (1667, 1647, 1454, 1461))
+    mx = (sx.FunCalls + 19 * sx.GradCalls).groupby(sx.Turbines).max()
+    mx20 = (sx.FunCalls + 20 * sx.GradCalls).groupby(sx.Turbines).max()
+    _claim(out, f"{sup}:771", "max over the 6,030 exact-gradient MS-SLSQP runs of FunCalls + 19 GradCalls (16, 36)",
+           "29,486 and 29,550 (< 30,030); fits for any c_g <= 19", f"{mx[16]} and {mx[36]} (c_g = 20: {mx20[16]} and {mx20[36]})",
+           (int(mx[16]), int(mx[36])) == (29486, 29550) and mx.max() <= 30030)
+    sh = (sx.CG * sx.GradCalls / sx.Budget * 100).groupby(sx.Turbines).mean()
+    sh30 = gr[(gr.Algorithm == "SLSQPX") & (gr.Budget == 30030)]
+    sh30 = (sh30.CG * sh30.GradCalls / sh30.Budget * 100).groupby(sh30.Turbines).mean()
+    _claim(out, f"{sup}:771", "share of the budget used by gradients, exact-gradient MS-SLSQP", "72--73%",
+           f"6,030: {sh[16]:.1f} / {sh[36]:.1f}; 30,030: {sh30[16]:.1f} / {sh30[36]:.1f}",
+           all(71.5 <= v < 73.5 for v in list(sh) + list(sh30)))
+    # ---- SD ranges (sup:773)
+    sds = gi[gi.Feasible.astype(str).str.lower().isin(["true", "1"])].groupby(["Algorithm", "Turbines", "Budget"]).Objective.std()
+    gsd = [sds[(a, n, b)] for a in ("SLSQPX", "PSOSLSQPX") for n in (16, 36) for b in (6030, 30030)]
+    pvf = pv[pv.Feasible.astype(str).str.lower().isin(["true", "1"])].groupby(["Turbines", "Budget"]).Objective.std()
+    _claim(out, f"{sup}:773", "SD over seeds: exact-gradient methods vs. PSO-VNS (MWh)", "1,801--6,101 against 4,587--19,268",
+           f"{min(gsd):.0f}--{max(gsd):.0f} against {pvf.min():.0f}--{pvf.max():.0f}",
+           (round(min(gsd)), round(max(gsd)), round(pvf.min()), round(pvf.max())) == (1801, 6101, 4587, 19268))
+    # ---- all-run paired outcome in the spacing study (tab:S-allrun-spacing)
+    sp["F"] = sp.Feasible.astype(str).str.lower().isin(["true", "1"])
+    key = ["Dataset", "Radius", "Turbines", "Seed", "Spacing"]
+    typed_ar = {"PSOC": ("100.0", "178/0/122", "0.593", "80.0", "169/30/101", "0.613"),
+                "SSABV": ("100.0", "236/0/64", "0.787", "80.7", "185/22/93", "0.653"),
+                "SSA": ("91.3", "285/0/15", "0.950", "58.7", "251/28/21", "0.883"),
+                "LXSSA": ("79.3", "293/0/7", "0.977", "52.0", "261/30/9", "0.920"),
+                "DE": ("23.3", "294/0/6", "0.980", "10.0", "264/30/6", "0.930"),
+                "BVNS": ("99.3", "251/0/49", "0.837", "82.0", "186/24/90", "0.660"),
+                "SLSQP": ("100.0", "238/0/62", "0.793", "95.0", "171/6/123", "0.580"),
+                "RSDVNS": ("100.0", "232/0/68", "0.773", "78.0", "212/20/68", "0.740"),
+                ("SSABV", "RSDVNS"): ("--", "144/0/156", "0.480", "--", "143/44/113", "0.550")}
+    for comp, t in typed_ar.items():
+        first, second = (comp if isinstance(comp, tuple) else ("PSOBV", comp))
+        rec = []
+        for spc in ("5D", "6D"):
+            A = sp[(sp.Algorithm == first) & (sp.Spacing == spc)].set_index(key)
+            B = sp[(sp.Algorithm == second) & (sp.Spacing == spc)].set_index(key)
+            j = A.join(B, lsuffix="_a", rsuffix="_b", how="inner")
+            w = ((j.F_a & ~j.F_b) | (j.F_a & j.F_b & (j.Objective_a > j.Objective_b + 1e-9))).sum()
+            l_ = ((~j.F_a & j.F_b) | (j.F_a & j.F_b & (j.Objective_b > j.Objective_a + 1e-9))).sum()
+            tt = len(j) - w - l_
+            feas = "--" if isinstance(comp, tuple) else f"{100 * B.F.mean():.1f}"
+            rec += [feas, f"{w}/{tt}/{l_}", f"{(w + tt / 2) / len(j):.3f}"]
+        _claim(out, f"{sup}: tab:S-allrun-spacing", f"{first} vs {second}: Feas. / W/T/L / score at 5D and 6D",
+               " | ".join(t), " | ".join(rec), tuple(rec) == t, "bootstrap CIs not recomputed (seed not stored)")
+    # ---- Lillgrund numbers from the records
+    lgf = lg[lg.Feasible.astype(str).str.lower().isin(["true", "1"])]
+    b30 = lgf[(lgf.Budget == 30030) & (lgf.Algorithm == "PSOBV")]
+    import rev2_site_model as LGM
+    inst = LGM.aep_gwh(LGM.site(16)[0])
+    mxo = b30.Objective.max()
+    _claim(out, f"{sup}: Lillgrund", "best PSO-VNS run at 30,030 exceeds installed block: AEP, % more",
+           "116.16 GWh/yr, 0.05% more", f"{mxo:.2f}, {100 * (mxo / inst - 1):.2f}% (installed {inst:.2f}); runs above installed: "
+           f"6,030 {int((lgf[lgf.Budget == 6030].Objective > inst).sum())}, 30,030 {int((lgf[lgf.Budget == 30030].Objective > inst).sum())}",
+           f"{mxo:.2f}" == "116.16" and f"{100 * (mxo / inst - 1):.2f}" == "0.05")
+    ms = b30.MinSpacing / 93.0
+    _claim(out, f"{sup}: Lillgrund", "minimum spacing of the 30 PSO-VNS layouts at 30,030", "3.00D--3.08D",
+           f"{ms.min():.2f}D--{ms.max():.2f}D (feasible: {len(b30)})", (f"{ms.min():.2f}", f"{ms.max():.2f}") == ("3.00", "3.08"))
+    # ---- mean wall-clock times per run on IEA37 (sup:775)
+    fdm = pd.concat([pd.read_csv(os.path.join(HERE, f), usecols=lambda c: c not in ("Coordinates", "Curve"))
+                     for f in ("mpce_iea16_s0of1.csv", "mpce_iea36_s0of1.csv")], ignore_index=True)
+    fdm = fdm[(fdm.Algorithm == "SLSQP") & (fdm.Init == "random")]
+    order = [(16, 6030), (16, 30030), (36, 6030), (36, 30030)]
+    mg = gr.groupby(["Algorithm", "Turbines", "Budget"]).Seconds.mean()
+    mfd = fdm.groupby(["Turbines", "Budget"]).Seconds.mean()
+    mpv = pv.groupby(["Turbines", "Budget"]).Seconds.mean()
+    for lab, ser, t in (("exact-gradient MS-SLSQP", lambda k: mg[("SLSQPX",) + k], "4.3, 34.7, 16.0, 85.4"),
+                        ("PSO-SLSQP", lambda k: mg[("PSOSLSQPX",) + k], "5.8, 23.7, 12.4, 56.6"),
+                        ("MS-SLSQP forward differences", lambda k: mfd[k], "11.2, 56.8, 15.7, 78.8"),
+                        ("PSO-VNS", lambda k: mpv[k], "1.3, 5.7, 3.2, 17.1")):
+        rec = ", ".join(f"{ser(k):.1f}" for k in order)
+        _claim(out, f"{sup}:775", f"mean s per run on IEA37 (16T 6,030 / 30,030; 36T 6,030 / 30,030), {lab}", t, rec, rec == t,
+               "repository records mpce_iea16/36(p) for MS-SLSQP (FD) and PSO-VNS")
+    # ---- IEA37 gaps to the best published layouts (strict 418,924.4 / 863,676.3; projected 421,451.1 / 882,382.8)
+    pub = {("s", 16): 418924.4, ("s", 36): 863676.3, ("p", 16): 421451.1, ("p", 36): 882382.8}
+    gg = lambda a, k: 100 * (1 - a / pub[k])
+    _claim(out, f"{sup}:616 / {sup}:773", "GA best 36T at 30,030 (836,526.4): gap strict / projected", "3.14% / 5.20%",
+           f"{gg(836526.4, ('s', 36)):.2f}% / {gg(836526.4, ('p', 36)):.2f}%",
+           (f"{gg(836526.4, ('s', 36)):.2f}", f"{gg(836526.4, ('p', 36)):.2f}") == ("3.14", "5.20"))
+    rec = (f"{gg(418757.4, ('s', 16)):.2f}", f"{gg(847780.3, ('s', 36)):.2f}", f"{gg(418757.4, ('p', 16)):.2f}", f"{gg(847780.3, ('p', 36)):.2f}")
+    _claim(out, f"{sup}:773 / {beyond}", "best PSO-SLSQP 30,030 (418,757.4; 847,780.3): gap strict 16/36, projected 16/36",
+           "0.04 / 1.84; 0.64 / 3.92", " / ".join(rec), rec == ("0.04", "1.84", "0.64", "3.92"))
+    # ---- Lillgrund: jointly feasible PSO-VNS / PSO seeds at 30,030 (sup:849) and McNemar p values
+    for b, tp in ((6030, "1.5e-5"), (30030, "9.8e-4")):
+        A_ = lg[(lg.Budget == b) & (lg.Algorithm == "PSOBV")].set_index("Seed")
+        B_ = lg[(lg.Budget == b) & (lg.Algorithm == "PSOC")].set_index("Seed")
+        fa = A_.Feasible.astype(str).str.lower().isin(["true", "1"]); fb = B_.Feasible.astype(str).str.lower().isin(["true", "1"])
+        n10, n01 = int((fa & ~fb).sum()), int((~fa & fb).sum())
+        pm = min(1.0, 2 * sum(math.comb(n10 + n01, k) for k in range(min(n10, n01) + 1)) / 2 ** (n10 + n01))
+        _claim(out, f"{sup}:849", f"Lillgrund {b}: exact McNemar p (PSO-VNS vs PSO feasibility)", tp,
+               f"{pm:.1e} (discordant {n10}/{n01})", f"{pm:.1e}".replace("e-0", "e-") == tp)
+        if b == 30030:
+            j = fa & fb
+            hi = int((A_.Objective[j] > B_.Objective[j]).sum())
+            _claim(out, f"{sup}:849", "Lillgrund 30,030, jointly feasible seeds: n, PSO-VNS higher, means",
+                   "19; 17; 114.60 vs 113.62", f"{int(j.sum())}; {hi}; {A_.Objective[j].mean():.2f} vs {B_.Objective[j].mean():.2f}",
+                   (int(j.sum()), hi, f"{A_.Objective[j].mean():.2f}", f"{B_.Objective[j].mean():.2f}") == (19, 17, "114.60", "113.62"))
+    # ---- Lillgrund parallelogram (sup:841): area, perimeter, Oler bound at 4D = 372 m
+    res_g = []
+    for fac, nm in ((1 / LGM.ENLARGE, "exact corner parallelogram"), (1.0, "boundary used (enlarged by 0.2%)")):
+        poly = np.asarray(LGM.site(16)[1]) * fac
+        xs, ys = poly[:, 0], poly[:, 1]
+        area = 0.5 * abs(np.dot(xs, np.roll(ys, 1)) - np.dot(ys, np.roll(xs, 1)))
+        per = np.sqrt((np.diff(np.r_[xs, xs[:1]]) ** 2 + np.diff(np.r_[ys, ys[:1]]) ** 2)).sum()
+        d4 = 4 * 93.0
+        oler = 2 * area / (np.sqrt(3) * d4 ** 2) + per / (2 * d4) + 1
+        res_g.append((nm, f"{area / 1e6:.3f}", f"{per / 1e3:.2f}", f"{oler:.2f}"))
+    _claim(out, f"{sup}:841", "Lillgrund parallelogram: area (km2), perimeter (km), Oler bound for 4D=372 m",
+           "1.081; 4.24; 15.7", "; ".join(f"{a}: {b}, {c}, {d}" for a, b, c, d in res_g),
+           any(r[1] == "1.081" for r in res_g), "conclusion (< 16 turbines) holds for both polygons")
+    # ---- compact main-text equivalence table (tab:equiv-main) vs. the generated tab:X-equiv-levels and Bayes macros
+    eqm = _table_by_label(open(os.path.join(R2, "optA/sw/06_results.tex"), encoding="utf-8").read(), "tab:equiv-main")
+    lev = _table_by_label(open(os.path.join(HERE, "mpce_supp_inference.tex"), encoding="utf-8").read(), "tab:X-equiv-levels")
+    MR_ = load_macros(sorted(glob.glob(os.path.join(HERE, "mpce_numbers*.tex"))))
+    rope = {"PSO-VNS vs.\\ PSO": "NBayPSOVNSvsPSORope", "SSA-VNS vs.\\ RSD-VNS": "NBaySSAVNSvsRSDVNSRope",
+            "SSA-VNS vs.\\ RS-VNS": "NBaySSAVNSvsRSVNSRope", "RSD-VNS vs.\\ RS-VNS": "NBayRSDVNSvsRSVNSRope",
+            "LX-SSA-VNS vs.\\ RSD-VNS": "NBayLXSSAVNSvsRSDVNSRope", "PSO-VNS vs.\\ RSD-VNS": "NBayPSOVNSvsRSDVNSRope"}
+    for row in eqm.split("\n"):
+        pair = row.split("&")[0].strip()
+        if pair not in rope:
+            continue
+        ref = [r for r in lev.split("\n") if r.split("&")[0].strip() == pair][0].split("&")
+        # generated: n, dL, seed CI, m, Eq, case CI, m, p, Eq, CR2 CI, ...
+        want = _nums("&".join([ref[2], ref[3], ref[6], ref[10]])) + _nums(expand("\\" + rope[pair], MR_))
+        got = _nums(row)
+        _claim(out, "optA/sw/06_results.tex: tab:equiv-main", f"{pair}: dL, seed / case / cluster 90% CI, P_rope",
+               " ".join(got), " ".join(want), got == want, "tab:X-equiv-levels (analysis/mpce_supp_inference.tex) and \\NBay...Rope")
+    # ---- revision record counts (design table and Section S-archive)
+    cnt = {e: len(_rev2(e)) for e in ("ga", "gahr", "gaiea", "grad", "laplace", "spacing", "lg16", "lg16b")}
+    _claim(out, f"{sup}: S-archive / tab:design", "revision record counts", "GA 2,040, GA HR 60, GA IEA37 120, grad 240, "
+           "Laplace 2,160, spacing 6,480, Lillgrund 270 + 270 (11,640)", f"{cnt} total {sum(cnt.values())}",
+           sum(cnt.values()) == 11640 and cnt["spacing"] == 6480 and cnt["laplace"] == 2160)
+    # ---- equal-cluster table (tab:S-eqclus): case-weighted and equal-cluster means from the per-run data
+    try:
+        from scipy.stats import t as t_dist
+        import mpce_inference_extra as MX
+        G = MX.load(HERE)
+        G = G[G.Feasible]
+        cm = G.groupby(["Algorithm"] + MX.CASE).LossPct.mean()
+        nf = G.groupby(["Algorithm"] + MX.CASE).size()
+        typed_cl = {("PSOBV", "PSOC"): "0.064, 0.043, -0.008, -0.063, -0.031, -0.090",
+                    ("SSABV", "RSDVNS"): "-0.153, 0.016, 0.025, -0.013, 0.064, 0.137",
+                    ("SSABV", "RSVNS"): "-0.212, -0.055, -0.018, -0.119, -0.064, -0.008",
+                    ("RSDVNS", "RSVNS"): "-0.059, -0.071, -0.042, -0.106, -0.128, -0.145",
+                    ("LXBV", "RSDVNS"): "-0.067, 0.041, 0.059, 0.053, 0.152, 0.222",
+                    ("PSOBV", "RSDVNS"): "-0.621, -0.233, -0.131, -0.454, -0.315, -0.235"}
+        typed_eq = {("PSOBV", "PSOC"): ("-0.018", "-0.014", "[-0.063, 0.035]"),
+                    ("SSABV", "RSDVNS"): ("+0.024", "+0.012", "[-0.067, 0.092]"),
+                    ("SSABV", "RSVNS"): ("-0.068", "-0.079", "[-0.142, -0.017]"),
+                    ("RSDVNS", "RSVNS"): ("-0.093", "-0.092", "[-0.125, -0.058]"),
+                    ("LXBV", "RSDVNS"): ("+0.087", "+0.077", "[-0.005, 0.158]"),
+                    ("PSOBV", "RSDVNS"): ("-0.306", "-0.332", "[-0.478, -0.185]")}
+        for (a, b), t in typed_eq.items():
+            d = (cm[a] - cm[b])
+            q = (nf[a].reindex(d.index).fillna(0) >= 15) & (nf[b].reindex(d.index).fillna(0) >= 15)
+            d = d[q]
+            clm = d.groupby(level=[0, 1]).mean()
+            m_eq = clm.mean(); se = clm.std(ddof=1) / np.sqrt(len(clm)); tc = t_dist.ppf(0.95, len(clm) - 1)
+            rec = (f"{d.mean():+.3f}".replace("-0.", "-0.") if a != "PSOBV" or b != "PSOC" else f"{d.mean():.3f}",
+                   f"{m_eq:+.3f}" if t[1].startswith("+") else f"{m_eq:.3f}", f"[{m_eq - tc * se:.3f}, {m_eq + tc * se:.3f}]")
+            _claim(out, f"{sup}: tab:S-eqclus", f"{a} - {b}: case-weighted mean, equal-cluster mean, t5 90% CI",
+                   " | ".join(t), " | ".join(rec), tuple(x.replace("+", "") for x in rec) == tuple(x.replace("+", "") for x in t),
+                   f"n cases = {len(d)}")
+            rc = ", ".join(f"{v:.3f}" for v in clm.values)
+            _claim(out, f"{sup}: tab:S-eqclus", f"{a} - {b}: six cluster means (DS I 500/750/1000, DS II 500/750/1000)",
+                   typed_cl[(a, b)], rc + "  [unrounded: " + ", ".join(f"{v:.5f}" for v in clm.values) + "]",
+                   rc == typed_cl[(a, b)])
+    except Exception as e:                                   # pragma: no cover
+        _claim(out, f"{sup}: tab:S-eqclus", "equal-cluster table", "", f"not recomputed: {e!r}", False)
+    return out
+
+
 # ------------------------------------------------------------------------------------------------ main
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--rev2-out", default="/tmp/rev3_numbers_rev2out")
+    ap.add_argument("--rev2-out", default=None, help="directory with (or for) the regenerated rev2_summary.json / "
+                    "rev2_tables.tex; default: a new temporary directory")
     ap.add_argument("--json", default=os.path.join(HERE, "rev3_numbers_audit.json"))
     a = ap.parse_args(argv)
+    if a.rev2_out is None:
+        import tempfile
+        a.rev2_out = tempfile.mkdtemp(prefix="rev3_numbers_rev2out_")
     if not os.path.exists(os.path.join(a.rev2_out, "rev2_summary.json")):
         os.makedirs(a.rev2_out, exist_ok=True)
         subprocess.run([sys.executable, os.path.join(HERE, "rev2_analysis.py"), "--out-dir", a.rev2_out], check=True)
@@ -687,6 +1111,7 @@ def main(argv=None):
     print("part 1:", dict(c1))
 
     pools = build_pools(a.rev2_out)
+    INLINED[:] = inlined_tables()
     p2_align, p2_nums = {}, []
     for rel in MAIN_FILES + SUPP_FILES:
         al = align(rel, M_repo, M_rev2)
@@ -699,6 +1124,13 @@ def main(argv=None):
     cn = Counter((part_of(r), r["cls"]) for r in p2_nums)
     print("part 2 numbers:", dict(cn))
 
+    p2t = INLINED
+    print("part 2 inlined tables:", [(r["source"], r["identical_numbers"]) for r in p2t])
+    r2tabs, r2prose = rev2_tables_and_sections(a.rev2_out)
+    print("part 2 rev2 tables:", [(r["supplement_table"], r["identical_numbers"]) for r in r2tabs])
+    print("part 2 rev2 prose:", Counter(r["found"] for r in r2prose))
+    p2c = targeted()
+    print("part 2c targeted:", Counter(r["status"] for r in p2c))
     p3, cost = part3()
     print("part 3 per-evaluation times:", json.dumps({k: cost[k] for k in ("median_ms", "mean_ms", "slsqp_over_pso_median",
                                                                            "slsqp_over_pso_mean")}, indent=0))
@@ -710,6 +1142,10 @@ def main(argv=None):
         part1_check_comments=dict(counts=dict(c1), items=p1),
         part2_alignment=dict(counts=dict(ca), items={k: v for k, v in p2_align.items()}),
         part2_numbers=dict(counts={f"{k[0]}:{k[1]}": v for k, v in sorted(cn.items())}, items=p2_nums),
+        part2_inlined_generated_tables=p2t,
+        part2_rev2_tables_vs_regenerated=r2tabs,
+        part2_rev2_supplement_prose=r2prose,
+        part2c_targeted_recomputations=p2c,
         part3_hand_edits=dict(changed_lines=p3, cost_per_eval_recomputed=cost),
     )
     json.dump(out, open(a.json, "w"), indent=1, default=str)

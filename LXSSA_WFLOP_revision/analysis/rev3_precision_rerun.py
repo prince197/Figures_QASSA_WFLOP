@@ -320,53 +320,163 @@ def plan():
 
 
 # ------------------------------------------------------------------ collect
-def collect():
+DELTA = 1e-8          # margin (m) required of a strict-label slack when the rerun is reproduced only to float noise
+
+
+def _category(g):
+    same = g.RoundedCoordsMatch & g.CallsMatch & (g.CurveMatch != False) & (g.RerunLabel == g.StoredLabel) & g.CaptureVerified
+    bit = same & g.BitIdentical & g.MinSpacingMatch
+    rel = (g.ObjectiveRerun - g.ObjectiveStored).abs() / g.ObjectiveStored.abs()
+    noise = same & ~bit & (rel <= 1e-9) & ((g.MinSpacingFull - g.MinSpacingStoredCol).abs() <= 1e-6)
+    return np.where(bit, "bit", np.where(noise, "noise", "diverged"))
+
+
+def load_results():
     rows = []
     for p in sorted(glob.glob(os.path.join(RESDIR, "*.jsonl"))):
         for line in open(p):
             rows.append(json.loads(line))
     res = pd.DataFrame(rows)
-    err = res[res.get("Error").notna()] if "Error" in res else res.iloc[:0]
-    res = res[res.get("Error").isna()] if "Error" in res else res
-    res = res.drop_duplicates(["File", "Row"], keep="last")
+    if "Error" not in res:
+        res["Error"] = np.nan
+    err = res[res.Error.notna()]
+    res = res[res.Error.isna()].drop_duplicates(["File", "Row"], keep="last").copy()
     r = audit_records().set_index(["File", "Row"])
-    res["Study"] = [r.loc[(f, i), "Study"] for f, i in zip(res.File, res.Row)]
-    res["Class"] = [r.loc[(f, i), "Class"] for f, i in zip(res.File, res.Row)]
-    res["ReplayDiffRounded"] = [r.loc[(f, i), "ReplayDiff"] for f, i in zip(res.File, res.Row)]
+    idx = list(zip(res.File, res.Row))
+    for c, cc in (("Study", "Study"), ("Class", "Class"), ("ReplayDiffRounded", "ReplayDiff"),
+                  ("MinSpacingStoredCol", "MinSpacingStored"), ("Ideal", "Ideal")):
+        res[c] = r.loc[idx, cc].values
     res["LabelChanged"] = res.StrictLabel != res.StoredLabel
     res["ReplayDiffFull"] = res.ObjectiveReplayFull - res.ObjectiveStored
-    cols = ["File", "Row", "Study", "Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init", "Spacing",
-            "SMin", "Class", "CoordinatesFull", "MinSpacingFull", "SpacingSlackFull", "BoundarySlackFull",
-            "StrictLabel", "StoredLabel", "RerunLabel", "LabelChanged", "ObjectiveReplayFull", "ObjectiveStored",
-            "ObjectiveRerun", "BitIdentical", "ReplayBitIdentical", "ReplayDiffFull", "ReplayDiffRounded",
-            "CallsMatch", "MinSpacingMatch", "RoundedCoordsMatch", "CurveMatch", "CaptureVerified", "AllMatch",
-            "HRModel", "SecondsStored", "SecondsRerun"]
+    res["Reproduction"] = _category(res)
+    m_ok = np.minimum(res.SpacingSlackFull, res.BoundarySlackFull)            # > 0: strictly feasible by m_ok
+    m_bad = -np.minimum(res.SpacingSlackFull, res.BoundarySlackFull)         # > 0: infeasible by m_bad
+    res["Margin"] = np.where(res.StrictLabel, m_ok, m_bad)
+    res["LabelDecided"] = (res.Reproduction == "bit") | ((res.Reproduction == "noise") & (res.Margin > DELTA))
+    return res, err
+
+
+COLS = ["File", "Row", "Study", "Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init", "Spacing",
+        "SMin", "Class", "CoordinatesFull", "MinSpacingFull", "SpacingSlackFull", "BoundarySlackFull", "Margin",
+        "StrictLabel", "StoredLabel", "RerunLabel", "LabelChanged", "LabelDecided", "ObjectiveReplayFull",
+        "ObjectiveStored", "ObjectiveRerun", "BitIdentical", "Reproduction", "ReplayBitIdentical", "ReplayDiffFull",
+        "ReplayDiffRounded", "CallsMatch", "MinSpacingMatch", "RoundedCoordsMatch", "CurveMatch", "CaptureVerified",
+        "AllMatch", "HRModel", "SecondsStored", "SecondsRerun"]
+
+
+def collect():
+    res, err = load_results()
     summ = {}
     for st, g in res.groupby("Study"):
         g = g.sort_values(["File", "Row"])
-        g[cols].to_csv(os.path.join(HERE, f"rev3_fullprec_{st}.csv"), index=False, float_format="%.17g")
-        summ[st] = dict(reruns=int(len(g)), class_iii_reruns=int((g.Class != "i").sum()),
-                        bit_identical=int(g.BitIdentical.sum()), all_match=int(g.AllMatch.sum()),
-                        capture_verified=int(g.CaptureVerified.sum()),
-                        strict_confirmed=int((~g.LabelChanged).sum()), strict_changed=int(g.LabelChanged.sum()),
-                        changed=[dict(File=a, Row=int(b), Algorithm=c, Seed=int(d), Stored=bool(e), Strict=bool(h),
-                                      SpacingSlack=float(i), BoundarySlack=float(j))
-                                 for a, b, c, d, e, h, i, j in g[g.LabelChanged][["File", "Row", "Algorithm", "Seed",
-                                     "StoredLabel", "StrictLabel", "SpacingSlackFull", "BoundarySlackFull"]].itertuples(index=False)],
+        g[COLS].to_csv(os.path.join(HERE, f"rev3_fullprec_{st}.csv"), index=False, float_format="%.17g")
+        ch = g[g.LabelChanged]
+        summ[st] = dict(reruns=int(len(g)), class_ii_iii_reruns=int((g.Class != "i").sum()),
+                        bit_identical=int((g.Reproduction == "bit").sum()),
+                        float_noise=int((g.Reproduction == "noise").sum()),
+                        diverged=int((g.Reproduction == "diverged").sum()),
+                        objective_bit_identical=int(g.BitIdentical.sum()),
+                        label_decided=int(g.LabelDecided.sum()),
+                        strict_confirmed=int((g.LabelDecided & ~g.LabelChanged).sum()),
+                        strict_changed=int((g.LabelDecided & g.LabelChanged).sum()),
+                        strict_changed_undecided=int((~g.LabelDecided & g.LabelChanged).sum()),
+                        changed=[dict(File=a, Row=int(b), Algorithm=c, Seed=int(d), Stored=bool(e), Strict=bool(f),
+                                      SpacingSlack=float(h), BoundarySlack=float(i), Reproduction=j)
+                                 for a, b, c, d, e, f, h, i, j in ch[["File", "Row", "Algorithm", "Seed", "StoredLabel",
+                                     "StrictLabel", "SpacingSlackFull", "BoundarySlackFull", "Reproduction"]].itertuples(index=False)],
+                        min_margin=float(g.Margin.min()),
+                        margins_below_1e_8=int((g.Margin <= DELTA).sum()),
                         replay_full_bit_identical=int(g.ReplayBitIdentical.sum()),
                         max_abs_replay_diff_full=float(g.ReplayDiffFull.abs().max()),
-                        min_boundary_slack_full=float(g.BoundarySlackFull.min()),
-                        min_spacing_slack_full=float(g.SpacingSlackFull.min()),
+                        max_abs_replay_diff_full_pp=float((100 * g.ReplayDiffFull / g.Ideal).abs().max()),
                         seconds_rerun=float(g.SecondsRerun.sum()), seconds_stored=float(g.SecondsStored.sum()),
-                        mismatches=[dict(File=a, Row=int(b)) for a, b in g[~g.AllMatch][["File", "Row"]].itertuples(index=False)])
-    out = dict(studies=summ, errors=[dict(File=a, Row=int(b), Error=c) for a, b, c in
-                                     err[["File", "Row", "Error"]].itertuples(index=False)] if len(err) else [])
+                        not_bit_identical=[dict(File=a, Row=int(b), Algorithm=c, Seed=int(d), Reproduction=e,
+                                                RelObjDiff=float((f - h) / abs(h)))
+                                           for a, b, c, d, e, f, h in g[g.Reproduction != "bit"][["File", "Row", "Algorithm",
+                                               "Seed", "Reproduction", "ObjectiveRerun", "ObjectiveStored"]].itertuples(index=False)])
+    out = dict(delta_m=DELTA, studies=summ,
+               errors=[dict(File=a, Row=int(b), Error=c) for a, b, c in err[["File", "Row", "Error"]].itertuples(index=False)])
     with open(os.path.join(HERE, "rev3_precision_rerun_summary.json"), "w") as fh:
         json.dump(out, fh, indent=1)
     for st, d in summ.items():
-        print(f"{st:16s} reruns {d['reruns']:5d} bit-identical {d['bit_identical']:5d} all-match {d['all_match']:5d} "
-              f"strict changed {d['strict_changed']:3d} rerun s {d['seconds_rerun']:8.0f} stored s {d['seconds_stored']:8.0f}")
+        print(f"{st:16s} reruns {d['reruns']:5d} bit {d['bit_identical']:5d} noise {d['float_noise']:4d} diverged "
+              f"{d['diverged']:4d} decided {d['label_decided']:5d} changed {d['strict_changed']:3d} "
+              f"rerun s {d['seconds_rerun']:8.0f} stored s {d['seconds_stored']:8.0f}")
     print("errors:", len(out["errors"]))
+    return res
+
+
+# ------------------------------------------------------------------ LaTeX table
+SHORT = {
+    "fresh_grid": "Benchmark, 6 methods$^a$", "fresh_bgrid": "Benchmark, LX-SSA-VNS, SSA-VNS",
+    "fresh_vgrid": "Benchmark, VNS", "fresh_bsplit": "Split, LX-SSA-VNS", "fresh_hgrid": "Benchmark, LX-VNS$^s$",
+    "fresh_hsplit": "Split, LX-VNS$^s$", "fresh_hr": "Horns Rev 1, earlier$^{s,h}$",
+    "mpce_psobv": "Benchmark, PSO-VNS$^h$", "mpce_psoc": "Benchmark, PSO", "mpce_slsqp": "Benchmark, MS-SLSQP",
+    "mpce_rsvns": "Benchmark, RS-VNS", "mpce_rsdisc": "Benchmark, RSD-VNS", "mpce_psosplit": "Split, PSO-VNS",
+    "mpce_omega90": "Split, PSO-VNS $\\omega=0.9$", "mpce_csweep": "PSO coefficient sweep",
+    "mpce_feas": "Feasible init., 8 methods$^h$", "mpce_feasp": "Feasible init., PSO-VNS$^h$",
+    "mpce_b30k": "30,030 eval., 9 methods$^h$", "mpce_b30kp": "30,030 eval., PSO-VNS$^h$",
+    "mpce_b120k": "120,030 eval., 9 methods$^h$", "mpce_b120kp": "120,030 eval., PSO-VNS$^h$",
+    "mpce_hr16new": "Horns Rev 1, PSO, RS-VNS$^{s,h}$", "mpce_hrfix": "Horns Rev 1 (all budgets)",
+    "mpce_iea": "IEA37, 10 methods", "rev2_ga": "GA, benchmark", "rev2_gahr": "GA, Horns Rev 1",
+    "rev2_gaiea": "GA, IEA37", "rev2_grad": "Exact gradients, IEA37", "rev2_laplace": "Laplace ablation",
+    "rev2_spacing": "Spacing $5D$/$6D$", "rev2_lg16": "Lillgrund, 6,030 eval.", "rev2_lg16b": "Lillgrund, 30,030 eval.",
+}
+
+
+def table():
+    A = json.load(open(os.path.join(HERE, "rev3_precision_audit.json")))["studies"]
+    res, _ = load_results()
+    lines = []
+    tot = np.zeros(11, dtype=float)
+    mx_all = 0.0
+    for st, d in A.items():
+        if d["role"] == "duplicate":
+            continue
+        g = res[res.Study == st]
+        g3 = g[g.Class != "i"]
+        nb = int((g3.Reproduction == "bit").sum()); nn = int((g3.Reproduction == "noise").sum())
+        conf = int((g3.LabelDecided & ~g3.LabelChanged).sum()); chg = int((g3.LabelDecided & g3.LabelChanged).sum())
+        open_ = d["class_ii"] + d["class_iii"] - conf - chg
+        v = [d["records"], d["labelled_feasible"], d["class_i"], d["class_ii"], d["class_iii"], len(g3), nb, nn, conf,
+             chg, open_]
+        tot += np.array(v, dtype=float)
+        mx = d["max_abs_replay_diff_pp"]; mx_all = max(mx_all, mx)
+        lines.append(SHORT[st] + " & " + " & ".join(f"{int(x):,}" for x in v) + f" & {mx:.3f} \\\\")
+    body = "\n".join(lines)
+    tex = r"""\begin{table}[!htbp]
+\centering
+\caption{Verification of the strict feasibility labels ($10^{-6}$~m) of all stored run records with coordinates
+(original and revision studies; all cases, methods, seeds 1--30 or 1--10 and budgets as stored).
+Class (i): label confirmed from the rounded coordinates with slack beyond the rounding bound
+($2\sqrt2\,\varepsilon$ for spacing, $\sqrt2\,\varepsilon$ for the boundary, $\varepsilon=0.5\cdot10^{-d}$~m for $d$
+stored decimals); (ii): contradicted beyond the bound; (iii): undecidable within the bound. Rerun: class (ii)/(iii)
+records rerun through the unchanged drivers with a 17-digit writer; bit: objective, minimum spacing, evaluations,
+rounded coordinates and convergence curve identical to the stored record; noise: identical except for float noise
+($\le10^{-9}$ relative in the objective). Strict: label decided from the full-precision layout (bit-identical
+rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open: class (ii)/(iii) labels not yet
+decided (reruns pending, see \texttt{rev3\_precision\_plan.json}). Replay: maximum $|$objective recomputed from
+the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
+$^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Superseded, not used in the manuscript.
+$^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
+\label{tab:S-r3-precision}
+\scriptsize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lrrrrrrrrrrrr}
+\toprule
+& & & \multicolumn{3}{c}{Rounded coordinates} & \multicolumn{3}{c}{Reruns} & \multicolumn{2}{c}{Strict label} & & \\
+\cmidrule(lr){4-6}\cmidrule(lr){7-9}\cmidrule(lr){10-11}
+Study & Records & Feas. & (i) & (ii) & (iii) & Rerun & Bit & Noise & Conf. & Changed & Open & Replay (pp) \\
+\midrule
+""" + body + r"""
+\midrule
+Total & """ + " & ".join(f"{int(x):,}" for x in tot) + f" & {mx_all:.3f} \\\\" + r"""
+\bottomrule
+\end{tabular}
+\end{table}
+"""
+    with open(os.path.join(HERE, "rev3_precision_tables.tex"), "w") as fh:
+        fh.write(tex)
+    print(tex)
 
 
 if __name__ == "__main__":
@@ -381,6 +491,11 @@ if __name__ == "__main__":
     elif a.cmd == "run":
         st = a.arg[0]
         keys = study_keys(st, a.all_classes)
+        pf = os.path.join(HERE, "rev3_precision_plan.json")
+        if os.path.exists(pf) and not a.all_classes:            # cloud workers: the plan's remaining keys
+            pl = {d["study"]: d for d in json.load(open(pf))["studies"]}
+            if st in pl:
+                keys = [tuple(k) for k in pl[st]["remaining_keys"]]
         tag = st
         if len(a.arg) >= 3:
             sh, nsh = int(a.arg[1]), int(a.arg[2])
@@ -392,5 +507,7 @@ if __name__ == "__main__":
         plan()
     elif a.cmd == "collect":
         collect()
+    elif a.cmd == "table":
+        table()
     else:
         raise SystemExit(__doc__)

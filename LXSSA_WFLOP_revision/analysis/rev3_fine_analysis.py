@@ -100,7 +100,9 @@ def stored_runs():
     A = A[A.Algorithm.isin(METHODS)]
     m = D.merge(A[MR.KEY + ["Objective", "Feasible"]], on=MR.KEY, suffixes=("", "_paper"))
     cons = dict(n_matched=int(len(m)), n_methods_in_paper_loader=int(A.Algorithm.nunique()),
-                objective_equal=bool((m.Objective == m.Objective_paper).all()),
+                objective_max_rel_dev=float(((m.Objective - m.Objective_paper).abs() / m.Objective.abs()).max()),
+                objective_equal_within_2ulp=bool(np.allclose(m.Objective, m.Objective_paper, rtol=4.5e-16, atol=0)),
+                note_objective="the paper loader reads the CSVs with pandas' default float parser (can be off by 1 ulp)",
                 feasible_equal=bool((m.Feasible == m.Feasible_paper).all()))
     j1, i1 = [], []
     for ds, c, feas in zip(D.Dataset, D.Coordinates, D.Feasible):
@@ -266,34 +268,32 @@ def latex(summ, partial):
     for a in METHODS:
         g = summ["compare"]["direct_vs_reeval"]["gain_x_minus_y"].get(a) if summ.get("compare", {}).get("direct_vs_reeval") else None
         al = dr["allrun_vs_focus"].get(a) if dr and a != FOCUS else None
-        alr = rv["allrun_vs_focus"].get(a) if a != FOCUS else None
         cells = [LAB[a],
                  fnum(dr["feasible_pct"].get(a), 1, False) if dr else "--", rk(dr, a), ml(dr, a),
-                 "--" if not al else f"{al['score']:.3f} {fci(al['ci95'])}",
+                 "--" if not al else f"{al['score']:.3f} {fci(al['ci95'], 2)}",
                  fnum(rv["feasible_pct"].get(a), 1, False), rk(rv, a), ml(rv, a),
-                 "--" if not alr else f"{alr['score']:.3f}",
-                 "--" if not g else f"{fnum(g['mean_pp'])} {fci(g['ci90'])}"]
+                 "--" if not g else f"{fnum(g['mean_pp'])} {fci(g['ci90'], 2)}"]
         lines.append(" & ".join(cells) + " \\\\")
     lines.append("\\midrule")
-    lines.append("\\multicolumn{10}{l}{\\emph{PSO-VNS $-$ PSO}: arm & $n$ & $\\overline{\\Delta L}$ (pp) & 90\\% CI seed (Eq.) "
-                 "& 90\\% CI case (Eq.) & $p_W$} \\\\")
-    for key, lab in (("direct", "Direct 1$^\\circ$ optimization (seeds 31--60)"),
-                     ("reeval", "15$^\\circ$ layouts re-evaluated at 1$^\\circ$ (seeds 1--30)"),
-                     ("rec15", "15$^\\circ$ layouts, recorded 15$^\\circ$ objective (seeds 1--30)"),
-                     ("ctrl1", "15$^\\circ$ runs (seeds 31--60) re-evaluated at 1$^\\circ$")):
+    lines.append("\\emph{PSO-VNS $-$ PSO} & \\multicolumn{2}{c}{$n$} & $\\overline{\\Delta L}$ & 90\\% CI seed (Eq.) & "
+                 "\\multicolumn{3}{c}{90\\% CI case (Eq.)} & $p_W$ \\\\")
+    lines.append("\\midrule")
+    for key, lab in (("direct", "Direct 1$^\\circ$"), ("reeval", "Re-eval.\\ 1$^\\circ$"), ("rec15", "Recorded 15$^\\circ$"),
+                     ("ctrl1", "Control 1$^\\circ$")):
         blk = B.get(key)
         if not blk:
             continue
-        r = blk["contrast_psovns_pso"]
+        r = blk.get("contrast_psovns_pso")
         if not r or not r["n_cases"]:
-            lines.append(f"\\multicolumn{{4}}{{l}}{{{lab}}} & \\multicolumn{{6}}{{l}}{{no case in which both qualify}} \\\\")
+            lines.append(f"{lab} & \\multicolumn{{8}}{{l}}{{no case in which both qualify}} \\\\")
             continue
         sl, cl = r["seed_level"], r["case_level"]
         eqs = "" if not sl else (" (yes)" if sl["equivalent"] else " (no)")
         eqc = "" if not cl else (" (yes)" if cl["equivalent"] else " (no)")
-        lines.append(f"\\multicolumn{{4}}{{l}}{{{lab}}} & {r['n_cases']} & {fnum(r['mean_dloss_pp'])} & "
-                     f"\\multicolumn{{2}}{{l}}{{{fci(sl['ci90'] if sl else None)}{eqs}}} & "
-                     f"{fci(cl['ci90_mean_dloss_pp'] if cl else None)}{eqc} & {RA.fp(r['wilcoxon']['p'])} \\\\")
+        lines.append(f"{lab} & \\multicolumn{{2}}{{c}}{{{r['n_cases']}}} & {fnum(r['mean_dloss_pp'])} & "
+                     f"{fci(sl['ci90'] if sl else None)}{eqs} & "
+                     f"\\multicolumn{{3}}{{c}}{{{fci(cl['ci90_mean_dloss_pp'] if cl else None)}{eqc}}} & "
+                     f"{RA.fp(r['wilcoxon']['p'])} \\\\")
     cmp_ = summ.get("compare", {}).get("direct_vs_reeval")
     fr_d = dr["friedman"] if dr else None
     lead = ("leader (best average rank) with direct optimization: " + ", ".join(LAB[a] for a in dr.get("leader", [])) +
@@ -304,27 +304,30 @@ def latex(summ, partial):
     if fr_d and "chi2" in fr_d:
         frt = f" Friedman (direct arm): $\\chi^2_F={fr_d['chi2']:.1f}$, $p={RA.fp(fr_d['p']).strip('$')}$."
     head = ("& \\multicolumn{4}{c}{Direct 1$^\\circ$ optimization (seeds 31--60)} & "
-            "\\multicolumn{4}{c}{Re-evaluation of 15$^\\circ$ layouts (seeds 1--30)} & Direct $-$ re-eval. \\\\\n"
-            "\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}\\cmidrule(lr){10-10}\n"
-            "Method & Feas. & Rank & $\\bar L$ (\\%) & All-run vs.\\ PSO-VNS & Feas. & Rank & $\\bar L$ (\\%) & All-run & "
-            "$\\Delta\\bar L$ (pp) [90\\% CI]")
+            "\\multicolumn{3}{c}{Re-eval.\\ 1$^\\circ$ (seeds 1--30)} & Direct $-$ re-eval. \\\\\n"
+            "\\cmidrule(lr){2-5}\\cmidrule(lr){6-8}\\cmidrule(lr){9-9}\n"
+            "Method & Feas. & Rank & $\\bar L$ & All-run [95\\% CI] & Feas. & Rank & $\\bar L$ & "
+            "$\\Delta\\bar L$ [90\\% CI]")
     cap = ("Direct optimization with 1$^\\circ$ direction bins versus 1$^\\circ$ re-evaluation of layouts optimized with "
            "15$^\\circ$ bins: 8 cases (data sets I and II; $r=500$~m, $N=10$; $r=750$~m, $N=6$ and 12; $r=1000$~m, $N=15$), "
            "five methods (PSO-VNS, PSO, GA, MS-SLSQP, RSD-VNS), 30 seed-paired runs per method and case, 6{,}030 "
            "evaluations, random starts. Endpoint: wake loss $L$ (\\% of the wake-free objective) under the 1$^\\circ$ "
            "objective (15 sub-bins per benchmark bin); differences first minus second, negative = first better." + pt)
-    note = ("Feas.: feasible runs (\\%). Rank: average feasibility-aware rank over the 8 cases (qualified = at least 15 "
+    note = ("$\\bar L$ in \\%, $\\Delta\\bar L$ in pp. Feas.: feasible runs (\\%). Rank: average feasibility-aware rank over the 8 cases (qualified = at least 15 "
             "of 30 runs feasible). $\\bar L$: mean over the cases in which the method qualifies (superscript: number of "
             "such cases if fewer than 8) of the mean wake loss of its feasible runs. All-run: paired score of PSO-VNS "
             "against the method over 240 seed pairs ($(W+T/2)/240$; feasible beats infeasible, two feasible runs "
             "compared by objective, two infeasible runs tie; above 0.5 = PSO-VNS better), with 95\\% case-bootstrap "
             "interval. Direct $-$ re-eval.: per-case mean $L$ of direct 1$^\\circ$ optimization minus that of the "
             "re-evaluated 15$^\\circ$ layouts (different seed sets), mean over the cases in which the method qualifies "
-            "in both, 90\\% case-bootstrap interval. Lower panel: $n$ cases in which both qualify; seed: within-case "
+            "in both, 90\\% case-bootstrap interval. Lower panel: Direct 1$^\\circ$ = direct 1$^\\circ$ optimization (seeds 31--60); Re-eval.\\ 1$^\\circ$ = "
+            "15$^\\circ$ layouts re-evaluated at 1$^\\circ$ (seeds 1--30); Recorded 15$^\\circ$ = the same layouts with "
+            "their recorded 15$^\\circ$ objective; Control 1$^\\circ$ (if run) = 15$^\\circ$ runs with seeds 31--60 "
+            "re-evaluated at 1$^\\circ$; $n$ cases in which both qualify; $\\overline{\\Delta L}$ in pp; seed: within-case "
             "seed-paired bootstrap; case: bootstrap over the cases (10{,}000 resamples, fixed seeds); Eq.: 90\\% "
             "interval inside $(-0.05, 0.05)$~pp; $p_W$: case-mean Wilcoxon (with 8 cases, $p\\ge0.0078$). Exploratory; "
             "" + lead + "." + frt)
-    return MR.table("table*", cap, "tab:S-r3-fine", "lccccccccc", head, lines, sep="2.4pt", pos="!htb", note=note)
+    return MR.table("table*", cap, "tab:S-r3-fine", "lcccccccc", head, lines, sep="2pt", pos="!htb", note=note)
 
 
 # ------------------------------------------------------------------ main

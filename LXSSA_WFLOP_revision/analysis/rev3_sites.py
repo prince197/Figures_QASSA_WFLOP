@@ -857,17 +857,18 @@ def block_init(summ, recompute):
             for seed in range(1, 31):
                 np.random.seed(seed)
                 cnt[0] = 0
-                t = time.perf_counter()
+                t, tc = time.perf_counter(), time.process_time()
                 P = gen(30, 2 * n)
-                sec = time.perf_counter() - t
+                sec, cpu = time.perf_counter() - t, time.process_time() - tc
                 ref = st[(st.Dataset == ds) & (st.Radius == r) & (st.Turbines == n) & (st.Seed == seed)]
                 dmin = np.nan
                 if len(ref):
                     q = parse_xy(ref.Coordinates.iloc[0]).ravel()
                     dmin = float(np.abs(P - q[None]).max(1).min())
-                rows.append(dict(Dataset=ds, Radius=r, Turbines=n, Seed=seed, Layouts=30, Seconds=sec, Tries=cnt[0],
+                rows.append(dict(Dataset=ds, Radius=r, Turbines=n, Seed=seed, Layouts=30, Seconds=sec, CPUSeconds=cpu, Tries=cnt[0], LoadAvg1=os.getloadavg()[0],
                                  PSOFeasibleStartMatchMaxAbsM=dmin))
-            log(f"  [init] {ds}-{r}-{n}: median {np.median([x['Seconds'] for x in rows[-30:]]):.2f} s, "
+            log(f"  [init] {ds}-{r}-{n}: median {np.median([x['Seconds'] for x in rows[-30:]]):.2f} s "
+                f"(CPU {np.median([x['CPUSeconds'] for x in rows[-30:]]):.2f} s, load {np.mean([x['LoadAvg1'] for x in rows[-30:]]):.1f}), "
                 f"max {max(x['Seconds'] for x in rows[-30:]):.2f} s, tries {sum(x['Tries'] for x in rows[-30:])}/900, "
                 f"PSO match max {np.nanmax([x['PSOFeasibleStartMatchMaxAbsM'] for x in rows[-30:]]):.4f} m ({time.time() - t_all:.0f} s)")
         FI._uniform_in_site = orig_uniform
@@ -878,12 +879,18 @@ def block_init(summ, recompute):
                       "spacing 8R = 308 m (benchmark) / 4D = 320 m (Horns Rev 1)", cases={})
     for (ds, r, n), g in T.groupby(["Dataset", "Radius", "Turbines"], sort=False):
         out["cases"][f"{ds}-{r}-{n}"] = dict(median_s=float(g.Seconds.median()), max_s=float(g.Seconds.max()),
+                                             median_cpu_s=float(g.CPUSeconds.median()), max_cpu_s=float(g.CPUSeconds.max()),
+                                             mean_loadavg1=float(g.LoadAvg1.mean()),
                                              min_s=float(g.Seconds.min()), mean_tries_per_layout=float(g.Tries.sum() / g.Layouts.sum()),
                                              max_tries_run=int(g.Tries.max()),
                                              pso_match_max_abs_m=float(g.PSOFeasibleStartMatchMaxAbsM.max()),
                                              pso_matched=int((g.PSOFeasibleStartMatchMaxAbsM <= 0.0051).sum()))
     bench = T[T.Dataset != "HR"]
-    out["benchmark_six_largest"] = dict(median_s=float(bench.Seconds.median()), max_s=float(bench.Seconds.max()))
+    out["benchmark_six_largest"] = dict(median_s=float(bench.Seconds.median()), max_s=float(bench.Seconds.max()),
+                                        median_cpu_s=float(bench.CPUSeconds.median()), max_cpu_s=float(bench.CPUSeconds.max()))
+    out["note"] = ("Seconds = wall time, CPUSeconds = process CPU time of the initialization of one run (30 layouts); the machine "
+                   "(4 cores) was shared with other jobs (1-min load average in LoadAvg1), so wall times are inflated relative "
+                   "to CPU times; CPU time is the better estimate of the cost on an idle core")
     out["machine"] = str(T.Machine.iloc[0]) if "Machine" in T else None
     summ["init_time"] = out
     log("[init] " + "; ".join(f"{k}: med {v['median_s']:.2f} max {v['max_s']:.2f} s, tries/layout {v['mean_tries_per_layout']:.2f}, "

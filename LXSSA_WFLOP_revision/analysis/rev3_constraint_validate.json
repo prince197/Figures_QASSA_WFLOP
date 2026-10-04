@@ -2,35 +2,35 @@
  "bitwise": {
   "runs": 60,
   "all_found": true,
-  "objective_equal": 48,
-  "wakeloss_equal": 52,
+  "objective_equal": 60,
+  "wakeloss_equal": 60,
   "coordinates_equal": 60,
   "feasible_equal": 60,
   "calls_equal": 60,
   "curve_equal": 60,
   "per_method": {
    "DE": {
-    "ObjectiveEqual": 10,
+    "ObjectiveEqual": 12,
     "CoordinatesEqual": 12,
     "CurveEqual": 12
    },
    "GA": {
-    "ObjectiveEqual": 9,
+    "ObjectiveEqual": 12,
     "CoordinatesEqual": 12,
     "CurveEqual": 12
    },
    "PSOBV": {
-    "ObjectiveEqual": 9,
+    "ObjectiveEqual": 12,
     "CoordinatesEqual": 12,
     "CurveEqual": 12
    },
    "PSOC": {
-    "ObjectiveEqual": 11,
+    "ObjectiveEqual": 12,
     "CoordinatesEqual": 12,
     "CurveEqual": 12
    },
    "SSABV": {
-    "ObjectiveEqual": 9,
+    "ObjectiveEqual": 12,
     "CoordinatesEqual": 12,
     "CurveEqual": 12
    }
@@ -143,5 +143,5 @@
    "MaxRadiusMinusR": 5.684341886080802e-14
   }
  ],
- "seconds": 172.8
+ "seconds": 292.4
 }
