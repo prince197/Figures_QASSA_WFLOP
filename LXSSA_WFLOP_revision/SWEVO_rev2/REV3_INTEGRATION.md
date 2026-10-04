@@ -143,3 +143,18 @@ PSO-VNS 2.25, MS-SLSQP 2.62, PSO 2.88, GA 3.12, RSD-VNS 4.12 (leader unchanged, 
 1 deg instead of 15 deg lowers the 1-deg wake loss on the same seeds by 1.12 pp (PSO-VNS), 1.01 (PSO), 1.09 (RSD-VNS),
 0.84 (GA) and 0.32 pp (MS-SLSQP). The leader does not change; PSO-VNS's advantage over PSO is about twice that of the
 re-evaluated layouts (-0.086 pp, control arm at 1 deg) and lies beyond the 0.05 pp margin.
+
+## Lead's final-pass list (collected from agent reports)
+- 0.33 -> 0.32 pp (MS-SLSQP gain from 1-deg optimization) wherever it appears.
+- 7.3/8 vs 9.6: the 68-case all-run numbers appear in both; keep them in one place (9.6 or 7.3) and point from the other.
+- tab:ga-main (Table 13) is not cited: cite it in 06_results (GA paragraph).
+- 05_setup: check qualification paragraph mentions the 68-case all-run endpoint; 6.3 IEA37 sentence vs 13-method pool.
+- 10_limits_concl: "Lillgrund ... 5-deg bins only" and "No dimensionless-violation ... experiment was run" (I3).
+- 02b_related Table 1: all-run outcome now on the 68 cases (I6).
+- Supplement: tab:S-r3-iea-pool caption (generated rev3_sites_tables.tex) "cannot re-verify" -> align with D12 after C4.
+- Precision text: explain 56,540 audited records vs 52,930 runs in Table 3 (superseded / archived rows).
+- Fill the C4 \TBD placeholders (08_beyond 9.6, supplement S11.11 and S-archive, swevo_back, declarations_content,
+  README_reproduce, AUTHOR_CONFIRMATION, REVISION_CHANGELOG).
+- build_swevo.sh line 2 stale comment; refresh xref/*_labels.tex in canonical; regenerate SWEVO_manuscript_full.tex.
+- Bibliography order rerun at the end (analysis/rev3_bib_order.py) for main and supplement.
+- Data availability: "release 1.0.0" vs package 1.0.0-rc — align.

@@ -351,7 +351,9 @@ def _category(g):
     bit = same & g.BitIdentical & g.MinSpacingMatch
     rel = (g.ObjectiveRerun - g.ObjectiveStored).abs() / g.ObjectiveStored.abs()
     noise = same & ~bit & (rel <= 1e-9) & ((g.MinSpacingFull - g.MinSpacingStoredCol).abs() <= 1e-6)
-    return np.where(bit, "bit", np.where(noise, "noise", "diverged"))
+    near = (g.RoundedCoordsMatch & (g.RerunLabel == g.StoredLabel) & g.CaptureVerified & ~bit & ~noise & (rel <= 1e-9)
+            & ((g.MinSpacingFull - g.MinSpacingStoredCol).abs() <= 1e-6))
+    return np.where(bit, "bit", np.where(noise, "noise", np.where(near, "near", "diverged")))
 
 
 def load_results():
@@ -425,6 +427,7 @@ def collect():
         summ[st] = dict(reruns=int(len(g)), class_ii_iii_reruns=int((g.Class != "i").sum()),
                         bit_identical=int((g.Reproduction == "bit").sum()),
                         float_noise=int((g.Reproduction == "noise").sum()),
+                        near=int((g.Reproduction == "near").sum()),
                         diverged=int((g.Reproduction == "diverged").sum()),
                         objective_bit_identical=int(g.BitIdentical.sum()),
                         label_decided=int(g.LabelDecided.sum()),
@@ -484,7 +487,7 @@ def table():
     A = json.load(open(os.path.join(HERE, "rev3_precision_audit.json")))["studies"]
     res, _ = load_results()
     lines = []
-    tot = np.zeros(11, dtype=float)
+    tot = np.zeros(12, dtype=float)
     mx_all = 0.0
     for st, d in A.items():
         if d["role"] == "duplicate":
@@ -492,10 +495,11 @@ def table():
         g = res[res.Study == st]
         g3 = g[g.Class != "i"]
         nb = int((g3.Reproduction == "bit").sum()); nn = int((g3.Reproduction == "noise").sum())
+        nr = int((g3.Reproduction == "near").sum())
         conf = int((g3.LabelDecided & ~g3.LabelChanged).sum()); chg = int((g3.LabelDecided & g3.LabelChanged).sum())
         open_ = d["class_ii"] + d["class_iii"] - conf - chg
-        v = [d["records"], d["labelled_feasible"], d["class_i"], d["class_ii"], d["class_iii"], len(g3), nb, nn, conf,
-             chg, open_]
+        v = [d["records"], d["labelled_feasible"], d["class_i"], d["class_ii"], d["class_iii"], len(g3), nb, nn, nr,
+             conf, chg, open_]
         tot += np.array(v, dtype=float)
         mx = d["max_abs_replay_diff_pp"]; mx_all = max(mx_all, mx)
         lines.append(SHORT[st] + " & " + " & ".join(f"{int(x):,}" for x in v) + f" & {mx:.3f} \\\\")
@@ -517,11 +521,11 @@ $^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Superseded, not used in th
 Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
 \label{tab:S-r3-precision}
 \scriptsize\setlength{\tabcolsep}{2pt}
-\begin{tabular}{lrrrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrrrrr}
 \toprule
-& & & \multicolumn{3}{c}{Rounded coordinates} & \multicolumn{3}{c}{Reruns} & \multicolumn{2}{c}{Strict label} & & \\
-\cmidrule(lr){4-6}\cmidrule(lr){7-9}\cmidrule(lr){10-11}
-Study & Rec. & Feas. & (i) & (ii) & (iii) & Rerun & Bit & Noise & Conf. & Chg. & Open & Replay \\
+& & & \multicolumn{3}{c}{Rounded coordinates} & \multicolumn{4}{c}{Reruns} & \multicolumn{2}{c}{Strict label} & & \\
+\cmidrule(lr){4-6}\cmidrule(lr){7-10}\cmidrule(lr){11-12}
+Study & Rec. & Feas. & (i) & (ii) & (iii) & Rerun & Bit & Noise & Near & Conf. & Chg. & Open & Replay \\
 \midrule
 """ + body + r"""
 \midrule
