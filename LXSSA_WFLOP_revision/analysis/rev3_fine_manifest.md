@@ -101,3 +101,16 @@ Each shard writes its rows as they finish (resumable: keys already in the shard 
 depend on the SciPy / BLAS platform; NumPy's SIMD exp / pow kernels depend on the CPU, so runs are exactly
 reproducible only on the same software and CPU class (the log records Python, NumPy, SciPy and the CPU flags).
 Reference environment: Python 3.11, NumPy 2.4.6, SciPy 1.17.1, pandas 3.0.6.
+
+## Execution plan (added after validation and timing; no design change)
+Validation (rev3_fine_validate.log): PASSED -- (1) 10/10 stored seed-1 runs reproduced bit for bit with the 15-deg
+objective (cases I-750-6 and II-1000-15; PSO-VNS, PSO, GA, MS-SLSQP, RSD-VNS); (2) 1,200/1,200 stored layouts give
+bit-identical 1-deg objective values with FineObjective and mpce_direction.bench_objective(., ., 15).
+Timing (rev3_fine_timing.log; measured on the shared 4-core machine at load average 10-13, so wall times are
+inflated, probably by ~1.5x): one 1-deg run at N = 15 takes 13-15 s (PSO-VNS, PSO, GA, RSD-VNS) and 35-37 s
+(MS-SLSQP); estimated total 3.1-4.6 CPU-hours for the 1,200 runs.
+Shards: 5 (tasks[i::5]; exactly 6 of the 30 seeds of every case x method per shard, 240 runs, est. 37-55 min each):
+    cd analysis && python3 rev3_fine.py <i> 5 --procs 1 > rev3_fine_s<i>of5.log 2>&1      (i = 0..4)
+Optional 15-deg control arm, 3 shards (est. 2 CPU-hours in total):
+    cd analysis && python3 rev3_fine.py <i> 3 --procs 1 --rose 15 > rev3_fine15_s<i>of3.log 2>&1   (i = 0..2)
+Analysis after the runs: cd analysis && python3 rev3_fine_analysis.py   (-> rev3_fine.json, rev3_fine_tables.tex)
