@@ -197,7 +197,7 @@ def block_hr(summ, tex):
     hdr30 = "Feas. & AEP & Loss & Rank & $\\bar R_s$ & $p_{\\rm best}$" + (" & $p_{\\rm PV}$" if two30 else "")
     head = (f"& \\multicolumn{{{n6}}}{{c}}{{6{{,}}030 evaluations}} & & \\multicolumn{{{n30}}}{{c}}{{30{{,}}030 evaluations}} \\\\\n"
             f"\\cmidrule(lr){{2-{1 + n6}}}\\cmidrule(lr){{{3 + n6}-{2 + n6 + n30}}}\n"
-            f"Layout / method & {hdr6} & & {hdr30}")
+            f"Method & {hdr6} & & {hdr30}")
     fr = lambda r: f"$\\chi^2_F={r['friedman']['chi2']:.1f}$ ({r['friedman']['df']} d.f.), $p={fp(r['friedman']['p']).strip('$')}$"
     note = ("Pool: the ten methods of Table~\\ref{M-tab:hr-site} and GA (11 methods), random initialization, 30 seed-paired runs "
             "(seeds 1--30) per method and budget, 5$^\\circ$ direction bins (the evaluator used in optimization). "
@@ -213,7 +213,7 @@ def block_hr(summ, tex):
     tex.append(MR.table("table*", "Horns Rev~1 16-turbine block, recomputed pool with GA (11 methods; 5$^\\circ$ bins, random "
                         "starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean AEP of the feasible runs, "
                         "feasibility-aware and run-level ranks, and seed-paired tests of the best method.",
-                        "tab:S-r3-hr-pool", "l" + "c" * n6 + "c" + "c" * n30, head, lines, sep="2pt", pos="!htb", note=note))
+                        "tab:S-r3-hr-pool", "l" + "c" * n6 + "c" + "c" * n30, head, lines, sep="1.7pt", pos="!htb", note=note))
 
 
 # ====================================================================== B2(b): IEA37 pool
@@ -264,14 +264,14 @@ def block_iea(summ, tex):
     for n in (16, 36):
         S6, S30 = out["settings"][f"{n}T_6030"], out["settings"][f"{n}T_30030"]
         lines.append(f"\\multicolumn{{11}}{{l}}{{\\emph{{{n} turbines ($r={1300 if n == 16 else 2000}$~m)}}}} \\\\")
-        lines.append(f"Example layout & \\multicolumn{{5}}{{c}}{{{big(pv[n]['example'])}}} & \\multicolumn{{5}}{{c}}{{}} \\\\")
-        lines.append(f"Best published, strict / projected & \\multicolumn{{5}}{{c}}{{{big(pv[n]['strict'])} / {big(pv[n]['projected'])}}} & \\multicolumn{{5}}{{c}}{{}} \\\\")
+        lines.append(f"Published & \\multicolumn{{10}}{{l}}{{example layout {big(pv[n]['example'], 0)}; best feasible, strict "
+                     f"{big(pv[n]['strict'], 0)}; best after projection {big(pv[n]['projected'], 0)}}} \\\\")
         order = sorted(IEA13, key=lambda a: (S30["methods"][a]["rank"], S6["methods"][a]["rank"]))
         for a in order:
             c = []
             for r in (S6, S30):
                 v = r["methods"][a]
-                mean, bst = big(v["mean"]), big(v["best"])
+                mean, bst = big(v["mean"], 0), big(v["best"], 0)
                 if a == r["best"]:
                     mean = f"\\textbf{{{mean}}}"
                 fam = r["families"]["best_vs_all"]
@@ -287,7 +287,7 @@ def block_iea(summ, tex):
                     for n in (16, 36) for b in BUDS)
     note = ("Pool (13 methods, one pool per scenario and budget): the ten methods of Table~\\ref{tab:iea37-detail}, GA, and "
             "MS-SLSQP and PSO-SLSQP with the exact analytic gradient (each gradient charged $c_g=3$ evaluations); random "
-            "initialization, 30 seed-paired runs (seeds 1--30). AEP in MWh (official IEA37 Gaussian-wake model); Mean: over "
+            "initialization, 30 seed-paired runs (seeds 1--30). AEP in MWh, rounded to integers (official IEA37 Gaussian-wake model); Mean: over "
             "the feasible runs (bold: best method); Best: best feasible run; Feas.: feasible runs as originally labelled (the "
             "rounded stored coordinates cannot re-verify the strict $10^{-6}$~m labels; Section~\\ref{sec:S-archive}). Rank: "
             "feasibility-aware rank of the mean AEP within this pool (rule of Table~\\ref{M-tab:friedman68}). $p_{\\rm best}$: "
@@ -299,7 +299,7 @@ def block_iea(summ, tex):
     tex.append(MR.table("table*", "IEA37 Case Study~1, recomputed pool with GA and the exact-gradient methods (13 methods; "
                         "16 and 36 turbines, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean and "
                         "best AEP, feasibility-aware rank and seed-paired tests of the best method.",
-                        "tab:S-r3-iea-pool", "l" + "ccccc" * 2, head, lines, sep="2pt", pos="!htb", note=note))
+                        "tab:S-r3-iea-pool", "l" + "ccccc" * 2, head, lines, sep="1.5pt", pos="!htb", note=note))
 
 
 # ====================================================================== C3: Horns Rev 1 alternate evaluators
@@ -495,7 +495,7 @@ def block_eval(summ, tex, recompute):
                 c.append("")
         lines.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
     lines.append("\\midrule")
-    lines.append("\\multicolumn{10}{l}{\\emph{GA minus method on jointly feasible seeds: mean AEP difference (GWh/yr) and unadjusted Wilcoxon $p$}} \\\\")
+    lines.append("\\multicolumn{10}{l}{\\emph{GA minus method, jointly feasible seeds (number in Feas.): mean $\\Delta$AEP (GWh/yr), Wilcoxon $p$}} \\\\")
     refs = []
     for b in BUDS:
         for c in ("5deg_2.5", "1deg_0.5", "PyWakeNOJ_1deg"):
@@ -505,16 +505,18 @@ def block_eval(summ, tex, recompute):
     if "PSOBV" in refs:
         refs.remove("PSOBV")
     for ref in ["PSOBV"] + refs:
-        c = []
+        c, cp_ = [], []
         for b in BUDS:
             q0 = pairs[f"{b}_GA_{ref}_5deg_2.5"]
-            c.append(f"{q0.get('n', 0)}")
+            c.append(f"{q0.get('n', 0)}"); cp_.append("")
             for cc in ("5deg_2.5", "1deg_0.5", "PyWakeNOJ_1deg"):
                 q = pairs[f"{b}_GA_{ref}_{cc}"]
-                c.append("--" if "p" not in q else f"{q['mean_diff_gwh']:+.2f} ({fp(q['p'])})".replace("+-", "$-$").replace("-0", "$-$0").replace("$$", ""))
+                c.append("--" if "p" not in q else (f"{q['mean_diff_gwh']:+.2f}").replace("-", "$-$"))
+                cp_.append("" if "p" not in q else fp(q["p"]))
             if b == 6030:
-                c.append("")
-        lines.append(f"vs.\\ {LAB[ref]} & " + " & ".join(c) + " \\\\")
+                c.append(""); cp_.append("")
+        lines.append(f"vs.\\ {LAB[ref]}: $\\Delta$AEP & " + " & ".join(c) + " \\\\")
+        lines.append(f"\\quad Wilcoxon $p$ & " + " & ".join(cp_) + " \\\\")
     # paper test row: GA vs PSO-VNS, Holm over 10
     c = []
     for b in BUDS:
@@ -524,7 +526,7 @@ def block_eval(summ, tex, recompute):
             c.append(f"{fp(t['p_holm'])} ({t['outcome']})")
         if b == 6030:
             c.append("")
-    lines.append("vs.\\ PSO-VNS, $p_{\\rm Holm}$ & " + " & ".join(c) + " \\\\")
+    lines.append("vs.\\ PSO-VNS: $p_{\\rm Holm}$ & " + " & ".join(c) + " \\\\")
     head = ("& \\multicolumn{4}{c}{6{,}030 evaluations} & & \\multicolumn{4}{c}{30{,}030 evaluations} \\\\\n"
             "\\cmidrule(lr){2-5}\\cmidrule(lr){7-10}\n"
             "Layout / method & Feas. & 5$^\\circ$ & 1$^\\circ$ & PyWake & & Feas. & 5$^\\circ$ & 1$^\\circ$ & PyWake")
@@ -626,7 +628,7 @@ def block_lg(summ, tex, recompute):
 
 
 # ====================================================================== B6: elapsed time
-def read_orig(exp, cols=("Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init", "Calls", "Seconds", "Feasible")):
+def read_orig(exp, cols=("Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init", "Calls", "Seconds", "Feasible", "Objective", "Ideal", "WakeLoss")):
     fs = sorted(glob.glob(os.path.join(HERE, f"mpce_{exp}_s*of*.csv")))
     if not fs:
         return None
@@ -690,7 +692,22 @@ def block_time(summ, tex):
                     slsqp_over_pso=bm["SLSQP"]["pooled_ms_per_eval"] / bm["PSOC"]["pooled_ms_per_eval"]),
         slsqp_over_pso_median_by_N={n: bm["SLSQP"]["median_ms_by_N"][n] / bm["PSOC"]["median_ms_by_N"][n] for n in bm["PSOC"]["median_ms_by_N"]},
         slsqp_over_psovns_median_s_by_N=bm["SLSQP"]["ratio_by_N_to_psovns"])
-    out["benchmark"] = dict(methods=bm, per_eval_verification=ver,
+    fo = MR.std_cols(pd.read_csv(os.path.join(HERE, "fresh_grid.csv"), usecols=lambda c: c not in ("Coordinates", "Curve")))
+    fo = fo[fo.Algorithm.isin(["SLSQP", "PSO"])].assign(ms=lambda d: 1000 * d.Seconds / d.Calls)
+    earlier = {}
+    for a, g in fo.groupby("Algorithm"):
+        earlier[a] = dict(source="fresh_grid.csv (earlier study / platform)", runs=int(len(g)),
+                          median_ms_per_eval=float(g.ms.median()), mean_ms_per_eval=float(g.ms.mean()),
+                          median_s_by_N={int(k): float(v) for k, v in g.groupby("Turbines").Seconds.median().items()})
+    ver["slsqp_rerun_small_vs_large_N"] = dict(
+        median_ms_N_le_7=float(A[(A.Algorithm == "SLSQP") & (A.Turbines <= 7)].ms.median()),
+        median_ms_N_ge_8=float(A[(A.Algorithm == "SLSQP") & (A.Turbines >= 8)].ms.median()),
+        pso_median_ms_N_le_7=float(A[(A.Algorithm == "PSOC") & (A.Turbines <= 7)].ms.median()),
+        pso_median_ms_N_ge_8=float(A[(A.Algorithm == "PSOC") & (A.Turbines >= 8)].ms.median()))
+    ver["earlier_platform"] = dict(slsqp_median_ms=earlier["SLSQP"]["median_ms_per_eval"], slsqp_mean_ms=earlier["SLSQP"]["mean_ms_per_eval"],
+                                   pso_old_median_ms=earlier["PSO"]["median_ms_per_eval"],
+                                   slsqp_over_psoc_median=earlier["SLSQP"]["median_ms_per_eval"] / bm["PSOC"]["median_ms_per_eval"])
+    out["benchmark"] = dict(methods=bm, per_eval_verification=ver, slsqp_earlier_platform=earlier["SLSQP"], pso_old_setting=earlier["PSO"],
                             data="MX.load: 68 cases, 6,030 evaluations, random init.; Seconds = wall-clock time of the run "
                                  "(perf_counter around the optimizer, incl. its overhead, excl. writing), single process per run")
     log(f"[time] benchmark ms/eval median: " + ", ".join(f"{a} {v['median_ms_per_eval']:.3f}" for a, v in bm.items()))
@@ -897,63 +914,126 @@ def block_init(summ, recompute):
                               f"PSO match {v['pso_matched']}/30" for k, v in out["cases"].items()))
 
 
+PROBE_CODE = r'''
+import sys, os, time, json
+sys.path.insert(0, HEREDIR)
+os.chdir(HEREDIR)
+import mpce_experiments as E, pandas as pd
+st = pd.read_csv("mpce_slsqp_s0of1.csv", usecols=["Dataset", "Radius", "Turbines", "Seed", "Objective", "Seconds"])
+for n in (7, 8, 10, 15):
+    t = time.process_time(); r = E.run_grid(("SLSQP", 1, 1000 if n == 15 else 750, n, 1, 6030, "random")); c = time.process_time() - t
+    s = st[(st.Dataset == 1) & (st.Radius == (1000 if n == 15 else 750)) & (st.Turbines == n) & (st.Seed == 1)].iloc[0]
+    print(json.dumps(dict(Dataset=1, Radius=1000 if n == 15 else 750, Turbines=n, Seed=1, Seconds=r["Seconds"], CPUSeconds=c,
+                          Objective=r["Objective"], StoredObjective=float(s.Objective), StoredSeconds=float(s.Seconds),
+                          Calls=r["Calls"], BLASThreads=os.environ.get("OPENBLAS_NUM_THREADS"),
+                          LoadAvg1=os.getloadavg()[0])), flush=True)
+'''
+
+
+def block_probe(summ, recompute):
+    """Re-time single MS-SLSQP runs (data set I, seed 1, N = 7, 8, 10, 15) with single-threaded BLAS, to test whether
+    the step in the stored mpce_slsqp times between N = 7 and N = 8 is a property of the method."""
+    import subprocess
+    cache = os.path.join(HERE, "rev3_sites_slsqp_probe.csv")
+    if recompute or not os.path.exists(cache):
+        env = dict(os.environ, OPENBLAS_NUM_THREADS="1", OMP_NUM_THREADS="1", MKL_NUM_THREADS="1")
+        code = PROBE_CODE.replace("HEREDIR", repr(HERE))
+        p = subprocess.run([sys.executable, "-c", code], env=env, capture_output=True, text=True, timeout=1800)
+        rows = [json.loads(l) for l in p.stdout.splitlines() if l.startswith("{")]
+        pd.DataFrame(rows).to_csv(cache, index=False, float_format="%.6g")
+    P = pd.read_csv(cache)
+    summ["slsqp_probe"] = dict(rows=P.to_dict("records"),
+                               note="MS-SLSQP (mpce_experiments.run_grid, unchanged) rerun now with OPENBLAS/OMP/MKL threads = 1, "
+                                    "one process, shared machine; StoredSeconds/StoredObjective from mpce_slsqp. SLSQP results "
+                                    "are platform dependent, so the objective need not match the stored one.")
+    log("[probe] " + "; ".join(f"N={int(r.Turbines)}: {r.Seconds:.2f} s (CPU {r.CPUSeconds:.2f}) vs stored {r.StoredSeconds:.2f} s; "
+                              f"obj {r.Objective:.1f} vs stored {r.StoredObjective:.1f}" for r in P.itertuples()))
+
+
 def time_table(summ, tex):
-    """tab:S-r3-time: extension of Table S-time with the original records and the initialization timing."""
+    """tab:S-r3-time (benchmark, budget, feasible init., initialization timing) and tab:S-r3-time-sites."""
     T = summ["time"]
     bm = T["benchmark"]["methods"]
-    order = ["PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP", "LXBV", "RSVNS", "RSDVNS", "GA", "SLSQPX", "PSOSLSQPX"]
-    hs = T["hr"]["settings"]; ie = T["iea"]["settings"]
-    lines = []
+    old = T["benchmark"].get("slsqp_earlier_platform", {})
+    bf = T["budget_feasinit"]["settings"]
+    order = ["PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP", "LXBV", "RSVNS", "RSDVNS"]
 
-    def rcell(med, ratio):
-        return "--" if med is None else f"{med:.1f} ({ratio:.2f})" if med >= 10 else f"{med:.2f} ({ratio:.2f})"
+    def rc(med, ratio):
+        if med is None or not np.isfinite(med):
+            return "--"
+        m = f"{med:.1f}" if med >= 10 else f"{med:.2f}"
+        return m if ratio is None or not np.isfinite(ratio) else f"{m} ({ratio:.2f})"
+    lines = []
     for a in order:
-        c = []
-        v = bm.get(a)
-        if v:
-            c += [f"{v['median_ms_per_eval']:.2f}", f"{v['mean_ms_per_eval']:.2f}",
-                  rcell(v["median_s_by_N"].get(15), v["ratio_by_N_to_psovns"].get(15, np.nan))]
-        else:
-            c += ["--", "--", "--"]
-        for k in ("6030_random", "30030_random"):
-            s_ = hs.get(k, {})
-            c.append(rcell(s_.get("median_s", {}).get(a), s_.get("ratio_to_psovns", {}).get(a, np.nan)) if a in s_.get("median_s", {}) else "--")
-        for k in ("16T_30030", "36T_30030"):
-            s_ = ie.get(k, {})
-            c.append(rcell(s_["median_s"].get(a), s_["ratio_to_psovns"].get(a, np.nan)) if a in s_.get("median_s", {}) else "--")
-        if all(x == "--" for x in c):
-            continue
+        v = bm[a]
+        c = [f"{v['median_ms_per_eval']:.2f}", f"{v['mean_ms_per_eval']:.2f}",
+             rc(v["median_s_by_N"].get(5), None), rc(v["median_s_by_N"].get(10), None),
+             rc(v["median_s_by_N"].get(15), v["ratio_by_N_to_psovns"].get(15))]
+        for k in ("6030_feasible", "30030_random", "120030_random"):
+            s_ = bf.get(k, {})
+            c.append(rc(s_.get("median_s", {}).get(a), s_.get("ratio_to_psovns", {}).get(a)) if a in s_.get("median_s", {}) else "n/r")
         lines.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
+    if old:
+        lines.append(f"MS-SLSQP, earlier$^{{a}}$ & {old['median_ms_per_eval']:.2f} & {old['mean_ms_per_eval']:.2f} & "
+                     f"{rc(old['median_s_by_N'].get(5), None)} & {rc(old['median_s_by_N'].get(10), None)} & "
+                     f"{rc(old['median_s_by_N'].get(15), None)} & & & \\\\")
     it = summ.get("init_time")
-    foot = []
     if it:
-        cs = it["cases"]
-        b6 = it["benchmark_six_largest"]
-        hr = cs.get("HR-0-16", {})
+        cs = it["cases"]; b6 = it["benchmark_six_largest"]; hr = cs.get("HR-0-16", {})
         lines.append("\\midrule")
-        lines.append("\\multicolumn{9}{l}{\\emph{Feasibility-preserving initialization, 30 layouts per run (L-BFGS-B packing; not charged), "
-                     "measured anew}} \\\\")
-        lines.append("Six largest cases & \\multicolumn{3}{l}{median %.2f~s, max %.2f~s} & \\multicolumn{2}{l}{Horns Rev~1: median %.2f~s, max %.2f~s} & & \\\\"
-                     % (b6["median_s"], b6["max_s"], hr.get("median_s", np.nan), hr.get("max_s", np.nan)))
+        lines.append("\\multicolumn{9}{l}{\\emph{Initialization alone (30 layouts per run, L-BFGS-B packing, not charged), "
+                     "re-run now, seeds 1--30: wall [CPU] time}} \\\\")
+        lines.append("\\multicolumn{3}{l}{Six largest cases} & \\multicolumn{6}{l}{median %.2f~s [%.2f~s], maximum %.2f~s [%.2f~s]} \\\\"
+                     % (b6["median_s"], b6["median_cpu_s"], b6["max_s"], b6["max_cpu_s"]))
+        lines.append("\\multicolumn{3}{l}{Horns Rev~1 block} & \\multicolumn{6}{l}{median %.2f~s [%.2f~s], maximum %.2f~s [%.2f~s]} \\\\"
+                     % (hr.get("median_s", np.nan), hr.get("median_cpu_s", np.nan), hr.get("max_s", np.nan), hr.get("max_cpu_s", np.nan)))
     cp = T["compute"]
-    head = ("& \\multicolumn{3}{c}{Benchmark, 6{,}030} & \\multicolumn{2}{c}{Horns Rev~1, s per run} & \\multicolumn{2}{c}{IEA37, 30{,}030, s per run} \\\\\n"
-            "\\cmidrule(lr){2-4}\\cmidrule(lr){5-6}\\cmidrule(lr){7-8}\n"
-            "Method & ms/eval (med.) & ms/eval (mean) & s per run, $N=15$ & 6{,}030 & 30{,}030 & 16 turb. & 36 turb.")
-    note = ("Elapsed (wall-clock) seconds of a run as stored in the original records (Seconds; time of the optimizer call in one "
-            "worker process, including optimizer overhead; for MS-SLSQP also the SLSQP subproblems and constraint evaluations, "
-            "which are not charged to the budget). Benchmark: 68 cases, random initialization, 30 seeds (Table~\\ref{tab:cost}); "
-            "ms/eval: Seconds/Evaluations$\\times1000$ of each run, median and mean over all runs of the method (the mean is the "
-            "statistic of Table~\\ref{tab:cost}); s per run: median over the 60 runs with $N=15$. Horns Rev~1: random "
-            "initialization, 30 seeds; IEA37: random initialization, 30 seeds. In parentheses: ratio to PSO-VNS in the same "
-            "study and setting. Runs of different methods come from different batches (benchmark: files of the earlier study "
-            "for SSA, LX-SSA, DE, VNS, SSA-VNS, LX-SSA-VNS; GA, exact-gradient methods: revision batches), so ratios are "
-            "indicative. Total serial compute (sum of Seconds): %.1f CPU-hours for the %s original records and %.1f for the %s "
-            "revision records; the runs were executed in parallel worker processes, so elapsed study times were shorter."
+    head = ("& \\multicolumn{5}{c}{68 cases, 6{,}030 evaluations, random init.} & \\multicolumn{3}{c}{Six largest cases, s per run} \\\\\n"
+            "\\cmidrule(lr){2-6}\\cmidrule(lr){7-9}\n"
+            "& \\multicolumn{2}{c}{ms per evaluation} & \\multicolumn{3}{c}{s per run} & 6{,}030 & 30{,}030 & 120{,}030 \\\\\n"
+            "\\cmidrule(lr){2-3}\\cmidrule(lr){4-6}\n"
+            "Method & median & mean & $N=5$ & $N=10$ & $N=15$ & feas.\\ init. & random & random")
+    pr = summ.get("slsqp_probe", {}).get("rows", [])
+    prs = ", ".join(f"$N={int(r['Turbines'])}$: {r['Seconds']:.1f}~s (stored {r['StoredSeconds']:.1f}~s)" for r in pr)
+    note = ("Elapsed (wall-clock) seconds of a run as stored in the original records (Seconds: time of the optimizer call in one "
+            "worker process, incl. optimizer overhead and, for MS-SLSQP, the SLSQP subproblems and constraint evaluations, which are "
+            "not charged). ms per evaluation: Seconds/Evaluations$\\times10^3$ of each run, median and mean over the 2{,}040 runs "
+            "of the method (the mean is the statistic of Table~\\ref{tab:cost}); s per run: median over the runs with the given $N$ "
+            "(60 runs); six largest cases: median over 180 runs (6{,}030 feasible init.\\ includes the packing). In parentheses: "
+            "ratio to PSO-VNS. Methods come from different run batches (SSA, LX-SSA, DE, VNS, SSA-VNS, LX-SSA-VNS: files of the "
+            "earlier study), so ratios are indicative. MS-SLSQP (rerun batch mpce\\_slsqp): the time per run jumps from 3.1~s at "
+            "$N=7$ to 16--22~s at $N\\ge8$, independent of $r$; re-timed now with single-threaded BLAS: " + prs + ". "
+            "$^{a}$Same method, runs of the earlier study (fresh\\_grid). n/r: not run. Total serial compute (sum of Seconds): "
+            "%.1f CPU-hours for the %s original records and %.1f for the %s revision records; the runs were executed in four "
+            "parallel worker processes, so the elapsed time of a study was about a quarter of its total."
             % (cp["original_cpu_h"], f"{cp['original_records']:,}".replace(",", "{,}"), cp["revision_cpu_h"],
                f"{cp['revision_records']:,}".replace(",", "{,}")))
-    tex.append(MR.table("table*", "Elapsed time per run and per evaluation in the original records (median seconds; ratio to "
-                        "PSO-VNS) and wall time of the feasibility-preserving initialization.", "tab:S-r3-time",
-                        "lccccccc", head, lines, sep="2.5pt", pos="!htb", note=note))
+    tex.append(MR.table("table*", "Elapsed time per evaluation and per run in the original benchmark records (median seconds; ratio "
+                        "to PSO-VNS), and wall time of the feasibility-preserving initialization.", "tab:S-r3-time",
+                        "lcccccccc", head, lines, sep="1.7pt", pos="!htb", note=note))
+    # ---- sites
+    hs = T["hr"]["settings"]; ie = T["iea"]["settings"]
+    lines = []
+    for a in ["PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP", "LXBV", "RSVNS", "GA", "SLSQPX", "PSOSLSQPX"]:
+        c = []
+        for k in ("6030_random", "6030_feasible", "30030_random", "120030_random"):
+            s_ = hs.get(k, {})
+            c.append(rc(s_["median_s"].get(a), s_["ratio_to_psovns"].get(a)) if a in s_.get("median_s", {}) else "n/r")
+        for k in ("16T_6030", "16T_30030", "36T_6030", "36T_30030"):
+            s_ = ie.get(k, {})
+            c.append(rc(s_["median_s"].get(a), s_["ratio_to_psovns"].get(a)) if a in s_.get("median_s", {}) else "n/r")
+        lines.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
+    head = ("& \\multicolumn{4}{c}{Horns Rev~1 (16 turbines)} & \\multicolumn{4}{c}{IEA37 Case Study~1} \\\\\n"
+            "\\cmidrule(lr){2-5}\\cmidrule(lr){6-9}\n"
+            "& 6{,}030 R & 6{,}030 F & 30{,}030 & 120{,}030 & 16, 6{,}030 & 16, 30{,}030 & 36, 6{,}030 & 36, 30{,}030")
+    note = ("Median elapsed seconds per run in the stored records (30 seeds; 10 at 120{,}030), in parentheses the ratio to PSO-VNS "
+            "in the same setting. R/F: random / feasibility-preserving initialization (F includes the packing, about 3.5~s of CPU "
+            "time per run at Horns Rev~1). Batches: Horns Rev~1 mpce\\_hrfix (ten methods, one batch) and rev2\\_gahr (GA); IEA37 "
+            "mpce\\_iea16/36 (nine methods), mpce\\_iea16p/36p (PSO-VNS), rev2\\_gaiea (GA) and rev2\\_grad (exact-gradient "
+            "methods). Ratios across batches are indicative. n/r: not run.")
+    tex.append(MR.table("table*", "Elapsed time per run on Horns Rev~1 and IEA37 Case Study~1 in the original and revision "
+                        "records (median seconds; ratio to PSO-VNS).", "tab:S-r3-time-sites", "lcccccccc", head, lines,
+                        sep="2pt", pos="!htb", note=note))
 
 
 # ====================================================================== main
@@ -973,7 +1053,8 @@ def clean(o):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--only", default="hr,iea,eval,lg,time,init")
+    ap.add_argument("--only", default="hr,iea,eval,lg,time,init,probe")
+    ap.add_argument("--recompute-probe", action="store_true")
     ap.add_argument("--recompute-eval", action="store_true")
     ap.add_argument("--recompute-init", action="store_true")
     ap.add_argument("--out-dir", default=HERE)
@@ -981,7 +1062,7 @@ def main(argv=None):
     t0 = time.time()
     blocks = [b.strip() for b in args.only.split(",") if b.strip()]
     jf = os.path.join(args.out_dir, "rev3_sites.json")
-    summ = json.load(open(jf)) if os.path.exists(jf) and set(blocks) != {"hr", "iea", "eval", "lg", "time", "init"} else {}
+    summ = json.load(open(jf)) if os.path.exists(jf) and set(blocks) != {"hr", "iea", "eval", "lg", "time", "init", "probe"} else {}
     summ.update(generated=time.strftime("%Y-%m-%d %H:%M:%S"), script="rev3_sites.py",
                 protocol=dict(ranking=MR.RANK_RULE, run_level_score="mpce_results.goodness: AEP if feasible, else "
                               "-1e12 - max(0, 1e4 - MinSpacing) (every infeasible run below every feasible run)",
@@ -1003,6 +1084,8 @@ def main(argv=None):
         log("\n==== time"); block_time(summ, tex)
     if "init" in blocks:
         log("\n==== init"); block_init(summ, args.recompute_init)
+    if "probe" in blocks:
+        log("\n==== probe"); block_probe(summ, args.recompute_probe)
     if "time" in summ:
         time_table(summ, tex)
     summ["runtime_s"] = time.time() - t0

@@ -397,8 +397,13 @@ analysis/rev3_precision_manifest.md
 analysis/rev3_precision_rerun.py
 analysis/rev3_refs_corrections.tex
 analysis/rev3_refs_report.md
+analysis/rev3_sites.json
+analysis/rev3_sites.log
 analysis/rev3_sites.py
+analysis/rev3_sites_inittime.csv
 analysis/rev3_sites_reeval.csv
+analysis/rev3_sites_slsqp_probe.csv
+analysis/rev3_sites_tables.tex
 analysis/rs_vns.py
 analysis/run_b120k_0of16.log
 analysis/run_b120k_10of16.log

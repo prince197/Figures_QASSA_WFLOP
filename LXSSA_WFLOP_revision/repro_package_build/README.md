@@ -91,7 +91,7 @@ WITH_PYWAKE=1 sh regenerate_all.sh /tmp/regen       # + PyWake cross-checks (req
 MANUSCRIPT=/path/to/latex_source WITH_SLOW=1 sh regenerate_all.sh /tmp/regen   # + CHECK-tag scan and theory text checks
 ```
 Results: `/tmp/regen/logs/steps.txt` (exit code and seconds of every step), `/tmp/regen/logs/compare.txt`
-(IDENTICAL / IDENTICAL-NORMALIZED / DIFFERENT per file). IDENTICAL-NORMALIZED means identical after removing
+(IDENTICAL / IDENTICAL-NORMALIZED / DIFFERENT per file). The diagnostics outputs (`mpce_*diag*`, `diag_pso_dynamics.*`) are not regenerated (instrumented reruns, `mpce_diagnostics.py`); their stored copies are checked by D01–D22. IDENTICAL-NORMALIZED means identical after removing
 only time stamps of the generation, PDF creation dates, gzip header times, absolute paths, run-time statements
 and environment version strings (see `compare_outputs.py`). The package files themselves are never written.
 
@@ -110,7 +110,7 @@ Commands are run in `analysis/`; runtimes are wall-clock seconds on one core of 
 | Table `tab:hr-site` (Horns Rev 1), `hr16.pdf`, `layouts_iea37_hr16.pdf` | `mpce_results.py` (`mpce_tab_hr16.tex`); GA row: `rev2_analysis.py` (`rev2_summary.json` -> `ga_hr16`) | as above; `python3 rev2_analysis.py --out-dir OUT` | `mpce_hrfix_s*of24.csv`, `pywake_check.csv`; `rev2_gahr_s*of2.csv` | 56 s; 14 s |
 | Table `tab:iea37` (best runs vs published layouts), `iea37_*.pdf` | `mpce_results.py` (`mpce_tab_iea37.tex`); GA and analytic-gradient rows: `rev2_analysis.py` (`ga_iea37`, `grad_iea37`) | as above | `mpce_iea16*/iea36*_s0of1.csv`, `iea37_published_results.csv`; `rev2_gaiea_*.csv`, `rev2_grad_*.csv` | 56 s; 14 s |
 | Tables `tab:iea-means`, `tab:ga-main` (typed from summaries) | `rev2_analysis.py`, `mpce_results.py` | as above | `rev2_ga_*.csv`, `rev2_gaiea_*.csv`, `rev2_grad_*.csv` + main-comparison files | 14 s |
-| Table `tab:robust-final` (cubic curve, Gaussian wake) | `mpce_results.py` -> `mpce_robustness.py` | same run (cache `mpce_reevaluation_cache.csv`; full recomputation: delete the cache, ~h) | final layouts of the run files, `final_reevaluation.csv` (cache seed) | (same run) |
+| Table `tab:robust-final` (cubic curve, Gaussian wake) | `mpce_results.py` -> `mpce_robustness.py` | same run (cache `mpce_reevaluation_cache.csv`; full recomputation: delete the cache; not timed here) | final layouts of the run files, `final_reevaluation.csv` (cache seed) | (same run) |
 | Table `tab:equiv-main`, Fig. `fig:equiv-curve` (`equiv_curve.pdf`), supplementary Section S-inference (`mpce_supp_inference.tex`), macros `\NX...` (`mpce_numbers_extra.tex`) | `mpce_inference_extra.py` | `python3 mpce_inference_extra.py` | benchmark run files, `mpce_summary.json`, `mpce_reevaluation.csv` | 31 s |
 | Fig. `fig:S-csweep` (`csweep.pdf`), `mpce_supp_csweep.tex`, `\NS...` (`mpce_numbers_csweep.tex`) | `mpce_csweep.py` | `python3 mpce_csweep.py` | `mpce_csweep_s0of1.csv`, `mpce_psoc_s0of1.csv`, `fresh_grid.csv` | 4 s |
 | Direction resolution (1° bins), Horns Rev 1 PyWake comparison, projected IEA37 layouts: `mpce_supp_direction.tex`, `\NF...` (`mpce_numbers_dir.tex`) | `mpce_direction.py` (+ `iea37_projected.py`) | `python3 mpce_direction.py --procs 1` | all final layouts, `pywake_check.csv`, `pywake_check_hr16runs.csv`, `iea37_published_results.csv` | 136–185 s |

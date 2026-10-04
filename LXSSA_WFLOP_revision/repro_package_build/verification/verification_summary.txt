@@ -1,0 +1,65 @@
+Verification of the SWEVO reproducibility package 1.0.0-rc (2026-10-04)
+=========================================================================
+
+Environment: CPython 3.11.15, NumPy 2.4.6, SciPy 1.17.1, pandas 3.0.6, Matplotlib 3.11.2, PyWake 2.6.20,
+Linux x86_64 (Ubuntu 24.04), one worker process on a shared 4-core machine.
+
+Procedure: the zip was built with make_package.sh, unpacked into a scratch folder, its checksums verified
+(sha256sum -c MANIFEST.sha256: all files OK, manifest_check.txt), and then
+    WITH_SLOW=1 WITH_DETERMINISM=1 WITH_PYWAKE=1 MANUSCRIPT=<SWEVO revision-2 latex_source> sh regenerate_all.sh <scratch>
+was run in the unpacked package (total 569 s; regenerate_all_logs/steps.txt). Every step exited with 0.
+
+1. Run records (count_records.py): 36,190 original-study records (11 benchmark methods 22,440; RSD-VNS 2,040;
+   split 1,080; coefficient sweep 3,240; budget 3,600; feasible initialization 1,620; Horns Rev 1 970; IEA37 1,200)
+   and 11,640 revision-2 records, as stated in the article.
+
+2. Regenerated outputs compared with the stored copies (regenerate_all_logs/compare.txt): 91 files (86 regenerated;
+   the 5 diagnostics files listed at the end of this item are stored copies and compare trivially), 58 byte-identical, 33 identical after removing only generation time stamps (first-line comments of the .tex
+   files, "generated" fields of the JSON summaries), PDF creation dates, the gzip header time, the run-time field
+   of mpce_summary_extra.json, the recorded environment versions in archive_audit.json, and the Generated/Seconds
+   columns of pywake_check.csv; 0 different, 0 missing:
+   - mpce_results.py: 9 main-text tables mpce_tab_*.tex, mpce_supplementary.tex, mpce_summary.json,
+     mpce_numbers.tex (711 macros), the statistics CSVs, the re-evaluation file and cache, 14 figures (PDF + PNG);
+   - mpce_inference_extra.py: mpce_numbers_extra.tex, mpce_supp_inference.tex, mpce_summary_extra.json, equiv_curve.pdf;
+   - mpce_direction.py: mpce_numbers_dir.tex (641 macros), mpce_supp_direction.tex, mpce_summary_dir.json,
+     mpce_direction_layouts.csv.gz, mpce_direction_hr16.csv, iea37_projected.csv/.json;
+   - mpce_csweep.py: mpce_numbers_csweep.tex, mpce_supp_csweep.tex, mpce_summary_csweep.json, csweep.pdf;
+   - rev2_analysis.py: rev2_summary.json (4,670 values) and rev2_tables.tex (9 tables);
+   - audit_archive.py / check_revision.py (revision-2 layout): archive_audit.json, reliability.csv,
+     paired_outcomes.csv, reliability_tables.tex, raw_data_checksums.json (140 CSV hashes), focused_checks.json;
+   - make_theory_figures.py: theory_stability.pdf; make_model_figures.py: the three model schematics;
+   - packing_capacity.py, analyze_authors_runs.py: packing_capacity.csv, authors_tables.tex, calibration_vs_recorded.csv,
+     equal_budget_tests.csv, hornsrev_tests.csv, authors_spacing_all.csv, authors_runtime_6030.csv;
+   - pywake_check.py --layouts: pywake_check.csv, pywake_check_hr16runs.csv/.json.
+   Not regenerated (stored, reused): mpce_numbers_diag.tex / mpce_supp_diag.tex / mpce_summary_diag.json /
+   diag_pso_dynamics.pdf/.png (instrumented diagnostic reruns, mpce_diagnostics.py, ~18 min on 2 cores); the
+   robustness re-evaluation cache was reused (its regenerated copy is byte-identical).
+
+3. Checks: CHECK-FINAL 62 PASS / 0 FAIL / 0 PENDING / 0 tag errors when scanning the revision-2 SWEVO sources
+   (61 PASS + C62 PENDING without the manuscript text, as designed); CHECK-EXTRA 57/57; CHECK-DIAG 22/22 (on the
+   stored diagnostics summary); CHECK-DIR 41/41; CHECK-CSWEEP 15/15; theory checks T01-T13 57 PASS / 0 FAIL against
+   the revision-2 sections optA/sw/supp_theory.tex and 04_methods.tex; audit_archive.py PASS (11,640 records);
+   check_revision.py PASS (2,006 float round-trips, 140 raw CSV hashes).
+
+4. Evaluator and model checks: validate_evaluator.py: 720 archived objectives, max |dObj| 8.73e-11;
+   iea37_model.py: relative AEP error -8.81e-12 / -2.84e-12 / 2.87e-12 (16 / 36 / 64 turbines);
+   rev2_site_model.py --pywake: Lillgrund model vs PyWake 2.6.20 (lillgrund_pywake.log).
+
+5. Determinism (verify_determinism.py): seed 1 of benchmark cases (DS I, r = 500 m, N = 6) and (DS II, r = 1000 m,
+   N = 15), rerun with the original drivers for PSO-VNS (mpce_experiments.py -> mpce_psobv_s0of2.csv) and SSA-VNS
+   (full_grid_experiments.py -> fresh_bgrid.csv): 4 of 4 reruns bit-identical to the stored records in every
+   field except the wall-clock Seconds (objective as the shortest round-trip repr, coordinates, 201-point curve,
+   calls, feasibility, minimum spacing).
+
+Findings outside the package (reported to the authors, not changed here):
+ a) The copies of the generated files in the revision-2 LaTeX folder (SWEVO_rev2/latex_source/analysis/) and the
+    tables pasted into optA/sw/*.tex were edited by hand after generation: sentence-case captions, typography
+    ($-$), wording ("ranked below the qualified methods"), spelling ("relabeling"), the GA row of tab:hr-site and the
+    GA / analytic-gradient rows of tab:iea37 (all values traceable to rev2_summary.json). The package ships the
+    unedited pipeline outputs.
+ b) In SWEVO_rev2/latex_source/analysis/mpce_numbers.tex the timing macros were changed by hand
+    (\NMsEvalMin/Max/SLSQP/PSO, \NSLSQPSlowdown = 0.24 / 0.47 / 1.82 / 0.24 ms and 7.5) and the text of
+    08_beyond.tex and the supplement types these values; the pipeline generates 0.23 / 0.45 / 0.53 / 0.23 ms and 2.3
+    (mpce_summary.json -> cost_per_eval), while the generated cost table tab:cost of mpce_supplementary.tex shows
+    0.244-0.467 ms and 1.820 ms for MS-SLSQP. The macro definitions in mpce_numbers.py and the table use different
+    timing summaries; the authors should decide which is quoted and make the macro and the table agree.

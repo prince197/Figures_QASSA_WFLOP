@@ -437,8 +437,8 @@ analysis/rev2_spacing_s9of40.csv,runs-rev2,include,267998,revision-2 per-run rec
 analysis/rev3_constraint.py,rev3-code,include,17631,revision-3 script
 analysis/rev3_constraint_analysis.py,rev3-code,include,23995,revision-3 script
 analysis/rev3_constraint_manifest.md,rev3-doc,include,9381,revision-3 manifest / prespecification
-analysis/rev3_constraint_pen.csv.partial,unclassified,exclude,561124,revision-3 file of an unexpected type (check by hand)
-analysis/rev3_constraint_run_pen.log,rev3-log,include,438,revision-3 log
+analysis/rev3_constraint_pen.csv.partial,unclassified,exclude,941469,revision-3 file of an unexpected type (check by hand)
+analysis/rev3_constraint_run_pen.log,rev3-log,include,760,revision-3 log
 analysis/rev3_constraint_validate.csv,rev3-data,include,5332,revision-3 run records / outputs
 analysis/rev3_constraint_validate.json,rev3-output,include,2699,revision-3 output
 analysis/rev3_constraint_validate.log,rev3-log,include,2700,revision-3 log
@@ -447,7 +447,7 @@ analysis/rev3_fine_analysis.py,rev3-code,include,25171,revision-3 script
 analysis/rev3_fine_manifest.md,rev3-doc,include,9994,revision-3 manifest / prespecification
 analysis/rev3_fine_timing.log,rev3-log,include,4028,revision-3 log
 analysis/rev3_fine_validate.log,rev3-log,include,2928,revision-3 log
-analysis/rev3_inference.log,rev3-log,include,4399,revision-3 log
+analysis/rev3_inference.log,rev3-log,include,5036,revision-3 log
 analysis/rev3_inference.py,rev3-code,include,52096,revision-3 script
 analysis/rev3_numbers_audit.json,rev3-output,include,3698669,revision-3 output
 analysis/rev3_numbers_audit.py,rev3-code,include,66312,revision-3 script
@@ -461,8 +461,13 @@ analysis/rev3_precision_manifest.md,rev3-doc,include,2866,revision-3 manifest / 
 analysis/rev3_precision_rerun.py,rev3-code,include,27663,revision-3 script
 analysis/rev3_refs_corrections.tex,rev3-output,include,4729,revision-3 table
 analysis/rev3_refs_report.md,rev3-doc,include,19546,revision-3 manifest / prespecification
-analysis/rev3_sites.py,rev3-code,include,68925,revision-3 script
+analysis/rev3_sites.json,rev3-output,include,201496,revision-3 output
+analysis/rev3_sites.log,rev3-log,include,11823,revision-3 log
+analysis/rev3_sites.py,rev3-code,include,75919,revision-3 script
+analysis/rev3_sites_inittime.csv,rev3-data,include,21796,revision-3 run records / outputs
 analysis/rev3_sites_reeval.csv,rev3-data,include,173817,revision-3 run records / outputs
+analysis/rev3_sites_slsqp_probe.csv,rev3-data,include,370,revision-3 run records / outputs
+analysis/rev3_sites_tables.tex,rev3-output,include,22418,revision-3 table
 analysis/robustness_final.py,legacy,exclude,4308,earlier paper; its output final_reevaluation.csv is kept as the cache seed of mpce_robustness.py
 analysis/robustness_fresh.py,legacy,exclude,4105,earlier paper
 analysis/robustness_hybrid.py,legacy,exclude,4296,superseded intermediate hybrid version
