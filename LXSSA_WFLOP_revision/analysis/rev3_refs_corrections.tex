@@ -1,0 +1,38 @@
+% rev3_refs_corrections.tex -- corrected \bibitem entries (A5/A6, revision 3, 2026-10-04).
+% Only entries that need a change are listed; keys and the IEEE-like style of the source files are kept.
+% Paste each block over the entry with the same key. Nothing here has been applied to the sources.
+% Verification environment: the egress proxy blocked doi.org, api.crossref.org, link.springer.com, sciencedirect.com,
+% dblp.org, openalex, semanticscholar, copernicus.org and arxiv.org (HTTP 403 / EGRESS_BLOCKED). Fields were therefore
+% checked against search-engine index records of the publisher pages (WebSearch), the PyPI JSON API, and the git
+% protocol (github.com). See analysis/rev3_refs_report.md for the full audit table.
+
+%======================================================================
+% A. Main bibliography: SWEVO_rev2/latex_source/optA/swevo_back.tex
+%======================================================================
+
+\bibitem{Thomas2023}
+% VERIFY-REF (2026-10-04): search-index records of wes.copernicus.org/articles/8/865/2023 (publisher citation line "Wind Energ. Sci., 8, 865-891, 2023"), OSTI 1975992, NASA ADS 2023WiEnS...8..865T -- 13 authors, title, vol. 8, pp. 865-891, 2023, DOI confirmed; issue number removed: the publisher's citation has none, secondary indexes give 8(5), but the article falls between 8/691 (5 May 2023, issue 5) and 8/947 (7 Jun 2023, issue 6), so the issue could not be confirmed
+J. J. Thomas \textit{et al.}, ``A comparison of eight optimization methods applied to a wind farm layout optimization problem,'' \textit{Wind Energy Sci.}, vol. 8, pp. 865--891, 2023, doi: 10.5194/wes-8-865-2023.
+
+\bibitem{Solanki2023}
+% VERIFY-REF (2026-10-04): search-index records of link.springer.com/article/10.1007/s13198-023-01935-y and of the journal's Online First listing -- authors (Prince Solanki, Kusum Deep; IIT Roorkee), title (publisher capitalization "Laplacian Salp Swarm Algorithm for continuous optimization"), journal, DOI, received 18 Aug 2021, accepted 1 May 2023, published online 18 May 2023 confirmed; the indexed publisher citation is "Int J Syst Assur Eng Manag (2023)" without volume, issue or pages, i.e. still Online First; Crossref/Springer pages blocked, so authors should re-check for an issue assignment at proof stage
+P. Solanki and K. Deep, ``Laplacian salp swarm algorithm for continuous optimization,'' \textit{Int. J. Syst. Assur. Eng. Manag.}, published online May 18, 2023 (Online First), doi: 10.1007/s13198-023-01935-y.
+
+\bibitem{IEA37repo}
+% VERIFY-REF (2026-10-04): git ls-remote/fetch of github.com/IEAWindSystems/iea37-wflo-casestudies -- HEAD = 267f6e5d2906400b2ee0a8ff533da7ebcc4bb47a, committed 13 Nov. 2020 (merge of PR #1 from byuflowlab/master), still the latest commit; its tree is identical to byuflowlab/iea37-wflo-casestudies af88908 (14 Aug. 2020), which still exists as a separate repository (no redirect); main contributors N. F. Baker, A. Ning, E. Quaeghebeur. Entry text unchanged (comment-only correction)
+N. F. Baker \textit{et al.}, ``IEA Wind Task 37 wind farm layout optimization case studies: Case files and submitted results,'' GitHub repository, commit 267f6e5, 2020. Accessed: Sep. 28, 2026. [Online]. Available: \url{https://github.com/IEAWindSystems/iea37-wflo-casestudies}
+
+%======================================================================
+% B. Supplement bibliography: SWEVO_rev2/latex_source/SWEVO_supplement.tex (one-line style kept)
+%======================================================================
+
+\bibitem{Solanki2023} P. Solanki and K. Deep, ``Laplacian salp swarm algorithm for continuous optimization,'' \textit{Int. J. Syst. Assur. Eng. Manag.}, published online May 18, 2023 (Online First), doi: 10.1007/s13198-023-01935-y.
+
+\bibitem{Thomas2023}
+J. J. Thomas \textit{et al.}, ``A comparison of eight optimization methods applied to a wind farm layout optimization problem,'' \textit{Wind Energy Sci.}, vol. 8, pp. 865--891, 2023, doi: 10.5194/wes-8-865-2023.
+
+\bibitem{PyWake} DTU Wind Energy, ``PyWake: Open-source static wake modeling framework,'' Python package \texttt{py\_wake}, ver. 2.6.20 (Horns Rev~1 and Lillgrund site data in \texttt{py\_wake/examples/data/hornsrev1.py} and \texttt{lillgrund.py}), MIT License, 2026. Accessed: Sep. 25, 2026. [Online]. Available: \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}
+% (PyWake: only the position of "Accessed" changed, to match the main bibliography; PyPI JSON API 2026-10-04: py-wake 2.6.20 uploaded 2026-03-30, MIT License, author "DTU Wind Energy")
+
+% Supplement entries to DELETE (never cited in SWEVO_supplement.tex, but a manual thebibliography prints them):
+%   \bibitem{Benavoli2016} ...   and   \bibitem{Cleghorn2018} ...
