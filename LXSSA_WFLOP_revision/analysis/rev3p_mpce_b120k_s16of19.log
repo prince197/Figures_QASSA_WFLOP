@@ -1,0 +1,4 @@
+mpce_b120k_s16of19: 38 keys, 38 to run, procs=1
+  10/38 570s last mpce_b120k_s5of8.csv:131 match
+  20/38 1046s last mpce_b120k_s3of8.csv:39 match
+  30/38 1566s last mpce_b120k_s6of8.csv:16 match
