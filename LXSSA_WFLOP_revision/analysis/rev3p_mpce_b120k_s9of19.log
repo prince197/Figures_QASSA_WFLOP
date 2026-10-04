@@ -2,3 +2,6 @@ mpce_b120k_s9of19: 39 keys, 39 to run, procs=1
   10/39 516s last mpce_b120k_s5of8.csv:27 match
   20/39 950s last mpce_b120k_s7of8.csv:51 match
   30/39 1451s last mpce_b120k_s6of8.csv:140 match
+  39/39 1821s last mpce_b120k_s3of8.csv:201 match
+mpce_b120k_s9of19: done in 1821s
+wrote /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/rev3_fullprec_mpce_b120k_s9of19.csv: 39 of 39 records
