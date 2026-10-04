@@ -12,6 +12,8 @@ Usage
   python3 rev3_precision_rerun.py keys FILE.json [--procs=2]           rerun an explicit list [[File, Row], ...]
   python3 rev3_precision_rerun.py plan [STUDY,STUDY]                   write rev3_precision_plan.json (studies listed
                                                                        are finished locally and get no shards)
+  python3 rev3_precision_rerun.py export-local                         write $REV3_PRECISION_RESDIR/*.jsonl as
+                                                                       rev3_fullprec_<study>_local.csv
   python3 rev3_precision_rerun.py collect                              write rev3_fullprec_<study>.csv (+ summary)
 Results are appended, one JSON line per record, to $REV3_PRECISION_RESDIR/<tag>.jsonl (default
 analysis/rev3_precision_results/) (resumable: records already
@@ -302,6 +304,31 @@ DRIVER = {
 ORDER_PRIORITY = ["rev2_grad", "rev2_lg16", "rev2_lg16b", "rev2_laplace", "rev2_spacing"]
 
 
+def shard_files():
+    """Raw rerun files in analysis/: cloud shards rev3_fullprec_<study>_s<i>of<k>.csv and the local reruns
+    rev3_fullprec_<study>_local.csv (not the per-study summaries rev3_fullprec_<study>.csv written by collect)."""
+    import re
+    return sorted(p for p in glob.glob(os.path.join(HERE, "rev3_fullprec_*.csv"))
+                  if re.search(r"_(s\d+of\d+|local)\.csv$", os.path.basename(p)))
+
+
+def export_local():
+    """Write the results of RESDIR (*.jsonl) as raw files rev3_fullprec_<study>_local.csv in analysis/."""
+    rows = []
+    for p in sorted(glob.glob(os.path.join(RESDIR, "*.jsonl"))):
+        for line in open(p):
+            q = json.loads(line)
+            if "Error" not in q:
+                rows.append(q)
+    df = pd.DataFrame(rows).drop_duplicates(["File", "Row"], keep="last")
+    r = audit_records().set_index(["File", "Row"])
+    df["_study"] = r.loc[list(zip(df.File, df.Row)), "Study"].values
+    for st, g in df.groupby("_study"):
+        fn = os.path.join(HERE, f"rev3_fullprec_{st}_local.csv")
+        g.drop(columns="_study").sort_values(["File", "Row"]).to_csv(fn, index=False)
+        print(f"wrote {os.path.basename(fn)}: {len(g)}")
+
+
 def _done_keys():
     done = set()
     for p in glob.glob(os.path.join(RESDIR, "*.jsonl")):
@@ -309,7 +336,7 @@ def _done_keys():
             q = json.loads(line)
             if "Error" not in q:
                 done.add((q["File"], int(q["Row"])))
-    for p in glob.glob(os.path.join(HERE, "rev3_fullprec_*_s*of*.csv")):
+    for p in shard_files():
         q = pd.read_csv(p, usecols=["File", "Row"])
         done.update((f, int(i)) for f, i in zip(q.File, q.Row))
     return done
@@ -400,8 +427,7 @@ def load_results():
         for line in open(p):
             rows.append(json.loads(line))
     res = pd.DataFrame(rows)
-    shard = [pd.read_csv(p, dtype={"Dataset": str, "Spacing": str, "Init": str})
-             for p in sorted(glob.glob(os.path.join(HERE, "rev3_fullprec_*_s*of*.csv")))]
+    shard = [pd.read_csv(p, dtype={"Dataset": str, "Spacing": str, "Init": str}) for p in shard_files()]
     if shard:
         res = pd.concat([res] + shard, ignore_index=True)
     for c in ("CurveMatch",):
@@ -512,7 +538,7 @@ def collect():
 
 # ------------------------------------------------------------------ LaTeX table
 SHORT = {
-    "fresh_grid": "Bench., 6 methods$^a$", "fresh_bgrid": "Bench., LX-SSA-VNS/SSA-VNS",
+    "fresh_grid": "Bench., 6 methods$^a$", "fresh_bgrid": "Bench., (LX-)SSA-VNS",
     "fresh_vgrid": "Bench., VNS", "fresh_bsplit": "Split, LX-SSA-VNS", "fresh_hgrid": "Bench., LX-VNS$^s$",
     "fresh_hsplit": "Split, LX-VNS$^s$", "fresh_hr": "HR1, earlier$^{s,h}$",
     "mpce_psobv": "Bench., PSO-VNS$^h$", "mpce_psoc": "Bench., PSO", "mpce_slsqp": "Bench., MS-SLSQP",
@@ -567,7 +593,7 @@ the rounded coordinates minus stored objective$|$, in percentage points of the i
 $^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Superseded, not used in the manuscript.
 Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
 \label{tab:S-r3-precision}
-\scriptsize\setlength{\tabcolsep}{2pt}
+\scriptsize\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{lrrrrrrrrrrrrr}
 \toprule
 & & & \multicolumn{3}{c}{Rounded coordinates} & \multicolumn{4}{c}{Reruns} & \multicolumn{2}{c}{Strict label} & & \\
@@ -615,6 +641,8 @@ if __name__ == "__main__":
         plan(exclude=tuple(a.arg[0].split(",")) if a.arg else ())
     elif a.cmd == "collect":
         collect()
+    elif a.cmd == "export-local":
+        export_local()
     elif a.cmd == "table":
         table()
     else:
