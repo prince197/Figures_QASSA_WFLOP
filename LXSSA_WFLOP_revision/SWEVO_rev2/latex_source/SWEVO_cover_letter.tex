@@ -3,6 +3,8 @@
 \usepackage[a4paper,margin=2.1cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\newcommand{\TBD}[1]{\textcolor{red}{[TBD: #1]}}
 \setlength{\parskip}{0.4em}
 \longindentation=0pt
 \indentedwidth=\textwidth
@@ -14,13 +16,13 @@
 \opening{Dear Editors-in-Chief,}
 We present for consideration the manuscript \textit{``Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization''}, by Prince Solanki, Pulkit Dwivedi, Vanita Garg and Vinay Shukla.
 
-The paper examines how baseline settings, hybrid-component controls and feasibility reporting change comparisons of swarm and evolutionary algorithms. On a 68-case benchmark with 30 paired seeds, it combines evaluation-budget accounting, random-sampling controls, conditional quality rankings and interval-based practical-equivalence assessments. A PSO coefficient sweep connects baseline behaviour to established second-moment stability theory under stagnation; this applies existing theory rather than proposing a new optimizer or convergence theorem.
+The paper examines how baseline settings, hybrid-component controls and the treatment of unsuccessful runs change comparisons of swarm and evolutionary algorithms. On a 68-case wind farm layout benchmark with 30 paired seeds, it combines evaluation-budget accounting, equal-cost random-sampling controls, feasibility-qualified and all-run rankings and interval-based equivalence analyses, and it tests the conclusions on Horns Rev~1, Lillgrund and IEA37 cases with a real-coded GA and exact-gradient baselines. A PSO coefficient sweep connects baseline behaviour to established second-moment stability theory under stagnation; the paper applies existing theory and proposes no new optimizer or convergence theorem.
 
-The revision includes a real-coded GA, re-optimization at $5D$ and $6D$, analytic-gradient SLSQP variants on IEA37 and a second measured-wind block at Lillgrund. GA changes conclusions beyond the original method pool, analytic objective and constraint derivatives strengthen the tested SLSQP implementations, and the SSA control result at $4D$/$5D$ does not persist at $6D$. A new all-run paired reliability analysis complements conditional quality ranks at Lillgrund. These findings make the work relevant to rigorous experimental comparison of swarm and evolutionary methods.
+This version adds an all-run paired endpoint on all 68 benchmark cases; equivalence tests calibrated by null simulation; a constraint-handling study (Deb's feasibility rules with box clipping or radial projection); direct optimization with 1$^\circ$ direction bins; Horns Rev~1 and IEA37 method pools recomputed with GA and the exact-gradient methods; and a full-precision verification of the feasibility labels of the stored runs. The findings are bounded accordingly: PSO-VNS stays first when the search itself uses 1$^\circ$ bins, GA's Horns Rev~1 lead at the larger budget holds under 1$^\circ$ bins and PyWake, and the conclusions depend partly on constraint handling, so they concern the implemented penalty and repair.
 
-The manuscript distinguishes fixed-benchmark estimates from sensitivities to case exchangeability and grouping. Alternative-model studies transfer final layouts to a different evaluator; the direct spacing and gradient experiments are identified separately. It explains the limits of gradient-cost accounting and the differing constraint-handling implementations.
+All code, the per-run records of every optimization run and the analysis scripts form a versioned reproducibility package. Re-executing its analysis pipeline regenerates every table, figure and number of the article and its supplement, and reruns of stored runs reproduce the records bit for bit apart from elapsed time. The package will be deposited publicly before publication (DOI pending); until then it is available to the editor and reviewers on request.
 
-The accompanying revision archive contains the manuscript, supplementary material, supplied revision records and a standalone archive audit. Original optimization records and several core modules remain to be added for full reproduction, and rounded archival coordinates limit independent strict-feasibility verification. These limitations are disclosed in the manuscript and supplement. Funding, contribution, interest and AI-use statements are provided in the declarations document.
+Funding, contribution, interest and AI-use statements are provided in the declarations document. \TBD{authors: confirm that the manuscript is not under consideration elsewhere and that all authors approved its submission}
 
 \closing{Sincerely,}
 \end{letter}\end{document}
