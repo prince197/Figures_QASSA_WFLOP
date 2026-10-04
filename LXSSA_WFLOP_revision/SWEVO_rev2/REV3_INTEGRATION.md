@@ -141,5 +141,5 @@ Direct 1-deg optimization (seeds 31–60): ranks PSO-VNS 1.12, PSO 2.62, GA 3.38
 (same seeds, optimized at 15 deg): ranks PSO-VNS 1.88, PSO 2.25, GA 2.62, MS-SLSQP 4.00, RSD-VNS 4.25; re-evaluated at 1 deg:
 PSO-VNS 2.25, MS-SLSQP 2.62, PSO 2.88, GA 3.12, RSD-VNS 4.12 (leader unchanged, as for the stored seeds 1–30). Optimizing at
 1 deg instead of 15 deg lowers the 1-deg wake loss on the same seeds by 1.12 pp (PSO-VNS), 1.01 (PSO), 1.09 (RSD-VNS),
-0.84 (GA) and 0.33 pp (MS-SLSQP). The leader does not change; PSO-VNS's advantage over PSO is about twice that of the
+0.84 (GA) and 0.32 pp (MS-SLSQP). The leader does not change; PSO-VNS's advantage over PSO is about twice that of the
 re-evaluated layouts (-0.086 pp, control arm at 1 deg) and lies beyond the 0.05 pp margin.

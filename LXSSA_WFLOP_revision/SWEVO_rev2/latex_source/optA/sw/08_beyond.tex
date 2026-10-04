@@ -203,42 +203,32 @@ In IEA37 Case Study~1 the participants chose their own optimizers and budgets~\c
 
 \emph{Gradient cost.} With forward differences, every MS-SLSQP gradient costs $2N$ evaluations besides the objective value, $2N+1$ in all, so 6,030 evaluations allow at most 182 gradients with 16 turbines and 82 with 36. Exact or algorithmic-differentiation gradients remove most of this cost, which grows with $N$~\cite{Guirguis2016,Rodrigues2024}, and a smooth wake model, such as the Gaussian wake of IEA37, makes gradients informative~\cite{Thomas2023}. In our runs, MS-SLSQP has, of the ten methods, the best 16-turbine layout at 6,030 evaluations and the best 36-turbine layout at 30,030, but falls behind PSO-VNS with 36 turbines at 6,030 (Table~\ref{tab:iea37}), consistent with this cost. We therefore added SLSQP with the exact analytic gradient of the IEA37 AEP, as multistart MS-SLSQP and after the PSO phase of PSO-VNS (PSO-SLSQP), with each gradient charged three evaluations, its measured cost (30 seeds, random starts; Section~\ref{S-sec:S-rev-grad}, Tables~\ref{S-tab:S-rev-grad} and~\ref{S-tab:S-rev-grad-calls}); both are feasible in all 240 runs. In one pool of all 13 methods (Table~\ref{tab:iea-means}; tests: Table~\ref{S-tab:S-r3-iea-pool}), an exact-gradient method ranks first in every scenario and budget and is better than each of the 11 other methods in all 30 seed pairs ($p_{\rm Holm}=2.2\times10^{-8}$); the two exact-gradient methods differ significantly only at 30,030 evaluations. With 36 turbines, their mean AEP at 6,030 evaluations (832{,}893.3 and 832{,}404.0~MWh) exceeds that of every other method at 30,030 (highest: GA, 823{,}061.5~MWh), and the best PSO-SLSQP layouts at 30,030 lie 0.04\% (16 turbines) and 1.84\% (36 turbines) below the best feasible published layouts (strict). Without exact gradients, PSO-VNS ranks first with 16 turbines (not different from GA at 30,030, $p_{\rm Holm}=0.26$) and GA with 36 turbines, where PSO-VNS ranks fifth and fourth of 13 and does not differ significantly from VNS. The exact-gradient variants differentiate both the objective and the constraints, whereas the original baseline uses finite differences, and PSO-SLSQP also restarts from the incumbent and personal bests: this comparison tests complete implementations of the second phase, not the isolated effect of the AEP derivative. The objective is only piecewise smooth: the derivative treats the upstream-wake indicator as locally constant. Per run, the exact-gradient methods take about 3--6 times as long as PSO-VNS (Section~\ref{sec:runtime}); SLSQP subproblems, constraint evaluations and their Jacobians are not charged, so the comparison is at equal charged budget in objective-equivalent units, not at equal elapsed time or total computation. Their constraints are active at the optimum, so the rounded stored coordinates cannot decide their strict feasibility labels; full-precision reruns do (Section~\ref{sec:archive-reliability}).
 
-\begin{table}[!t]\centering\scriptsize
+\begin{table}[!t]\centering\scriptsize\setlength{\tabcolsep}{1.6pt}
 \caption{IEA37 Case Study~1: conditional mean AEP, feasibility and rank in the pool of 13 methods (11 shown).}\label{tab:iea-means}
-\begin{tabular}{lrrrrrr}\toprule
-& \multicolumn{3}{c}{6,030 evaluations} & \multicolumn{3}{c}{30,030 evaluations} \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
-Method & Mean AEP & Feas. & Rank & Mean AEP & Feas. & Rank \\
-\midrule\multicolumn{7}{c}{16 turbines} \\
-PSO-VNS & 395{,}031.8 & 30/30 & 3 & 402{,}583.1 & 30/30 & 3 \\
-PSO & 390{,}540.2 & 30/30 & 5 & 401{,}347.0 & 30/30 & 5 \\
-GA & 391{,}037.6 & 30/30 & 4 & 401{,}766.1 & 30/30 & 4 \\
-SSA-VNS & 388{,}562.9 & 30/30 & 6 & 396{,}920.5 & 30/30 & 7 \\
-SSA & 378{,}073.1 & 30/30 & 11 & 392{,}875.6 & 30/30 & 11 \\
-LX-SSA & 373{,}977.4 & 30/30 & 12 & 390{,}267.4 & 30/30 & 12 \\
-DE & 338{,}610.6 & 27/30 & 13 & 359{,}952.3 & 30/30 & 13 \\
-VNS & 387{,}637.3 & 30/30 & 7 & 396{,}192.0 & 30/30 & 8 \\
-MS-SLSQP & 382{,}605.2 & 18/30 & 10 & 394{,}567.0 & 29/30 & 10 \\
-MS-SLSQP, analytic & 407{,}721.0 & 30/30 & 2 & 409{,}976.3 & 30/30 & 2 \\
-PSO-SLSQP, analytic & \textbf{407{,}891.4} & 30/30 & \textbf{1} & \textbf{413{,}179.2} & 30/30 & \textbf{1} \\
-\midrule\multicolumn{7}{c}{36 turbines} \\
-PSO-VNS & 736{,}832.4 & 30/30 & 5 & 807{,}446.0 & 30/30 & 4 \\
-PSO & 729{,}188.5 & 27/30 & 6 & 802{,}252.3 & 30/30 & 5 \\
-GA & 774{,}971.9 & 30/30 & 3 & 823{,}061.5 & 30/30 & 3 \\
-SSA-VNS & 728{,}870.3 & 30/30 & 7 & 791{,}404.4 & 30/30 & 7 \\
-SSA & 717{,}258.5 & 30/30 & 8 & 771{,}298.0 & 30/30 & 10 \\
-LX-SSA & 709{,}660.5 & 30/30 & 10 & 752{,}030.3 & 30/30 & 11 \\
-DE & -- & 0/30 & 13 & -- & 0/30 & 13 \\
-VNS & 741{,}565.6 & 30/30 & 4 & 801{,}797.4 & 30/30 & 6 \\
-MS-SLSQP & 733{,}342.0 & 4/30 & 12 & 798{,}913.0 & 14/30 & 12 \\
-MS-SLSQP, analytic & \textbf{832{,}893.3} & 30/30 & \textbf{1} & 838{,}852.9 & 30/30 & 2 \\
-PSO-SLSQP, analytic & 832{,}404.0 & 30/30 & 2 & \textbf{842{,}556.9} & 30/30 & \textbf{1} \\
+\begin{tabular}{lrcrrcrrcrrcr}\toprule
+& \multicolumn{6}{c}{16 turbines} & \multicolumn{6}{c}{36 turbines} \\
+\cmidrule(lr){2-7}\cmidrule(lr){8-13}
+& \multicolumn{3}{c}{6,030 evaluations} & \multicolumn{3}{c}{30,030 evaluations} & \multicolumn{3}{c}{6,030 evaluations} & \multicolumn{3}{c}{30,030 evaluations} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
+Method & Mean AEP & Feas. & Rank & Mean AEP & Feas. & Rank & Mean AEP & Feas. & Rank & Mean AEP & Feas. & Rank \\
+\midrule
+PSO-VNS & 395{,}031.8 & 30/30 & 3 & 402{,}583.1 & 30/30 & 3 & 736{,}832.4 & 30/30 & 5 & 807{,}446.0 & 30/30 & 4 \\
+PSO & 390{,}540.2 & 30/30 & 5 & 401{,}347.0 & 30/30 & 5 & 729{,}188.5 & 27/30 & 6 & 802{,}252.3 & 30/30 & 5 \\
+GA & 391{,}037.6 & 30/30 & 4 & 401{,}766.1 & 30/30 & 4 & 774{,}971.9 & 30/30 & 3 & 823{,}061.5 & 30/30 & 3 \\
+SSA-VNS & 388{,}562.9 & 30/30 & 6 & 396{,}920.5 & 30/30 & 7 & 728{,}870.3 & 30/30 & 7 & 791{,}404.4 & 30/30 & 7 \\
+SSA & 378{,}073.1 & 30/30 & 11 & 392{,}875.6 & 30/30 & 11 & 717{,}258.5 & 30/30 & 8 & 771{,}298.0 & 30/30 & 10 \\
+LX-SSA & 373{,}977.4 & 30/30 & 12 & 390{,}267.4 & 30/30 & 12 & 709{,}660.5 & 30/30 & 10 & 752{,}030.3 & 30/30 & 11 \\
+DE & 338{,}610.6 & 27/30 & 13 & 359{,}952.3 & 30/30 & 13 & -- & 0/30 & 13 & -- & 0/30 & 13 \\
+VNS & 387{,}637.3 & 30/30 & 7 & 396{,}192.0 & 30/30 & 8 & 741{,}565.6 & 30/30 & 4 & 801{,}797.4 & 30/30 & 6 \\
+MS-SLSQP & 382{,}605.2 & 18/30 & 10 & 394{,}567.0 & 29/30 & 10 & 733{,}342.0 & 4/30 & 12 & 798{,}913.0 & 14/30 & 12 \\
+MS-SLSQP, analytic & 407{,}721.0 & 30/30 & 2 & 409{,}976.3 & 30/30 & 2 & \textbf{832{,}893.3} & 30/30 & \textbf{1} & 838{,}852.9 & 30/30 & 2 \\
+PSO-SLSQP, analytic & \textbf{407{,}891.4} & 30/30 & \textbf{1} & \textbf{413{,}179.2} & 30/30 & \textbf{1} & 832{,}404.0 & 30/30 & 2 & \textbf{842{,}556.9} & 30/30 & \textbf{1} \\
 \bottomrule\end{tabular}
-\par\vspace{3pt}\parbox{\linewidth}{\footnotesize Mean AEP in MWh over the feasible runs (bold: best method); Feas.: feasible runs of 30 seeds (strict $10^{-6}$~m labels; Section~\ref{sec:archive-reliability}); --: no feasible run. Analytic variants use analytic objective and constraint derivatives, $c_g=3$. Rank: feasibility-aware rank (rule of Table~\ref{tab:friedman68}) in the pool of the ten methods of the budget study, GA and the two analytic variants; the two methods not shown, RS-VNS and LX-SSA-VNS, and the seed-paired Holm-adjusted tests: Table~\ref{S-tab:S-r3-iea-pool}.}
+\par\vspace{2pt}\parbox{\linewidth}{\scriptsize Mean AEP in MWh over the feasible runs (bold: best method); Feas.: feasible runs of 30 seeds (strict $10^{-6}$~m labels; Section~\ref{sec:archive-reliability}); --: no feasible run. Analytic variants: analytic objective and constraint derivatives, $c_g=3$. Rank: feasibility-aware rank (rule of Table~\ref{tab:friedman68}) in the pool of the ten methods of the budget study, GA and the two analytic variants; the two methods not shown (RS-VNS, LX-SSA-VNS) and the seed-paired Holm-adjusted tests: Table~\ref{S-tab:S-r3-iea-pool}.}
 \end{table}
 
 \begin{table}[!t]
-\centering\small
+\centering\footnotesize
 \caption{Expanded nine-method benchmark pool. Original eight-method results remain a separate analysis.}
 \label{tab:ga-main}
 \begin{tabular}{lcccc}\toprule
