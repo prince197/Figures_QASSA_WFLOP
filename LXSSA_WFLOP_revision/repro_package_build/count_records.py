@@ -9,7 +9,7 @@ the superseded Horns Rev rows, which hrfix replaces), Horns Rev 1 (hrfix) 970, I
 Revision 2 (11,640): the rev2_<family>_s<i>of<k>.csv shards. Revision 3: every analysis/rev3_*.csv that has the
 run-record columns (Algorithm, Seed, Objective, Feasible) is counted and listed. Exit code 1 if a total differs.
 """
-import argparse, glob, os, sys
+import argparse, glob, os, re, sys
 import pandas as pd
 
 ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
@@ -49,7 +49,7 @@ for k, v in c.items():
 print(f"original study records: {orig} (expected 36190)")
 r2 = {}
 for f in sorted(glob.glob(os.path.join(D, "rev2_*_s*of*.csv"))):
-    fam = os.path.basename(f).split("_s")[0]
+    fam = re.sub(r"_s\d+of\d+\.csv$", "", os.path.basename(f))
     r2[fam] = r2.get(fam, 0) + len(pd.read_csv(f, usecols=["Algorithm"]))
 print("revision-2 records:", sum(r2.values()), "(expected 11640):", ", ".join(f"{k} {v}" for k, v in r2.items()))
 r3 = {}
@@ -60,7 +60,7 @@ for f in sorted(glob.glob(os.path.join(D, "rev3_*.csv"))):
         continue
     if {"Algorithm", "Seed", "Objective", "Feasible"} <= set(cols):
         r3[os.path.basename(f)] = len(pd.read_csv(f, usecols=["Algorithm"]))
-print("revision-3 run-record files:", sum(r3.values()), "records" if r3 else "(none present)")
+print("revision-3 files in run-record format (runs or re-evaluations):", sum(r3.values()), "rows" if r3 else "(none present)")
 for k, v in r3.items():
     print(f"  {k:62s} {v:6d}")
 sys.exit(0 if orig == 36190 and sum(r2.values()) == 11640 else 1)

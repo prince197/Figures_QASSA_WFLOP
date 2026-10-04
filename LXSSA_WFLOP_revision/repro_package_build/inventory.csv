@@ -1,0 +1,622 @@
+path,category,decision,bytes,note
+SWEVO_rev2/experiments_docs/rev2_summary.json,output,include,170258,revision-2 summary (rev2_analysis.py)
+SWEVO_rev2/experiments_docs/rev2_tables.tex,output,include,21357,revision-2 tables (rev2_analysis.py)
+SWEVO_rev2/experiments_docs/run_rev2_all.sh,driver,include,720,revision-2 launch scripts (exact shard commands)
+SWEVO_rev2/experiments_docs/run_rev2_hpc.sh,driver,include,623,revision-2 launch scripts (exact shard commands)
+SWEVO_rev2/experiments_docs/run_rev2_resumable.sh,driver,include,741,revision-2 launch scripts (exact shard commands)
+SWEVO_rev2/validation/archive_audit.json,output,include,3675,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+SWEVO_rev2/validation/focused_checks.json,output,include,753,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+SWEVO_rev2/validation/paired_outcomes.csv,output,include,1861,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+SWEVO_rev2/validation/raw_data_checksums.json,output,include,22429,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+SWEVO_rev2/validation/reliability.csv,output,include,1619,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+SWEVO_rev2/validation/reliability_tables.tex,output,include,3272,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+SWEVO_rev2/validation/revision_verification.json,output,include,1657,"revision-2 audit outputs (audit_archive.py, check_revision.py)"
+analysis/README.md,legacy-doc,exclude,10509,history of all analysis versions; superseded for SWEVO by README_reproduce.md and the package README
+analysis/README_reproduce.md,doc,include,16140,repository reproduction notes (MPCE/SWEVO pipeline)
+analysis/analyze_authors_runs.py,analysis,include,12602,authors_tables.tex (spacing table) and calibration table
+analysis/analyze_extra_runs.py,legacy,exclude,7541,earlier paper
+analysis/audit_archive.py,check,include,11529,archive audit of the revision-2 records (expects the experiments/ + validation/ layout)
+analysis/authors_experiments.log,log,include,1407,launcher log of authors_experiments.py
+analysis/authors_experiments.py,driver,include,3761,runs authors_runs_*.csv (spacing table tab:spacing-authors)
+analysis/authors_objective.py,model,include,1382,penalized objective (exact quadratic penalty of the original objective.py)
+analysis/authors_optimizers.py,optimizer,include,9150,GA/PSO/DE/SSA/LX-SSA of the original code (logic and random-call order unchanged)
+analysis/authors_runs_budget.csv,runs-earlier,include,370703,re-runs of the original code (inputs of analyze_authors_runs.py: spacing table)
+analysis/authors_runs_crowded.csv,runs-earlier,include,262704,re-runs of the original code (inputs of analyze_authors_runs.py: spacing table)
+analysis/authors_runs_hornsrev.csv,runs-earlier,include,143645,re-runs of the original code (inputs of analyze_authors_runs.py: spacing table)
+analysis/authors_runs_spacing.csv,runs-earlier,include,186772,re-runs of the original code (inputs of analyze_authors_runs.py: spacing table)
+analysis/authors_runtime_6030.csv,output,include,410,output of analyze_authors_runs.py
+analysis/authors_spacing_all.csv,output,include,279083,output of analyze_authors_runs.py
+analysis/authors_tables.tex,output,include,9940,spacing / calibration tables
+analysis/batch_runtime_per_run.csv,legacy,exclude,546,earlier analyses (superseded)
+analysis/best_layouts_selected_cases.csv,legacy,exclude,7311,earlier analyses (superseded)
+analysis/bootstrap_ci.csv,legacy,exclude,1584,earlier analyses (superseded)
+analysis/build_final_manuscript.py,legacy,exclude,29494,manuscript builders of earlier papers (LX-SSA versions)
+analysis/build_fresh_manuscript.py,legacy,exclude,26074,manuscript builders of earlier papers (LX-SSA versions)
+analysis/build_hybrid_manuscript.py,legacy,exclude,33402,manuscript builders of earlier papers (LX-SSA versions)
+analysis/build_mpce_paper.sh,manuscript-tool,exclude,4142,MPCE-version build (pdflatex of MPCE_PSO_VNS.tex); the Python stages are in regenerate_all.sh
+analysis/build_section7.py,legacy,exclude,10154,manuscript builder of an earlier paper
+analysis/build_swevo.sh,manuscript-tool,exclude,2193,pdflatex of the manuscript; needs the manuscript sources (not in the data package)
+analysis/bvns_case_tests.csv,legacy,exclude,31834,superseded intermediate version
+analysis/bvns_compare.py,legacy,exclude,3950,superseded intermediate version
+analysis/bvns_summary.json,legacy,exclude,2858,superseded intermediate version
+analysis/bvns_tables.tex,legacy,exclude,1184,superseded intermediate version
+analysis/calibrate_authors_code.py,check,include,1857,re-run vs recorded distributions of the original code
+analysis/calibration_vs_recorded.csv,output,include,1703,Mann-Whitney calibration table
+analysis/check_csweep.log,log,include,2774,stored outputs of the check scripts
+analysis/check_diag.log,log,include,4408,stored outputs of the check scripts
+analysis/check_dir.log,log,include,10533,stored outputs of the check scripts
+analysis/check_extra.log,log,include,16420,stored outputs of the check scripts
+analysis/check_final.log,log,include,17971,stored outputs of the check scripts
+analysis/check_revision.py,check,include,2820,focused checks of the revision-2 package
+analysis/csweep.log,log,include,4626,log of mpce_csweep.py
+analysis/direction.log,log,include,4349,log of mpce_direction.py
+analysis/equal_budget_tests.csv,output,include,5122,output of analyze_authors_runs.py
+analysis/extra_baselines.py,optimizer,include,5140,MS-SLSQP (and the modified VNS of an earlier version)
+analysis/extra_experiments.log,legacy,exclude,540,earlier paper
+analysis/extra_experiments.py,legacy,exclude,4772,earlier VNS/SLSQP/Horns Rev runs (superseded by mpce_* and hrfix)
+analysis/extra_runs_extra.csv,legacy,exclude,316194,earlier paper (superseded)
+analysis/extra_runs_hr16.csv,legacy,exclude,61314,earlier paper (superseded)
+analysis/extra_runs_hr80.csv,legacy,exclude,83265,earlier paper (superseded)
+analysis/extra_tables.tex,legacy,exclude,4765,earlier paper
+analysis/feasible_init.py,optimizer,include,3711,feasibility-preserving initialization
+analysis/final_ablation_tests.csv,legacy,exclude,18967,earlier paper
+analysis/final_best_layouts_maxN.csv,legacy,exclude,2105,earlier paper
+analysis/final_case_tests.csv,legacy,exclude,51019,earlier paper
+analysis/final_frontmatter.py,legacy,exclude,5201,manuscript builder of an earlier paper
+analysis/final_prose.py,legacy,exclude,63415,manuscript builder of an earlier paper
+analysis/final_reevaluation.csv,input,include,3015665,cache seed read by mpce_robustness.py (re-evaluations of the fresh_* layouts)
+analysis/final_results.py,legacy,exclude,33067,earlier LX-SSA-VNS paper (final_* outputs)
+analysis/final_robust_summary.json,legacy,exclude,1455,earlier paper
+analysis/final_robust_table.tex,legacy,exclude,1386,earlier paper
+analysis/final_summary.json,legacy,exclude,5175,earlier paper
+analysis/final_tables.tex,legacy,exclude,20053,earlier paper
+analysis/flatten_swevo.py,manuscript-tool,exclude,4270,LaTeX flattening of the SWEVO manuscript (manuscript sources are not part of the data package)
+analysis/followup_statistics.py,legacy,exclude,2779,earlier analyses (superseded)
+analysis/fresh_best_layouts_maxN.csv,legacy,exclude,3186,earlier paper
+analysis/fresh_bgrid.csv,runs-original,include,8742135,"68 cases: SSA-VNS, LX-SSA-VNS"
+analysis/fresh_bhr16.csv,runs-superseded-read,include,107113,"old Horns Rev binning; read, then replaced by hrfix"
+analysis/fresh_bhr80.csv,legacy,exclude,21788,earlier paper; not read by the SWEVO analysis
+analysis/fresh_bsplit.csv,legacy,exclude,1467040,LX-SSA-VNS split runs of the earlier paper; not read by the SWEVO analysis
+analysis/fresh_case_tests.csv,legacy,exclude,43110,earlier paper
+analysis/fresh_grid.csv,runs-original,include,25150969,"68 cases: SSA, LX-SSA, DE, old-setting PSO (+ unused SLSQP/VNS rows)"
+analysis/fresh_hgrid.csv,legacy,exclude,4337051,"superseded hybrid (LXVNS) runs, not used"
+analysis/fresh_hhr16.csv,legacy,exclude,50186,"superseded hybrid (LXVNS) runs, not used"
+analysis/fresh_hhr80.csv,legacy,exclude,21826,"superseded hybrid (LXVNS) runs, not used"
+analysis/fresh_hr16.csv,runs-superseded-read,include,277384,old Horns Rev binning; read by mpce_results.py but every HR row is replaced by hrfix
+analysis/fresh_hr80.csv,legacy,exclude,140371,Horns Rev 80-turbine runs of the earlier paper; not read by the SWEVO analysis
+analysis/fresh_hsplit.csv,legacy,exclude,1431311,"superseded hybrid (LXVNS) runs, not used"
+analysis/fresh_reevaluation.csv,legacy,exclude,2548788,earlier paper
+analysis/fresh_results.py,legacy,exclude,23035,six-method study of an earlier paper
+analysis/fresh_robust_summary.json,legacy,exclude,1332,earlier paper
+analysis/fresh_robust_table.tex,legacy,exclude,1349,earlier paper
+analysis/fresh_summary.json,legacy,exclude,2366,earlier paper
+analysis/fresh_tables.tex,legacy,exclude,15701,earlier paper
+analysis/fresh_vgrid.csv,runs-original,include,4492170,68 cases: VNS
+analysis/fresh_vhr16.csv,runs-superseded-read,include,55996,"old Horns Rev binning; read, then replaced by hrfix"
+analysis/fresh_vhr80.csv,legacy,exclude,22037,earlier paper; not read by the SWEVO analysis
+analysis/friedman_case_level.csv,legacy,exclude,359,earlier analyses (superseded)
+analysis/full_grid_experiments.py,driver,include,7361,runs fresh_grid / fresh_vgrid / fresh_bgrid (+ old Horns Rev files)
+analysis/hornsrev_model.py,model,include,6175,"Horns Rev 1 site model (V80, measured 12-sector climate from PyWake 2.6.20)"
+analysis/hornsrev_site_text.tex,legacy,exclude,2577,manuscript text of an earlier paper
+analysis/hornsrev_tests.csv,output,include,1503,output of analyze_authors_runs.py
+analysis/hybrid_best_layouts_maxN.csv,legacy,exclude,3189,superseded intermediate hybrid version
+analysis/hybrid_case_tests.csv,legacy,exclude,59613,superseded intermediate hybrid version
+analysis/hybrid_frontmatter.py,legacy,exclude,8919,manuscript builder of an earlier paper
+analysis/hybrid_lxssa_bvns.py,legacy,exclude,2607,superseded intermediate hybrid version
+analysis/hybrid_lxssa_vns.py,model,include,3360,superseded hybrid with the modified VNS; kept because full_grid_experiments.py imports it (rows VNS/LXVNS are not used)
+analysis/hybrid_reevaluation.csv,legacy,exclude,3468832,superseded intermediate hybrid version
+analysis/hybrid_results.py,legacy,exclude,26735,superseded intermediate hybrid version
+analysis/hybrid_robust_summary.json,legacy,exclude,1553,superseded intermediate hybrid version
+analysis/hybrid_robust_table.tex,legacy,exclude,1423,superseded intermediate hybrid version
+analysis/hybrid_summary.json,legacy,exclude,4903,superseded intermediate hybrid version
+analysis/hybrid_tables.tex,legacy,exclude,20285,superseded intermediate hybrid version
+analysis/iea37_data/iea37-335mw.yaml,input,include,4004,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-aepcalc.py,input,include,10334,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par1-opt16.yaml,input,include,2312,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par1-opt36.yaml,input,include,3039,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par1-opt64.yaml,input,include,4178,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par10-opt16.yaml,input,include,2310,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par10-opt36.yaml,input,include,2980,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par10-opt64.yaml,input,include,3885,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par11-opt16.yaml,input,include,2162,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par11-opt36.yaml,input,include,2569,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par11-opt64.yaml,input,include,3158,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par12-opt16.yaml,input,include,2272,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par12-opt36.yaml,input,include,3132,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par12-opt64.yaml,input,include,4260,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par2-opt16.yaml,input,include,2177,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par2-opt36.yaml,input,include,2635,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par2-opt64.yaml,input,include,3267,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par3-opt16.yaml,input,include,2414,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par3-opt36.yaml,input,include,3182,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par3-opt64.yaml,input,include,4230,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par4-opt16.yaml,input,include,2684,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par4-opt36.yaml,input,include,3610,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par4-opt64.yaml,input,include,4888,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par5-opt16.yaml,input,include,2169,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par5-opt36.yaml,input,include,2370,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par5-opt64.yaml,input,include,2971,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par6-opt16.yaml,input,include,2162,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par6-opt36.yaml,input,include,2928,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par6-opt64.yaml,input,include,3795,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par7-opt16.yaml,input,include,2360,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par7-opt36.yaml,input,include,3040,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par7-opt64.yaml,input,include,4010,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par8-opt16.yaml,input,include,1982,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par8-opt36.yaml,input,include,2361,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par8-opt64.yaml,input,include,2957,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par9-opt16.yaml,input,include,2414,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par9-opt36.yaml,input,include,3182,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-cs1-results/iea37-par9-opt64.yaml,input,include,4236,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-ex16.yaml,input,include,2282,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-ex36.yaml,input,include,2756,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-ex64.yaml,input,include,3345,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_data/iea37-windrose.yaml,input,include,1288,"IEA Wind Task 37 case-study files (repo iea37-wflo-casestudies, cs1-2, commit 267f6e5), unmodified"
+analysis/iea37_experiments.py,driver,include,3763,runs mpce_iea16/iea36(+p)
+analysis/iea37_model.py,model,include,7104,IEA37 Case Study 1 evaluator
+analysis/iea37_projected.csv,output,include,4546,projected IEA37 layouts
+analysis/iea37_projected.json,output,include,23977,projected IEA37 layouts
+analysis/iea37_projected.py,driver,include,9886,projected IEA37 layouts
+analysis/iea37_published_results.csv,input,include,10761,published IEA37 CS1 layouts evaluated with the official calculator
+analysis/init_hook.py,optimizer,include,602,initial-population hook (random / feasible)
+analysis/layout_reevaluation.csv,legacy,exclude,151617,earlier analyses (superseded)
+analysis/literature_values.csv,input,include,135032,hand-collected literature values (Section S-literature)
+analysis/literature_values.md,input,include,13959,hand-collected literature values (Section S-literature)
+analysis/make_model_figures.py,analysis,include,9960,model schematics (figures_final/)
+analysis/make_robustness_tables.py,legacy,exclude,5127,earlier analyses (superseded)
+analysis/make_theory_figures.py,analysis,include,17074,theory figure and checks T01-T13
+analysis/mpce_ablation_tests.csv,output,include,94135,generated statistics
+analysis/mpce_b120k_s0of8.csv,runs-original,include,468243,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120k_s1of8.csv,runs-original,include,469691,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120k_s2of8.csv,runs-original,include,469025,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120k_s3of8.csv,runs-original,include,472305,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120k_s4of8.csv,runs-original,include,471209,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120k_s5of8.csv,runs-original,include,473138,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120k_s6of8.csv,runs-original,include,468272,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120k_s7of8.csv,runs-original,include,468466,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120kp_s0of4.csv,runs-original,include,116938,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120kp_s1of4.csv,runs-original,include,117096,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120kp_s2of4.csv,runs-original,include,114737,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b120kp_s3of4.csv,runs-original,include,114923,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b30k_s0of3.csv,runs-original,include,1286610,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b30k_s1of3.csv,runs-original,include,1280022,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b30k_s2of3.csv,runs-original,include,1290185,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_b30kp_s0of1.csv,runs-original,include,489937,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_best_layouts_maxN.csv,output,include,2308,generated statistics
+analysis/mpce_budget_case_stats.csv,output,include,26473,generated statistics
+analysis/mpce_case_stats.csv,output,include,63576,generated statistics
+analysis/mpce_case_tests.csv,output,include,33863,generated statistics
+analysis/mpce_check_csweep.py,check,include,8403,check scripts (C/X/D/F/S ids)
+analysis/mpce_check_diag.py,check,include,11624,check scripts (C/X/D/F/S ids)
+analysis/mpce_check_dir.py,check,include,26339,check scripts (C/X/D/F/S ids)
+analysis/mpce_check_extra.py,check,include,33605,check scripts (C/X/D/F/S ids)
+analysis/mpce_check_final.py,check,include,40776,check scripts (C/X/D/F/S ids)
+analysis/mpce_csweep.py,analysis,include,26330,PSO coefficient sweep analysis
+analysis/mpce_csweep_s0of1.csv,runs-original,include,6686707,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_diagnostics.py,driver,include,87419,instrumented diagnostic reruns (Section S-diag)
+analysis/mpce_direction.py,analysis,include,67137,"direction resolution, Horns Rev 1 re-evaluation"
+analysis/mpce_direction_hr16.csv,output,include,82847,generated statistics
+analysis/mpce_direction_layouts.csv.gz,output,include,606651,1-degree re-evaluation of all final layouts
+analysis/mpce_experiments.py,driver,include,22793,"runs mpce_<exp>_s<i>of<k>.csv (PSO, PSO-VNS, RS-VNS, RSD-VNS, MS-SLSQP, split, init., budget, hrfix, csweep)"
+analysis/mpce_feas_s0of1.csv,runs-original,include,4096137,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_feasinit_tests.csv,output,include,9079,generated statistics
+analysis/mpce_feasp_s0of1.csv,runs-original,include,512474,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_feasx_s0of8.csv,runs-original-shards,include,512223,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_feasx_s1of8.csv,runs-original-shards,include,512203,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_feasx_s2of8.csv,runs-original-shards,include,512169,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_feasx_s3of8.csv,runs-original-shards,include,512276,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_feasx_s4of8.csv,runs-original-shards,include,512172,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_feasx_s5of8.csv,runs-original-shards,include,512206,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_feasx_s6of8.csv,runs-original-shards,include,512145,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_feasx_s7of8.csv,runs-original-shards,include,512220,the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)
+analysis/mpce_hr16new_s0of1.csv,runs-original,include,91250,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s0of24.csv,runs-original,include,77087,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s10of24.csv,runs-original,include,76814,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s11of24.csv,runs-original,include,76261,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s12of24.csv,runs-original,include,76541,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s13of24.csv,runs-original,include,76192,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s14of24.csv,runs-original,include,77108,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s15of24.csv,runs-original,include,76571,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s16of24.csv,runs-original,include,76595,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s17of24.csv,runs-original,include,77159,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s18of24.csv,runs-original,include,76653,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s19of24.csv,runs-original,include,76838,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s1of24.csv,runs-original,include,77057,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s20of24.csv,runs-original,include,76554,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s21of24.csv,runs-original,include,75178,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s22of24.csv,runs-original,include,74544,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s23of24.csv,runs-original,include,75785,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s2of24.csv,runs-original,include,77697,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s3of24.csv,runs-original,include,76955,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s4of24.csv,runs-original,include,77307,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s5of24.csv,runs-original,include,78793,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s6of24.csv,runs-original,include,76787,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s7of24.csv,runs-original,include,78534,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s8of24.csv,runs-original,include,79272,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_hrfix_s9of24.csv,runs-original,include,78321,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_iea16_s0of1.csv,runs-original,include,1275680,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_iea16p_s0of1.csv,runs-original,include,150851,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_iea36_s0of1.csv,runs-original,include,1217792,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_iea36p_s0of1.csv,runs-original,include,152560,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_inference_extra.py,analysis,include,138887,"equivalence at three levels, inference robustness"
+analysis/mpce_numbers.py,analysis,include,41349,number macros mpce_numbers.tex
+analysis/mpce_numbers.tex,output,include,29677,generated number macros
+analysis/mpce_numbers_csweep.tex,output,include,6407,generated number macros
+analysis/mpce_numbers_diag.tex,output,include,8521,generated number macros
+analysis/mpce_numbers_dir.tex,output,include,36551,generated number macros
+analysis/mpce_numbers_extra.tex,output,include,82795,generated number macros
+analysis/mpce_omega90_s0of1.csv,runs-original,include,776602,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_psobv_s0of2.csv,runs-original,include,2267761,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_psobv_s1of2.csv,runs-original,include,2273331,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_psoc_s0of1.csv,runs-original,include,4486602,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_psosplit_s0of1.csv,runs-original,include,1568127,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_reevaluation.csv,output,include,4213975,generated statistics
+analysis/mpce_reevaluation_cache.csv,input,include,2873889,re-evaluation cache (key md5 of data set + coordinates)
+analysis/mpce_results.py,analysis,include,202542,"main tables, figures, mpce_summary.json"
+analysis/mpce_robustness.py,analysis,include,8265,cubic-curve / Gaussian-wake re-evaluation (cached)
+analysis/mpce_rsdisc_s0of1.csv,runs-original,include,4297734,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_rsvns_s0of1.csv,runs-original,include,4115146,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_slsqp_s0of1.csv,runs-original,include,4668985,per-run records of mpce_experiments.py / iea37_experiments.py
+analysis/mpce_summary.json,output,include,194051,generated summaries
+analysis/mpce_summary_csweep.json,output,include,28174,generated summaries
+analysis/mpce_summary_diag.json,output,include,78459,generated summaries
+analysis/mpce_summary_dir.json,output,include,268116,generated summaries
+analysis/mpce_summary_extra.json,output,include,246932,generated summaries
+analysis/mpce_supp_csweep.tex,output,include,4184,generated supplementary tables
+analysis/mpce_supp_diag.tex,output,include,11574,generated supplementary tables
+analysis/mpce_supp_direction.tex,output,include,21456,generated supplementary tables
+analysis/mpce_supp_inference.tex,output,include,43268,generated supplementary tables
+analysis/mpce_supplementary.tex,output,include,72356,generated supplementary tables
+analysis/mpce_tab_ablation.tex,output,include,2969,generated main-text tables
+analysis/mpce_tab_baseline.tex,output,include,1301,generated main-text tables
+analysis/mpce_tab_feasbudget.tex,output,include,1451,generated main-text tables
+analysis/mpce_tab_friedman68.tex,output,include,1837,generated main-text tables
+analysis/mpce_tab_hr16.tex,output,include,1644,generated main-text tables
+analysis/mpce_tab_iea37.tex,output,include,1771,generated main-text tables
+analysis/mpce_tab_robust_final.tex,output,include,1085,generated main-text tables
+analysis/mpce_tab_split.tex,output,include,1159,generated main-text tables
+analysis/mpce_tab_wtl.tex,output,include,1642,generated main-text tables
+analysis/objective_original.py,model,include,3942,"the original authors' objective.py, verbatim (reference for validate_evaluator.py)"
+analysis/original_vns.py,optimizer,include,4759,basic VNS
+analysis/packing_capacity.csv,output,include,188,packing bounds (input of mpce_results.py)
+analysis/packing_capacity.py,driver,include,1932,packing bounds (tab:capacity)
+analysis/pywake_check.csv,input,include,6534,PyWake NOJ reference values (read by mpce_results.py / mpce_direction.py)
+analysis/pywake_check.py,driver,include,8198,Horns Rev 1 PyWake NOJ cross-check (needs py_wake 2.6.20)
+analysis/pywake_check_hr16runs.csv,input,include,46579,PyWake NOJ reference values (read by mpce_results.py / mpce_direction.py)
+analysis/pywake_check_hr16runs.json,input,include,378,PyWake check of the stored Horns Rev runs
+analysis/record_io.py,model,include,1062,17-significant-digit coordinate writer / reader
+analysis/reevaluate_layouts.py,legacy,exclude,3074,earlier analyses (superseded)
+analysis/requirements.txt,doc,include,868,environment of the original runs (superseded by the package requirements.txt)
+analysis/rev2_analysis.py,analysis,include,53507,"revision-2 statistics and tables (rev2_summary.json, rev2_tables.tex)"
+analysis/rev2_ga.py,driver,include,9356,"revision 2: real-coded GA (ga, gahr, gaiea)"
+analysis/rev2_ga_s0of10.csv,runs-rev2,include,445136,revision-2 per-run records
+analysis/rev2_ga_s1of10.csv,runs-rev2,include,442176,revision-2 per-run records
+analysis/rev2_ga_s2of10.csv,runs-rev2,include,447455,revision-2 per-run records
+analysis/rev2_ga_s3of10.csv,runs-rev2,include,446943,revision-2 per-run records
+analysis/rev2_ga_s4of10.csv,runs-rev2,include,446731,revision-2 per-run records
+analysis/rev2_ga_s5of10.csv,runs-rev2,include,443657,revision-2 per-run records
+analysis/rev2_ga_s6of10.csv,runs-rev2,include,446856,revision-2 per-run records
+analysis/rev2_ga_s7of10.csv,runs-rev2,include,445318,revision-2 per-run records
+analysis/rev2_ga_s8of10.csv,runs-rev2,include,449204,revision-2 per-run records
+analysis/rev2_ga_s9of10.csv,runs-rev2,include,441649,revision-2 per-run records
+analysis/rev2_gahr_s0of2.csv,runs-rev2,include,58652,revision-2 per-run records
+analysis/rev2_gahr_s1of2.csv,runs-rev2,include,57629,revision-2 per-run records
+analysis/rev2_gaiea_s0of2.csv,runs-rev2,include,157849,revision-2 per-run records
+analysis/rev2_gaiea_s1of2.csv,runs-rev2,include,156558,revision-2 per-run records
+analysis/rev2_grad_s0of40.csv,runs-rev2,include,16827,revision-2 per-run records
+analysis/rev2_grad_s10of40.csv,runs-rev2,include,16163,revision-2 per-run records
+analysis/rev2_grad_s11of40.csv,runs-rev2,include,15711,revision-2 per-run records
+analysis/rev2_grad_s12of40.csv,runs-rev2,include,16010,revision-2 per-run records
+analysis/rev2_grad_s13of40.csv,runs-rev2,include,16273,revision-2 per-run records
+analysis/rev2_grad_s14of40.csv,runs-rev2,include,15971,revision-2 per-run records
+analysis/rev2_grad_s15of40.csv,runs-rev2,include,15766,revision-2 per-run records
+analysis/rev2_grad_s16of40.csv,runs-rev2,include,16054,revision-2 per-run records
+analysis/rev2_grad_s17of40.csv,runs-rev2,include,15886,revision-2 per-run records
+analysis/rev2_grad_s18of40.csv,runs-rev2,include,15936,revision-2 per-run records
+analysis/rev2_grad_s19of40.csv,runs-rev2,include,16168,revision-2 per-run records
+analysis/rev2_grad_s1of40.csv,runs-rev2,include,16703,revision-2 per-run records
+analysis/rev2_grad_s20of40.csv,runs-rev2,include,16498,revision-2 per-run records
+analysis/rev2_grad_s21of40.csv,runs-rev2,include,15906,revision-2 per-run records
+analysis/rev2_grad_s22of40.csv,runs-rev2,include,16131,revision-2 per-run records
+analysis/rev2_grad_s23of40.csv,runs-rev2,include,15991,revision-2 per-run records
+analysis/rev2_grad_s24of40.csv,runs-rev2,include,16209,revision-2 per-run records
+analysis/rev2_grad_s25of40.csv,runs-rev2,include,15762,revision-2 per-run records
+analysis/rev2_grad_s26of40.csv,runs-rev2,include,16146,revision-2 per-run records
+analysis/rev2_grad_s27of40.csv,runs-rev2,include,15951,revision-2 per-run records
+analysis/rev2_grad_s28of40.csv,runs-rev2,include,16116,revision-2 per-run records
+analysis/rev2_grad_s29of40.csv,runs-rev2,include,16339,revision-2 per-run records
+analysis/rev2_grad_s2of40.csv,runs-rev2,include,16713,revision-2 per-run records
+analysis/rev2_grad_s30of40.csv,runs-rev2,include,15653,revision-2 per-run records
+analysis/rev2_grad_s31of40.csv,runs-rev2,include,15812,revision-2 per-run records
+analysis/rev2_grad_s32of40.csv,runs-rev2,include,15940,revision-2 per-run records
+analysis/rev2_grad_s33of40.csv,runs-rev2,include,15825,revision-2 per-run records
+analysis/rev2_grad_s34of40.csv,runs-rev2,include,15702,revision-2 per-run records
+analysis/rev2_grad_s35of40.csv,runs-rev2,include,15622,revision-2 per-run records
+analysis/rev2_grad_s36of40.csv,runs-rev2,include,15789,revision-2 per-run records
+analysis/rev2_grad_s37of40.csv,runs-rev2,include,15920,revision-2 per-run records
+analysis/rev2_grad_s38of40.csv,runs-rev2,include,15732,revision-2 per-run records
+analysis/rev2_grad_s39of40.csv,runs-rev2,include,16006,revision-2 per-run records
+analysis/rev2_grad_s3of40.csv,runs-rev2,include,16631,revision-2 per-run records
+analysis/rev2_grad_s4of40.csv,runs-rev2,include,16691,revision-2 per-run records
+analysis/rev2_grad_s5of40.csv,runs-rev2,include,16616,revision-2 per-run records
+analysis/rev2_grad_s6of40.csv,runs-rev2,include,16775,revision-2 per-run records
+analysis/rev2_grad_s7of40.csv,runs-rev2,include,16627,revision-2 per-run records
+analysis/rev2_grad_s8of40.csv,runs-rev2,include,16696,revision-2 per-run records
+analysis/rev2_grad_s9of40.csv,runs-rev2,include,16747,revision-2 per-run records
+analysis/rev2_gradient.py,driver,include,18542,revision 2: exact-gradient MS-SLSQP / PSO-SLSQP on IEA37
+analysis/rev2_laplace.py,driver,include,13298,revision 2: Laplace ablation
+analysis/rev2_laplace_s0of12.csv,runs-rev2,include,342836,revision-2 per-run records
+analysis/rev2_laplace_s10of12.csv,runs-rev2,include,345260,revision-2 per-run records
+analysis/rev2_laplace_s11of12.csv,runs-rev2,include,350346,revision-2 per-run records
+analysis/rev2_laplace_s1of12.csv,runs-rev2,include,343248,revision-2 per-run records
+analysis/rev2_laplace_s2of12.csv,runs-rev2,include,343713,revision-2 per-run records
+analysis/rev2_laplace_s3of12.csv,runs-rev2,include,346005,revision-2 per-run records
+analysis/rev2_laplace_s4of12.csv,runs-rev2,include,345638,revision-2 per-run records
+analysis/rev2_laplace_s5of12.csv,runs-rev2,include,345238,revision-2 per-run records
+analysis/rev2_laplace_s6of12.csv,runs-rev2,include,339614,revision-2 per-run records
+analysis/rev2_laplace_s7of12.csv,runs-rev2,include,339635,revision-2 per-run records
+analysis/rev2_laplace_s8of12.csv,runs-rev2,include,342099,revision-2 per-run records
+analysis/rev2_laplace_s9of12.csv,runs-rev2,include,346599,revision-2 per-run records
+analysis/rev2_lg16_s0of4.csv,runs-rev2,include,89008,revision-2 per-run records
+analysis/rev2_lg16_s1of4.csv,runs-rev2,include,90632,revision-2 per-run records
+analysis/rev2_lg16_s2of4.csv,runs-rev2,include,87542,revision-2 per-run records
+analysis/rev2_lg16_s3of4.csv,runs-rev2,include,87790,revision-2 per-run records
+analysis/rev2_lg16b_s0of30.csv,runs-rev2,include,14088,revision-2 per-run records
+analysis/rev2_lg16b_s10of30.csv,runs-rev2,include,14439,revision-2 per-run records
+analysis/rev2_lg16b_s11of30.csv,runs-rev2,include,15334,revision-2 per-run records
+analysis/rev2_lg16b_s12of30.csv,runs-rev2,include,15854,revision-2 per-run records
+analysis/rev2_lg16b_s13of30.csv,runs-rev2,include,14117,revision-2 per-run records
+analysis/rev2_lg16b_s14of30.csv,runs-rev2,include,13974,revision-2 per-run records
+analysis/rev2_lg16b_s15of30.csv,runs-rev2,include,15316,revision-2 per-run records
+analysis/rev2_lg16b_s16of30.csv,runs-rev2,include,15041,revision-2 per-run records
+analysis/rev2_lg16b_s17of30.csv,runs-rev2,include,15653,revision-2 per-run records
+analysis/rev2_lg16b_s18of30.csv,runs-rev2,include,14982,revision-2 per-run records
+analysis/rev2_lg16b_s19of30.csv,runs-rev2,include,15482,revision-2 per-run records
+analysis/rev2_lg16b_s1of30.csv,runs-rev2,include,14484,revision-2 per-run records
+analysis/rev2_lg16b_s20of30.csv,runs-rev2,include,15005,revision-2 per-run records
+analysis/rev2_lg16b_s21of30.csv,runs-rev2,include,15722,revision-2 per-run records
+analysis/rev2_lg16b_s22of30.csv,runs-rev2,include,14708,revision-2 per-run records
+analysis/rev2_lg16b_s23of30.csv,runs-rev2,include,15981,revision-2 per-run records
+analysis/rev2_lg16b_s24of30.csv,runs-rev2,include,13912,revision-2 per-run records
+analysis/rev2_lg16b_s25of30.csv,runs-rev2,include,15012,revision-2 per-run records
+analysis/rev2_lg16b_s26of30.csv,runs-rev2,include,15465,revision-2 per-run records
+analysis/rev2_lg16b_s27of30.csv,runs-rev2,include,14113,revision-2 per-run records
+analysis/rev2_lg16b_s28of30.csv,runs-rev2,include,14066,revision-2 per-run records
+analysis/rev2_lg16b_s29of30.csv,runs-rev2,include,15973,revision-2 per-run records
+analysis/rev2_lg16b_s2of30.csv,runs-rev2,include,15419,revision-2 per-run records
+analysis/rev2_lg16b_s3of30.csv,runs-rev2,include,15821,revision-2 per-run records
+analysis/rev2_lg16b_s4of30.csv,runs-rev2,include,15296,revision-2 per-run records
+analysis/rev2_lg16b_s5of30.csv,runs-rev2,include,14264,revision-2 per-run records
+analysis/rev2_lg16b_s6of30.csv,runs-rev2,include,15192,revision-2 per-run records
+analysis/rev2_lg16b_s7of30.csv,runs-rev2,include,15215,revision-2 per-run records
+analysis/rev2_lg16b_s8of30.csv,runs-rev2,include,15336,revision-2 per-run records
+analysis/rev2_lg16b_s9of30.csv,runs-rev2,include,15235,revision-2 per-run records
+analysis/rev2_site.py,driver,include,6473,revision 2: Lillgrund block runs
+analysis/rev2_site_model.py,model,include,13064,Lillgrund block model (PyWake inputs; wind climate after Gocmen and Giebel 2016)
+analysis/rev2_spacing.py,driver,include,6347,revision 2: 5D / 6D spacing re-optimization
+analysis/rev2_spacing_s0of40.csv,runs-rev2,include,270417,revision-2 per-run records
+analysis/rev2_spacing_s10of40.csv,runs-rev2,include,270248,revision-2 per-run records
+analysis/rev2_spacing_s11of40.csv,runs-rev2,include,270573,revision-2 per-run records
+analysis/rev2_spacing_s12of40.csv,runs-rev2,include,269714,revision-2 per-run records
+analysis/rev2_spacing_s13of40.csv,runs-rev2,include,268704,revision-2 per-run records
+analysis/rev2_spacing_s14of40.csv,runs-rev2,include,268983,revision-2 per-run records
+analysis/rev2_spacing_s15of40.csv,runs-rev2,include,269275,revision-2 per-run records
+analysis/rev2_spacing_s16of40.csv,runs-rev2,include,270108,revision-2 per-run records
+analysis/rev2_spacing_s17of40.csv,runs-rev2,include,268616,revision-2 per-run records
+analysis/rev2_spacing_s18of40.csv,runs-rev2,include,275241,revision-2 per-run records
+analysis/rev2_spacing_s19of40.csv,runs-rev2,include,267775,revision-2 per-run records
+analysis/rev2_spacing_s1of40.csv,runs-rev2,include,272590,revision-2 per-run records
+analysis/rev2_spacing_s20of40.csv,runs-rev2,include,268505,revision-2 per-run records
+analysis/rev2_spacing_s21of40.csv,runs-rev2,include,271803,revision-2 per-run records
+analysis/rev2_spacing_s22of40.csv,runs-rev2,include,267253,revision-2 per-run records
+analysis/rev2_spacing_s23of40.csv,runs-rev2,include,270009,revision-2 per-run records
+analysis/rev2_spacing_s24of40.csv,runs-rev2,include,269989,revision-2 per-run records
+analysis/rev2_spacing_s25of40.csv,runs-rev2,include,270875,revision-2 per-run records
+analysis/rev2_spacing_s26of40.csv,runs-rev2,include,271396,revision-2 per-run records
+analysis/rev2_spacing_s27of40.csv,runs-rev2,include,271349,revision-2 per-run records
+analysis/rev2_spacing_s28of40.csv,runs-rev2,include,270927,revision-2 per-run records
+analysis/rev2_spacing_s29of40.csv,runs-rev2,include,267739,revision-2 per-run records
+analysis/rev2_spacing_s2of40.csv,runs-rev2,include,270697,revision-2 per-run records
+analysis/rev2_spacing_s30of40.csv,runs-rev2,include,270492,revision-2 per-run records
+analysis/rev2_spacing_s31of40.csv,runs-rev2,include,270427,revision-2 per-run records
+analysis/rev2_spacing_s32of40.csv,runs-rev2,include,268319,revision-2 per-run records
+analysis/rev2_spacing_s33of40.csv,runs-rev2,include,269997,revision-2 per-run records
+analysis/rev2_spacing_s34of40.csv,runs-rev2,include,269297,revision-2 per-run records
+analysis/rev2_spacing_s35of40.csv,runs-rev2,include,269886,revision-2 per-run records
+analysis/rev2_spacing_s36of40.csv,runs-rev2,include,271328,revision-2 per-run records
+analysis/rev2_spacing_s37of40.csv,runs-rev2,include,268750,revision-2 per-run records
+analysis/rev2_spacing_s38of40.csv,runs-rev2,include,273798,revision-2 per-run records
+analysis/rev2_spacing_s39of40.csv,runs-rev2,include,267846,revision-2 per-run records
+analysis/rev2_spacing_s3of40.csv,runs-rev2,include,272575,revision-2 per-run records
+analysis/rev2_spacing_s4of40.csv,runs-rev2,include,271069,revision-2 per-run records
+analysis/rev2_spacing_s5of40.csv,runs-rev2,include,271806,revision-2 per-run records
+analysis/rev2_spacing_s6of40.csv,runs-rev2,include,271620,revision-2 per-run records
+analysis/rev2_spacing_s7of40.csv,runs-rev2,include,272467,revision-2 per-run records
+analysis/rev2_spacing_s8of40.csv,runs-rev2,include,272237,revision-2 per-run records
+analysis/rev2_spacing_s9of40.csv,runs-rev2,include,267998,revision-2 per-run records
+analysis/rev3_constraint.py,rev3-code,include,17631,revision-3 script
+analysis/rev3_constraint_analysis.py,rev3-code,include,23995,revision-3 script
+analysis/rev3_constraint_manifest.md,rev3-doc,include,9381,revision-3 manifest / prespecification
+analysis/rev3_constraint_pen.csv.partial,unclassified,exclude,101019,revision-3 file of an unexpected type (check by hand)
+analysis/rev3_constraint_run_pen.log,rev3-log,include,78,revision-3 log
+analysis/rev3_constraint_validate.csv,rev3-data,include,5332,revision-3 run records / outputs
+analysis/rev3_constraint_validate.json,rev3-output,include,2699,revision-3 output
+analysis/rev3_constraint_validate.log,rev3-log,include,2700,revision-3 log
+analysis/rev3_fine.py,rev3-code,include,22249,revision-3 script
+analysis/rev3_fine_analysis.py,rev3-code,include,24820,revision-3 script
+analysis/rev3_fine_manifest.md,rev3-doc,include,8798,revision-3 manifest / prespecification
+analysis/rev3_fine_validate.log,rev3-log,include,2928,revision-3 log
+analysis/rev3_inference.log,rev3-log,include,1604,revision-3 log
+analysis/rev3_inference.py,rev3-code,include,52096,revision-3 script
+analysis/rev3_numbers_audit.py,rev3-code,include,59631,revision-3 script
+analysis/rev3_numbers_theory_check.py,rev3-code,include,17821,revision-3 script
+analysis/rev3_precision_audit.json,rev3-output,include,63747,revision-3 output
+analysis/rev3_precision_audit.py,rev3-code,include,18326,revision-3 script
+analysis/rev3_precision_audit_records.csv,rev3-data,include,15705198,revision-3 run records / outputs
+analysis/rev3_precision_manifest.md,rev3-doc,include,2866,revision-3 manifest / prespecification
+analysis/rev3_precision_rerun.py,rev3-code,include,27663,revision-3 script
+analysis/rev3_refs_corrections.tex,rev3-output,include,4729,revision-3 table
+analysis/rev3_refs_report.md,rev3-doc,include,19546,revision-3 manifest / prespecification
+analysis/rev3_sites.py,rev3-code,include,68925,revision-3 script
+analysis/rev3_sites_reeval.csv,rev3-data,include,173817,revision-3 run records / outputs
+analysis/robustness_final.py,legacy,exclude,4308,earlier paper; its output final_reevaluation.csv is kept as the cache seed of mpce_robustness.py
+analysis/robustness_fresh.py,legacy,exclude,4105,earlier paper
+analysis/robustness_hybrid.py,legacy,exclude,4296,superseded intermediate hybrid version
+analysis/robustness_summary.csv,legacy,exclude,5122,earlier analyses (superseded)
+analysis/robustness_tables.tex,legacy,exclude,4849,earlier analyses (superseded)
+analysis/robustness_text.tex,legacy,exclude,9375,earlier draft text
+analysis/rs_vns.py,optimizer,include,1597,RS-VNS (random-sampling phase 1 + VNS)
+analysis/run_b120k_0of16.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_10of16.log,log,include,69,launcher logs of the original experiment shards
+analysis/run_b120k_12of32.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_13of32.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_14of16.log,log,include,69,launcher logs of the original experiment shards
+analysis/run_b120k_15of16.log,log,include,69,launcher logs of the original experiment shards
+analysis/run_b120k_1of8.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120k_20of32.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_24of32.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_29of32.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_2of16.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_3of8.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120k_4of32.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120k_4of8.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120k_5of32.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120k_5of8.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120k_6of16.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_7of16.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_b120k_8of32.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120kp_0of8.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120kp_1of4.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120kp_2of4.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120kp_3of4.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b120kp_4of8.log,log,include,67,launcher logs of the original experiment shards
+analysis/run_b30k_0of3.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_b30k_1of3.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_b30k_1of6.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_b30k_2of3.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_b30k_4of6.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_b30kp.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_feas_0of8_local.log,log,include,0,launcher logs of the original experiment shards
+analysis/run_feasp.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_0of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_1of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_2of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_3of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_4of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_5of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_6of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_feasx_7of8.log,log,include,62,launcher logs of the original experiment shards
+analysis/run_hr16new.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_0of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_10of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_11of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_12of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_13of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_14of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_15of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_16of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_17of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_18of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_19of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_1of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_20of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_21of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_22of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_23of24.log,log,include,65,launcher logs of the original experiment shards
+analysis/run_hrfix_2of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_3of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_4of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_5of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_6of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_7of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_8of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_hrfix_9of24.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_iea16_0of1.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_iea16p.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_iea36_0of1.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_iea36p.log,log,include,64,launcher logs of the original experiment shards
+analysis/run_omega90_0of1.log,log,include,66,launcher logs of the original experiment shards
+analysis/run_psobv_0of2.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_psobv_1of2.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_psoc_0of1.log,log,include,61,launcher logs of the original experiment shards
+analysis/run_psosplit.log,log,include,68,launcher logs of the original experiment shards
+analysis/run_rsdisc_0of1.log,log,include,66,launcher logs of the original experiment shards
+analysis/run_rsvns_0of1.log,log,include,63,launcher logs of the original experiment shards
+analysis/run_slsqp_0of1.log,log,include,64,launcher logs of the original experiment shards
+analysis/sec_hybrid.tex,legacy,exclude,4704,manuscript text of an earlier paper
+analysis/sec_setup.tex,legacy,exclude,6527,manuscript text of an earlier paper
+analysis/six_method_average_ranks.csv,legacy,exclude,262,earlier paper
+analysis/ssa_reference.py,driver,include,4900,SSA with radial projection (boundary-rule check)
+analysis/ssa_reference_runs.csv,runs-earlier,include,196722,SSA radial-projection runs (read by mpce_results.py)
+analysis/superseded_linear_penalty/authors_runs_budget.csv,legacy,exclude,370429,earlier runs with a reconstructed linear penalty (superseded)
+analysis/superseded_linear_penalty/authors_runs_crowded.csv,legacy,exclude,263002,earlier runs with a reconstructed linear penalty (superseded)
+analysis/superseded_linear_penalty/authors_runs_hornsrev.csv,legacy,exclude,143736,earlier runs with a reconstructed linear penalty (superseded)
+analysis/superseded_linear_penalty/authors_runs_spacing.csv,legacy,exclude,186786,earlier runs with a reconstructed linear penalty (superseded)
+analysis/superseded_linear_penalty/calibration_LXSSA_count_linear.csv,legacy,exclude,23587,earlier runs with a reconstructed linear penalty (superseded)
+analysis/superseded_linear_penalty/calibration_SSA_count_linear.csv,legacy,exclude,22896,earlier runs with a reconstructed linear penalty (superseded)
+analysis/superseded_linear_penalty/calibration_vs_recorded.csv,legacy,exclude,1702,earlier runs with a reconstructed linear penalty (superseded)
+analysis/swevo_bib.py,manuscript-tool,exclude,2006,bibliography tool of the manuscript
+analysis/validate_evaluator.py,check,include,663,evaluator vs 720 archived objectives
+analysis/wflop_model.py,model,include,6170,"Kusiak-Song benchmark evaluator (Jensen wake, Weibull rose), cubic curve, Gaussian wake"
+figures_final/ablation_convergence.pdf,legacy,exclude,34278,figures of an earlier paper
+figures_final/ablation_convergence.png,legacy,exclude,163780,figures of an earlier paper
+figures_final/avg_ranks.pdf,legacy,exclude,14020,figures of an earlier paper
+figures_final/avg_ranks.png,legacy,exclude,28938,figures of an earlier paper
+figures_final/boxplots_mid.pdf,legacy,exclude,29610,figures of an earlier paper
+figures_final/boxplots_mid.png,legacy,exclude,115335,figures of an earlier paper
+figures_final/convergence_max.pdf,legacy,exclude,83709,figures of an earlier paper
+figures_final/convergence_max.png,legacy,exclude,194033,figures of an earlier paper
+figures_final/convergence_mid.pdf,legacy,exclude,136360,figures of an earlier paper
+figures_final/convergence_mid.png,legacy,exclude,272051,figures of an earlier paper
+figures_final/feasibility_vs_n.pdf,legacy,exclude,33573,figures of an earlier paper
+figures_final/feasibility_vs_n.png,legacy,exclude,135656,figures of an earlier paper
+figures_final/fig_half_cone.pdf,figure,include,13887,model schematic (make_model_figures.py)
+figures_final/fig_half_cone.png,legacy,exclude,36774,figures of an earlier paper
+figures_final/fig_wake_model.pdf,figure,include,9734,model schematic (make_model_figures.py)
+figures_final/fig_wake_model.png,legacy,exclude,21967,figures of an earlier paper
+figures_final/fig_wind_farm.pdf,figure,include,18271,model schematic (make_model_figures.py)
+figures_final/fig_wind_farm.png,legacy,exclude,127112,figures of an earlier paper
+figures_final/hr_convergence.pdf,legacy,exclude,20991,figures of an earlier paper
+figures_final/hr_convergence.png,legacy,exclude,82693,figures of an earlier paper
+figures_final/hr_layouts.pdf,legacy,exclude,19850,figures of an earlier paper
+figures_final/hr_layouts.png,legacy,exclude,74756,figures of an earlier paper
+figures_final/layouts_max.pdf,legacy,exclude,35148,figures of an earlier paper
+figures_final/layouts_max.png,legacy,exclude,190116,figures of an earlier paper
+figures_final/wakeloss_vs_n.pdf,legacy,exclude,40335,figures of an earlier paper
+figures_final/wakeloss_vs_n.png,legacy,exclude,173406,figures of an earlier paper
+figures_mpce/ablation_convergence.pdf,figure,include,49683,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/ablation_convergence.png,figure,include,240830,PNG previews of the generated figures
+figures_mpce/avg_ranks.pdf,figure,include,14077,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/avg_ranks.png,figure,include,31316,PNG previews of the generated figures
+figures_mpce/boxplots_max.pdf,figure,include,30722,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/boxplots_max.png,figure,include,131682,PNG previews of the generated figures
+figures_mpce/boxplots_mid.pdf,figure,include,33351,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/boxplots_mid.png,figure,include,122864,PNG previews of the generated figures
+figures_mpce/budget_scaling.pdf,figure,include,44077,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/budget_scaling.png,figure,include,240925,PNG previews of the generated figures
+figures_mpce/convergence_max.pdf,figure,include,105279,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/convergence_max.png,figure,include,223898,PNG previews of the generated figures
+figures_mpce/convergence_mid.pdf,figure,include,150120,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/convergence_mid.png,figure,include,280913,PNG previews of the generated figures
+figures_mpce/csweep.pdf,figure,include,34404,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/csweep.png,figure,include,94618,PNG previews of the generated figures
+figures_mpce/diag_pso_dynamics.pdf,figure,include,47082,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/diag_pso_dynamics.png,figure,include,97189,PNG previews of the generated figures
+figures_mpce/equiv_curve.pdf,figure,include,39093,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/feasibility_vs_n.pdf,figure,include,35130,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/feasibility_vs_n.png,figure,include,111733,PNG previews of the generated figures
+figures_mpce/hr16.pdf,figure,include,27847,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/hr16.png,figure,include,98188,PNG previews of the generated figures
+figures_mpce/iea37_convergence.pdf,figure,include,28093,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/iea37_convergence.png,figure,include,146817,PNG previews of the generated figures
+figures_mpce/iea37_layouts.pdf,figure,include,24475,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/iea37_layouts.png,figure,include,87371,PNG previews of the generated figures
+figures_mpce/layouts_iea37_hr16.pdf,figure,include,26642,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/layouts_iea37_hr16.png,figure,include,82179,PNG previews of the generated figures
+figures_mpce/layouts_max.pdf,figure,include,35543,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/layouts_max.png,figure,include,197273,PNG previews of the generated figures
+figures_mpce/theory_stability.pdf,figure,include,34942,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/wakeloss_vs_n.pdf,figure,include,42852,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/wakeloss_vs_n.png,figure,include,192732,PNG previews of the generated figures
+selected_30_run_data.csv,runs-archived,include,249641,"720 archived runs of the original code (evaluator validation, calibration, boundary-rule check)"
+analysis/rev3_fullprec_*.csv,rev3-pending,pending,0,not present when the inventory was built: full-precision (17 significant digits) side files of the legacy coordinates (C4)
