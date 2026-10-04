@@ -3,11 +3,15 @@
 Usage
   python3 rev3_precision_rerun.py sample  [--procs=2]                 determinism sample (one record per study x
                                                                        site kind x method; class (ii)/(iii) preferred)
-  python3 rev3_precision_rerun.py run STUDY [SHARD NSHARDS] [--procs=2] [--all-classes]
+  python3 rev3_precision_rerun.py run STUDY [--procs=2] [--all-classes]
                                                                        rerun the class (ii)/(iii) records of STUDY
                                                                        (rev3_precision_audit_records.csv)
+  python3 rev3_precision_rerun.py run STUDY SHARD NSHARDS [--procs=1]  rerun shard SHARD of the plan (explicit key
+                                                                       list in rev3_precision_plan.json); resumable;
+                                                                       writes rev3_fullprec_STUDY_sSHARDofNSHARDS.csv
   python3 rev3_precision_rerun.py keys FILE.json [--procs=2]           rerun an explicit list [[File, Row], ...]
-  python3 rev3_precision_rerun.py plan                                 write rev3_precision_plan.json
+  python3 rev3_precision_rerun.py plan [STUDY,STUDY]                   write rev3_precision_plan.json (studies listed
+                                                                       are finished locally and get no shards)
   python3 rev3_precision_rerun.py collect                              write rev3_fullprec_<study>.csv (+ summary)
 Results are appended, one JSON line per record, to $REV3_PRECISION_RESDIR/<tag>.jsonl (default
 analysis/rev3_precision_results/) (resumable: records already
@@ -34,6 +38,8 @@ The strict 1e-6 m label is then decided from the full-precision layout with exac
 replayed from it with the record's evaluator.
 """
 import os, sys, json, time, math, glob, argparse
+for _v in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):      # one thread per worker process
+    os.environ.setdefault(_v, "1")
 import numpy as np, pandas as pd
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -296,50 +302,82 @@ DRIVER = {
 ORDER_PRIORITY = ["rev2_grad", "rev2_lg16", "rev2_lg16b", "rev2_laplace", "rev2_spacing"]
 
 
-def plan():
-    r = audit_records()
-    r = r[(r.Role != "duplicate") & (r.Class != "i")]
+def _done_keys():
     done = set()
     for p in glob.glob(os.path.join(RESDIR, "*.jsonl")):
         for line in open(p):
             q = json.loads(line)
             if "Error" not in q:
-                done.add((q["File"], q["Row"]))
+                done.add((q["File"], int(q["Row"])))
+    for p in glob.glob(os.path.join(HERE, "rev3_fullprec_*_s*of*.csv")):
+        q = pd.read_csv(p, usecols=["File", "Row"])
+        done.update((f, int(i)) for f, i in zip(q.File, q.Row))
+    return done
+
+
+def plan(exclude=(), target_hours=1.0):
+    """Cost-balanced explicit shards (LPT packing on the stored Seconds, about target_hours CPU-hours per shard)
+    of the class (ii)/(iii) records not yet rerun; studies in `exclude` are being finished locally."""
+    r = audit_records()
+    r = r[(r.Role != "duplicate") & (r.Class != "i")]
+    done = _done_keys()
     studies = []
     for st, g in r.groupby("Study"):
         keys = [(f, int(i)) for f, i in zip(g.File, g.Row)]
-        rem = [k for k in keys if k not in done]
-        gr = g[[(f, int(i)) not in done for f, i in zip(g.File, g.Row)]]
+        gr = g[[(f, int(i)) not in done for f, i in zip(g.File, g.Row)]].sort_values("Seconds", ascending=False)
         hrs = gr.Seconds.sum() / 3600
-        nsh = max(1, int(math.ceil(hrs / 1.0)))
-        studies.append(dict(study=st, role=g.Role.iloc[0], driver=DRIVER.get(st, ""),
-                            suggested_shards=nsh,
-                            shard_commands=[f"REV3_PRECISION_RESDIR=rev3_precision_results python3 rev3_precision_rerun.py "
-                                            f"run {st} {i} {nsh} --procs=P" for i in range(nsh)] if rem else [],
-                            records_class_ii_iii=len(keys), done_locally=len(keys) - len(rem),
-                            remaining=len(rem), cpu_hours_stored_seconds=round(g.Seconds.sum() / 3600, 3),
-                            cpu_hours_remaining=round(gr.Seconds.sum() / 3600, 3),
-                            command=f"python3 rev3_precision_rerun.py run {st} SHARD NSHARDS --procs=P",
-                            remaining_keys=rem))
-    studies.sort(key=lambda d: d["cpu_hours_remaining"])
-    tot = sum(d["cpu_hours_remaining"] for d in studies)
-    out = dict(note=("Rerun plan for the class (ii)/(iii) records of rev3_precision_audit_records.csv. Each record is "
-                     "identified by (File, Row): the 0-based data row of the stored CSV in analysis/. A worker runs "
-                     "'python3 rev3_precision_rerun.py run STUDY SHARD NSHARDS --procs=P' from analysis/ (shard = "
-                     "records[SHARD::NSHARDS] of the study's remaining list in this file order) and returns "
-                     "analysis/rev3_precision_results/<study>_s<SHARD>of<NSHARDS>.jsonl; the lead copies the jsonl files "
-                     "back and runs 'python3 rev3_precision_rerun.py collect'. CPU estimates use the stored Seconds "
-                     "column (measured on 4 busy cores); local reruns ran at roughly the speed given in "
-                     "rev3_precision_summary.json."),
+        d = dict(study=st, role=g.Role.iloc[0], driver=DRIVER.get(st, ""), records_class_ii_iii=len(keys),
+                 done_locally=len(keys) - len(gr), remaining=len(gr), cpu_hours_remaining=round(hrs, 3),
+                 local=st in exclude, shards=[], shard_hours=[], shard_commands=[], shard_outputs=[])
+        if len(gr) and st not in exclude:
+            nsh = max(1, int(math.ceil(hrs / target_hours)))
+            bins = [[] for _ in range(nsh)]; load = [0.0] * nsh
+            for f, i, sec in zip(gr.File, gr.Row, gr.Seconds):              # longest first into the lightest shard
+                j = int(np.argmin(load)); bins[j].append([f, int(i)]); load[j] += sec
+            d["shards"] = bins
+            d["shard_hours"] = [round(x / 3600, 3) for x in load]
+            d["shard_commands"] = [f"python3 rev3_precision_rerun.py run {st} {j} {nsh} --procs=1" for j in range(nsh)]
+            d["shard_outputs"] = [f"analysis/rev3_fullprec_{st}_s{j}of{nsh}.csv" for j in range(nsh)]
+        studies.append(d)
+    studies.sort(key=lambda d: -d["cpu_hours_remaining"])
+    cloud = [d for d in studies if d["shards"]]
+    out = dict(note=("Rerun plan for the class (ii)/(iii) records of rev3_precision_audit_records.csv not yet rerun. "
+                     "A record is (File, Row) = 0-based data row of the stored CSV in analysis/. Each shard is an explicit "
+                     "cost-balanced key list (LPT packing on the stored Seconds). A worker, in a checkout of analysis/ "
+                     "(needs the stored run CSVs, rev3_precision_audit_records.csv, this plan and the model/optimizer "
+                     "modules), runs the shard command from analysis/; it is resumable (finished records, kept one JSON "
+                     "line each in analysis/rev3_precision_results/<study>_s<i>of<k>.jsonl, are skipped on restart) and "
+                     "ends by writing analysis/rev3_fullprec_<study>_s<i>of<k>.csv. Copy the shard CSVs back into analysis/ "
+                     "and run 'python3 rev3_precision_rerun.py collect' and 'python3 rev3_precision_rerun.py table'. "
+                     "Hours = sum of the stored Seconds (originally measured with 4 processes on 4 cores); on an idle core "
+                     "a rerun took 1.0-1.4x the stored time, on this shared machine 2-4x. SLSQP-based methods "
+                     "(rev2_grad, MS-SLSQP rows) are platform dependent: expect 'near'/'diverged' reruns."),
                environment=dict(python=sys.version.split()[0], numpy=np.__version__,
-                                scipy=__import__("scipy").__version__, pandas=pd.__version__),
-               remaining_cpu_hours=round(tot, 2), studies=studies)
+                                scipy=__import__("scipy").__version__, pandas=pd.__version__,
+                                env="OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 recommended"),
+               remaining_cpu_hours_cloud=round(sum(d["cpu_hours_remaining"] for d in cloud), 2),
+               n_shards_cloud=sum(len(d["shards"]) for d in cloud),
+               all_shard_commands=[c for d in cloud for c in d["shard_commands"]], studies=studies)
     with open(os.path.join(HERE, "rev3_precision_plan.json"), "w") as fh:
         json.dump(out, fh, indent=1)
     for d in studies:
         print(f"{d['study']:16s} {d['records_class_ii_iii']:5d} done {d['done_locally']:5d} remaining {d['remaining']:5d} "
-              f"{d['cpu_hours_remaining']:7.2f} h")
-    print("remaining CPU-hours", round(tot, 2))
+              f"{d['cpu_hours_remaining']:7.2f} h shards {len(d['shards'])} {'LOCAL' if d['local'] else ''}")
+    print("cloud CPU-hours", out["remaining_cpu_hours_cloud"], "shards", out["n_shards_cloud"])
+
+
+def write_shard_csv(st, sh, nsh, keys):
+    rows = []
+    for p in glob.glob(os.path.join(RESDIR, "*.jsonl")):
+        for line in open(p):
+            q = json.loads(line)
+            if "Error" not in q:
+                rows.append(q)
+    want = {(f, int(i)) for f, i in keys}
+    df = pd.DataFrame([q for q in rows if (q["File"], int(q["Row"])) in want]).drop_duplicates(["File", "Row"], keep="last")
+    fn = os.path.join(HERE, f"rev3_fullprec_{st}_s{sh}of{nsh}.csv")
+    df.sort_values(["File", "Row"]).to_csv(fn, index=False)
+    print(f"wrote {fn}: {len(df)} of {len(want)} records", flush=True)
 
 
 # ------------------------------------------------------------------ collect
@@ -362,6 +400,13 @@ def load_results():
         for line in open(p):
             rows.append(json.loads(line))
     res = pd.DataFrame(rows)
+    shard = [pd.read_csv(p, dtype={"Dataset": str, "Spacing": str, "Init": str})
+             for p in sorted(glob.glob(os.path.join(HERE, "rev3_fullprec_*_s*of*.csv")))]
+    if shard:
+        res = pd.concat([res] + shard, ignore_index=True)
+    for c in ("CurveMatch",):
+        res[c] = res[c].map(lambda v: None if (v is None or (isinstance(v, float) and np.isnan(v))) else
+                            (v if isinstance(v, (bool, np.bool_)) else str(v) == "True"))
     if "Error" not in res:
         res["Error"] = np.nan
     err = res[res.Error.notna()]
@@ -553,20 +598,21 @@ if __name__ == "__main__":
     elif a.cmd == "run":
         st = a.arg[0]
         keys = study_keys(st, a.all_classes)
-        pf = os.path.join(HERE, "rev3_precision_plan.json")
-        if os.path.exists(pf) and not a.all_classes:            # cloud workers: the plan's remaining keys
-            pl = {d["study"]: d for d in json.load(open(pf))["studies"]}
-            if st in pl:
-                keys = [tuple(k) for k in pl[st]["remaining_keys"]]
-        tag = st
         if len(a.arg) >= 3:
             sh, nsh = int(a.arg[1]), int(a.arg[2])
-            keys = keys[sh::nsh]; tag = f"{st}_s{sh}of{nsh}"
-        run_keys(keys, tag, a.procs)
+            pl = {d["study"]: d for d in json.load(open(os.path.join(HERE, "rev3_precision_plan.json")))["studies"]}
+            shards = pl[st]["shards"]
+            if len(shards) != nsh:
+                raise SystemExit(f"plan has {len(shards)} shards for {st}, not {nsh}")
+            keys = [tuple(k) for k in shards[sh]]
+            run_keys(keys, f"{st}_s{sh}of{nsh}", a.procs)
+            write_shard_csv(st, sh, nsh, keys)
+        else:
+            run_keys(keys, st, a.procs)
     elif a.cmd == "keys":
         run_keys([tuple(k) for k in json.load(open(a.arg[0]))], os.path.splitext(os.path.basename(a.arg[0]))[0], a.procs)
     elif a.cmd == "plan":
-        plan()
+        plan(exclude=tuple(a.arg[0].split(",")) if a.arg else ())
     elif a.cmd == "collect":
         collect()
     elif a.cmd == "table":
