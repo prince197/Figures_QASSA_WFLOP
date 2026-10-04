@@ -1,1 +1,2 @@
 repro_package_build/dist/
+*.partial
