@@ -1,22 +1,24 @@
 \begin{table}[!htbp]
 \centering
-\caption{Verification of the strict feasibility labels ($10^{-6}$~m) of all stored run records with coordinates
+\caption{Audit of the strict feasibility labels ($10^{-6}$~m) of all stored run records with coordinates
 (all cases, methods, seeds 1--30 or 1--10 and budgets as stored).
+Rec.: stored records; Feas.: labels reported feasible by the runs (decided from the full-precision layouts during the runs).
 Class (i): label confirmed from the rounded coordinates with slack beyond the rounding bound
 ($2\sqrt2\,\varepsilon$ for spacing, $\sqrt2\,\varepsilon$ for the boundary, $\varepsilon=0.5\cdot10^{-d}$~m for $d$
 stored decimals); (ii): contradicted beyond the bound; (iii): undecidable within the bound. Rerun: class (ii)/(iii)
-records rerun through the unchanged drivers with a 17-digit writer; bit: objective, minimum spacing, evaluations,
+records rerun through the unchanged drivers with a 17-digit writer (a rerun resolves a label only if it reproduces the record: bit or noise); bit: objective, minimum spacing, evaluations,
 rounded coordinates and convergence curve identical to the stored record; noise: identical except for float noise
 ($\le10^{-9}$ relative in the objective); near: rounded coordinates, label and objective ($\le10^{-9}$ relative)
 reproduced but convergence curve or minimum spacing not (SLSQP-based methods; platform dependent), not used to
-decide labels. Strict: label decided from the full-precision layout (bit-identical
-rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open: class (iii) labels the reruns could not
-decide; all belong to SLSQP-based runs (MS-SLSQP, exact-gradient MS-SLSQP and PSO-SLSQP), whose reruns are not
+decide labels. Strict: reported label resolved from the recovered full-precision layout (bit-identical
+rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open: class (iii) reported labels that are neither confirmed nor
+contradicted, because the rerun did not recover the original layout; all belong to SLSQP-based runs (MS-SLSQP, exact-gradient MS-SLSQP and PSO-SLSQP), whose reruns are not
 bit-reproducible across CPU/BLAS builds (near, or a different trajectory). Replay: maximum $|$objective recomputed from
 the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
 $^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Not used in the results.
-Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
+Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the earlier direction binning of Section~\ref{sec:S-hrmodel} (replayed and rerun with that binning).}
 \label{tab:S-sa-precision}
+% LEAD-INSERT (optional, caption): maximal boundary/spacing residual of the Open records from the rounded coordinates and the tolerance that would decide them; see Section sec:S-sa-feasbounds.
 \scriptsize\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{lrrrrrrrrrrrrr}
 \toprule

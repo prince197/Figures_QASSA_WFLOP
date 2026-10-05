@@ -1,0 +1,4200 @@
+{
+ "script": "rev3_feasbounds.py",
+ "generated": "2026-10-05 17:12:42",
+ "tolerance_m": 1e-06,
+ "float_pad_m": 1e-09,
+ "taus_m": [
+  1e-06,
+  0.0001,
+  0.001,
+  0.01
+ ],
+ "bounds": "boundary: e + sqrt(2) eps; spacing: s + 2 sqrt(2) eps; eps = 0.5 10^-d (d stored decimals)",
+ "geometry": {
+  "grid": "circle r = 500/750/1000 m; S_min = 4D = 308 m (D = 77 m)",
+  "iea": "circle r = 1300 m (16 turbines) / 2000 m (36); S_min = 2D = 260 m (D = 130 m)",
+  "hr": "Horns Rev 1 parallelogram (hornsrev_model.site); S_min = 4D = 320 m (D = 80 m)"
+ },
+ "audited_records": 56540,
+ "open_by_study_method": [
+  {
+   "study": "fresh_hr",
+   "algorithm": "SLSQP",
+   "kind": "hr",
+   "role": "superseded",
+   "n": 28,
+   "labelled_feasible": 28,
+   "decimals": [
+    2
+   ],
+   "eps_m": 0.005,
+   "radii_m": [
+    0.0
+   ],
+   "smin_m": [
+    320.0
+   ],
+   "geometry": "Horns Rev 1 parallelogram (hornsrev_model.site); S_min = 4D = 320 m (D = 80 m)",
+   "max_boundary_excess_rounded_m": 0.0045000000000000005,
+   "max_spacing_deficit_rounded_m": 0.003510956761,
+   "bound_true_boundary_excess_m": 0.011571068811865478,
+   "bound_true_spacing_deficit_m": 0.01765309338473095,
+   "true_spacing_deficit_from_minspacing_m": -0.0010773999999855732,
+   "bound_true_boundary_rel_radius": null,
+   "bound_true_boundary_rel_smin": 3.615959003707962e-05,
+   "bound_true_spacing_rel_smin": 5.516591682728422e-05,
+   "n_boundary_active": 28,
+   "n_spacing_active_rounded": 2,
+   "n_spacing_satisfied_minspacing": 28,
+   "n_rounded_outside": 14,
+   "n_rounded_spacing_short": 2,
+   "reproduction": {
+    "diverged": 27,
+    "near": 1
+   }
+  },
+  {
+   "study": "mpce_slsqp",
+   "algorithm": "SLSQP",
+   "kind": "grid",
+   "role": "used",
+   "n": 448,
+   "labelled_feasible": 448,
+   "decimals": [
+    3
+   ],
+   "eps_m": 0.0005,
+   "radii_m": [
+    500.0,
+    750.0,
+    1000.0
+   ],
+   "smin_m": [
+    308.0
+   ],
+   "geometry": "circle r = 500/750/1000 m; S_min = 4D = 308 m (D = 77 m)",
+   "max_boundary_excess_rounded_m": 0.0006177330789,
+   "max_spacing_deficit_rounded_m": 0.00010242696499999999,
+   "bound_true_boundary_excess_m": 0.0013248408600865476,
+   "bound_true_spacing_deficit_m": 0.001516641527373095,
+   "true_spacing_deficit_from_minspacing_m": -9.599999998499698e-06,
+   "bound_true_boundary_rel_radius": 2.4713990035730953e-06,
+   "bound_true_boundary_rel_smin": 4.3014313639173625e-06,
+   "bound_true_spacing_rel_smin": 4.924160803159399e-06,
+   "n_boundary_active": 446,
+   "n_spacing_active_rounded": 6,
+   "n_spacing_satisfied_minspacing": 448,
+   "n_rounded_outside": 208,
+   "n_rounded_spacing_short": 2,
+   "reproduction": {
+    "diverged": 430,
+    "near": 18
+   }
+  },
+  {
+   "study": "mpce_feas",
+   "algorithm": "SLSQP",
+   "kind": "hr",
+   "role": "used",
+   "n": 22,
+   "labelled_feasible": 22,
+   "decimals": [
+    2
+   ],
+   "eps_m": 0.005,
+   "radii_m": [
+    0.0
+   ],
+   "smin_m": [
+    320.0
+   ],
+   "geometry": "Horns Rev 1 parallelogram (hornsrev_model.site); S_min = 4D = 320 m (D = 80 m)",
+   "max_boundary_excess_rounded_m": 0.004581832763,
+   "max_spacing_deficit_rounded_m": -0.002645145317,
+   "bound_true_boundary_excess_m": 0.011652901574865477,
+   "bound_true_spacing_deficit_m": 0.011496991306730951,
+   "true_spacing_deficit_from_minspacing_m": -1.8800000020746666e-05,
+   "bound_true_boundary_rel_radius": null,
+   "bound_true_boundary_rel_smin": 3.6415317421454616e-05,
+   "bound_true_spacing_rel_smin": 3.592809783353422e-05,
+   "n_boundary_active": 22,
+   "n_spacing_active_rounded": 1,
+   "n_spacing_satisfied_minspacing": 22,
+   "n_rounded_outside": 6,
+   "n_rounded_spacing_short": 0,
+   "reproduction": {
+    "diverged": 22
+   }
+  },
+  {
+   "study": "mpce_feas",
+   "algorithm": "SLSQP",
+   "kind": "grid",
+   "role": "used",
+   "n": 17,
+   "labelled_feasible": 17,
+   "decimals": [
+    3
+   ],
+   "eps_m": 0.0005,
+   "radii_m": [
+    500.0,
+    750.0,
+    1000.0
+   ],
+   "smin_m": [
+    308.0
+   ],
+   "geometry": "circle r = 500/750/1000 m; S_min = 4D = 308 m (D = 77 m)",
+   "max_boundary_excess_rounded_m": 0.0005139967358,
+   "max_spacing_deficit_rounded_m": 0.0005422699579,
+   "bound_true_boundary_excess_m": 0.0012211045169865475,
+   "bound_true_spacing_deficit_m": 0.001956484520273095,
+   "true_spacing_deficit_from_minspacing_m": -0.0003530000000182554,
+   "bound_true_boundary_rel_radius": 2.442209033973095e-06,
+   "bound_true_boundary_rel_smin": 3.9646250551511285e-06,
+   "bound_true_spacing_rel_smin": 6.3522224684191395e-06,
+   "n_boundary_active": 15,
+   "n_spacing_active_rounded": 2,
+   "n_spacing_satisfied_minspacing": 17,
+   "n_rounded_outside": 4,
+   "n_rounded_spacing_short": 1,
+   "reproduction": {
+    "diverged": 17
+   }
+  },
+  {
+   "study": "mpce_b30k",
+   "algorithm": "SLSQP",
+   "kind": "hr",
+   "role": "used",
+   "n": 18,
+   "labelled_feasible": 18,
+   "decimals": [
+    2
+   ],
+   "eps_m": 0.005,
+   "radii_m": [
+    0.0
+   ],
+   "smin_m": [
+    320.0
+   ],
+   "geometry": "Horns Rev 1 parallelogram (hornsrev_model.site); S_min = 4D = 320 m (D = 80 m)",
+   "max_boundary_excess_rounded_m": 0.004534229305,
+   "max_spacing_deficit_rounded_m": -0.019233328249999997,
+   "bound_true_boundary_excess_m": 0.011605298116865476,
+   "bound_true_spacing_deficit_m": -0.005091191626269045,
+   "true_spacing_deficit_from_minspacing_m": -0.018673599999999624,
+   "bound_true_boundary_rel_radius": null,
+   "bound_true_boundary_rel_smin": 3.626655661520461e-05,
+   "bound_true_spacing_rel_smin": -1.5909973832090766e-05,
+   "n_boundary_active": 18,
+   "n_spacing_active_rounded": 0,
+   "n_spacing_satisfied_minspacing": 18,
+   "n_rounded_outside": 6,
+   "n_rounded_spacing_short": 0,
+   "reproduction": {
+    "diverged": 18
+   }
+  },
+  {
+   "study": "mpce_b30k",
+   "algorithm": "SLSQP",
+   "kind": "grid",
+   "role": "used",
+   "n": 26,
+   "labelled_feasible": 26,
+   "decimals": [
+    3
+   ],
+   "eps_m": 0.0005,
+   "radii_m": [
+    500.0,
+    750.0,
+    1000.0
+   ],
+   "smin_m": [
+    308.0
+   ],
+   "geometry": "circle r = 500/750/1000 m; S_min = 4D = 308 m (D = 77 m)",
+   "max_boundary_excess_rounded_m": 0.00041177841520000005,
+   "max_spacing_deficit_rounded_m": -0.04051926492,
+   "bound_true_boundary_excess_m": 0.0011188861963865476,
+   "bound_true_spacing_deficit_m": -0.0391050503576269,
+   "true_spacing_deficit_from_minspacing_m": -0.04101059999999279,
+   "bound_true_boundary_rel_radius": 2.1170993153730958e-06,
+   "bound_true_boundary_rel_smin": 3.632747390865414e-06,
+   "bound_true_spacing_rel_smin": -0.00012696444921307437,
+   "n_boundary_active": 26,
+   "n_spacing_active_rounded": 0,
+   "n_spacing_satisfied_minspacing": 26,
+   "n_rounded_outside": 8,
+   "n_rounded_spacing_short": 0,
+   "reproduction": {
+    "diverged": 26
+   }
+  },
+  {
+   "study": "mpce_b120k",
+   "algorithm": "SLSQP",
+   "kind": "hr",
+   "role": "used",
+   "n": 6,
+   "labelled_feasible": 6,
+   "decimals": [
+    2
+   ],
+   "eps_m": 0.005,
+   "radii_m": [
+    0.0
+   ],
+   "smin_m": [
+    320.0
+   ],
+   "geometry": "Horns Rev 1 parallelogram (hornsrev_model.site); S_min = 4D = 320 m (D = 80 m)",
+   "max_boundary_excess_rounded_m": 0.004534229305,
+   "max_spacing_deficit_rounded_m": -1.7887894260000001,
+   "bound_true_boundary_excess_m": 0.011605298116865476,
+   "bound_true_spacing_deficit_m": -1.7746472893762693,
+   "true_spacing_deficit_from_minspacing_m": -1.7891672999999741,
+   "bound_true_boundary_rel_radius": null,
+   "bound_true_boundary_rel_smin": 3.626655661520461e-05,
+   "bound_true_spacing_rel_smin": -0.005545772779300842,
+   "n_boundary_active": 6,
+   "n_spacing_active_rounded": 0,
+   "n_spacing_satisfied_minspacing": 6,
+   "n_rounded_outside": 4,
+   "n_rounded_spacing_short": 0,
+   "reproduction": {
+    "diverged": 6
+   }
+  },
+  {
+   "study": "mpce_b120k",
+   "algorithm": "SLSQP",
+   "kind": "grid",
+   "role": "used",
+   "n": 34,
+   "labelled_feasible": 34,
+   "decimals": [
+    3
+   ],
+   "eps_m": 0.0005,
+   "radii_m": [
+    500.0,
+    750.0,
+    1000.0
+   ],
+   "smin_m": [
+    308.0
+   ],
+   "geometry": "circle r = 500/750/1000 m; S_min = 4D = 308 m (D = 77 m)",
+   "max_boundary_excess_rounded_m": 0.0004622623932,
+   "max_spacing_deficit_rounded_m": -0.0008773769969999999,
+   "bound_true_boundary_excess_m": 0.0011693701743865476,
+   "bound_true_spacing_deficit_m": 0.0005368375653730952,
+   "true_spacing_deficit_from_minspacing_m": -3.2400000009147334e-05,
+   "bound_true_boundary_rel_radius": 2.1170993153730958e-06,
+   "bound_true_boundary_rel_smin": 3.796656410345934e-06,
+   "bound_true_spacing_rel_smin": 1.7429791083542051e-06,
+   "n_boundary_active": 32,
+   "n_spacing_active_rounded": 3,
+   "n_spacing_satisfied_minspacing": 34,
+   "n_rounded_outside": 16,
+   "n_rounded_spacing_short": 0,
+   "reproduction": {
+    "diverged": 34
+   }
+  },
+  {
+   "study": "mpce_hrfix",
+   "algorithm": "SLSQP",
+   "kind": "hr",
+   "role": "used",
+   "n": 67,
+   "labelled_feasible": 67,
+   "decimals": [
+    2
+   ],
+   "eps_m": 0.005,
+   "radii_m": [
+    0.0
+   ],
+   "smin_m": [
+    320.0
+   ],
+   "geometry": "Horns Rev 1 parallelogram (hornsrev_model.site); S_min = 4D = 320 m (D = 80 m)",
+   "max_boundary_excess_rounded_m": 0.004599684059,
+   "max_spacing_deficit_rounded_m": 0.0020792255050000002,
+   "bound_true_boundary_excess_m": 0.011670752870865476,
+   "bound_true_spacing_deficit_m": 0.016221362128730953,
+   "true_spacing_deficit_from_minspacing_m": -0.0021682999999939057,
+   "bound_true_boundary_rel_radius": null,
+   "bound_true_boundary_rel_smin": 3.647110272145462e-05,
+   "bound_true_spacing_rel_smin": 5.0691756652284224e-05,
+   "n_boundary_active": 67,
+   "n_spacing_active_rounded": 3,
+   "n_spacing_satisfied_minspacing": 67,
+   "n_rounded_outside": 23,
+   "n_rounded_spacing_short": 1,
+   "reproduction": {
+    "diverged": 65,
+    "near": 2
+   }
+  },
+  {
+   "study": "mpce_iea",
+   "algorithm": "SLSQP",
+   "kind": "iea",
+   "role": "used",
+   "n": 34,
+   "labelled_feasible": 34,
+   "decimals": [
+    3
+   ],
+   "eps_m": 0.0005,
+   "radii_m": [
+    1300.0,
+    2000.0
+   ],
+   "smin_m": [
+    260.0
+   ],
+   "geometry": "circle r = 1300 m (16 turbines) / 2000 m (36); S_min = 2D = 260 m (D = 130 m)",
+   "max_boundary_excess_rounded_m": 0.0005899971738,
+   "max_spacing_deficit_rounded_m": 0.0001126827168,
+   "bound_true_boundary_excess_m": 0.0012971049549865476,
+   "bound_true_spacing_deficit_m": 0.0015268972791730952,
+   "true_spacing_deficit_from_minspacing_m": 1.0000002248489182e-07,
+   "bound_true_boundary_rel_radius": 9.977730422973444e-07,
+   "bound_true_boundary_rel_smin": 4.988865211486722e-06,
+   "bound_true_spacing_rel_smin": 5.872681842973443e-06,
+   "n_boundary_active": 34,
+   "n_spacing_active_rounded": 8,
+   "n_spacing_satisfied_minspacing": 34,
+   "n_rounded_outside": 33,
+   "n_rounded_spacing_short": 3,
+   "reproduction": {
+    "diverged": 29,
+    "near": 5
+   }
+  },
+  {
+   "study": "rev2_grad",
+   "algorithm": "SLSQPX",
+   "kind": "iea",
+   "role": "used",
+   "n": 110,
+   "labelled_feasible": 110,
+   "decimals": [
+    3
+   ],
+   "eps_m": 0.0005,
+   "radii_m": [
+    1300.0,
+    2000.0
+   ],
+   "smin_m": [
+    260.0
+   ],
+   "geometry": "circle r = 1300 m (16 turbines) / 2000 m (36); S_min = 2D = 260 m (D = 130 m)",
+   "max_boundary_excess_rounded_m": 0.0006284611511,
+   "max_spacing_deficit_rounded_m": 0.0009359016844,
+   "bound_true_boundary_excess_m": 0.0013355689322865475,
+   "bound_true_spacing_deficit_m": 0.002350116246773095,
+   "true_spacing_deficit_from_minspacing_m": 0.0,
+   "bound_true_boundary_rel_radius": 9.927422753742674e-07,
+   "bound_true_boundary_rel_smin": 5.1368035857174906e-06,
+   "bound_true_spacing_rel_smin": 9.038908641434982e-06,
+   "n_boundary_active": 110,
+   "n_spacing_active_rounded": 24,
+   "n_spacing_satisfied_minspacing": 110,
+   "n_rounded_outside": 107,
+   "n_rounded_spacing_short": 17,
+   "reproduction": {
+    "diverged": 89,
+    "near": 21
+   }
+  },
+  {
+   "study": "rev2_grad",
+   "algorithm": "PSOSLSQPX",
+   "kind": "iea",
+   "role": "used",
+   "n": 110,
+   "labelled_feasible": 110,
+   "decimals": [
+    3
+   ],
+   "eps_m": 0.0005,
+   "radii_m": [
+    1300.0,
+    2000.0
+   ],
+   "smin_m": [
+    260.0
+   ],
+   "geometry": "circle r = 1300 m (16 turbines) / 2000 m (36); S_min = 2D = 260 m (D = 130 m)",
+   "max_boundary_excess_rounded_m": 0.0006177999046,
+   "max_spacing_deficit_rounded_m": 0.0007201048434000001,
+   "bound_true_boundary_excess_m": 0.0013249076857865475,
+   "bound_true_spacing_deficit_m": 0.0021343194057730952,
+   "true_spacing_deficit_from_minspacing_m": 0.0,
+   "bound_true_boundary_rel_radius": 9.96779255835806e-07,
+   "bound_true_boundary_rel_smin": 5.095798791486721e-06,
+   "bound_true_spacing_rel_smin": 8.208920791434982e-06,
+   "n_boundary_active": 110,
+   "n_spacing_active_rounded": 22,
+   "n_spacing_satisfied_minspacing": 110,
+   "n_rounded_outside": 109,
+   "n_rounded_spacing_short": 15,
+   "reproduction": {
+    "diverged": 81,
+    "near": 29
+   }
+  }
+ ],
+ "open_total": {
+  "n": 920,
+  "labelled_feasible": 920,
+  "max_boundary_excess_rounded_m": {
+   "grid": 0.0006177330789,
+   "hr": 0.004599684059,
+   "iea": 0.0006284611511
+  },
+  "max_spacing_deficit_rounded_m": {
+   "grid": 0.0005422699579,
+   "hr": 0.003510956761,
+   "iea": 0.0009359016844
+  },
+  "bound_true_boundary_excess_m": {
+   "grid": 0.0013248408600865476,
+   "hr": 0.011670752870865476,
+   "iea": 0.0013355689322865475
+  },
+  "bound_true_spacing_deficit_m": {
+   "grid": 0.001956484520273095,
+   "hr": 0.01765309338473095,
+   "iea": 0.002350116246773095
+  },
+  "true_spacing_deficit_from_minspacing_m": {
+   "grid": -9.599999998499698e-06,
+   "hr": -1.8800000020746666e-05,
+   "iea": 1.0000002248489182e-07
+  },
+  "n_spacing_satisfied_minspacing": 920,
+  "n_boundary_active": 914
+ },
+ "tolerance_sensitivity": {
+  "open920": {
+   "n": 920,
+   "tau_star_R": 0.01765309338473095,
+   "tau_star_M": 0.011670752870865476,
+   "tol": {
+    "1e-06": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 920
+     },
+     "M": {
+      "feasible": 6,
+      "infeasible": 0,
+      "undecidable": 914
+     }
+    },
+    "0.0001": {
+     "R": {
+      "feasible": 14,
+      "infeasible": 0,
+      "undecidable": 906
+     },
+     "M": {
+      "feasible": 19,
+      "infeasible": 0,
+      "undecidable": 901
+     }
+    },
+    "0.001": {
+     "R": {
+      "feasible": 492,
+      "infeasible": 0,
+      "undecidable": 428
+     },
+     "M": {
+      "feasible": 500,
+      "infeasible": 0,
+      "undecidable": 420
+     }
+    },
+    "0.01": {
+     "R": {
+      "feasible": 895,
+      "infeasible": 0,
+      "undecidable": 25
+     },
+     "M": {
+      "feasible": 899,
+      "infeasible": 0,
+      "undecidable": 21
+     }
+    }
+   }
+  },
+  "open_exact_gradient": {
+   "n": 220,
+   "tau_star_R": 0.002350116246773095,
+   "tau_star_M": 0.0013355689322865475,
+   "tol": {
+    "1e-06": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 220
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 220
+     }
+    },
+    "0.0001": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 220
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 220
+     }
+    },
+    "0.001": {
+     "R": {
+      "feasible": 38,
+      "infeasible": 0,
+      "undecidable": 182
+     },
+     "M": {
+      "feasible": 42,
+      "infeasible": 0,
+      "undecidable": 178
+     }
+    },
+    "0.01": {
+     "R": {
+      "feasible": 220,
+      "infeasible": 0,
+      "undecidable": 0
+     },
+     "M": {
+      "feasible": 220,
+      "infeasible": 0,
+      "undecidable": 0
+     }
+    }
+   }
+  },
+  "exact_gradient240": {
+   "n": 240,
+   "tau_star_R": 0.002350116246773095,
+   "tau_star_M": 0.0013355689322865475,
+   "tol": {
+    "1e-06": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 240
+     },
+     "R_with_reruns": {
+      "feasible": 20,
+      "infeasible": 0,
+      "undecidable": 220
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 240
+     },
+     "M_with_reruns": {
+      "feasible": 20,
+      "infeasible": 0,
+      "undecidable": 220
+     }
+    },
+    "0.0001": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 240
+     },
+     "R_with_reruns": {
+      "feasible": 20,
+      "infeasible": 0,
+      "undecidable": 220
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 240
+     },
+     "M_with_reruns": {
+      "feasible": 20,
+      "infeasible": 0,
+      "undecidable": 220
+     }
+    },
+    "0.001": {
+     "R": {
+      "feasible": 43,
+      "infeasible": 0,
+      "undecidable": 197
+     },
+     "R_with_reruns": {
+      "feasible": 58,
+      "infeasible": 0,
+      "undecidable": 182
+     },
+     "M": {
+      "feasible": 47,
+      "infeasible": 0,
+      "undecidable": 193
+     },
+     "M_with_reruns": {
+      "feasible": 62,
+      "infeasible": 0,
+      "undecidable": 178
+     }
+    },
+    "0.01": {
+     "R": {
+      "feasible": 240,
+      "infeasible": 0,
+      "undecidable": 0
+     },
+     "R_with_reruns": {
+      "feasible": 240,
+      "infeasible": 0,
+      "undecidable": 0
+     },
+     "M": {
+      "feasible": 240,
+      "infeasible": 0,
+      "undecidable": 0
+     },
+     "M_with_reruns": {
+      "feasible": 240,
+      "infeasible": 0,
+      "undecidable": 0
+     }
+    }
+   }
+  },
+  "open_benchmark_circle": {
+   "n": 525,
+   "tau_star_R": 0.001956484520273095,
+   "tau_star_M": 0.0013248408600865476,
+   "tol": {
+    "1e-06": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 525
+     },
+     "M": {
+      "feasible": 6,
+      "infeasible": 0,
+      "undecidable": 519
+     }
+    },
+    "0.0001": {
+     "R": {
+      "feasible": 14,
+      "infeasible": 0,
+      "undecidable": 511
+     },
+     "M": {
+      "feasible": 19,
+      "infeasible": 0,
+      "undecidable": 506
+     }
+    },
+    "0.001": {
+     "R": {
+      "feasible": 438,
+      "infeasible": 0,
+      "undecidable": 87
+     },
+     "M": {
+      "feasible": 441,
+      "infeasible": 0,
+      "undecidable": 84
+     }
+    },
+    "0.01": {
+     "R": {
+      "feasible": 525,
+      "infeasible": 0,
+      "undecidable": 0
+     },
+     "M": {
+      "feasible": 525,
+      "infeasible": 0,
+      "undecidable": 0
+     }
+    }
+   }
+  },
+  "open_iea": {
+   "n": 254,
+   "tau_star_R": 0.002350116246773095,
+   "tau_star_M": 0.0013355689322865475,
+   "tol": {
+    "1e-06": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 254
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 254
+     }
+    },
+    "0.0001": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 254
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 254
+     }
+    },
+    "0.001": {
+     "R": {
+      "feasible": 53,
+      "infeasible": 0,
+      "undecidable": 201
+     },
+     "M": {
+      "feasible": 58,
+      "infeasible": 0,
+      "undecidable": 196
+     }
+    },
+    "0.01": {
+     "R": {
+      "feasible": 254,
+      "infeasible": 0,
+      "undecidable": 0
+     },
+     "M": {
+      "feasible": 254,
+      "infeasible": 0,
+      "undecidable": 0
+     }
+    }
+   }
+  },
+  "open_hr": {
+   "n": 141,
+   "tau_star_R": 0.01765309338473095,
+   "tau_star_M": 0.011670752870865476,
+   "tol": {
+    "1e-06": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 141
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 141
+     }
+    },
+    "0.0001": {
+     "R": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 141
+     },
+     "M": {
+      "feasible": 0,
+      "infeasible": 0,
+      "undecidable": 141
+     }
+    },
+    "0.001": {
+     "R": {
+      "feasible": 1,
+      "infeasible": 0,
+      "undecidable": 140
+     },
+     "M": {
+      "feasible": 1,
+      "infeasible": 0,
+      "undecidable": 140
+     }
+    },
+    "0.01": {
+     "R": {
+      "feasible": 116,
+      "infeasible": 0,
+      "undecidable": 25
+     },
+     "M": {
+      "feasible": 120,
+      "infeasible": 0,
+      "undecidable": 21
+     }
+    }
+   }
+  }
+ },
+ "iea_worst_case": {
+  "settings": {
+   "16T_6030": {
+    "stored": {
+     "best": "PSOSLSQPX",
+     "best_mean": 407891.3888649729,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 395031.81240277033,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 388562.88495532266,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 387637.3168288761,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 390540.193001406,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 18,
+       "runs": 30,
+       "mean": 382605.21674562735,
+       "rank": 10.0,
+       "qualified": true
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 391037.62883470417,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 407720.99035253585,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 407891.3888649729,
+       "rank": 1.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "PSOSLSQPX",
+      "not_significant": [
+       "SLSQPX"
+      ],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "W",
+       "SLSQPX": "T"
+      },
+      "p_holm": {
+       "PSOBV": 2.2351741790771484e-08,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 2.2351741790771484e-08,
+       "PSOC": 2.2351741790771484e-08,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 2.2351741790771484e-08,
+       "GA": 2.2351741790771484e-08,
+       "SLSQPX": 0.7765688337385654
+      }
+     },
+     "flipped": 0,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 395031.81240277033,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 3.0,
+      "SSABV": 6.0,
+      "LXBV": 8.0,
+      "RSVNS": 9.0,
+      "BVNS": 7.0,
+      "PSOC": 5.0,
+      "SSA": 11.0,
+      "LXSSA": 12.0,
+      "DE": 13.0,
+      "SLSQP": 10.0,
+      "GA": 4.0,
+      "SLSQPX": 2.0,
+      "PSOSLSQPX": 1.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 27,
+      "SLSQP": 18,
+      "GA": 30,
+      "SLSQPX": 30,
+      "PSOSLSQPX": 30
+     },
+     "mean_all": {
+      "PSOBV": 395031.81240277033,
+      "SSABV": 388562.88495532266,
+      "LXBV": 386930.0482520586,
+      "RSVNS": 386206.01641850447,
+      "BVNS": 387637.3168288761,
+      "PSOC": 390540.193001406,
+      "SSA": 378073.07473884634,
+      "LXSSA": 373977.4234698049,
+      "DE": 338610.64550017193,
+      "SLSQP": 382605.21674562735,
+      "GA": 391037.62883470417,
+      "SLSQPX": 407720.99035253585,
+      "PSOSLSQPX": 407891.3888649729
+     }
+    },
+    "W1_exactgrad_open_infeasible": {
+     "best": "PSOBV",
+     "best_mean": 395031.81240277033,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 395031.81240277033,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 388562.88495532266,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 387637.3168288761,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 390540.193001406,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 18,
+       "runs": 30,
+       "mean": 382605.21674562735,
+       "rank": 8.0,
+       "qualified": true
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 391037.62883470417,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 3,
+       "runs": 30,
+       "mean": 408031.04547678103,
+       "rank": 13.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 6,
+       "runs": 30,
+       "mean": 408363.2599610933,
+       "rank": 12.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "PSOBV",
+      "not_significant": [],
+      "outcomes": {
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "W",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "SSABV": 0.0007601864635944366,
+       "LXBV": 5.5320560932159424e-05,
+       "RSVNS": 5.5320560932159424e-05,
+       "BVNS": 5.5320560932159424e-05,
+       "PSOC": 8.344650268554688e-06,
+       "SSA": 9.313225746154785e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 0.00010359473526477814,
+       "GA": 0.0050126127898693085,
+       "SLSQPX": 2.3469328880310059e-07,
+       "PSOSLSQPX": 6.660819053649902e-06
+      }
+     },
+     "flipped": 51,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 395031.81240277033,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 1.0,
+      "SSABV": 4.0,
+      "LXBV": 6.0,
+      "RSVNS": 7.0,
+      "BVNS": 5.0,
+      "PSOC": 3.0,
+      "SSA": 9.0,
+      "LXSSA": 10.0,
+      "DE": 11.0,
+      "SLSQP": 8.0,
+      "GA": 2.0,
+      "SLSQPX": 13.0,
+      "PSOSLSQPX": 12.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 27,
+      "SLSQP": 18,
+      "GA": 30,
+      "SLSQPX": 3,
+      "PSOSLSQPX": 6
+     },
+     "mean_all": {
+      "PSOBV": 395031.81240277033,
+      "SSABV": 388562.88495532266,
+      "LXBV": 386930.0482520586,
+      "RSVNS": 386206.01641850447,
+      "BVNS": 387637.3168288761,
+      "PSOC": 390540.193001406,
+      "SSA": 378073.07473884634,
+      "LXSSA": 373977.4234698049,
+      "DE": 338610.64550017193,
+      "SLSQP": 382605.21674562735,
+      "GA": 391037.62883470417,
+      "SLSQPX": 408031.04547678103,
+      "PSOSLSQPX": 408363.2599610933
+     }
+    },
+    "W2_plus_msslsqp_open_infeasible": {
+     "best": "PSOBV",
+     "best_mean": 395031.81240277033,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 395031.81240277033,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 388562.88495532266,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 387637.3168288761,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 390540.193001406,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 12,
+       "runs": 30,
+       "mean": 373886.29692568403,
+       "rank": 11.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 391037.62883470417,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 3,
+       "runs": 30,
+       "mean": 408031.04547678103,
+       "rank": 13.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 6,
+       "runs": 30,
+       "mean": 408363.2599610933,
+       "rank": 12.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "PSOBV",
+      "not_significant": [],
+      "outcomes": {
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "W",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "SSABV": 0.0007601864635944366,
+       "LXBV": 4.6100467443466187e-05,
+       "RSVNS": 4.6100467443466187e-05,
+       "BVNS": 4.6100467443466187e-05,
+       "PSOC": 7.152557373046875e-06,
+       "SSA": 9.313225746154785e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 1.1734664440155029e-07,
+       "GA": 0.0050126127898693085,
+       "SLSQPX": 2.086162567138672e-07,
+       "PSOSLSQPX": 5.8282166719436646e-06
+      }
+     },
+     "flipped": 57,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 395031.81240277033,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 1.0,
+      "SSABV": 4.0,
+      "LXBV": 6.0,
+      "RSVNS": 7.0,
+      "BVNS": 5.0,
+      "PSOC": 3.0,
+      "SSA": 8.0,
+      "LXSSA": 9.0,
+      "DE": 10.0,
+      "SLSQP": 11.0,
+      "GA": 2.0,
+      "SLSQPX": 13.0,
+      "PSOSLSQPX": 12.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 27,
+      "SLSQP": 12,
+      "GA": 30,
+      "SLSQPX": 3,
+      "PSOSLSQPX": 6
+     },
+     "mean_all": {
+      "PSOBV": 395031.81240277033,
+      "SSABV": 388562.88495532266,
+      "LXBV": 386930.0482520586,
+      "RSVNS": 386206.01641850447,
+      "BVNS": 387637.3168288761,
+      "PSOC": 390540.193001406,
+      "SSA": 378073.07473884634,
+      "LXSSA": 373977.4234698049,
+      "DE": 338610.64550017193,
+      "SLSQP": 373886.29692568403,
+      "GA": 391037.62883470417,
+      "SLSQPX": 408031.04547678103,
+      "PSOSLSQPX": 408363.2599610933
+     }
+    },
+    "A_adversarial_qualified": {
+     "best": "SLSQPX",
+     "best_mean": 406047.5792931019,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 395031.81240277033,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 388562.88495532266,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 387637.3168288761,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 390540.193001406,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 18,
+       "runs": 30,
+       "mean": 382605.21674562735,
+       "rank": 10.0,
+       "qualified": true
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 391037.62883470417,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 406047.5792931019,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 405659.90852038807,
+       "rank": 2.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "SLSQPX",
+      "not_significant": [
+       "PSOBV",
+       "SSABV",
+       "LXBV",
+       "RSVNS",
+       "BVNS",
+       "PSOC",
+       "SSA",
+       "LXSSA",
+       "DE",
+       "SLSQP",
+       "GA",
+       "PSOSLSQPX"
+      ],
+      "outcomes": {
+       "PSOBV": "T",
+       "SSABV": "T",
+       "LXBV": "T",
+       "RSVNS": "T",
+       "BVNS": "T",
+       "PSOC": "T",
+       "SSA": "T",
+       "LXSSA": "T",
+       "DE": "T",
+       "SLSQP": "T",
+       "GA": "T",
+       "PSOSLSQPX": "T"
+      },
+      "p_holm": {
+       "PSOBV": 0.23592978715896606,
+       "SSABV": 0.23592978715896606,
+       "LXBV": 0.23592978715896606,
+       "RSVNS": 0.23592978715896606,
+       "BVNS": 0.23592978715896606,
+       "PSOC": 0.23592978715896606,
+       "SSA": 0.23592978715896606,
+       "LXSSA": 0.23592978715896606,
+       "DE": 0.6387985590845346,
+       "SLSQP": 0.7197558544576168,
+       "GA": 0.23592978715896606,
+       "PSOSLSQPX": 0.7197558544576168
+      }
+     },
+     "flipped": 30,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 395031.81240277033,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 3.0,
+      "SSABV": 6.0,
+      "LXBV": 8.0,
+      "RSVNS": 9.0,
+      "BVNS": 7.0,
+      "PSOC": 5.0,
+      "SSA": 11.0,
+      "LXSSA": 12.0,
+      "DE": 13.0,
+      "SLSQP": 10.0,
+      "GA": 4.0,
+      "SLSQPX": 1.0,
+      "PSOSLSQPX": 2.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 27,
+      "SLSQP": 18,
+      "GA": 30,
+      "SLSQPX": 15,
+      "PSOSLSQPX": 15
+     },
+     "mean_all": {
+      "PSOBV": 395031.81240277033,
+      "SSABV": 388562.88495532266,
+      "LXBV": 386930.0482520586,
+      "RSVNS": 386206.01641850447,
+      "BVNS": 387637.3168288761,
+      "PSOC": 390540.193001406,
+      "SSA": 378073.07473884634,
+      "LXSSA": 373977.4234698049,
+      "DE": 338610.64550017193,
+      "SLSQP": 382605.21674562735,
+      "GA": 391037.62883470417,
+      "SLSQPX": 406047.5792931019,
+      "PSOSLSQPX": 405659.90852038807
+     },
+     "adversarial_detail": {
+      "SLSQPX": {
+       "open": 27,
+       "feasible_stored": 30,
+       "flipped": 15
+      },
+      "PSOSLSQPX": {
+       "open": 24,
+       "feasible_stored": 30,
+       "flipped": 15
+      }
+     }
+    }
+   },
+   "16T_30030": {
+    "stored": {
+     "best": "PSOSLSQPX",
+     "best_mean": 413179.2089633991,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 402583.0584310474,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396920.50731957733,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396192.02182935644,
+       "rank": 8.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401347.03769496345,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 29,
+       "runs": 30,
+       "mean": 394566.9974249723,
+       "rank": 10.0,
+       "qualified": true
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401766.123579992,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 409976.3083725482,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 413179.2089633991,
+       "rank": 1.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "PSOSLSQPX",
+      "not_significant": [],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "W",
+       "SLSQPX": "W"
+      },
+      "p_holm": {
+       "PSOBV": 2.2351741790771484e-08,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 2.2351741790771484e-08,
+       "PSOC": 2.2351741790771484e-08,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 2.2351741790771484e-08,
+       "GA": 2.2351741790771484e-08,
+       "SLSQPX": 8.009374141693115e-08
+      }
+     },
+     "flipped": 0,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 402583.0584310474,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 3.0,
+      "SSABV": 7.0,
+      "LXBV": 6.0,
+      "RSVNS": 9.0,
+      "BVNS": 8.0,
+      "PSOC": 5.0,
+      "SSA": 11.0,
+      "LXSSA": 12.0,
+      "DE": 13.0,
+      "SLSQP": 10.0,
+      "GA": 4.0,
+      "SLSQPX": 2.0,
+      "PSOSLSQPX": 1.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 30,
+      "SLSQP": 29,
+      "GA": 30,
+      "SLSQPX": 30,
+      "PSOSLSQPX": 30
+     },
+     "mean_all": {
+      "PSOBV": 402583.0584310474,
+      "SSABV": 396920.50731957733,
+      "LXBV": 399196.9005075417,
+      "RSVNS": 396163.3179092349,
+      "BVNS": 396192.02182935644,
+      "PSOC": 401347.03769496345,
+      "SSA": 392875.5815886986,
+      "LXSSA": 390267.4290817604,
+      "DE": 359952.2773781028,
+      "SLSQP": 394566.9974249723,
+      "GA": 401766.123579992,
+      "SLSQPX": 409976.3083725482,
+      "PSOSLSQPX": 413179.2089633991
+     }
+    },
+    "W1_exactgrad_open_infeasible": {
+     "best": "PSOBV",
+     "best_mean": 402583.0584310474,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 402583.0584310474,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396920.50731957733,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396192.02182935644,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401347.03769496345,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 29,
+       "runs": 30,
+       "mean": 394566.9974249723,
+       "rank": 8.0,
+       "qualified": true
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401766.123579992,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 7,
+       "runs": 30,
+       "mean": 409839.9790583957,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 4,
+       "runs": 30,
+       "mean": 412317.62051633286,
+       "rank": 13.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "PSOBV",
+      "not_significant": [
+       "GA"
+      ],
+      "outcomes": {
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "T",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "SSABV": 0.0005529075860977173,
+       "LXBV": 0.0074560269713401794,
+       "RSVNS": 1.1354684829711914e-05,
+       "BVNS": 9.58666205406189e-05,
+       "PSOC": 0.0074560269713401794,
+       "SSA": 6.146728992462158e-07,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 4.0978193283081055e-08,
+       "SLSQP": 0.010025225579738617,
+       "GA": 0.2621222734451294,
+       "SLSQPX": 1.9336119294166565e-05,
+       "PSOSLSQPX": 7.208436727523804e-07
+      }
+     },
+     "flipped": 49,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 402583.0584310474,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 1.0,
+      "SSABV": 5.0,
+      "LXBV": 4.0,
+      "RSVNS": 7.0,
+      "BVNS": 6.0,
+      "PSOC": 3.0,
+      "SSA": 9.0,
+      "LXSSA": 10.0,
+      "DE": 11.0,
+      "SLSQP": 8.0,
+      "GA": 2.0,
+      "SLSQPX": 12.0,
+      "PSOSLSQPX": 13.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 30,
+      "SLSQP": 29,
+      "GA": 30,
+      "SLSQPX": 7,
+      "PSOSLSQPX": 4
+     },
+     "mean_all": {
+      "PSOBV": 402583.0584310474,
+      "SSABV": 396920.50731957733,
+      "LXBV": 399196.9005075417,
+      "RSVNS": 396163.3179092349,
+      "BVNS": 396192.02182935644,
+      "PSOC": 401347.03769496345,
+      "SSA": 392875.5815886986,
+      "LXSSA": 390267.4290817604,
+      "DE": 359952.2773781028,
+      "SLSQP": 394566.9974249723,
+      "GA": 401766.123579992,
+      "SLSQPX": 409839.9790583957,
+      "PSOSLSQPX": 412317.62051633286
+     }
+    },
+    "W2_plus_msslsqp_open_infeasible": {
+     "best": "PSOBV",
+     "best_mean": 402583.0584310474,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 402583.0584310474,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396920.50731957733,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396192.02182935644,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401347.03769496345,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 11,
+       "runs": 30,
+       "mean": 386103.9826835154,
+       "rank": 11.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401766.123579992,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 7,
+       "runs": 30,
+       "mean": 409839.9790583957,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 4,
+       "runs": 30,
+       "mean": 412317.62051633286,
+       "rank": 13.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "PSOBV",
+      "not_significant": [
+       "GA"
+      ],
+      "outcomes": {
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "T",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "SSABV": 0.00044232606887817383,
+       "LXBV": 0.005592020228505135,
+       "RSVNS": 9.935349225997925e-06,
+       "BVNS": 7.988885045051575e-05,
+       "PSOC": 0.005592020228505135,
+       "SSA": 6.146728992462158e-07,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 4.0978193283081055e-08,
+       "SLSQP": 8.195638656616211e-07,
+       "GA": 0.2621222734451294,
+       "SLSQPX": 1.6573816537857056e-05,
+       "PSOSLSQPX": 7.208436727523804e-07
+      }
+     },
+     "flipped": 67,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 402583.0584310474,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 1.0,
+      "SSABV": 5.0,
+      "LXBV": 4.0,
+      "RSVNS": 7.0,
+      "BVNS": 6.0,
+      "PSOC": 3.0,
+      "SSA": 8.0,
+      "LXSSA": 9.0,
+      "DE": 10.0,
+      "SLSQP": 11.0,
+      "GA": 2.0,
+      "SLSQPX": 12.0,
+      "PSOSLSQPX": 13.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 30,
+      "SLSQP": 11,
+      "GA": 30,
+      "SLSQPX": 7,
+      "PSOSLSQPX": 4
+     },
+     "mean_all": {
+      "PSOBV": 402583.0584310474,
+      "SSABV": 396920.50731957733,
+      "LXBV": 399196.9005075417,
+      "RSVNS": 396163.3179092349,
+      "BVNS": 396192.02182935644,
+      "PSOC": 401347.03769496345,
+      "SSA": 392875.5815886986,
+      "LXSSA": 390267.4290817604,
+      "DE": 359952.2773781028,
+      "SLSQP": 386103.9826835154,
+      "GA": 401766.123579992,
+      "SLSQPX": 409839.9790583957,
+      "PSOSLSQPX": 412317.62051633286
+     }
+    },
+    "A_adversarial_qualified": {
+     "best": "PSOSLSQPX",
+     "best_mean": 411359.2001614518,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 402583.0584310474,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396920.50731957733,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 396192.02182935644,
+       "rank": 8.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401347.03769496345,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 29,
+       "runs": 30,
+       "mean": 394566.9974249723,
+       "rank": 10.0,
+       "qualified": true
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 401766.123579992,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 408821.6283760967,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 411359.2001614518,
+       "rank": 1.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "PSOSLSQPX",
+      "not_significant": [
+       "PSOBV",
+       "SSABV",
+       "LXBV",
+       "RSVNS",
+       "BVNS",
+       "PSOC",
+       "SSA",
+       "LXSSA",
+       "DE",
+       "SLSQP",
+       "GA",
+       "SLSQPX"
+      ],
+      "outcomes": {
+       "PSOBV": "T",
+       "SSABV": "T",
+       "LXBV": "T",
+       "RSVNS": "T",
+       "BVNS": "T",
+       "PSOC": "T",
+       "SSA": "T",
+       "LXSSA": "T",
+       "DE": "T",
+       "SLSQP": "T",
+       "GA": "T",
+       "SLSQPX": "T"
+      },
+      "p_holm": {
+       "PSOBV": 0.23592978715896606,
+       "SSABV": 0.23592978715896606,
+       "LXBV": 0.23592978715896606,
+       "RSVNS": 0.23592978715896606,
+       "BVNS": 0.23592978715896606,
+       "PSOC": 0.23592978715896606,
+       "SSA": 0.23592978715896606,
+       "LXSSA": 0.23592978715896606,
+       "DE": 0.23592978715896606,
+       "SLSQP": 0.23592978715896606,
+       "GA": 0.23592978715896606,
+       "SLSQPX": 0.23592978715896606
+      }
+     },
+     "flipped": 30,
+     "best_gradient_free": "PSOBV",
+     "best_free_mean": 402583.0584310474,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 3.0,
+      "SSABV": 7.0,
+      "LXBV": 6.0,
+      "RSVNS": 9.0,
+      "BVNS": 8.0,
+      "PSOC": 5.0,
+      "SSA": 11.0,
+      "LXSSA": 12.0,
+      "DE": 13.0,
+      "SLSQP": 10.0,
+      "GA": 4.0,
+      "SLSQPX": 2.0,
+      "PSOSLSQPX": 1.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 30,
+      "SLSQP": 29,
+      "GA": 30,
+      "SLSQPX": 15,
+      "PSOSLSQPX": 15
+     },
+     "mean_all": {
+      "PSOBV": 402583.0584310474,
+      "SSABV": 396920.50731957733,
+      "LXBV": 399196.9005075417,
+      "RSVNS": 396163.3179092349,
+      "BVNS": 396192.02182935644,
+      "PSOC": 401347.03769496345,
+      "SSA": 392875.5815886986,
+      "LXSSA": 390267.4290817604,
+      "DE": 359952.2773781028,
+      "SLSQP": 394566.9974249723,
+      "GA": 401766.123579992,
+      "SLSQPX": 408821.6283760967,
+      "PSOSLSQPX": 411359.2001614518
+     },
+     "adversarial_detail": {
+      "SLSQPX": {
+       "open": 23,
+       "feasible_stored": 30,
+       "flipped": 15
+      },
+      "PSOSLSQPX": {
+       "open": 26,
+       "feasible_stored": 30,
+       "flipped": 15
+      }
+     }
+    }
+   },
+   "36T_6030": {
+    "stored": {
+     "best": "SLSQPX",
+     "best_mean": 832893.2798527642,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 736832.364516246,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 728870.2783577497,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 741565.5748306591,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 27,
+       "runs": 30,
+       "mean": 729188.510003859,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 4,
+       "runs": 30,
+       "mean": 733342.0106963257,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 774971.9130773497,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 832893.2798527642,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 832404.0193194342,
+       "rank": 2.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "SLSQPX",
+      "not_significant": [
+       "PSOSLSQPX"
+      ],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "W",
+       "PSOSLSQPX": "T"
+      },
+      "p_holm": {
+       "PSOBV": 2.2351741790771484e-08,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 2.2351741790771484e-08,
+       "PSOC": 2.2351741790771484e-08,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 2.2351741790771484e-08,
+       "GA": 2.2351741790771484e-08,
+       "PSOSLSQPX": 0.7000329215079546
+      }
+     },
+     "flipped": 0,
+     "best_gradient_free": "GA",
+     "best_free_mean": 774971.9130773497,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 5.0,
+      "SSABV": 7.0,
+      "LXBV": 9.0,
+      "RSVNS": 11.0,
+      "BVNS": 4.0,
+      "PSOC": 6.0,
+      "SSA": 8.0,
+      "LXSSA": 10.0,
+      "DE": 13.0,
+      "SLSQP": 12.0,
+      "GA": 3.0,
+      "SLSQPX": 1.0,
+      "PSOSLSQPX": 2.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 29,
+      "RSVNS": 28,
+      "BVNS": 30,
+      "PSOC": 27,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 4,
+      "GA": 30,
+      "SLSQPX": 30,
+      "PSOSLSQPX": 30
+     },
+     "mean_all": {
+      "PSOBV": 736832.364516246,
+      "SSABV": 728870.2783577497,
+      "LXBV": 715952.4870874742,
+      "RSVNS": 709276.4745766707,
+      "BVNS": 741565.5748306591,
+      "PSOC": 729188.510003859,
+      "SSA": 717258.4918506356,
+      "LXSSA": 709660.5231250295,
+      "DE": null,
+      "SLSQP": 733342.0106963257,
+      "GA": 774971.9130773497,
+      "SLSQPX": 832893.2798527642,
+      "PSOSLSQPX": 832404.0193194342
+     }
+    },
+    "W1_exactgrad_open_infeasible": {
+     "best": "GA",
+     "best_mean": 774971.9130773497,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 736832.364516246,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 728870.2783577497,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 741565.5748306591,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 27,
+       "runs": 30,
+       "mean": 729188.510003859,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 4,
+       "runs": 30,
+       "mean": 733342.0106963257,
+       "rank": 10.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 774971.9130773497,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "GA",
+      "not_significant": [],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "PSOBV": 2.2351741790771484e-08,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 2.2351741790771484e-08,
+       "PSOC": 2.2351741790771484e-08,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 2.2351741790771484e-08,
+       "SLSQPX": 2.2351741790771484e-08,
+       "PSOSLSQPX": 2.2351741790771484e-08
+      }
+     },
+     "flipped": 60,
+     "best_gradient_free": "GA",
+     "best_free_mean": 774971.9130773497,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 3.0,
+      "SSABV": 5.0,
+      "LXBV": 7.0,
+      "RSVNS": 9.0,
+      "BVNS": 2.0,
+      "PSOC": 4.0,
+      "SSA": 6.0,
+      "LXSSA": 8.0,
+      "DE": 12.0,
+      "SLSQP": 10.0,
+      "GA": 1.0,
+      "SLSQPX": 12.0,
+      "PSOSLSQPX": 12.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 29,
+      "RSVNS": 28,
+      "BVNS": 30,
+      "PSOC": 27,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 4,
+      "GA": 30,
+      "SLSQPX": 0,
+      "PSOSLSQPX": 0
+     },
+     "mean_all": {
+      "PSOBV": 736832.364516246,
+      "SSABV": 728870.2783577497,
+      "LXBV": 715952.4870874742,
+      "RSVNS": 709276.4745766707,
+      "BVNS": 741565.5748306591,
+      "PSOC": 729188.510003859,
+      "SSA": 717258.4918506356,
+      "LXSSA": 709660.5231250295,
+      "DE": null,
+      "SLSQP": 733342.0106963257,
+      "GA": 774971.9130773497,
+      "SLSQPX": null,
+      "PSOSLSQPX": null
+     }
+    },
+    "W2_plus_msslsqp_open_infeasible": {
+     "best": "GA",
+     "best_mean": 774971.9130773497,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 736832.364516246,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 728870.2783577497,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 741565.5748306591,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 27,
+       "runs": 30,
+       "mean": 729188.510003859,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 4,
+       "runs": 30,
+       "mean": 733342.0106963257,
+       "rank": 10.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 774971.9130773497,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "GA",
+      "not_significant": [],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "PSOBV": 2.2351741790771484e-08,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 2.2351741790771484e-08,
+       "PSOC": 2.2351741790771484e-08,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 2.2351741790771484e-08,
+       "SLSQPX": 2.2351741790771484e-08,
+       "PSOSLSQPX": 2.2351741790771484e-08
+      }
+     },
+     "flipped": 60,
+     "best_gradient_free": "GA",
+     "best_free_mean": 774971.9130773497,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 3.0,
+      "SSABV": 5.0,
+      "LXBV": 7.0,
+      "RSVNS": 9.0,
+      "BVNS": 2.0,
+      "PSOC": 4.0,
+      "SSA": 6.0,
+      "LXSSA": 8.0,
+      "DE": 12.0,
+      "SLSQP": 10.0,
+      "GA": 1.0,
+      "SLSQPX": 12.0,
+      "PSOSLSQPX": 12.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 29,
+      "RSVNS": 28,
+      "BVNS": 30,
+      "PSOC": 27,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 4,
+      "GA": 30,
+      "SLSQPX": 0,
+      "PSOSLSQPX": 0
+     },
+     "mean_all": {
+      "PSOBV": 736832.364516246,
+      "SSABV": 728870.2783577497,
+      "LXBV": 715952.4870874742,
+      "RSVNS": 709276.4745766707,
+      "BVNS": 741565.5748306591,
+      "PSOC": 729188.510003859,
+      "SSA": 717258.4918506356,
+      "LXSSA": 709660.5231250295,
+      "DE": null,
+      "SLSQP": 733342.0106963257,
+      "GA": 774971.9130773497,
+      "SLSQPX": null,
+      "PSOSLSQPX": null
+     }
+    },
+    "A_adversarial_qualified": {
+     "best": "SLSQPX",
+     "best_mean": 830082.3578083302,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 736832.364516246,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 728870.2783577497,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 741565.5748306591,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 27,
+       "runs": 30,
+       "mean": 729188.510003859,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 4,
+       "runs": 30,
+       "mean": 733342.0106963257,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 774971.9130773497,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 830082.3578083302,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 827329.8731966107,
+       "rank": 2.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "SLSQPX",
+      "not_significant": [
+       "PSOBV",
+       "SSABV",
+       "LXBV",
+       "RSVNS",
+       "BVNS",
+       "PSOC",
+       "SSA",
+       "LXSSA",
+       "GA",
+       "PSOSLSQPX"
+      ],
+      "outcomes": {
+       "PSOBV": "T",
+       "SSABV": "T",
+       "LXBV": "T",
+       "RSVNS": "T",
+       "BVNS": "T",
+       "PSOC": "T",
+       "SSA": "T",
+       "LXSSA": "T",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "T",
+       "PSOSLSQPX": "T"
+      },
+      "p_holm": {
+       "PSOBV": 0.19660815596580505,
+       "SSABV": 0.19660815596580505,
+       "LXBV": 0.19660815596580505,
+       "RSVNS": 0.31451971270143986,
+       "BVNS": 0.19660815596580505,
+       "PSOC": 0.42586570605635643,
+       "SSA": 0.19660815596580505,
+       "LXSSA": 0.19660815596580505,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 5.183741450309753e-06,
+       "GA": 0.19660815596580505,
+       "PSOSLSQPX": 0.5978077705949545
+      }
+     },
+     "flipped": 30,
+     "best_gradient_free": "GA",
+     "best_free_mean": 774971.9130773497,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 5.0,
+      "SSABV": 7.0,
+      "LXBV": 9.0,
+      "RSVNS": 11.0,
+      "BVNS": 4.0,
+      "PSOC": 6.0,
+      "SSA": 8.0,
+      "LXSSA": 10.0,
+      "DE": 13.0,
+      "SLSQP": 12.0,
+      "GA": 3.0,
+      "SLSQPX": 1.0,
+      "PSOSLSQPX": 2.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 29,
+      "RSVNS": 28,
+      "BVNS": 30,
+      "PSOC": 27,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 4,
+      "GA": 30,
+      "SLSQPX": 15,
+      "PSOSLSQPX": 15
+     },
+     "mean_all": {
+      "PSOBV": 736832.364516246,
+      "SSABV": 728870.2783577497,
+      "LXBV": 715952.4870874742,
+      "RSVNS": 709276.4745766707,
+      "BVNS": 741565.5748306591,
+      "PSOC": 729188.510003859,
+      "SSA": 717258.4918506356,
+      "LXSSA": 709660.5231250295,
+      "DE": null,
+      "SLSQP": 733342.0106963257,
+      "GA": 774971.9130773497,
+      "SLSQPX": 830082.3578083302,
+      "PSOSLSQPX": 827329.8731966107
+     },
+     "adversarial_detail": {
+      "SLSQPX": {
+       "open": 30,
+       "feasible_stored": 30,
+       "flipped": 15
+      },
+      "PSOSLSQPX": {
+       "open": 30,
+       "feasible_stored": 30,
+       "flipped": 15
+      }
+     }
+    }
+   },
+   "36T_30030": {
+    "stored": {
+     "best": "PSOSLSQPX",
+     "best_mean": 842556.8553798138,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 807445.9524939018,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 791404.3693369811,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 801797.385491931,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 802252.3061241572,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 14,
+       "runs": 30,
+       "mean": 798912.9676158857,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 823061.4834919833,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 838852.8935812821,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 842556.8553798138,
+       "rank": 1.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "PSOSLSQPX",
+      "not_significant": [],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "GA": "W",
+       "SLSQPX": "W"
+      },
+      "p_holm": {
+       "PSOBV": 2.2351741790771484e-08,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 2.2351741790771484e-08,
+       "PSOC": 2.2351741790771484e-08,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 2.2351741790771484e-08,
+       "GA": 2.2351741790771484e-08,
+       "SLSQPX": 8.856505155563354e-05
+      }
+     },
+     "flipped": 0,
+     "best_gradient_free": "GA",
+     "best_free_mean": 823061.4834919833,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 4.0,
+      "SSABV": 7.0,
+      "LXBV": 9.0,
+      "RSVNS": 8.0,
+      "BVNS": 6.0,
+      "PSOC": 5.0,
+      "SSA": 10.0,
+      "LXSSA": 11.0,
+      "DE": 13.0,
+      "SLSQP": 12.0,
+      "GA": 3.0,
+      "SLSQPX": 2.0,
+      "PSOSLSQPX": 1.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 14,
+      "GA": 30,
+      "SLSQPX": 30,
+      "PSOSLSQPX": 30
+     },
+     "mean_all": {
+      "PSOBV": 807445.9524939018,
+      "SSABV": 791404.3693369811,
+      "LXBV": 785676.5842831661,
+      "RSVNS": 787892.2323030762,
+      "BVNS": 801797.385491931,
+      "PSOC": 802252.3061241572,
+      "SSA": 771297.9714753184,
+      "LXSSA": 752030.2808691754,
+      "DE": null,
+      "SLSQP": 798912.9676158857,
+      "GA": 823061.4834919833,
+      "SLSQPX": 838852.8935812821,
+      "PSOSLSQPX": 842556.8553798138
+     }
+    },
+    "W1_exactgrad_open_infeasible": {
+     "best": "GA",
+     "best_mean": 823061.4834919833,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 807445.9524939018,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 791404.3693369811,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 801797.385491931,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 802252.3061241572,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 14,
+       "runs": 30,
+       "mean": 798912.9676158857,
+       "rank": 10.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 823061.4834919833,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "GA",
+      "not_significant": [],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "PSOBV": 7.711350917816162e-07,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 5.21540641784668e-08,
+       "PSOC": 1.8440186977386475e-07,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 1.597777009010315e-05,
+       "SLSQPX": 2.2351741790771484e-08,
+       "PSOSLSQPX": 2.2351741790771484e-08
+      }
+     },
+     "flipped": 60,
+     "best_gradient_free": "GA",
+     "best_free_mean": 823061.4834919833,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 2.0,
+      "SSABV": 5.0,
+      "LXBV": 7.0,
+      "RSVNS": 6.0,
+      "BVNS": 4.0,
+      "PSOC": 3.0,
+      "SSA": 8.0,
+      "LXSSA": 9.0,
+      "DE": 12.0,
+      "SLSQP": 10.0,
+      "GA": 1.0,
+      "SLSQPX": 12.0,
+      "PSOSLSQPX": 12.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 14,
+      "GA": 30,
+      "SLSQPX": 0,
+      "PSOSLSQPX": 0
+     },
+     "mean_all": {
+      "PSOBV": 807445.9524939018,
+      "SSABV": 791404.3693369811,
+      "LXBV": 785676.5842831661,
+      "RSVNS": 787892.2323030762,
+      "BVNS": 801797.385491931,
+      "PSOC": 802252.3061241572,
+      "SSA": 771297.9714753184,
+      "LXSSA": 752030.2808691754,
+      "DE": null,
+      "SLSQP": 798912.9676158857,
+      "GA": 823061.4834919833,
+      "SLSQPX": null,
+      "PSOSLSQPX": null
+     }
+    },
+    "W2_plus_msslsqp_open_infeasible": {
+     "best": "GA",
+     "best_mean": 823061.4834919833,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 807445.9524939018,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 791404.3693369811,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 801797.385491931,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 802252.3061241572,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 4,
+       "runs": 30,
+       "mean": 738576.9275312705,
+       "rank": 10.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 823061.4834919833,
+       "rank": 1.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "PSOSLSQPX": {
+       "feasible": 0,
+       "runs": 30,
+       "mean": null,
+       "rank": 12.0,
+       "qualified": false
+      }
+     },
+     "best_family": {
+      "focus": "GA",
+      "not_significant": [],
+      "outcomes": {
+       "PSOBV": "W",
+       "SSABV": "W",
+       "LXBV": "W",
+       "RSVNS": "W",
+       "BVNS": "W",
+       "PSOC": "W",
+       "SSA": "W",
+       "LXSSA": "W",
+       "DE": "W",
+       "SLSQP": "W",
+       "SLSQPX": "W",
+       "PSOSLSQPX": "W"
+      },
+      "p_holm": {
+       "PSOBV": 3.855675458908081e-07,
+       "SSABV": 2.2351741790771484e-08,
+       "LXBV": 2.2351741790771484e-08,
+       "RSVNS": 2.2351741790771484e-08,
+       "BVNS": 3.91155481338501e-08,
+       "PSOC": 1.2293457984924316e-07,
+       "SSA": 2.2351741790771484e-08,
+       "LXSSA": 2.2351741790771484e-08,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 2.2351741790771484e-08,
+       "SLSQPX": 2.2351741790771484e-08,
+       "PSOSLSQPX": 2.2351741790771484e-08
+      }
+     },
+     "flipped": 70,
+     "best_gradient_free": "GA",
+     "best_free_mean": 823061.4834919833,
+     "exact_gradient_first": false,
+     "ranks_all": {
+      "PSOBV": 2.0,
+      "SSABV": 5.0,
+      "LXBV": 7.0,
+      "RSVNS": 6.0,
+      "BVNS": 4.0,
+      "PSOC": 3.0,
+      "SSA": 8.0,
+      "LXSSA": 9.0,
+      "DE": 12.0,
+      "SLSQP": 10.0,
+      "GA": 1.0,
+      "SLSQPX": 12.0,
+      "PSOSLSQPX": 12.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 4,
+      "GA": 30,
+      "SLSQPX": 0,
+      "PSOSLSQPX": 0
+     },
+     "mean_all": {
+      "PSOBV": 807445.9524939018,
+      "SSABV": 791404.3693369811,
+      "LXBV": 785676.5842831661,
+      "RSVNS": 787892.2323030762,
+      "BVNS": 801797.385491931,
+      "PSOC": 802252.3061241572,
+      "SSA": 771297.9714753184,
+      "LXSSA": 752030.2808691754,
+      "DE": null,
+      "SLSQP": 738576.9275312705,
+      "GA": 823061.4834919833,
+      "SLSQPX": null,
+      "PSOSLSQPX": null
+     }
+    },
+    "A_adversarial_qualified": {
+     "best": "PSOSLSQPX",
+     "best_mean": 840012.9514113327,
+     "methods": {
+      "PSOBV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 807445.9524939018,
+       "rank": 4.0,
+       "qualified": true
+      },
+      "SSABV": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 791404.3693369811,
+       "rank": 7.0,
+       "qualified": true
+      },
+      "BVNS": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 801797.385491931,
+       "rank": 6.0,
+       "qualified": true
+      },
+      "PSOC": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 802252.3061241572,
+       "rank": 5.0,
+       "qualified": true
+      },
+      "SLSQP": {
+       "feasible": 14,
+       "runs": 30,
+       "mean": 798912.9676158857,
+       "rank": 12.0,
+       "qualified": false
+      },
+      "GA": {
+       "feasible": 30,
+       "runs": 30,
+       "mean": 823061.4834919833,
+       "rank": 3.0,
+       "qualified": true
+      },
+      "SLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 837128.2453622632,
+       "rank": 2.0,
+       "qualified": true
+      },
+      "PSOSLSQPX": {
+       "feasible": 15,
+       "runs": 30,
+       "mean": 840012.9514113327,
+       "rank": 1.0,
+       "qualified": true
+      }
+     },
+     "best_family": {
+      "focus": "PSOSLSQPX",
+      "not_significant": [
+       "PSOBV",
+       "SSABV",
+       "LXBV",
+       "RSVNS",
+       "BVNS",
+       "PSOC",
+       "SSA",
+       "LXSSA",
+       "SLSQP",
+       "GA",
+       "SLSQPX"
+      ],
+      "outcomes": {
+       "PSOBV": "T",
+       "SSABV": "T",
+       "LXBV": "T",
+       "RSVNS": "T",
+       "BVNS": "T",
+       "PSOC": "T",
+       "SSA": "T",
+       "LXSSA": "T",
+       "DE": "W",
+       "SLSQP": "T",
+       "GA": "T",
+       "SLSQPX": "T"
+      },
+      "p_holm": {
+       "PSOBV": 0.21626897156238556,
+       "SSABV": 0.21626897156238556,
+       "LXBV": 0.21626897156238556,
+       "RSVNS": 0.21626897156238556,
+       "BVNS": 0.21626897156238556,
+       "PSOC": 0.21626897156238556,
+       "SSA": 0.21626897156238556,
+       "LXSSA": 0.21626897156238556,
+       "DE": 2.2351741790771484e-08,
+       "SLSQP": 0.21626897156238556,
+       "GA": 0.21626897156238556,
+       "SLSQPX": 0.21626897156238556
+      }
+     },
+     "flipped": 30,
+     "best_gradient_free": "GA",
+     "best_free_mean": 823061.4834919833,
+     "exact_gradient_first": true,
+     "ranks_all": {
+      "PSOBV": 4.0,
+      "SSABV": 7.0,
+      "LXBV": 9.0,
+      "RSVNS": 8.0,
+      "BVNS": 6.0,
+      "PSOC": 5.0,
+      "SSA": 10.0,
+      "LXSSA": 11.0,
+      "DE": 13.0,
+      "SLSQP": 12.0,
+      "GA": 3.0,
+      "SLSQPX": 2.0,
+      "PSOSLSQPX": 1.0
+     },
+     "feasible_all": {
+      "PSOBV": 30,
+      "SSABV": 30,
+      "LXBV": 30,
+      "RSVNS": 30,
+      "BVNS": 30,
+      "PSOC": 30,
+      "SSA": 30,
+      "LXSSA": 30,
+      "DE": 0,
+      "SLSQP": 14,
+      "GA": 30,
+      "SLSQPX": 15,
+      "PSOSLSQPX": 15
+     },
+     "mean_all": {
+      "PSOBV": 807445.9524939018,
+      "SSABV": 791404.3693369811,
+      "LXBV": 785676.5842831661,
+      "RSVNS": 787892.2323030762,
+      "BVNS": 801797.385491931,
+      "PSOC": 802252.3061241572,
+      "SSA": 771297.9714753184,
+      "LXSSA": 752030.2808691754,
+      "DE": null,
+      "SLSQP": 798912.9676158857,
+      "GA": 823061.4834919833,
+      "SLSQPX": 837128.2453622632,
+      "PSOSLSQPX": 840012.9514113327
+     },
+     "adversarial_detail": {
+      "SLSQPX": {
+       "open": 30,
+       "feasible_stored": 30,
+       "flipped": 15
+      },
+      "PSOSLSQPX": {
+       "open": 30,
+       "feasible_stored": 30,
+       "flipped": 15
+      }
+     }
+    }
+   }
+  },
+  "reproduces_rev3_sites": true,
+  "open_exact_gradient": 220,
+  "open_msslsqp_iea": 34,
+  "open_by_setting": {
+   "16T_6030": {
+    "SLSQPX": 27,
+    "PSOSLSQPX": 24,
+    "SLSQP": 6
+   },
+   "16T_30030": {
+    "SLSQPX": 23,
+    "PSOSLSQPX": 26,
+    "SLSQP": 18
+   },
+   "36T_6030": {
+    "SLSQPX": 30,
+    "PSOSLSQPX": 30,
+    "SLSQP": 0
+   },
+   "36T_30030": {
+    "SLSQPX": 30,
+    "PSOSLSQPX": 30,
+    "SLSQP": 10
+   }
+  }
+ },
+ "hr_worst_case": {
+  "6030": {
+   "stored": {
+    "best": "PSOBV",
+    "best_mean": 138.28774401113697,
+    "methods": {
+     "PSOBV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 138.28774401113697,
+      "rank": 1.0,
+      "qualified": true
+     },
+     "SSABV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 137.591637337408,
+      "rank": 4.0,
+      "qualified": true
+     },
+     "PSOC": {
+      "feasible": 19,
+      "runs": 30,
+      "mean": 137.79162238840016,
+      "rank": 3.0,
+      "qualified": true
+     },
+     "SLSQP": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 136.30809720681074,
+      "rank": 8.0,
+      "qualified": true
+     }
+    },
+    "best_family": {
+     "focus": "PSOBV",
+     "not_significant": [
+      "GA"
+     ],
+     "outcomes": {
+      "SSABV": "W",
+      "LXBV": "W",
+      "RSVNS": "W",
+      "BVNS": "W",
+      "PSOC": "W",
+      "SSA": "W",
+      "LXSSA": "W",
+      "DE": "W",
+      "SLSQP": "W",
+      "GA": "T"
+     },
+     "p_holm": {
+      "SSABV": 0.0005125775933265686,
+      "LXBV": 0.00023731961846351624,
+      "RSVNS": 0.00013442710041999817,
+      "BVNS": 0.00013442710041999817,
+      "PSOC": 5.5320560932159424e-05,
+      "SSA": 2.477318048477173e-07,
+      "LXSSA": 7.450580596923828e-08,
+      "DE": 1.862645149230957e-08,
+      "SLSQP": 1.862645149230957e-08,
+      "GA": 0.5291051845997572
+     }
+    },
+    "ranks_all": {
+     "PSOBV": 1.0,
+     "SSABV": 4.0,
+     "LXBV": 6.0,
+     "RSVNS": 5.0,
+     "BVNS": 7.0,
+     "PSOC": 3.0,
+     "SSA": 9.0,
+     "LXSSA": 10.0,
+     "DE": 11.0,
+     "SLSQP": 8.0,
+     "GA": 2.0
+    },
+    "order_without_msslsqp": [
+     "PSOBV",
+     "GA",
+     "PSOC",
+     "SSABV",
+     "RSVNS",
+     "LXBV",
+     "BVNS",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ]
+   },
+   "msslsqp_open_infeasible": {
+    "best": "PSOBV",
+    "best_mean": 138.28774401113697,
+    "methods": {
+     "PSOBV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 138.28774401113697,
+      "rank": 1.0,
+      "qualified": true
+     },
+     "SSABV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 137.591637337408,
+      "rank": 4.0,
+      "qualified": true
+     },
+     "PSOC": {
+      "feasible": 19,
+      "runs": 30,
+      "mean": 137.79162238840016,
+      "rank": 3.0,
+      "qualified": true
+     },
+     "SLSQP": {
+      "feasible": 10,
+      "runs": 30,
+      "mean": 136.43268168837778,
+      "rank": 10.0,
+      "qualified": false
+     }
+    },
+    "best_family": {
+     "focus": "PSOBV",
+     "not_significant": [
+      "GA"
+     ],
+     "outcomes": {
+      "SSABV": "W",
+      "LXBV": "W",
+      "RSVNS": "W",
+      "BVNS": "W",
+      "PSOC": "W",
+      "SSA": "W",
+      "LXSSA": "W",
+      "DE": "W",
+      "SLSQP": "W",
+      "GA": "T"
+     },
+     "p_holm": {
+      "SSABV": 0.0005125775933265686,
+      "LXBV": 0.00023731961846351624,
+      "RSVNS": 0.00013442710041999817,
+      "BVNS": 0.00013442710041999817,
+      "PSOC": 5.5320560932159424e-05,
+      "SSA": 2.477318048477173e-07,
+      "LXSSA": 7.450580596923828e-08,
+      "DE": 1.862645149230957e-08,
+      "SLSQP": 1.862645149230957e-08,
+      "GA": 0.5291051845997572
+     }
+    },
+    "ranks_all": {
+     "PSOBV": 1.0,
+     "SSABV": 4.0,
+     "LXBV": 6.0,
+     "RSVNS": 5.0,
+     "BVNS": 7.0,
+     "PSOC": 3.0,
+     "SSA": 8.0,
+     "LXSSA": 9.0,
+     "DE": 11.0,
+     "SLSQP": 10.0,
+     "GA": 2.0
+    },
+    "order_without_msslsqp": [
+     "PSOBV",
+     "GA",
+     "PSOC",
+     "SSABV",
+     "RSVNS",
+     "LXBV",
+     "BVNS",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ]
+   },
+   "order_of_other_methods_unchanged": true,
+   "flipped": 20
+  },
+  "30030": {
+   "stored": {
+    "best": "GA",
+    "best_mean": 139.63939580963765,
+    "methods": {
+     "PSOBV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 139.10811309618293,
+      "rank": 2.0,
+      "qualified": true
+     },
+     "SSABV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 138.11483816926926,
+      "rank": 7.0,
+      "qualified": true
+     },
+     "PSOC": {
+      "feasible": 28,
+      "runs": 30,
+      "mean": 138.71945639033066,
+      "rank": 3.0,
+      "qualified": true
+     },
+     "SLSQP": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 137.17735413767065,
+      "rank": 8.0,
+      "qualified": true
+     }
+    },
+    "best_family": {
+     "focus": "GA",
+     "not_significant": [],
+     "outcomes": {
+      "PSOBV": "W",
+      "SSABV": "W",
+      "LXBV": "W",
+      "RSVNS": "W",
+      "BVNS": "W",
+      "PSOC": "W",
+      "SSA": "W",
+      "LXSSA": "W",
+      "DE": "W",
+      "SLSQP": "W"
+     },
+     "p_holm": {
+      "PSOBV": 0.00011058151721954346,
+      "SSABV": 1.862645149230957e-08,
+      "LXBV": 1.862645149230957e-08,
+      "RSVNS": 1.862645149230957e-08,
+      "BVNS": 5.587935447692871e-08,
+      "PSOC": 1.1436641216278076e-06,
+      "SSA": 1.862645149230957e-08,
+      "LXSSA": 1.862645149230957e-08,
+      "DE": 1.862645149230957e-08,
+      "SLSQP": 1.862645149230957e-08
+     }
+    },
+    "ranks_all": {
+     "PSOBV": 2.0,
+     "SSABV": 7.0,
+     "LXBV": 6.0,
+     "RSVNS": 5.0,
+     "BVNS": 4.0,
+     "PSOC": 3.0,
+     "SSA": 9.0,
+     "LXSSA": 10.0,
+     "DE": 11.0,
+     "SLSQP": 8.0,
+     "GA": 1.0
+    },
+    "order_without_msslsqp": [
+     "GA",
+     "PSOBV",
+     "PSOC",
+     "BVNS",
+     "RSVNS",
+     "LXBV",
+     "SSABV",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ]
+   },
+   "msslsqp_open_infeasible": {
+    "best": "GA",
+    "best_mean": 139.63939580963765,
+    "methods": {
+     "PSOBV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 139.10811309618293,
+      "rank": 2.0,
+      "qualified": true
+     },
+     "SSABV": {
+      "feasible": 30,
+      "runs": 30,
+      "mean": 138.11483816926926,
+      "rank": 7.0,
+      "qualified": true
+     },
+     "PSOC": {
+      "feasible": 28,
+      "runs": 30,
+      "mean": 138.71945639033066,
+      "rank": 3.0,
+      "qualified": true
+     },
+     "SLSQP": {
+      "feasible": 10,
+      "runs": 30,
+      "mean": 137.06321287635865,
+      "rank": 10.0,
+      "qualified": false
+     }
+    },
+    "best_family": {
+     "focus": "GA",
+     "not_significant": [],
+     "outcomes": {
+      "PSOBV": "W",
+      "SSABV": "W",
+      "LXBV": "W",
+      "RSVNS": "W",
+      "BVNS": "W",
+      "PSOC": "W",
+      "SSA": "W",
+      "LXSSA": "W",
+      "DE": "W",
+      "SLSQP": "W"
+     },
+     "p_holm": {
+      "PSOBV": 0.00011058151721954346,
+      "SSABV": 1.862645149230957e-08,
+      "LXBV": 1.862645149230957e-08,
+      "RSVNS": 1.862645149230957e-08,
+      "BVNS": 5.587935447692871e-08,
+      "PSOC": 1.1436641216278076e-06,
+      "SSA": 1.862645149230957e-08,
+      "LXSSA": 1.862645149230957e-08,
+      "DE": 1.862645149230957e-08,
+      "SLSQP": 1.862645149230957e-08
+     }
+    },
+    "ranks_all": {
+     "PSOBV": 2.0,
+     "SSABV": 7.0,
+     "LXBV": 6.0,
+     "RSVNS": 5.0,
+     "BVNS": 4.0,
+     "PSOC": 3.0,
+     "SSA": 8.0,
+     "LXSSA": 9.0,
+     "DE": 11.0,
+     "SLSQP": 10.0,
+     "GA": 1.0
+    },
+    "order_without_msslsqp": [
+     "GA",
+     "PSOBV",
+     "PSOC",
+     "BVNS",
+     "RSVNS",
+     "LXBV",
+     "SSABV",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ]
+   },
+   "order_of_other_methods_unchanged": true,
+   "flipped": 20
+  }
+ },
+ "benchmark_worst_case": {
+  "main8_68cases": {
+   "stored": {
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.382352941176471,
+     "LXSSA": 6.0588235294117645,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 8.322717950001036e-17,
+     "LXSSA": 3.3307905761444154e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "chi2": 319.2979002624672,
+    "p": 4.555038515279214e-65,
+    "best_cases": null,
+    "msslsqp_feasible_pct": 99.95098039215686,
+    "msslsqp_cases_unqualified": 0,
+    "msslsqp_mean_loss_qualified": 1.7578660938001243,
+    "allrun_psovns_vs_msslsqp": {
+     "n": 2040,
+     "W": 1649,
+     "T": 218,
+     "L": 173,
+     "score": 0.861764705882353,
+     "p_sign": 5.200928980537675e-302
+    }
+   },
+   "msslsqp_open_infeasible": {
+    "avg_rank": {
+     "PSOBV": 1.8235294117647058,
+     "PSOC": 1.9779411764705883,
+     "SSABV": 3.4558823529411766,
+     "SSA": 5.404411764705882,
+     "LXSSA": 6.0661764705882355,
+     "DE": 7.051470588235294,
+     "BVNS": 4.404411764705882,
+     "SLSQP": 5.8161764705882355
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 6.154515988436521e-17,
+     "LXSSA": 3.3307905761443684e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.0060123732051567e-20
+    },
+    "chi2": 318.88258575197887,
+    "p": 5.588203187964982e-65,
+    "best_cases": null,
+    "msslsqp_feasible_pct": 77.99019607843137,
+    "msslsqp_cases_unqualified": 1,
+    "msslsqp_mean_loss_qualified": 1.7691093473824255,
+    "allrun_psovns_vs_msslsqp": {
+     "n": 2040,
+     "W": 1716,
+     "T": 185,
+     "L": 139,
+     "score": 0.8865196078431372,
+     "p_sign": 0.0
+    }
+   },
+   "flipped": 448,
+   "cases_with_open_msslsqp": 67,
+   "max_open_per_case": 16,
+   "cases_rank_changed": 5,
+   "order_unchanged": true,
+   "avg_rank_change": {
+    "PSOBV": 0.007352941176470562,
+    "PSOC": 0.007352941176470562,
+    "SSABV": 0.007352941176470562,
+    "SSA": 0.022058823529411242,
+    "LXSSA": 0.007352941176471006,
+    "DE": 0.007352941176471006,
+    "BVNS": 0.007352941176470118,
+    "SLSQP": -0.0661764705882355
+   }
+  },
+  "budget_init_groups": [
+   {
+    "study": "mpce_feas",
+    "dataset": "1",
+    "radius": 500,
+    "turbines": 10,
+    "budget": 6030,
+    "init": "feasible",
+    "runs": 30,
+    "feasible": 30,
+    "open": 3,
+    "feasible_worst": 27,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_feas",
+    "dataset": "1",
+    "radius": 750,
+    "turbines": 12,
+    "budget": 6030,
+    "init": "feasible",
+    "runs": 30,
+    "feasible": 30,
+    "open": 3,
+    "feasible_worst": 27,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_feas",
+    "dataset": "1",
+    "radius": 1000,
+    "turbines": 15,
+    "budget": 6030,
+    "init": "feasible",
+    "runs": 30,
+    "feasible": 30,
+    "open": 2,
+    "feasible_worst": 28,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_feas",
+    "dataset": "2",
+    "radius": 500,
+    "turbines": 10,
+    "budget": 6030,
+    "init": "feasible",
+    "runs": 30,
+    "feasible": 30,
+    "open": 2,
+    "feasible_worst": 28,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_feas",
+    "dataset": "2",
+    "radius": 750,
+    "turbines": 12,
+    "budget": 6030,
+    "init": "feasible",
+    "runs": 30,
+    "feasible": 30,
+    "open": 3,
+    "feasible_worst": 27,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_feas",
+    "dataset": "2",
+    "radius": 1000,
+    "turbines": 15,
+    "budget": 6030,
+    "init": "feasible",
+    "runs": 30,
+    "feasible": 30,
+    "open": 4,
+    "feasible_worst": 26,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b30k",
+    "dataset": "1",
+    "radius": 500,
+    "turbines": 10,
+    "budget": 30030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 3,
+    "feasible_worst": 27,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b30k",
+    "dataset": "1",
+    "radius": 750,
+    "turbines": 12,
+    "budget": 30030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 2,
+    "feasible_worst": 28,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b30k",
+    "dataset": "1",
+    "radius": 1000,
+    "turbines": 15,
+    "budget": 30030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 5,
+    "feasible_worst": 25,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b30k",
+    "dataset": "2",
+    "radius": 500,
+    "turbines": 10,
+    "budget": 30030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 4,
+    "feasible_worst": 26,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b30k",
+    "dataset": "2",
+    "radius": 750,
+    "turbines": 12,
+    "budget": 30030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 5,
+    "feasible_worst": 25,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b30k",
+    "dataset": "2",
+    "radius": 1000,
+    "turbines": 15,
+    "budget": 30030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 7,
+    "feasible_worst": 23,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b120k",
+    "dataset": "1",
+    "radius": 500,
+    "turbines": 10,
+    "budget": 120030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 7,
+    "feasible_worst": 23,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b120k",
+    "dataset": "1",
+    "radius": 750,
+    "turbines": 12,
+    "budget": 120030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 7,
+    "feasible_worst": 23,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b120k",
+    "dataset": "1",
+    "radius": 1000,
+    "turbines": 15,
+    "budget": 120030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 5,
+    "feasible_worst": 25,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b120k",
+    "dataset": "2",
+    "radius": 500,
+    "turbines": 10,
+    "budget": 120030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 5,
+    "feasible_worst": 25,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b120k",
+    "dataset": "2",
+    "radius": 750,
+    "turbines": 12,
+    "budget": 120030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 4,
+    "feasible_worst": 26,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_b120k",
+    "dataset": "2",
+    "radius": 1000,
+    "turbines": 15,
+    "budget": 120030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 6,
+    "feasible_worst": 24,
+    "qualified_stored": true,
+    "qualified_worst": true
+   },
+   {
+    "study": "mpce_hrfix",
+    "dataset": "HR",
+    "radius": 0,
+    "turbines": 16,
+    "budget": 6030,
+    "init": "feasible",
+    "runs": 30,
+    "feasible": 30,
+    "open": 20,
+    "feasible_worst": 10,
+    "qualified_stored": true,
+    "qualified_worst": false
+   },
+   {
+    "study": "mpce_hrfix",
+    "dataset": "HR",
+    "radius": 0,
+    "turbines": 16,
+    "budget": 6030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 20,
+    "feasible_worst": 10,
+    "qualified_stored": true,
+    "qualified_worst": false
+   },
+   {
+    "study": "mpce_hrfix",
+    "dataset": "HR",
+    "radius": 0,
+    "turbines": 16,
+    "budget": 30030,
+    "init": "random",
+    "runs": 30,
+    "feasible": 30,
+    "open": 20,
+    "feasible_worst": 10,
+    "qualified_stored": true,
+    "qualified_worst": false
+   },
+   {
+    "study": "mpce_hrfix",
+    "dataset": "HR",
+    "radius": 0,
+    "turbines": 16,
+    "budget": 120030,
+    "init": "random",
+    "runs": 10,
+    "feasible": 10,
+    "open": 7,
+    "feasible_worst": 3,
+    "qualified_stored": true,
+    "qualified_worst": false
+   }
+  ],
+  "budget_init_groups_qualification_lost": 4,
+  "budget_init_groups_n": 22
+ },
+ "transfer": {
+  "benchmark": {
+   "set": "feasible 6,030-evaluation random-start runs of the 11 benchmark methods (mpce_direction.ALLM)",
+   "n_layouts": 1484,
+   "by_algorithm": {
+    "BVNS": 2,
+    "DE": 5,
+    "LXBV": 53,
+    "LXSSA": 343,
+    "PSOBV": 9,
+    "PSOC": 25,
+    "RSDVNS": 3,
+    "RSVNS": 2,
+    "SLSQP": 96,
+    "SSA": 838,
+    "SSABV": 108
+   },
+   "reproduction": {
+    "bit": 1074,
+    "noise": 410
+   },
+   "jensen_1deg": {
+    "n": 1484,
+    "max_pp": 0.05951051075485234,
+    "p95_pp": 0.003640680229134116,
+    "median_pp": 3.342293217534275e-07,
+    "n_gt_0_05pp": 1,
+    "n_gt_0_01pp": 47,
+    "n_exact_zero": 0
+   },
+   "gauss_1deg": {
+    "n": 1484,
+    "max_pp": 2.3201778648885112e-05,
+    "p95_pp": 6.57335475808397e-06,
+    "median_pp": 8.813637087350571e-07,
+    "n_gt_0_05pp": 0,
+    "n_gt_0_01pp": 0,
+    "n_exact_zero": 0
+   },
+   "paper_15deg": {
+    "n": 1484,
+    "max_pp": 0.8926722124321652,
+    "p95_pp": 0.0519187781691001,
+    "median_pp": 1.2271766555913897e-07,
+    "n_gt_0_05pp": 79,
+    "n_gt_0_01pp": 142,
+    "n_exact_zero": 53
+   }
+  },
+  "horns_rev": {
+   "set": "mpce_hrfix + rev2_gahr, 16 turbines, all stored layouts (as rev3_sites.reeval_layouts)",
+   "n_layouts": 211,
+   "n_feasible": 206,
+   "reproduction": {
+    "bit": 181,
+    "noise": 30
+   },
+   "jensen_1deg": {
+    "n": 211,
+    "max_pp": 0.07080348379168738,
+    "p95_pp": 0.0370141722890423,
+    "median_pp": 7.119968881616464e-06,
+    "n_gt_0_05pp": 4,
+    "n_gt_0_01pp": 30,
+    "n_exact_zero": 0
+   },
+   "paper_5deg": {
+    "n": 211,
+    "max_pp": 0.35401685394264926,
+    "p95_pp": 0.18505679447320933,
+    "median_pp": 6.388132904996962e-06,
+    "n_gt_0_05pp": 29,
+    "n_gt_0_01pp": 49,
+    "n_exact_zero": 0
+   },
+   "pywake_noj_1deg": {
+    "n": 211,
+    "max_pp": 4.240265235923696e-05,
+    "p95_pp": 2.724075593322341e-05,
+    "median_pp": 8.403441182436882e-06,
+    "n_gt_0_05pp": 0,
+    "n_gt_0_01pp": 0,
+    "n_exact_zero": 0
+   },
+   "max_abs_gwh_1deg": 0.10536066624089813,
+   "max_abs_gwh_pywake": 6.3098190423716e-05,
+   "pywake_version": "2.6.20"
+  },
+  "lillgrund": {
+   "set": "rev2_lg16 + rev2_lg16b (as rev3_sites.reeval_layouts)",
+   "n_layouts": 136,
+   "reproduction": {
+    "bit": 87,
+    "noise": 49
+   },
+   "jensen_1deg": {
+    "n": 136,
+    "max_pp": 0.0322945611957601,
+    "p95_pp": 0.014258922404121339,
+    "median_pp": 1.1802543182600685e-05,
+    "n_gt_0_05pp": 0,
+    "n_gt_0_01pp": 11,
+    "n_exact_zero": 0
+   },
+   "paper_5deg": {
+    "n": 136,
+    "max_pp": 0.1614554070824085,
+    "p95_pp": 0.032874205232324843,
+    "median_pp": 1.058395856771276e-05,
+    "n_gt_0_05pp": 5,
+    "n_gt_0_01pp": 10,
+    "n_exact_zero": 0
+   },
+   "pywake_noj_1deg": {
+    "n": 136,
+    "max_pp": 0.00011613540379465446,
+    "p95_pp": 6.2227280308527e-05,
+    "median_pp": 2.303788782661368e-05,
+    "n_gt_0_05pp": 0,
+    "n_gt_0_01pp": 0,
+    "n_exact_zero": 0
+   }
+  },
+  "seconds": 55.872435331344604
+ },
+ "seconds": 60.63718223571777
+}
