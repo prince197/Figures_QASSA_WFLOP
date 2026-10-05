@@ -16,11 +16,11 @@ supplement from the stored per-run records, and to rerun every optimization stud
 
 | Part | Where | Count |
 |---|---|---|
-| Per-run records of the original study (one row per run: method, case, seed, budget, initialization, evaluations, objective, feasibility, minimum spacing, seconds, final coordinates, convergence curve) | `analysis/fresh_{grid,vgrid,bgrid}.csv`, `analysis/mpce_*_s<i>of<k>.csv` | **36,190** runs (`count_records.py`) + the superseded Horns Rev rows that the analysis drops + the 8 `feasx` shards merged into `mpce_feas_s0of1.csv` |
-| Per-run records of revision 2 (GA, exact gradients, Laplace ablation, 5D/6D spacing, Lillgrund) | `analysis/rev2_*_s<i>of<k>.csv` | **11,640** runs |
-| Per-run records of revision 3 (constraint handling C1; direct 1° optimization C2 with its 15° control arm) | `analysis/rev3_constraint_{pen,deb,proj}.csv`, `analysis/rev3_fine_s<i>of10.csv`, `analysis/rev3_fine15_s0of1.csv` | **5,100** runs (2,700 + 1,200 + 1,200) |
-| Full-precision reruns of stored records (C4) | `analysis/rev3_precision_results/*.jsonl` (raw), `analysis/rev3_fullprec_<study>.csv` (merged, 17 significant digits) | **5,744** reruns (the 5,714 records whose stored label the rounded coordinates cannot certify + a 30-record determinism sample) |
-| Revision-3 analyses, tables and prespecifications | `analysis/rev3_*.py`, `rev3_*_tables.tex` (`tab:S-r3-*`), `rev3_*.json`, `rev3_*_manifest.md`, logs | |
+| Per-run records of the main study (one row per run: method, case, seed, budget, initialization, evaluations, objective, feasibility, minimum spacing, seconds, final coordinates, convergence curve) | `analysis/fresh_{grid,vgrid,bgrid}.csv`, `analysis/mpce_*_s<i>of<k>.csv` | **36,190** runs (`count_records.py`) + the superseded Horns Rev rows that the analysis drops + the 8 `feasx` shards merged into `mpce_feas_s0of1.csv` |
+| Per-run records of the additional experiments (GA, exact gradients, Laplace ablation, 5D/6D spacing, Lillgrund) | `analysis/rev2_*_s<i>of<k>.csv` | **11,640** runs |
+| Per-run records of the sensitivity studies (constraint handling; direct 1° optimization with its 15° control arm) | `analysis/rev3_constraint_{pen,deb,proj}.csv`, `analysis/rev3_fine_s<i>of10.csv`, `analysis/rev3_fine15_s0of1.csv` | **5,100** runs (2,700 + 1,200 + 1,200) |
+| Full-precision reruns of stored records | `analysis/rev3_precision_results/*.jsonl` (raw), `analysis/rev3_fullprec_<study>.csv` (merged, 17 significant digits) | **5,744** reruns (the 5,714 records whose stored label the rounded coordinates cannot certify + a 30-record determinism sample) |
+| Sensitivity studies and sensitivity analyses: code, tables and prespecifications | `analysis/rev3_*.py`, `rev3_*_tables.tex` (`tab:S-sa-*` in the article; the generated files carry the same labels with the prefix `tab:S-r3-`), `rev3_*.json`, `rev3_*_manifest.md`, logs | |
 | Models and objectives | `analysis/wflop_model.py`, `authors_objective.py`, `objective_original.py`, `hornsrev_model.py`, `iea37_model.py` (+ `iea37_data/`), `rev2_site_model.py` (Lillgrund), `record_io.py` | |
 | Optimizers | `analysis/authors_optimizers.py`, `extra_baselines.py`, `original_vns.py`, `hybrid_lxssa_bvns.py`, `rs_vns.py`, `feasible_init.py`, `init_hook.py` (+ `hybrid_lxssa_vns.py`, imported by `full_grid_experiments.py`) | |
 | Experiment drivers | `analysis/full_grid_experiments.py`, `mpce_experiments.py`, `iea37_experiments.py`, `rev2_{ga,gradient,laplace,site,spacing}.py`, `authors_experiments.py`, `ssa_reference.py`, `mpce_diagnostics.py`, `packing_capacity.py`, `pywake_check.py`, `iea37_projected.py`; launch scripts `SWEVO_rev2/experiments_docs/run_rev2_*.sh` | |
@@ -48,12 +48,13 @@ SWEVO_repro_<version>/
   figures_mpce/             generated figures (PDF + PNG previews)
   figures_final/            model schematics fig_wind_farm / fig_wake_model / fig_half_cone (PDF)
   selected_30_run_data.csv  720 archived runs of the original code (evaluator validation, calibration)
-  SWEVO_rev2/experiments_docs/   revision-2 summary/tables and launch scripts
-  SWEVO_rev2/validation/         revision-2 archive audit outputs
+  SWEVO_rev2/experiments_docs/   summary/tables and launch scripts of the additional experiments
+  SWEVO_rev2/validation/         archive audit outputs of the additional experiments
   verification/             logs of the verification of this release
 ```
 
 All scripts are run from `analysis/` (they find their inputs relative to their own location).
+File-name prefixes (mpce_, rev2_, rev3_) are historical identifiers of the scripts and run files and carry no meaning for the analysis.
 
 ## 3. Environment
 
@@ -79,8 +80,8 @@ cd SWEVO_repro_<version>
 sha256sum -c MANIFEST.sha256          # every file of the package except MANIFEST.sha256 itself
 ```
 The sha256 of the zip file is in `SWEVO_repro_<version>.zip.sha256` (next to the zip) and, after the deposit, on
-the deposit page. `SWEVO_rev2/validation/raw_data_checksums.json` holds the checksums of the 140 revision-2 run
-files as delivered in revision 2; `python3 analysis/check_revision.py` (run by `regenerate_all.sh`) verifies them.
+the deposit page. `SWEVO_rev2/validation/raw_data_checksums.json` holds the checksums of the 140 run files of
+the additional experiments, recorded when those runs were completed; `python3 analysis/check_revision.py` (run by `regenerate_all.sh`) verifies them.
 
 ## 5. Regenerate the tables, figures and numbers
 
@@ -88,8 +89,8 @@ One command regenerates everything that is computed from the stored run records,
 each regenerated file with the stored copy:
 
 ```sh
-sh regenerate_all.sh /tmp/regen                     # ~8 min on one core (incl. revision-3 analyses)
-WITH_SLOW=1 WITH_DETERMINISM=1 sh regenerate_all.sh /tmp/regen     # + theory figure, evaluator, packing, schematics, reruns, revision-3 inference (~50 min)
+sh regenerate_all.sh /tmp/regen                     # ~8 min on one core (incl. the sensitivity analyses)
+WITH_SLOW=1 WITH_DETERMINISM=1 sh regenerate_all.sh /tmp/regen     # + theory figure, evaluator, packing, schematics, reruns, inference sensitivity analyses (~50 min)
 WITH_PYWAKE=1 sh regenerate_all.sh /tmp/regen       # + PyWake cross-checks (requirements-pywake.txt)
 MANUSCRIPT=/path/to/latex_source WITH_SLOW=1 sh regenerate_all.sh /tmp/regen   # + CHECK-tag scan and theory text checks
 ```
@@ -123,7 +124,7 @@ Commands are run in `analysis/`; runtimes are wall-clock seconds on one core of 
 | Outcome-dependent statements (CHECK-FINAL C01–C62) | `mpce_check_final.py` (called by `mpce_results.py`) | `python3 mpce_check_final.py [--tex .../SWEVO_manuscript.tex]` | `mpce_summary.json` (+ manuscript for the tag scan) | < 1 s |
 | Checks X01–X57, D01–D22, F01–F46, S01–S15 | `mpce_check_extra.py`, `mpce_check_diag.py`, `mpce_check_dir.py`, `mpce_check_csweep.py` | `python3 mpce_check_<x>.py` | `mpce_summary_{extra,diag,dir,csweep}.json` | 1 s each |
 | Algorithm diagnostics (Section S-diag, `mpce_supp_diag.tex`, `\ND...`, `diag_pso_dynamics.pdf`) | `mpce_diagnostics.py` | `python3 mpce_diagnostics.py --procs=2` (instrumented reruns; stored summary `mpce_summary_diag.json` checked by `mpce_check_diag.py`) | `fresh_grid.csv`, `fresh_bgrid.csv`, `mpce_psoc/psobv/rsvns/feas/psosplit/hrfix` | stored; ~18 min on 2 cores (not rerun here) |
-| Revision-2 tables (Laplace ablation, GA, 5D/6D spacing, exact gradients, Lillgrund; `rev2_tables.tex`, `rev2_summary.json`) | `rev2_analysis.py` | `python3 rev2_analysis.py --out-dir OUT` | `rev2_*_s*of*.csv` + main-comparison and IEA37/Horns Rev files | 14 s |
+| Tables of the additional experiments (Laplace ablation, GA, 5D/6D spacing, exact gradients, Lillgrund; `rev2_tables.tex`, `rev2_summary.json`) | `rev2_analysis.py` | `python3 rev2_analysis.py --out-dir OUT` | `rev2_*_s*of*.csv` + main-comparison and IEA37/Horns Rev files | 14 s |
 | Lillgrund reliability tables (supplement `archive_reliability_tables.tex` = `SWEVO_rev2/validation/reliability_tables.tex`), archive audit | `audit_archive.py`, `check_revision.py` | run in a folder with `experiments/` (the `rev2_*` CSVs + the two scripts + `record_io.py`, `rev2_site_model.py`) and `validation/`; done by `regenerate_all.sh` | `rev2_*_s*of*.csv` | 3 s |
 | Spacing re-optimization of SSA / LX-SSA (`tab:spacing-authors`, `authors_tables.tex`) | `analyze_authors_runs.py` | `python3 analyze_authors_runs.py` | `authors_runs_{budget,crowded,spacing,hornsrev}.csv`, `../selected_30_run_data.csv` | 1 s |
 | Packing capacity (`tab:capacity`) | `packing_capacity.py` | `python3 packing_capacity.py` | none | 39 s |
@@ -132,16 +133,16 @@ Commands are run in `analysis/`; runtimes are wall-clock seconds on one core of 
 | Calibration of the reused code (2 of 24 Mann–Whitney tests reject) | `calibrate_authors_code.py` | `python3 calibrate_authors_code.py SSA,LXSSA authors` | `../selected_30_run_data.csv` | reruns, minutes (not run here) |
 | Horns Rev 1 / Lillgrund vs PyWake | `pywake_check.py`, `rev2_site_model.py` | `python3 pywake_check.py --layouts --out-dir OUT`; `python3 rev2_site_model.py --pywake` | `mpce_hrfix_s*of24.csv` | 46 s; 4 s |
 | Typed tables `tab:rq-matrix`, `tab:params`, `tab:design`, `tab:recommendations`; run counts | design constants; `count_records.py` | `python3 ../count_records.py --analysis-dir .` | all run files | 5 s |
-| Revision-3 constraint handling (`tab:S-r3-constraint`, `-constraint-cases`; C1) | `rev3_constraint_analysis.py` | `python3 rev3_constraint_analysis.py --out-dir OUT` | `rev3_constraint_{pen,deb,proj}.csv` | 9 s |
-| Revision-3 direct 1° optimization (`tab:S-r3-fine`, C2) | `rev3_fine_analysis.py` | `python3 rev3_fine_analysis.py --out-dir OUT` | `rev3_fine_s*of10.csv`, `rev3_fine15_s0of1.csv` | 11 s |
-| Revision-3 site pools, budgets, 1° / PyWake re-evaluation, initialization cost (`tab:S-r3-hr-pool`, `-iea-pool`, `-hr-eval`, `-lg-eval`, `-time`, `-time-sites`; B2, B6, C3) | `rev3_sites.py` | `python3 rev3_sites.py --out-dir OUT` (uses the stored caches `rev3_sites_reeval.csv`, `rev3_sites_inittime.csv`, `rev3_sites_slsqp_probe.csv`; `--recompute-eval`, `--recompute-init`, `--recompute-probe` rebuild them) | Horns Rev 1, IEA37, Lillgrund, GA and gradient run files | 7 s |
-| Revision-3 inference (`tab:S-r3-allrun`, `-tostaudit`, `-syncseed`, `-imputation`, `-eqclus`; B1, B3, B4, B5, B7) | `rev3_inference.py` | `python3 rev3_inference.py --out-dir OUT` (`--skip-null` without the null calibrations, ~1 min) | benchmark run files | ~50 min (shared machine) |
-| Revision-3 precision audit and full-precision reruns (`tab:S-r3-precision`, C4) | `rev3_precision_audit.py`, `rev3_precision_rerun.py` | `python3 rev3_precision_audit.py --out-dir OUT`; `python3 rev3_precision_rerun.py collect`; `python3 rev3_precision_rerun.py table` | all run files; `rev3_precision_results/*.jsonl` | 39 s; 4 s; 2 s |
-| Supplementary `tab:S-eqclus`, `tab:S-allrun-spacing`, `tab:S-time` (added in revision 2) | typed by the revision-2 authors from stored tables and records; no generating script in the revision-2 archive. `rev3_inference.py` recomputes `tab:S-eqclus` (as `tab:S-r3-eqclus`); `rev3_numbers_audit.py` traces the other numbers | — | stored tables, `rev2_spacing_*.csv` | — |
+| Sensitivity study: constraint handling (`tab:S-sa-constraint`, `-constraint-cases`) | `rev3_constraint_analysis.py` | `python3 rev3_constraint_analysis.py --out-dir OUT` | `rev3_constraint_{pen,deb,proj}.csv` | 9 s |
+| Sensitivity study: direct 1° optimization (`tab:S-sa-fine`) | `rev3_fine_analysis.py` | `python3 rev3_fine_analysis.py --out-dir OUT` | `rev3_fine_s*of10.csv`, `rev3_fine15_s0of1.csv` | 11 s |
+| Sensitivity analyses: site pools, budgets, 1° / PyWake re-evaluation, initialization cost (`tab:S-sa-hr-pool`, `-iea-pool`, `-hr-eval`, `-lg-eval`, `-time`, `-time-sites`) | `rev3_sites.py` | `python3 rev3_sites.py --out-dir OUT` (uses the stored caches `rev3_sites_reeval.csv`, `rev3_sites_inittime.csv`, `rev3_sites_slsqp_probe.csv`; `--recompute-eval`, `--recompute-init`, `--recompute-probe` rebuild them) | Horns Rev 1, IEA37, Lillgrund, GA and gradient run files | 7 s |
+| Sensitivity analyses: inference (`tab:S-sa-allrun`, `-tostaudit`, `-syncseed`, `-imputation`, `-eqclus`) | `rev3_inference.py` | `python3 rev3_inference.py --out-dir OUT` (`--skip-null` without the null calibrations, ~1 min) | benchmark run files | ~50 min (shared machine) |
+| Precision audit and full-precision reruns (`tab:S-sa-precision`) | `rev3_precision_audit.py`, `rev3_precision_rerun.py` | `python3 rev3_precision_audit.py --out-dir OUT`; `python3 rev3_precision_rerun.py collect`; `python3 rev3_precision_rerun.py table` | all run files; `rev3_precision_results/*.jsonl` | 39 s; 4 s; 2 s |
+| Supplementary `tab:S-eqclus`, `tab:S-allrun-spacing`, `tab:S-time` | typed by hand from stored tables and records; no generating script. `rev3_inference.py` recomputes `tab:S-eqclus` (as `tab:S-sa-eqclus`); `rev3_numbers_audit.py` traces the other numbers | — | stored tables, `rev2_spacing_*.csv` | — |
 
 Note on the LaTeX sources: the article's sections paste the generated tables between `% >>>>> begin
-analysis/<file>` / `% <<<<< end` markers and the revision-2 authors edited the pasted copies (sentence-case
-captions, typography, the added GA / analytic-gradient rows of `tab:hr-site` and `tab:iea37`, whose values are in
+analysis/<file>` / `% <<<<< end` markers, and the pasted copies were edited by hand (sentence-case captions,
+typography, the GA / analytic-gradient rows of `tab:hr-site` and `tab:iea37`, whose values are in
 `rev2_summary.json`). The generated files of this package are the unedited pipeline outputs.
 
 ## 6. Rerun the studies (optimization runs)
@@ -175,32 +176,32 @@ original machines; divide by the number of workers).
 | `rev2_lg16_s<i>of4.csv`, `rev2_lg16b_s<i>of30.csv` (Lillgrund) | `python3 rev2_site.py lg16 <i> 4 --procs=2`; `lg16b <i> 30` | 540 | 2.9 h |
 | `rev2_grad_s<i>of40.csv` (exact gradients) | `python3 rev2_gradient.py grad <i> 40 --procs=2` | 240 | 2.0 h |
 | `authors_runs_*.csv` | `python3 authors_experiments.py budget / crowded / spacing / hornsrev` | — | ~30 min on 4 cores |
-| `rev3_constraint_{pen,deb,proj}.csv` (C1; seeds 31–60) | `python3 rev3_constraint.py run pen` / `deb` / `proj` (`--procs 2`); check: `python3 rev3_constraint.py validate` | 2,700 | 2.9 h |
-| `rev3_fine_s<i>of10.csv` (C2, 1° arm; seeds 31–60) | `python3 rev3_fine.py <i> 10` (i = 0..9); check: `python3 rev3_fine.py --validate` | 1,200 | 1.7 h |
-| `rev3_fine15_s0of1.csv` (C2, 15° control arm) | `python3 rev3_fine.py 0 1 --rose 15` | 1,200 | 1.7 h |
-| `rev3_precision_results/*.jsonl` -> `rev3_fullprec_<study>.csv` (C4) | `python3 rev3_precision_rerun.py run STUDY SHARD NSHARDS` (the 35 shard commands are listed in `rev3_precision_plan.json`; local studies: `run STUDY`), then `collect` | 5,744 | 21.2 h |
+| `rev3_constraint_{pen,deb,proj}.csv` (constraint handling; seeds 31–60) | `python3 rev3_constraint.py run pen` / `deb` / `proj` (`--procs 2`); check: `python3 rev3_constraint.py validate` | 2,700 | 2.9 h |
+| `rev3_fine_s<i>of10.csv` (direct 1° optimization, 1° arm; seeds 31–60) | `python3 rev3_fine.py <i> 10` (i = 0..9); check: `python3 rev3_fine.py --validate` | 1,200 | 1.7 h |
+| `rev3_fine15_s0of1.csv` (direct 1° optimization, 15° control arm) | `python3 rev3_fine.py 0 1 --rose 15` | 1,200 | 1.7 h |
+| `rev3_precision_results/*.jsonl` -> `rev3_fullprec_<study>.csv` (full-precision reruns) | `python3 rev3_precision_rerun.py run STUDY SHARD NSHARDS` (the 35 shard commands are listed in `rev3_precision_plan.json`; local studies: `run STUDY`), then `collect` | 5,744 | 21.2 h |
 | Prespecifications | `analysis/rev3_constraint_manifest.md`, `rev3_fine_manifest.md`, `rev3_precision_manifest.md` (written before the runs) | — | — |
 
-Total stored CPU time of the original and revision-2 runs: about 126 CPU-hours; revision-3 runs and reruns: about 28 CPU-hours. The revision-2 launchers with the
-exact shard counts are `SWEVO_rev2/experiments_docs/run_rev2_resumable.sh` (resumable) and `run_rev2_hpc.sh`.
+Total stored CPU time of the main study and the additional experiments: about 126 CPU-hours; sensitivity studies and
+full-precision reruns: about 28 CPU-hours. The launchers of the additional experiments with the exact shard counts are `SWEVO_rev2/experiments_docs/run_rev2_resumable.sh` (resumable) and `run_rev2_hpc.sh`.
 Determinism: a rerun of a stored run reproduces all fields except `Seconds`; `verify_determinism.py` checks seed 1
 of two benchmark cases for PSO-VNS and SSA-VNS against the stored records (Section 8).
 
 ## 7. Known limits
 
-- **Legacy coordinate rounding.** The original and revision-2 run files store final coordinates with 3 decimals
+- **Legacy coordinate rounding.** The run files of the main study and the additional experiments store final coordinates with 3 decimals
   (benchmark, IEA37: 1 mm), 2 decimals (Horns Rev 1, Lillgrund: 1 cm) and convergence curves with 3–4 decimals;
   objective, wake loss, feasibility label and minimum spacing are stored at full double precision from the
   unrounded layout. The 10^-6 m feasibility tolerance of the paper therefore cannot be re-verified from the
   stored coordinates alone (e.g. 236 of 240 labelled-feasible exact-gradient runs fail a strict recheck of the
   rounded coordinates; `SWEVO_rev2/validation/archive_audit.json`). The drivers are deterministic for a given
   seed (MS-SLSQP only on the same NumPy/SciPy/BLAS build; reruns in Section 8 are bit-identical to the records),
-  so the full-precision layouts can be recovered by rerunning the stored runs. Revision 3 did this for every record
-  whose stored label the rounded coordinates cannot certify (5,714 records; `rev3_precision_audit.py` classifies all
+  so the full-precision layouts can be recovered by rerunning the stored runs. The full-precision reruns do this for
+  every record whose stored label the rounded coordinates cannot certify (5,714 records; `rev3_precision_audit.py` classifies all
   56,540 records) and wrote the layouts with 17 significant digits (`record_io.encode_coordinates`) to
   `analysis/rev3_fullprec_<study>.csv`: 3,691 reruns are bit-identical to the stored records, 1,103 differ by
   floating-point noise only, 4,794 labels are confirmed at full precision, none changes, and 920 labels of
-  SLSQP-based runs stay undecided because SLSQP does not reproduce across CPU/BLAS builds (`tab:S-r3-precision`).
+  SLSQP-based runs stay undecided because SLSQP does not reproduce across CPU/BLAS builds (`tab:S-sa-precision`).
   New runs use the 17-digit writer.
 - **MS-SLSQP** results depend on the NumPy/SciPy build and BLAS; `mpce_slsqp_s0of1.csv` was rerun on the
   platform of the other runs; the old-platform SLSQP rows of `fresh_grid.csv` are not used.
@@ -212,20 +213,21 @@ of two benchmark cases for PSO-VNS and SSA-VNS against the stored records (Secti
   adds them); the CHECK-tag scan and the theory text checks need them.
 - Third-party inputs (IEA37 files, PyWake-derived site data) keep their own terms (`LICENSE_SUGGESTION.md`).
 
-## 8. Verification of this release (2026-10-04)
+## 8. Verification of this release (2026-10-04 and 2026-10-05)
 
-Release 1.0.0 = release candidate 1.0.0-rc (whose full verification is summarized below) + the revision-3 records,
-reruns, analyses and the revision-3 steps of `regenerate_all.sh`; `verification/verification_summary.txt`, Part B,
-records the verification of 1.0.0 from a clean unpack (logs in `verification/release_1.0.0/`): 783 of 783 checksums OK; all
-31 regeneration steps succeed; 202 regenerated files identical to the stored copies (167 byte-identical, 35 after
-removing time stamps only), including all 111 revision-3 outputs; all checks pass; 4 of 4 determinism reruns
+The package was verified in two steps (`verification/verification_summary.txt`). Verification 1 covers the records
+of the main study and the additional experiments with all regeneration steps that use them (summarized in the next
+paragraph). Verification 2 covers the complete package, release 1.0.0, from a clean unpack (logs in
+`verification/release_1.0.0/`): 783 of 783 checksums OK; all 31 regeneration steps succeed; 202 regenerated files
+identical to the stored copies (167 byte-identical, 35 after removing time stamps only), including all 111 outputs of
+the sensitivity studies, sensitivity analyses and full-precision reruns; all checks pass; 4 of 4 determinism reruns
 bit-identical.
 
 See `verification/verification_summary.txt` and the logs next to it. In short: all regenerated tables, number
 macros, summaries, statistics files and figures are byte-identical to the stored copies or differ only in
 generation time stamps / PDF creation dates / gzip header times / recorded environment versions; all check
-scripts pass (C01–C62, X01–X57, D01–D22, F01–F46, S01–S15, T01–T13); the revision-2 summary (`rev2_summary.json`)
-and tables are reproduced; reruns of stored PSO-VNS and SSA-VNS runs are bit-identical to the records.
+scripts pass (C01–C62, X01–X57, D01–D22, F01–F46, S01–S15, T01–T13); the summary (`rev2_summary.json`) and tables
+of the additional experiments are reproduced; reruns of stored PSO-VNS and SSA-VNS runs are bit-identical to the records.
 
 ## 9. How to cite
 

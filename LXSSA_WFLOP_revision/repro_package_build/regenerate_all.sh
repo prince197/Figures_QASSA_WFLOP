@@ -9,7 +9,7 @@
 #   PROCS=1            worker processes for mpce_results.py / mpce_direction.py (default 1)
 #   WITH_SLOW=1        also run the slower optional steps: theory Monte Carlo check (~3-6 min), packing bounds,
 #                      evaluator validation, IEA37 calculator check, authors-run tables, model schematics,
-#                      revision-3 inference with null calibrations (rev3_inference.py, ~50 min)
+#                      inference sensitivity analyses with null calibrations (rev3_inference.py, ~50 min)
 #   WITH_PYWAKE=1      also run the PyWake cross-checks (needs requirements-pywake.txt)
 #   WITH_DETERMINISM=1 also rerun seed 1 of two benchmark cases for PSO-VNS and SSA-VNS (verify_determinism.py, ~30 s)
 #   MANUSCRIPT=DIR     a folder with the SWEVO LaTeX sources (SWEVO_manuscript.tex, SWEVO_supplement.tex, optA/sw/*.tex);
@@ -33,7 +33,7 @@ A="$WORK/analysis"
 cd "$A"
 python3 -c "import sys, numpy, scipy, pandas, matplotlib; print('python', sys.version.split()[0], 'numpy', numpy.__version__, 'scipy', scipy.__version__, 'pandas', pandas.__version__, 'matplotlib', matplotlib.__version__)" | tee "$LOG/environment.txt"
 
-# 0. record counts (36,190 original + 11,640 revision-2 + revision-3 files)
+# 0. record counts (36,190 main study + 11,640 additional experiments + sensitivity-study files)
 step count_records python3 "$PKG/count_records.py" --analysis-dir "$A"
 # 1. main pipeline: tables, figures, mpce_summary.json, mpce_numbers.tex, CHECK-FINAL C01-C62   (~1 min)
 TEXARG=""
@@ -51,10 +51,10 @@ step mpce_check_extra python3 mpce_check_extra.py
 step mpce_check_diag python3 mpce_check_diag.py
 step mpce_check_dir python3 mpce_check_dir.py
 step mpce_check_csweep python3 mpce_check_csweep.py
-# 6. revision-2 statistics and tables   (~15 s)
+# 6. statistics and tables of the additional experiments   (~15 s)
 step rev2_analysis python3 rev2_analysis.py --out-dir "$WORK/rev2_out"
-# 6b. revision-3 analyses (constraint handling C1, direct 1-degree optimization C2, sites/budgets B2/B6/C3 with their
-#     stored caches, precision audit and collection of the full-precision reruns C4)   (~1.5 min)
+# 6b. sensitivity studies and analyses (constraint handling, direct 1-degree optimization, sites/budgets with their
+#     stored caches, precision audit and collection of the full-precision reruns)   (~1.5 min)
 mkdir -p "$WORK/rev3_out"
 step rev3_constraint python3 rev3_constraint_analysis.py --out-dir "$WORK/rev3_out"
 step rev3_fine python3 rev3_fine_analysis.py --out-dir "$WORK/rev3_out"
@@ -62,7 +62,7 @@ step rev3_sites python3 rev3_sites.py --out-dir "$WORK/rev3_out"
 step rev3_precision_audit python3 rev3_precision_audit.py --out-dir "$WORK/rev3_out"
 step rev3_precision_collect python3 rev3_precision_rerun.py collect      # rewrites rev3_fullprec_<study>.csv in WORKDIR
 step rev3_precision_table python3 rev3_precision_rerun.py table
-# 7. revision-2 archive audit and focused checks, in the layout they expect (experiments/ + validation/)   (~5 s)
+# 7. archive audit and focused checks of the additional experiments, in the layout they expect (experiments/ + validation/)   (~5 s)
 mkdir -p "$WORK/rev2_audit/experiments" "$WORK/rev2_audit/validation"
 cp "$A"/rev2_*_s*of*.csv "$A"/audit_archive.py "$A"/check_revision.py "$A"/record_io.py "$A"/rev2_site_model.py "$WORK/rev2_audit/experiments/"
 cp "$PKG"/SWEVO_rev2/validation/* "$WORK/rev2_audit/validation/"
@@ -83,7 +83,7 @@ if [ "${WITH_SLOW:-0}" = "1" ]; then
   step packing_capacity python3 packing_capacity.py
   step analyze_authors_runs python3 analyze_authors_runs.py
   step model_figures python3 make_model_figures.py
-  mkdir -p "$WORK/rev3_slow"     # revision-3 inference B1/B3/B4/B5/B7 with the null calibrations (~50 min)
+  mkdir -p "$WORK/rev3_slow"     # inference sensitivity analyses with the null calibrations (~50 min)
   step rev3_inference python3 rev3_inference.py --out-dir "$WORK/rev3_slow"
 fi
 if [ "${WITH_PYWAKE:-0}" = "1" ]; then

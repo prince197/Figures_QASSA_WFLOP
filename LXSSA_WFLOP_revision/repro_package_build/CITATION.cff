@@ -29,8 +29,9 @@ contact:
 abstract: >-
   Code (benchmark, Horns Rev 1, IEA37 and Lillgrund evaluators; PSO, PSO-VNS, SSA, LX-SSA, DE, GA, VNS,
   SSA-VNS, LX-SSA-VNS, RS-VNS, RSD-VNS, MS-SLSQP and exact-gradient variants; experiment drivers; analysis
-  and check scripts), all per-run records of the study (36,190 original, 11,640 revision-2 and the
-  revision-3 records) and the generated tables, figures and number macros of the article and its supplement.
+  and check scripts), all per-run records of the study (36,190 runs of the main study, 11,640 runs of the
+  additional experiments, 5,100 runs of the sensitivity studies and 5,744 full-precision reruns) and the
+  generated tables, figures and number macros of the article and its supplement.
 keywords:
   - wind farm layout optimization
   - metaheuristics

@@ -12,8 +12,8 @@ Writes, in --out:
                       silently added or lost.
   package_files.txt   the included paths (relative to the repository root), one per line, in the order used by
                       make_package.sh.
-Rules are first-match; analysis/rev3_* files (revision 3, produced by other work packages) are included
-automatically when present, and the expected-but-absent ones are listed with decision "pending".
+Rules are first-match; analysis/rev3_* files (sensitivity studies, sensitivity analyses and full-precision reruns) are
+included automatically when present, and the expected-but-absent ones are listed with decision "pending".
 The script only reads the repository; it never modifies a file outside --out.
 """
 import argparse, csv, fnmatch, os, sys
@@ -58,13 +58,13 @@ RULES = [
     ("analysis/hybrid_*", "legacy", "exclude", "superseded intermediate hybrid version"),
     ("analysis/robustness_hybrid.py", "legacy", "exclude", "superseded intermediate hybrid version"),
     ("analysis/bvns_*", "legacy", "exclude", "superseded intermediate version"),
-    ("analysis/fresh_hgrid.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"),
-    ("analysis/fresh_hsplit.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"),
-    ("analysis/fresh_hhr*.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"),
-    ("analysis/fresh_bsplit.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"),
-    ("analysis/fresh_hr80.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"),
-    ("analysis/fresh_vhr80.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"),
-    ("analysis/fresh_bhr80.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py, C4)"),
+    ("analysis/fresh_hgrid.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py)"),
+    ("analysis/fresh_hsplit.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py)"),
+    ("analysis/fresh_hhr*.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py)"),
+    ("analysis/fresh_bsplit.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py)"),
+    ("analysis/fresh_hr80.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py)"),
+    ("analysis/fresh_vhr80.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py)"),
+    ("analysis/fresh_bhr80.csv", "runs-audited", "include", "superseded / earlier-paper runs; not used by the SWEVO results but part of the 56,540 records of the precision audit (rev3_precision_audit.py)"),
     ("analysis/followup_statistics.py", "legacy", "exclude", "earlier analyses (superseded)"),
     ("analysis/reevaluate_layouts.py", "legacy", "exclude", "earlier analyses (superseded)"),
     ("analysis/make_robustness_tables.py", "legacy", "exclude", "earlier analyses (superseded)"),
@@ -85,20 +85,20 @@ RULES = [
     ("analysis/sec_*.tex", "legacy", "exclude", "manuscript text of an earlier paper"),
     ("analysis/hornsrev_site_text.tex", "legacy", "exclude", "manuscript text of an earlier paper"),
     ("analysis/README.md", "legacy-doc", "exclude", "history of all analysis versions; superseded for SWEVO by README_reproduce.md and the package README"),
-    # ---- revision 3 (other work packages; included automatically when present) -------------------------------
-    ("analysis/rev3_precision_results/*.jsonl", "rev3-data", "include", "raw full-precision rerun results (C4), one JSON line per record; merged by rev3_precision_rerun.py collect"),
-    ("analysis/rev3p_*.log", "rev3-log", "include", "worker logs of the 35 cloud shards of the full-precision reruns (C4)"),
-    ("analysis/rev3_review_report.md", "rev3-editorial", "exclude", "internal editorial review notes on the manuscript text"),
+    # ---- sensitivity studies, sensitivity analyses, full-precision reruns (included automatically when present) --
+    ("analysis/rev3_precision_results/*.jsonl", "rev3-data", "include", "raw full-precision rerun results, one JSON line per record; merged by rev3_precision_rerun.py collect"),
+    ("analysis/rev3p_*.log", "rev3-log", "include", "worker logs of the 35 cloud shards of the full-precision reruns"),
+    ("analysis/rev3_review_report.md", "rev3-editorial", "exclude", "internal editorial notes on the manuscript text"),
     ("analysis/rev3_suggested_text.md", "rev3-editorial", "exclude", "internal drafting notes for the manuscript text"),
     ("analysis/rev3_refs_*", "rev3-editorial", "exclude", "internal reference-list check of the manuscript"),
-    ("analysis/rev3_*.py", "rev3-code", "include", "revision-3 script"),
-    ("analysis/rev3_*.csv", "rev3-data", "include", "revision-3 run records / outputs"),
-    ("analysis/rev3_*.csv.gz", "rev3-data", "include", "revision-3 run records / outputs"),
-    ("analysis/rev3_*.json", "rev3-output", "include", "revision-3 output"),
-    ("analysis/rev3_*.tex", "rev3-output", "include", "revision-3 table"),
-    ("analysis/rev3_*.log", "rev3-log", "include", "revision-3 log"),
-    ("analysis/rev3_*.md", "rev3-doc", "include", "revision-3 manifest / prespecification"),
-    ("analysis/rev3_*", "unclassified", "exclude", "revision-3 file of an unexpected type (check by hand)"),
+    ("analysis/rev3_*.py", "rev3-code", "include", "script of the sensitivity studies / sensitivity analyses / full-precision reruns"),
+    ("analysis/rev3_*.csv", "rev3-data", "include", "run records / outputs of the sensitivity studies and analyses"),
+    ("analysis/rev3_*.csv.gz", "rev3-data", "include", "run records / outputs of the sensitivity studies and analyses"),
+    ("analysis/rev3_*.json", "rev3-output", "include", "output of the sensitivity studies and analyses"),
+    ("analysis/rev3_*.tex", "rev3-output", "include", "table of the sensitivity studies and analyses"),
+    ("analysis/rev3_*.log", "rev3-log", "include", "log of the sensitivity studies and analyses"),
+    ("analysis/rev3_*.md", "rev3-doc", "include", "prespecification (sensitivity study or full-precision reruns)"),
+    ("analysis/rev3_*", "unclassified", "exclude", "rev3_* file of an unexpected type (check by hand)"),
     # ---- models, objectives and site data ---------------------------------------------------------------------
     ("analysis/wflop_model.py", "model", "include", "Kusiak-Song benchmark evaluator (Jensen wake, Weibull rose), cubic curve, Gaussian wake"),
     ("analysis/authors_objective.py", "model", "include", "penalized objective (exact quadratic penalty of the original objective.py)"),
@@ -110,7 +110,7 @@ RULES = [
     ("analysis/record_io.py", "model", "include", "17-significant-digit coordinate writer / reader"),
     # ---- optimizers ---------------------------------------------------------------------------------------------
     ("analysis/authors_optimizers.py", "optimizer", "include", "GA/PSO/DE/SSA/LX-SSA of the original code (logic and random-call order unchanged)"),
-    ("analysis/extra_baselines.py", "optimizer", "include", "MS-SLSQP (and the modified VNS of an earlier version)"),
+    ("analysis/extra_baselines.py", "optimizer", "include", "MS-SLSQP (and the modified VNS of an earlier code version)"),
     ("analysis/original_vns.py", "optimizer", "include", "basic VNS"),
     ("analysis/hybrid_lxssa_bvns.py", "optimizer", "include", "two-phase hybrids PSO-VNS / SSA-VNS / LX-SSA-VNS"),
     ("analysis/rs_vns.py", "optimizer", "include", "RS-VNS (random-sampling phase 1 + VNS)"),
@@ -120,11 +120,11 @@ RULES = [
     ("analysis/full_grid_experiments.py", "driver", "include", "runs fresh_grid / fresh_vgrid / fresh_bgrid (+ old Horns Rev files)"),
     ("analysis/mpce_experiments.py", "driver", "include", "runs mpce_<exp>_s<i>of<k>.csv (PSO, PSO-VNS, RS-VNS, RSD-VNS, MS-SLSQP, split, init., budget, hrfix, csweep)"),
     ("analysis/iea37_experiments.py", "driver", "include", "runs mpce_iea16/iea36(+p)"),
-    ("analysis/rev2_ga.py", "driver", "include", "revision 2: real-coded GA (ga, gahr, gaiea)"),
-    ("analysis/rev2_gradient.py", "driver", "include", "revision 2: exact-gradient MS-SLSQP / PSO-SLSQP on IEA37"),
-    ("analysis/rev2_laplace.py", "driver", "include", "revision 2: Laplace ablation"),
-    ("analysis/rev2_site.py", "driver", "include", "revision 2: Lillgrund block runs"),
-    ("analysis/rev2_spacing.py", "driver", "include", "revision 2: 5D / 6D spacing re-optimization"),
+    ("analysis/rev2_ga.py", "driver", "include", "additional experiments: real-coded GA (ga, gahr, gaiea)"),
+    ("analysis/rev2_gradient.py", "driver", "include", "additional experiments: exact-gradient MS-SLSQP / PSO-SLSQP on IEA37"),
+    ("analysis/rev2_laplace.py", "driver", "include", "additional experiments: Laplace ablation"),
+    ("analysis/rev2_site.py", "driver", "include", "additional experiments: Lillgrund block runs"),
+    ("analysis/rev2_spacing.py", "driver", "include", "additional experiments: 5D / 6D spacing re-optimization"),
     ("analysis/authors_experiments.py", "driver", "include", "runs authors_runs_*.csv (spacing table tab:spacing-authors)"),
     ("analysis/ssa_reference.py", "driver", "include", "SSA with radial projection (boundary-rule check)"),
     ("analysis/mpce_diagnostics.py", "driver", "include", "instrumented diagnostic reruns (Section S-diag)"),
@@ -143,9 +143,9 @@ RULES = [
     ("analysis/make_theory_figures.py", "analysis", "include", "theory figure and checks T01-T13"),
     ("analysis/make_model_figures.py", "analysis", "include", "model schematics (figures_final/)"),
     ("analysis/analyze_authors_runs.py", "analysis", "include", "authors_tables.tex (spacing table) and calibration table"),
-    ("analysis/rev2_analysis.py", "analysis", "include", "revision-2 statistics and tables (rev2_summary.json, rev2_tables.tex)"),
-    ("analysis/audit_archive.py", "check", "include", "archive audit of the revision-2 records (expects the experiments/ + validation/ layout)"),
-    ("analysis/check_revision.py", "check", "include", "focused checks of the revision-2 package"),
+    ("analysis/rev2_analysis.py", "analysis", "include", "statistics and tables of the additional experiments (rev2_summary.json, rev2_tables.tex)"),
+    ("analysis/audit_archive.py", "check", "include", "archive audit of the records of the additional experiments (expects the experiments/ + validation/ layout)"),
+    ("analysis/check_revision.py", "check", "include", "focused checks of the records of the additional experiments (float round-trips, raw CSV hashes)"),
     ("analysis/mpce_check_*.py", "check", "include", "check scripts (C/X/D/F/S ids)"),
     ("analysis/README_reproduce.md", "doc", "include", "repository reproduction notes (MPCE/SWEVO pipeline)"),
     ("analysis/requirements.txt", "doc", "include", "environment of the original runs (superseded by the package requirements.txt)"),
@@ -159,7 +159,7 @@ RULES = [
     ("analysis/fresh_bhr16.csv", "runs-superseded-read", "include", "old Horns Rev binning; read, then replaced by hrfix"),
     ("analysis/mpce_feasx_s*of8.csv", "runs-original-shards", "include", "the 8 shards concatenated into mpce_feas_s0of1.csv (provenance; not read by the analysis)"),
     ("analysis/mpce_*_s*of*.csv", "runs-original", "include", "per-run records of mpce_experiments.py / iea37_experiments.py"),
-    ("analysis/rev2_*_s*of*.csv", "runs-rev2", "include", "revision-2 per-run records"),
+    ("analysis/rev2_*_s*of*.csv", "runs-rev2", "include", "per-run records of the additional experiments"),
     ("analysis/authors_runs_*.csv", "runs-earlier", "include", "re-runs of the original code (inputs of analyze_authors_runs.py: spacing table)"),
     ("analysis/ssa_reference_runs.csv", "runs-earlier", "include", "SSA radial-projection runs (read by mpce_results.py)"),
     # ---- inputs / caches / reference values ----------------------------------------------------------------
@@ -195,11 +195,11 @@ RULES = [
     ("figures_final/fig_wake_model.pdf", "figure", "include", "model schematic (make_model_figures.py)"),
     ("figures_final/fig_half_cone.pdf", "figure", "include", "model schematic (make_model_figures.py)"),
     ("figures_final/*", "legacy", "exclude", "figures of an earlier paper"),
-    # ---- revision-2 package documents ------------------------------------------------------------------------
-    ("SWEVO_rev2/experiments_docs/rev2_summary.json", "output", "include", "revision-2 summary (rev2_analysis.py)"),
-    ("SWEVO_rev2/experiments_docs/rev2_tables.tex", "output", "include", "revision-2 tables (rev2_analysis.py)"),
-    ("SWEVO_rev2/experiments_docs/run_rev2_*.sh", "driver", "include", "revision-2 launch scripts (exact shard commands)"),
-    ("SWEVO_rev2/validation/*", "output", "include", "revision-2 audit outputs (audit_archive.py, check_revision.py)"),
+    # ---- documents of the additional experiments ------------------------------------------------------------
+    ("SWEVO_rev2/experiments_docs/rev2_summary.json", "output", "include", "summary of the additional experiments (rev2_analysis.py)"),
+    ("SWEVO_rev2/experiments_docs/rev2_tables.tex", "output", "include", "tables of the additional experiments (rev2_analysis.py)"),
+    ("SWEVO_rev2/experiments_docs/run_rev2_*.sh", "driver", "include", "launch scripts of the additional experiments (exact shard commands)"),
+    ("SWEVO_rev2/validation/*", "output", "include", "audit outputs of the additional experiments (audit_archive.py, check_revision.py)"),
     # ---- root-level inputs -------------------------------------------------------------------------------------
     ("selected_30_run_data.csv", "runs-archived", "include", "720 archived runs of the original code (evaluator validation, calibration, boundary-rule check)"),
 ]
@@ -207,15 +207,15 @@ RULES = [
 SCAN = ["analysis", "figures_mpce", "figures_final", "SWEVO_rev2/experiments_docs", "SWEVO_rev2/validation"]
 EXTRA_FILES = ["selected_30_run_data.csv"]
 
-# Revision-3 outputs other work packages were asked to produce (Section D / brief). Listed as "pending" until a
-# matching file exists. Pattern -> what it is.
+# Expected outputs of the sensitivity studies, sensitivity analyses and full-precision reruns. Listed as "pending"
+# until a matching file exists. Pattern -> what it is.
 PENDING_HOOKS = [
-    ("analysis/rev3_fullprec_*.csv", "full-precision (17 significant digits) side files of the legacy coordinates (C4)"),
-    ("analysis/rev3_*_manifest.md", "prespecification of every revision-3 run set"),
-    ("analysis/rev3_*.py", "revision-3 drivers and analyses"),
-    ("analysis/rev3_*.csv", "revision-3 run records (seeds 31-60 unless stated)"),
-    ("analysis/rev3_*.tex", "revision-3 tables (tab:S-r3-*)"),
-    ("analysis/rev3_*.json", "revision-3 summaries"),
+    ("analysis/rev3_fullprec_*.csv", "full-precision (17 significant digits) side files of the legacy coordinates"),
+    ("analysis/rev3_*_manifest.md", "prespecification of every run set of the sensitivity studies and the full-precision reruns"),
+    ("analysis/rev3_*.py", "drivers and analyses of the sensitivity studies and sensitivity analyses"),
+    ("analysis/rev3_*.csv", "run records of the sensitivity studies (seeds 31-60 unless stated)"),
+    ("analysis/rev3_*.tex", "tables of the sensitivity studies and analyses (tab:S-sa-* in the article)"),
+    ("analysis/rev3_*.json", "summaries of the sensitivity studies and analyses"),
 ]
 
 

@@ -1,7 +1,8 @@
 # Licence — SUGGESTION, to be confirmed by the authors
 
 **No licence has been chosen.** The authors decide on the licence before the public deposit. Until then, this
-package is shared with the editor and reviewers only, and all rights are reserved by the authors.
+package is provided to the editor and reviewers for the review of the article only, and all rights are reserved by
+the authors.
 
 Suggested (common for research code and data, compatible with Zenodo and GitHub):
 
