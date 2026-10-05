@@ -3,7 +3,7 @@
 \begin{table*}[!htb]
 \centering
 \caption{Horns Rev~1 16-turbine block, pool with GA (11 methods; 5$^\circ$ bins, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean AEP of the feasible runs, feasibility-aware and run-level ranks, and seed-paired tests of the best method.}
-\label{tab:S-r3-hr-pool}
+\label{tab:S-sa-hr-pool}
 \scriptsize\setlength{\tabcolsep}{1.7pt}
 \begin{tabular}{lcccccccccccccc}
 \toprule
@@ -32,7 +32,7 @@ DE & 0/30 & -- & -- & 11 & 11.00 & $1.9\times10^{-8}$$^{\ast}$ & & 8/30 & 137.79
 \begin{table*}[!htb]
 \centering
 \caption{IEA37 Case Study~1, pool with GA and the exact-gradient methods (13 methods; 16 and 36 turbines, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean and best AEP, feasibility-aware rank and seed-paired tests of the best method.}
-\label{tab:S-r3-iea-pool}
+\label{tab:S-sa-iea-pool}
 \scriptsize\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{lcccccccccc}
 \toprule
@@ -73,13 +73,13 @@ MS-SLSQP & 4/30 & 733{,}342 & 748{,}571 & 12 & $2.2\times10^{-8}$$^{\ast}$ & 14/
 DE & 0/30 & -- & -- & 13 & $2.2\times10^{-8}$$^{\ast}$ & 0/30 & -- & -- & 13 & $2.2\times10^{-8}$$^{\ast}$ \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Pool (13 methods, one pool per scenario and budget): the ten methods of Table~\ref{tab:iea37-detail}, GA, and MS-SLSQP and PSO-SLSQP with the exact analytic gradient (each gradient charged $c_g=3$ evaluations); random initialization, 30 seed-paired runs (seeds 1--30). AEP in MWh, rounded to integers (official IEA37 Gaussian-wake model); Mean: over the feasible runs (bold: best method); Best: best feasible run; Feas.: feasible runs as labelled in the stored records (the labels checked at full precision where the rounded coordinates cannot decide them; Section~\ref{sec:S-r3-precision}). Rank: feasibility-aware rank of the mean AEP within this pool (rule of Table~\ref{M-tab:friedman68}). $p_{\rm best}$: seed-paired Wilcoxon signed-rank test of the best method (Rank 1) against the method (infeasible runs below every feasible run), Holm-adjusted within the family of its 12 comparisons in that scenario and budget; $^{\ast}$: significant at 0.05 (the best method better in every such case). Published rows: example layout, best feasible submitted layout with every turbine within 1~mm of the boundary (strict) and after radial projection onto it (projected)~\cite{Baker2019,IEA37repo}. Run-level Friedman tests: 16 turbines{,} 6{,}030: $p=1.1\times10^{-45}$; 16 turbines{,} 30{,}030: $p=6.9\times10^{-47}$; 36 turbines{,} 6{,}030: $p=2.7\times10^{-53}$; 36 turbines{,} 30{,}030: $p=5.3\times10^{-53}$.}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Pool (13 methods, one pool per scenario and budget): the ten methods of Table~\ref{tab:iea37-detail}, GA, and MS-SLSQP and PSO-SLSQP with the exact analytic gradient (each gradient charged $c_g=3$ evaluations); random initialization, 30 seed-paired runs (seeds 1--30). AEP in MWh, rounded to integers (official IEA37 Gaussian-wake model); Mean: over the feasible runs (bold: best method); Best: best feasible run; Feas.: feasible runs as labelled in the stored records (the labels checked at full precision where the rounded coordinates cannot decide them; Section~\ref{sec:S-sa-precision}). Rank: feasibility-aware rank of the mean AEP within this pool (rule of Table~\ref{M-tab:friedman68}). $p_{\rm best}$: seed-paired Wilcoxon signed-rank test of the best method (Rank 1) against the method (infeasible runs below every feasible run), Holm-adjusted within the family of its 12 comparisons in that scenario and budget; $^{\ast}$: significant at 0.05 (the best method better in every such case). Published rows: example layout, best feasible submitted layout with every turbine within 1~mm of the boundary (strict) and after radial projection onto it (projected)~\cite{Baker2019,IEA37repo}. Run-level Friedman tests: 16 turbines{,} 6{,}030: $p=1.1\times10^{-45}$; 16 turbines{,} 30{,}030: $p=6.9\times10^{-47}$; 36 turbines{,} 6{,}030: $p=2.7\times10^{-53}$; 36 turbines{,} 30{,}030: $p=5.3\times10^{-53}$.}
 \end{table*}
 
 \begin{table*}[!htb]
 \centering
 \caption{Horns Rev~1 16-turbine block: the GA layouts and those of the ten methods of the main study re-evaluated with 1$^\circ$ direction bins and with PyWake NOJ (random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations).}
-\label{tab:S-r3-hr-eval}
+\label{tab:S-sa-hr-eval}
 \scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lccccccccc}
 \toprule
@@ -115,7 +115,7 @@ vs.\ PSO-VNS: $p_{\rm Holm}$ &  & 0.529 (T) & 0.452 (T) & 0.360 (T) &  &  & $1.1
 \begin{table*}[!htb]
 \centering
 \caption{Lillgrund 16-turbine block (minimum spacing $3D$): final layouts re-evaluated with 1$^\circ$ direction bins and PyWake NOJ (nine methods, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations).}
-\label{tab:S-r3-lg-eval}
+\label{tab:S-sa-lg-eval}
 \scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lccccccccccc}
 \toprule
@@ -136,13 +136,13 @@ SSA & 3/30 & 111.48 & 111.16 & 111.74 &  & 28/30 & 112.12 & 111.38 & 111.91 & $5
 LX-SSA & 0/30 & -- & -- & -- &  & 18/30 & 110.70 & 110.58 & 111.23 & $1.5\times10^{-8}$ (W) \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Stored final layouts of Table~\ref{tab:S-rev-site} re-evaluated (not re-optimized): 5$^\circ$: the model used in optimization replayed on the stored coordinates (rounded to 1~cm; maximum absolute difference to the stored AEP 0.225~GWh/yr, 14 of 309 feasible layouts differ by more than 0.01); 1$^\circ$: bins centred at 0.5$^\circ$, 1.5$^\circ$, \ldots{} with the sector's Weibull parameters; PyWake: NOJ of PyWake~2.6.20 ($k=0.04$, defaults) at the same 1$^\circ$ bins. Mean AEP (GWh/yr) of the feasible runs (stored labels; bold: highest among methods with at least 15 feasible runs). Last column: the paper's run-level test of PSO-VNS against the method with the 1$^\circ$ AEP (infeasible runs below every feasible run), Holm over its 8 comparisons, W/T/L from PSO-VNS's side.}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Stored final layouts of Table~\ref{tab:S-xp-site} re-evaluated (not re-optimized): 5$^\circ$: the model used in optimization replayed on the stored coordinates (rounded to 1~cm; maximum absolute difference to the stored AEP 0.225~GWh/yr, 14 of 309 feasible layouts differ by more than 0.01); 1$^\circ$: bins centred at 0.5$^\circ$, 1.5$^\circ$, \ldots{} with the sector's Weibull parameters; PyWake: NOJ of PyWake~2.6.20 ($k=0.04$, defaults) at the same 1$^\circ$ bins. Mean AEP (GWh/yr) of the feasible runs (stored labels; bold: highest among methods with at least 15 feasible runs). Last column: the paper's run-level test of PSO-VNS against the method with the 1$^\circ$ AEP (infeasible runs below every feasible run), Holm over its 8 comparisons, W/T/L from PSO-VNS's side.}
 \end{table*}
 
 \begin{table*}[!htb]
 \centering
 \caption{Elapsed time per evaluation and per run in the stored benchmark records (median seconds; ratio to PSO-VNS), and wall time of the feasibility-preserving initialization.}
-\label{tab:S-r3-time}
+\label{tab:S-sa-time}
 \scriptsize\setlength{\tabcolsep}{1.7pt}
 \begin{tabular}{lcccccccc}
 \toprule
@@ -176,7 +176,7 @@ MS-SLSQP, earlier$^{a}$ & 0.47 & 0.49 & 2.62 & 3.27 & 4.02 & & & \\
 \begin{table*}[!htb]
 \centering
 \caption{Elapsed time per run on Horns Rev~1 and IEA37 Case Study~1 in the records of the main study and the additional experiments (median seconds; ratio to PSO-VNS).}
-\label{tab:S-r3-time-sites}
+\label{tab:S-sa-time-sites}
 \scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lcccccccc}
 \toprule

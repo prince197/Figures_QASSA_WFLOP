@@ -3,7 +3,7 @@
 \begin{table}[!htbp]
 \centering
 \caption{All-run paired outcome on the 68 benchmark cases (6,030 evaluations, random starts, seeds 1--30; $n=2{,}040$ seed pairs per comparison). Per case and seed, a feasible run beats an infeasible one, two feasible runs are compared by the benchmark objective (tie if the difference is at most $10^{-9}$ objective units), two infeasible runs tie. Score $(W+T/2)/n$ of the first method (0.5 = no difference; above 0.5 = first method better) with 95\% percentile intervals from 20{,}000 resamples (fixed seed) of the cases (all seeds of a case together) and two-stage (cases, then seeds within cases). $p_{\rm sign}$: exact two-sided sign test over the discordant pairs ($W$ vs.\ $L$, pairs treated as independent), Holm-adjusted over the 7 comparisons of PSO-VNS (top) or over the 5 contrasts below. Separate outcomes: Feas., feasible runs (\%) of the first/second method; $\overline{\Delta L}$, conditional mean wake-loss difference (pp, first minus second; negative = first better) over the cases in which both are qualified (Table~\ref{M-tab:friedman68}). Last two columns: two infeasible runs ordered by the normalized violation $V=\sum_i\max(0,x_i^2+y_i^2-r^2)/r^2+\sum_{i<j}\max(0,\ell_{\min}-\ell_{ij})/\ell_{\min}$ recomputed from the stored coordinates (rounded to $10^{-3}$~m; tie if $|\Delta V|\le10^{-5}$); its intervals are in rev3\_inference.json.}
-\label{tab:S-r3-allrun}
+\label{tab:S-sa-allrun}
 \scriptsize\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{@{}lcccccccc@{}}
 \toprule
@@ -33,7 +33,7 @@ PSO-VNS vs.\ RSD-VNS & 100.0/99.8 & $-$0.306 & 1320/322/398 & 0.726 & [0.692, 0.
 \begin{table}[!htbp]
 \centering
 \caption{Audit of the bootstrap TOST (margin $m=0.05$~pp; 68 cases, 6,030 evaluations, random starts, seeds 1--30; $\Delta L$ first minus second method). Top: the 18 pairs of Tables~\ref{tab:equivalence} and~\ref{tab:X-equiv-levels} at each level; Eq.\ (CI): 90\% interval strictly inside $(-m,m)$; $p\le0.05$: reported $p_{\rm TOST}=\max(k_-+1,k_++1)/(B+1)$, $k_-$ ($k_+$) = bootstrap means $\le-m$ ($\ge m$), $B=10{,}000$ (wild: enumerated tail shares, CR2: $t_5$). Bottom: empirical size of the equivalence decision (90\% percentile interval inside $(-m,m)$) under a true mean difference of exactly $-m$ or $+m$, in \% with exact 95\% binomial intervals (nominal: at most 5\%). Case level: the observed case differences shifted to mean $\pm m$, 68 cases drawn with replacement per replication; seed level: the first method's run losses shifted by a constant so that the benchmark mean of the case-mean differences is $\pm m$, 30 seed pairs drawn with replacement within every case; each replication then applies the procedure of the paper with the stated number of inner resamples. Calibrated $p_-$ ($p_+$): share of the replications at $\Delta=-m$ ($+m$) whose lower (upper) 90\% limit is at least as far inside the margin as the observed one (add-one), a null-calibrated $p$ for $H_0^-$ ($H_0^+$).}
-\label{tab:S-r3-tostaudit}
+\label{tab:S-sa-tostaudit}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
@@ -62,7 +62,7 @@ SSA-VNS vs.\ RSD-VNS & seed & 2{,}000 & 10{,}000 & 4.70 [3.81, 5.72] & 5.95 [4.9
 \begin{table}[!htbp]
 \centering
 \caption{Seed-level (fixed-benchmark) equivalence with independent and with synchronized seed resampling (68 cases, 6,030 evaluations, random starts, seeds 1--30; $\overline{\Delta L}$ first minus second method, pp; negative = first better; $m=0.05$~pp; 10{,}000 resamples, fixed seeds of Table~\ref{tab:X-equiv-levels}). Independent: the 30 seed pairs resampled independently in every case (Table~\ref{tab:X-equiv-levels}); joint: one seed-index vector drawn for all cases, so every case uses the same resampled seeds (seed $k$ seeds the same random stream, hence the same initial population draws, in every case). Per-seed $t$: 90\% $t_{29}$ interval of the 30 per-seed benchmark averages (pairs with all runs feasible). $m_{\min}$: smallest margin for equivalence (rounded up); Eq.: 90\% interval inside $\pm m$. Cross-case dependence of the seed effects (permutation of seeds within cases, 20{,}000 permutations): PSO-VNS vs.\ PSO: variance ratio of the per-seed benchmark average 1.07 (1 under independence; permutation $p=0.366$), mean correlation of the seed effects of the data-set I/II twin cases $-$0.006 ($p=0.566$, 30 twins); SSA-VNS vs.\ RSD-VNS: variance ratio of the per-seed benchmark average 1.44 (1 under independence; permutation $p=0.059$), mean correlation of the seed effects of the data-set I/II twin cases +0.074 ($p=0.016$, 28 twins).}
-\label{tab:S-r3-syncseed}
+\label{tab:S-sa-syncseed}
 \scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}lcccccccc@{}}
 \toprule
@@ -96,7 +96,7 @@ PSO-VNS vs.\ MS-SLSQP & $-$0.435 & [$-$0.452, $-$0.419] & 0.452 & no & [$-$0.458
 \begin{table}[!htbp]
 \centering
 \caption{Sensitivity of the case-mean Wilcoxon signed-rank tests to the imputation of maximal differences and to the handling of zero differences (68 cases, 6,030 evaluations, random starts, seeds 1--30; case means of the feasible runs, qualification at 15 of 30 feasible runs). Imputed: the paper's test (a case in which only one method qualifies counts as a maximal difference in its favour; $n=68$). Dropped: only the cases in which both qualify. Wilcoxon: zero differences ($|d|\le10^{-9}$~pp) dropped (paper); Pratt: zeros kept in the ranking. All $p$ values Holm-adjusted within the stated family and version. Only 1st/2nd: cases in which only the first / second method qualifies; Zeros: cases with $|d|\le10^{-9}$ among those in which both qualify. Verdicts (imputed-Wilcoxon / imputed-Pratt / dropped-Wilcoxon / dropped-Pratt): A, first method significantly better; B, second; ns, not significant ($\alpha=0.05$).}
-\label{tab:S-r3-imputation}
+\label{tab:S-sa-imputation}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lcccccccc@{}}
 \toprule
@@ -123,7 +123,7 @@ LX-SSA-VNS vs.\ LX-SSA & 2/0 & 6 & $1.1\times10^{-10}$ & $1.8\times10^{-11}$ & 6
 \begin{table}[!htbp]
 \centering
 \caption{Case-weighted and equal-cluster estimates at the cluster level, recomputed from the run records (68 cases in six (data set, radius) clusters, 6,030 evaluations, random starts, seeds 1--30; $\overline{\Delta L}$ first minus second method, pp; negative = first better; margin $m=0.05$~pp). Case-weighted: mean over the cases with the CR2 $t_5$ interval and the restricted wild-cluster bootstrap-$t$ interval of Table~\ref{tab:X-equiv-levels}. Equal-cluster: mean of the six cluster means with the $t_5$ interval over these means (this equals the CR2 interval for the equal-cluster weighting) and the restricted wild-cluster bootstrap-$t$ interval (CR2-studentized, all $6^6=46{,}656$ Webb six-point draws enumerated; interval by test inversion). Cluster means in the order Data Set~I, $r=500$, 750, 1000~m; Data Set~II, $r=500$, 750, 1000~m.}
-\label{tab:S-r3-eqclus}
+\label{tab:S-sa-eqclus}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
 \begin{tabular}{@{}lcccccc@{}}
 \toprule

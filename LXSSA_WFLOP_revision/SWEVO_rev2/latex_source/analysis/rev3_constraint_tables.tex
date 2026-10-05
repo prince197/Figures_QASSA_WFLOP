@@ -2,7 +2,7 @@
 \begin{table}[!htbp]
 \centering
 \caption{Alternative constraint handling: five methods under (i) the implemented penalty $F_p$ ($\mu=10^{10}$, $g^{\rm b}$ in m$^2$, $g^{\rm s}$ in m) with box clipping, (ii) Deb's feasibility rules on dimensionless violations ($g^{\rm b}/r^2$, $g^{\rm s}/\ell_{\min}$) with box clipping, and (iii) Deb's rules with radial projection onto the circle; six cases (data sets I and II; $r=500$~m, $N=10$; $r=750$~m, $N=6$; $r=1000$~m, $N=15$), new seeds 31--60 (identical in all variants), 6,030 evaluations, random starts, $N_p=30$. Feas.: feasible final layouts (\%, 180 runs). Loss: mean wake loss of the feasible runs (\% of ideal; mean of the case means). W/T/L and Score $=(W+T/2)/180$: all-run paired outcome of PSO-VNS against the method (feasible beats infeasible; two feasible runs by wake loss; two infeasible runs tie), 95\% two-stage bootstrap interval over cases and seeds; $p_{\rm H}$: exact sign test, Holm-adjusted over the 28 tests of each variant (4 methods $\times$ 6 cases and pooled). $\Delta L$: PSO-VNS minus method (pp; negative = PSO-VNS better) over seed pairs with both runs feasible, 95\% interval. Rank: feasibility-aware average rank over the 180 (case, seed) blocks (1 = best; infeasible runs tied below feasible ones) and, in parentheses, the paper's case-level rule.}
-\label{tab:S-r3-constraint}
+\label{tab:S-sa-constraint}
 \scriptsize\setlength{\tabcolsep}{2.6pt}
 \begin{tabular}{@{}llrrcccrc@{}}
 \toprule
@@ -33,7 +33,7 @@ Variant & Method & Feas. & Loss & W/T/L & Score [95\% CI] & $p_{\rm H}$ & $\Delt
 \begin{table}[!htbp]
 \centering
 \caption{Alternative constraint handling, per case: feasible runs (of 30) and all-run paired score of PSO-VNS against each method, $(W+T/2)/30$, for the variants (i) penalty with box clipping, (ii) Deb's rules with box clipping and (iii) Deb's rules with radial projection; seeds 31--60, 6,030 evaluations, random starts. $^{*}$: Holm-adjusted exact sign test $p<0.05$ (family of 28 tests per variant). Case: data set / $r$ (m) / $N$.}
-\label{tab:S-r3-constraint-cases}
+\label{tab:S-sa-constraint-cases}
 \scriptsize\setlength{\tabcolsep}{2.4pt}
 \begin{tabular}{@{}lccccccccccccccc@{}}
 \toprule
