@@ -1,7 +1,6 @@
 \section{Sensitivity to the Modeling Assumptions}
 \label{sec:robustness}
-% SWEVO expansion: tab:robust-final is back in the main text (it was moved to the supplement by editor cut C2 in the
-% MPCE version); the full re-evaluation stays in the supplement (Table S-robust). tab:F-bench and tab:F-equiv are
+% tab:robust-final is placed in the main text; the full re-evaluation stays in the supplement (Table S-robust). tab:F-bench and tab:F-equiv are
 % captured in 08_beyond.tex (\CaptureSuppTables{analysis/mpce_supp_direction.tex}).
 The benchmark fixes a power curve, a wake model, a minimum spacing, a boundary rule and a discretization of the wind rose. We re-evaluated every feasible final layout of the main comparison, without re-optimization, under a cubic power curve, a Gaussian wake and finer direction bins (Table~\ref{tab:robust-final}; all methods: Table~\ref{S-tab:robust}); this asks whether the delivered layouts keep their order under another model, not which layouts the methods would find for it (re-evaluations use the stored rounded coordinates; Section~\ref{sec:archive-reliability}). For the spacing, the constraint handling and the direction resolution, the methods were also re-optimized on subsets of the cases (Sections~\ref{sec:spacing}--\ref{sec:direction}).
 % >>>>> begin analysis/mpce_tab_robust_final.tex

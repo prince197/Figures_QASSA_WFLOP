@@ -2,7 +2,7 @@
 
 \begin{table*}[!htb]
 \centering
-\caption{Horns Rev~1 16-turbine block, recomputed pool with GA (11 methods; 5$^\circ$ bins, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean AEP of the feasible runs, feasibility-aware and run-level ranks, and seed-paired tests of the best method.}
+\caption{Horns Rev~1 16-turbine block, pool with GA (11 methods; 5$^\circ$ bins, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean AEP of the feasible runs, feasibility-aware and run-level ranks, and seed-paired tests of the best method.}
 \label{tab:S-r3-hr-pool}
 \scriptsize\setlength{\tabcolsep}{1.7pt}
 \begin{tabular}{lcccccccccccccc}
@@ -31,7 +31,7 @@ DE & 0/30 & -- & -- & 11 & 11.00 & $1.9\times10^{-8}$$^{\ast}$ & & 8/30 & 137.79
 
 \begin{table*}[!htb]
 \centering
-\caption{IEA37 Case Study~1, recomputed pool with GA and the exact-gradient methods (13 methods; 16 and 36 turbines, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean and best AEP, feasibility-aware rank and seed-paired tests of the best method.}
+\caption{IEA37 Case Study~1, pool with GA and the exact-gradient methods (13 methods; 16 and 36 turbines, random starts, 30 seeds, 6{,}030 and 30{,}030 evaluations): feasibility, mean and best AEP, feasibility-aware rank and seed-paired tests of the best method.}
 \label{tab:S-r3-iea-pool}
 \scriptsize\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{lcccccccccc}
@@ -73,7 +73,7 @@ MS-SLSQP & 4/30 & 733{,}342 & 748{,}571 & 12 & $2.2\times10^{-8}$$^{\ast}$ & 14/
 DE & 0/30 & -- & -- & 13 & $2.2\times10^{-8}$$^{\ast}$ & 0/30 & -- & -- & 13 & $2.2\times10^{-8}$$^{\ast}$ \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Pool (13 methods, one pool per scenario and budget): the ten methods of Table~\ref{tab:iea37-detail}, GA, and MS-SLSQP and PSO-SLSQP with the exact analytic gradient (each gradient charged $c_g=3$ evaluations); random initialization, 30 seed-paired runs (seeds 1--30). AEP in MWh, rounded to integers (official IEA37 Gaussian-wake model); Mean: over the feasible runs (bold: best method); Best: best feasible run; Feas.: feasible runs as originally labelled (the labels checked at full precision where the rounded coordinates cannot decide them; Section~\ref{sec:S-r3-precision}). Rank: feasibility-aware rank of the mean AEP within this pool (rule of Table~\ref{M-tab:friedman68}). $p_{\rm best}$: seed-paired Wilcoxon signed-rank test of the best method (Rank 1) against the method (infeasible runs below every feasible run), Holm-adjusted within the family of its 12 comparisons in that scenario and budget; $^{\ast}$: significant at 0.05 (the best method better in every such case). Published rows: example layout, best feasible submitted layout with every turbine within 1~mm of the boundary (strict) and after radial projection onto it (projected)~\cite{Baker2019,IEA37repo}. Run-level Friedman tests: 16 turbines{,} 6{,}030: $p=1.1\times10^{-45}$; 16 turbines{,} 30{,}030: $p=6.9\times10^{-47}$; 36 turbines{,} 6{,}030: $p=2.7\times10^{-53}$; 36 turbines{,} 30{,}030: $p=5.3\times10^{-53}$.}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Pool (13 methods, one pool per scenario and budget): the ten methods of Table~\ref{tab:iea37-detail}, GA, and MS-SLSQP and PSO-SLSQP with the exact analytic gradient (each gradient charged $c_g=3$ evaluations); random initialization, 30 seed-paired runs (seeds 1--30). AEP in MWh, rounded to integers (official IEA37 Gaussian-wake model); Mean: over the feasible runs (bold: best method); Best: best feasible run; Feas.: feasible runs as labelled in the stored records (the labels checked at full precision where the rounded coordinates cannot decide them; Section~\ref{sec:S-r3-precision}). Rank: feasibility-aware rank of the mean AEP within this pool (rule of Table~\ref{M-tab:friedman68}). $p_{\rm best}$: seed-paired Wilcoxon signed-rank test of the best method (Rank 1) against the method (infeasible runs below every feasible run), Holm-adjusted within the family of its 12 comparisons in that scenario and budget; $^{\ast}$: significant at 0.05 (the best method better in every such case). Published rows: example layout, best feasible submitted layout with every turbine within 1~mm of the boundary (strict) and after radial projection onto it (projected)~\cite{Baker2019,IEA37repo}. Run-level Friedman tests: 16 turbines{,} 6{,}030: $p=1.1\times10^{-45}$; 16 turbines{,} 30{,}030: $p=6.9\times10^{-47}$; 36 turbines{,} 6{,}030: $p=2.7\times10^{-53}$; 36 turbines{,} 30{,}030: $p=5.3\times10^{-53}$.}
 \end{table*}
 
 \begin{table*}[!htb]
@@ -141,7 +141,7 @@ LX-SSA & 0/30 & -- & -- & -- &  & 18/30 & 110.70 & 110.58 & 111.23 & $1.5\times1
 
 \begin{table*}[!htb]
 \centering
-\caption{Elapsed time per evaluation and per run in the original benchmark records (median seconds; ratio to PSO-VNS), and wall time of the feasibility-preserving initialization.}
+\caption{Elapsed time per evaluation and per run in the stored benchmark records (median seconds; ratio to PSO-VNS), and wall time of the feasibility-preserving initialization.}
 \label{tab:S-r3-time}
 \scriptsize\setlength{\tabcolsep}{1.7pt}
 \begin{tabular}{lcccccccc}
@@ -165,17 +165,17 @@ RS-VNS & 0.28 & 0.29 & 1.39 & 2.00 & 2.72 (0.78) & n/r & 13.2 (0.60) & 63.3 (1.1
 RSD-VNS & 0.34 & 0.38 & 1.67 & 2.46 & 3.52 (1.01) & n/r & n/r & n/r \\
 MS-SLSQP, earlier$^{a}$ & 0.47 & 0.49 & 2.62 & 3.27 & 4.02 & & & \\
 \midrule
-\multicolumn{9}{l}{\emph{Initialization alone (30 layouts per run, L-BFGS-B packing, not charged), re-run now, seeds 1--30: wall [CPU] time}} \\
+\multicolumn{9}{l}{\emph{Initialization alone (30 layouts per run, L-BFGS-B packing, not charged), re-run, seeds 1--30: wall [CPU] time}} \\
 \multicolumn{3}{l}{Six largest cases} & \multicolumn{6}{l}{median 4.82~s [3.85~s], maximum 15.52~s [9.68~s]} \\
 \multicolumn{3}{l}{Horns Rev~1 block} & \multicolumn{6}{l}{median 4.44~s [3.47~s], maximum 5.62~s [4.43~s]} \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Elapsed (wall-clock) seconds of a run as stored in the original records (Seconds: time of the optimizer call in one worker process, incl. optimizer overhead and, for MS-SLSQP, the SLSQP subproblems and constraint evaluations, which are not charged). ms per evaluation: Seconds/Evaluations$\times10^3$ of each run, median and mean over the 2{,}040 runs of the method (the mean is the statistic of Table~\ref{tab:cost}); s per run: median over the runs with the given $N$ (60 runs); six largest cases: median over 180 runs (6{,}030 feasible init.\ includes the packing). In parentheses: ratio to PSO-VNS. Methods come from different run batches (SSA, LX-SSA, DE, VNS, SSA-VNS, LX-SSA-VNS: files of the earlier study), so ratios are indicative. MS-SLSQP (rerun batch mpce\_slsqp): the time per run jumps from 3.1~s at $N=7$ to 16--22~s at $N\ge8$, independent of $r$; re-timed now with single-threaded BLAS: $N=7$: 3.0~s (stored 3.0~s), $N=8$: 4.1~s (stored 13.9~s), $N=10$: 6.9~s (stored 20.3~s), $N=15$: 6.0~s (stored 19.7~s). $^{a}$Same method, runs of the earlier study (fresh\_grid). n/r: not run. Total serial compute (sum of Seconds): 101.1 CPU-hours for the 36{,}190 original records and 12.4 for the 11{,}640 revision records; the runs were executed in four parallel worker processes, so the elapsed time of a study was about a quarter of its total.}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Elapsed (wall-clock) seconds of a run as stored in the run records (Seconds: time of the optimizer call in one worker process, incl. optimizer overhead and, for MS-SLSQP, the SLSQP subproblems and constraint evaluations, which are not charged). ms per evaluation: Seconds/Evaluations$\times10^3$ of each run, median and mean over the 2{,}040 runs of the method (the mean is the statistic of Table~\ref{tab:cost}); s per run: median over the runs with the given $N$ (60 runs); six largest cases: median over 180 runs (6{,}030 feasible init.\ includes the packing). In parentheses: ratio to PSO-VNS. Methods come from different run batches (SSA, LX-SSA, DE, VNS, SSA-VNS, LX-SSA-VNS: files of an earlier run batch), so ratios are indicative. MS-SLSQP (rerun batch mpce\_slsqp): the time per run jumps from 3.1~s at $N=7$ to 16--22~s at $N\ge8$, independent of $r$; re-timed with single-threaded BLAS: $N=7$: 3.0~s (stored 3.0~s), $N=8$: 4.1~s (stored 13.9~s), $N=10$: 6.9~s (stored 20.3~s), $N=15$: 6.0~s (stored 19.7~s). $^{a}$Same method, runs of an earlier batch (fresh\_grid). n/r: not run. Total serial compute (sum of Seconds): 101.1 CPU-hours for the 36{,}190 records of the main study and 12.4 for the 11{,}640 records of the additional experiments; the runs were executed in four parallel worker processes, so the elapsed time of a study was about a quarter of its total.}
 \end{table*}
 
 \begin{table*}[!htb]
 \centering
-\caption{Elapsed time per run on Horns Rev~1 and IEA37 Case Study~1 in the original and revision records (median seconds; ratio to PSO-VNS).}
+\caption{Elapsed time per run on Horns Rev~1 and IEA37 Case Study~1 in the records of the main study and the additional experiments (median seconds; ratio to PSO-VNS).}
 \label{tab:S-r3-time-sites}
 \scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{lcccccccc}
