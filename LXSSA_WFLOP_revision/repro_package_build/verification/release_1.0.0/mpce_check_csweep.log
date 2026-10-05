@@ -1,0 +1,17 @@
+S01 PASS    the c = 2.0 sweep point reproduces all 360 stored runs of the old setting (fresh_grid PSO) bit for bit
+S02 PASS    order-2 stable side: for every c <= 1.7 at least 98 % of the final layouts are feasible and all 12 cases are qualified (>= 15 of 30 feasible)
+S03 PASS    beyond the boundary feasibility falls monotonically with c (c = 1.8 > 1.9 > 2.0) and is below 95 % for every c > c*; below 60 % at c = 2.0
+S04 PASS    the loss of feasibility starts in the interval (1.7, 1.8) that contains c* = 1.7486: every step below it loses < 1 pp per 0.1 in c, the step 1.7 -> 1.8 loses >= 5 pp, and c = 1.7 vs 1.8 differs in feasibility (McNemar p < 0.001)
+S05 PASS    no step at c*: the decline beyond c* is progressive and accelerating (drop per 0.1 in c: 1.9 -> 2.0 > 1.8 -> 1.9 > 1.7 -> 1.8), i.e. the largest drop is not the step that contains c*
+S06 PASS    the swarm dynamics change smoothly through c*: the final spread grows monotonically with c, already by a factor >= 5 from c = 1.4 to 1.7 (stable side), and the largest decrease of the feasible-evaluation share (iterations 101-200) per 0.1 in c lies below c* (1.6 -> 1.7)
+S07 PASS    final quality degrades already on the stable side: mean loss (common cases) is non-decreasing from c = 1.4 to 2.0, and c = 1.6 beats c = 1.7 in >= 10 of 12 cases (Wilcoxon p < 0.05)
+S08 PASS    crossing from c = 1.7 to 1.8 worsens the loss in all 12 cases (Wilcoxon p < 0.001) and the average rank change 1.7 -> 1.8 is the largest along the sweep
+S09 PASS    zeroing the clipped velocity components does NOT rescue the old setting: feasibility within 3 pp of the implemented rule (McNemar p > 0.05), no more qualified cases, loss not better
+S10 PASS    velocity clamping (vmax = 0.2 (ub - lb)) largely rescues feasibility of the old setting: >= 90 % feasible (+ >= 30 pp, McNemar p < 0.001, no run lost), all 12 cases qualified, lower loss in every common case
+S11 PASS    ... but not fully: with vmax the old setting stays worse than the constriction setting and than c = 1.7 in feasibility (McNemar p < 0.01) and in loss in all 12 cases
+S12 PASS    the old setting with vmax is statistically indistinguishable from c = 1.8 without vmax (feasibility McNemar p > 0.05, loss Wilcoxon p > 0.05)
+S13 PASS    the constriction setting has the best average rank of the ten settings; c = 1.4 (w = 0.7) is 100 % feasible and not significantly different from it in loss (Wilcoxon p > 0.05)
+S14 PASS    too small coefficients also hurt: c = 1.2 has a higher mean loss (common cases) and a worse average rank than c = 1.4 and c = 1.6
+S15 PASS    feasibility of every run is identical in Data Sets I and II (same geometry), so feasibility statistics rest on 6 geometries x 30 seeds (McNemar on 180 pairs)
+
+15 PASS / 0 FAIL / 0 PENDING

@@ -1,0 +1,139 @@
+CHECK-FINAL conditions (summary generated 2026-10-04 23:41:02)
+  [C01] PASS    PSO-VNS has the best average rank of the eight methods (abstract, Sec. VI-A, conclusion)
+            keys: main.friedman.best_ranked
+  [C02] PASS    the Friedman test rejects equal performance
+            keys: main.friedman.p
+  [C03] PASS    post hoc: PSO-VNS significantly better than every method except PSO (grammar of the sentence assumes exactly PSO is non-significant)
+            keys: main.friedman.p_holm_vs_focus
+  [C04] PASS    vs PSO: at least as good (W >= L, lower mean loss) but not significant over all cases (case-mean Wilcoxon p >= 0.05)
+            keys: main.wtl.PSOC, main.mean_loss_pct_qualified_cases, main.case_mean_wilcoxon.PSOC.p
+  [C05] PASS    vs PSO: gain concentrates at N >= 10 (W > L there, mean gain > 0) and nearly equal loss for N < 10 (mean |dL| < 0.05 pp)
+            keys: main.by_n.PSOC
+  [C06] PASS    vs SSA-VNS: never significantly worse, significant on the case means
+            keys: main.wtl.SSABV.L, main.case_mean_wilcoxon.SSABV.p_holm
+  [C07] PASS    06 sentence 'Against SSA, LX-SSA and DE, it is significantly better in ... cases, and against VNS and MS-SLSQP in ...' (re-pointed; attach [C07] there): each W >= 40, L <= 2, case-mean p_holm < 0.05
+            keys: main.wtl.*, main.case_mean_wilcoxon.*.p_holm
+  [C08] PASS    PSO-VNS returns a feasible layout in every run (68 cases and Horns Rev 16)
+            keys: main.feasible_pct.PSOBV, hr16.methods.PSOBV.feasible
+  [C09] PASS    feasible-run counts of PSO, SSA, LX-SSA and DE are identical for both wind data sets
+            keys: main.feasible_runs_by_dataset
+  [C10] PASS    VNS phase removes (slightly) more of the loss left at the switch than continuing PSO, and both keep improving
+            keys: ablation.phase2_loss_reduction_pct.PSOBV/PSOC_continued.mean
+  [C11] PASS    VNS phases of SSA-VNS / RS-VNS remove larger shares but start from worse or more often infeasible layouts; VNS alone ranks below every hybrid and RS-VNS
+            keys: ablation.phase2_loss_reduction_pct.*, ablation.friedman.avg_rank
+  [C12] PASS    old PSO setting (w=0.7, c1=c2=2) understates PSO: constriction PSO never significantly worse, better in most cases, moves PSO up to second place, ahead of SSA, LX-SSA and SSA-VNS
+            keys: pso_setting.*, main.friedman.avg_rank
+  [C13] PASS    ablation: VNS phase gives a small gain (PSO-VNS vs PSO W > L)
+            keys: ablation.contrasts.PSOBV-PSOC
+  [C14] PASS    the PSO start beats the best initial point (VNS) and random sampling (RS-VNS): W >= 40, L <= 2 / L == 0
+            keys: ablation.contrasts.PSOBV-BVNS, PSOBV-RSVNS
+  [C15] PASS    SSA phase gives only a small gain over random sampling (D1): SSA-VNS vs RS-VNS case-mean p < 0.05 with SSA-VNS lower (dL < 0, |dL| < 0.1 pp and less than half of |dL| of PSO-VNS vs RS-VNS), tied at run level in most cases (T > 34 of 68)
+            keys: ablation.case_mean.SSABV-RSVNS / PSOBV-RSVNS, ablation.contrasts.SSABV-RSVNS
+  [C16] PASS    PSO is the better first phase than SSA / LX-SSA (never worse, W >= 34) and its best layout at the switch is more often feasible and has lower loss
+            keys: ablation.contrasts.PSOBV-SSABV/PSOBV-LXBV, ablation.phase2_loss_reduction_pct
+  [C17] PASS    LX-SSA as published is worse (D1, D14; Table IV rows 'LX-SSA as published (hybrid)' / '(alone)'): LX-SSA never significantly better than SSA and LX-SSA-VNS never significantly better than SSA-VNS (run level); on the case means SSA-VNS beats LX-SSA-VNS and SSA beats LX-SSA (p < 0.05)
+            keys: ablation.contrasts.LXSSA-SSA.W, SSABV-LXBV.L, ablation.case_mean.SSABV-LXBV / LXSSA-SSA
+  [C18] PASS    split: 75% has lower loss than 50% in >= 10 of 12 cases, 50% never significantly better than 75%, 25% never significantly better than 50%, ranks 75 < 50 < 25
+            keys: split.n_lower_loss_than_50, split.wtl_50_vs_75, split.wtl_50_vs_25, split.avg_rank
+  [C19] PASS    Horns Rev 16 (6,030, random starts, the paper's 5-deg bins): PSO-VNS has the highest mean AEP and is significantly better than every other method in the run-level test (DATA condition; D19: the AEP edge vanishes with 1-deg bins and PyWake, see mpce_check_dir.py F24/F25, so the text states the 6,030 result as a feasibility result)
+            keys: hr16.methods.*.mean/p_holm
+  [C20] PASS    Horns Rev 16: PSO finds feasible layouts in only part of its random-start runs (fewer than 30 of 30)
+            keys: hr16.methods.PSOC.feasible
+  [C21] PASS    ranking stable under the cubic curves: tau >= 0.9 and PSO-VNS keeps the best rank
+            keys: robustness.Cubic/CubicCutout.tau, avg_rank
+  [C22] PASS    Gaussian wake: ranking less stable (tau < 0.8, same best < 75%), PSO ranks first and PSO-VNS second (both ahead of the rest)
+            keys: robustness.Gauss.tau, same_best_pct, avg_rank
+  [C23] PASS    optimized layouts often lie on the 4D constraint (fewer than 10% of the N = 11-15 layouts satisfy 5D)
+            keys: main.spacing_share.n11_15.pct_5d
+  [C24] PASS    densest cases: the VNS phase repairs the PSO global best that is often infeasible at the switch (feasible at switch < final)
+            keys: main.dense_500_10
+  [C25] PASS    Horns Rev 16: larger budgets lower the mean AEP loss of PSO-VNS (30,030 and 120,030 below 6,030)
+            keys: hr16.loss_by_setting.PSOBV
+  [C26] PASS    budget 6,030 on the six largest cases: PSO-VNS ranks first (column 6,030 of Table feasbudget)
+            keys: feasbudget.rank.6030
+  [C27] PASS    previous study's method pool (Table baseline): under the old PSO setting BOTH salp-swarm hybrids (SSA-VNS and LX-SSA-VNS) rank ahead of PSO; under the corrected setting PSO ranks ahead of every salp-swarm method (SSA, LX-SSA, SSA-VNS, LX-SSA-VNS)
+            keys: baseline.old.avg_rank, baseline.constriction.avg_rank
+  [C28] PASS    feasibility-preserving initialization, six largest cases: VNS alone (BVNS) has the best average rank and PSO-VNS ranks second
+            keys: feasbudget.rank_feasible_init
+  [C29] PASS    six largest cases: PSO-VNS has the best average rank at all three budgets (6,030, 30,030, 120,030)
+            keys: feasbudget.rank.{6030,30030,120030}
+  [C30] PASS    Horns Rev 1 at 30,030 evaluations (5-deg bins): PSO-VNS has the highest mean AEP (reworded, D16/D19: the former second part 'at least one of its runs exceeds the installed layout' is dropped -- no run does with 1-deg bins, F21 -- and is no longer evaluated; see C62; survival at 1 deg / PyWake: F26)
+            keys: hr16.loss_by_setting.*.30030R.mean_aep
+  [C31] PASS    Horns Rev 1, 6,030 evaluations (5-deg bins): the PSO-VNS mean AEP is below the installed block (DATA condition; neither the mean nor any run is claimed to exceed it, C62)
+            keys: hr16.methods.PSOBV.mean, hr16.installed_aep
+  [C32] PASS    PSO-VNS vs PSO (D2): not significant over all 68 cases (case-mean p >= 0.05); Data Set II, N >= 10: PSO-VNS lower case-mean loss in more cases than PSO (wins > losses, mean dL < 0); Data Set I, N >= 10: PSO lower in at least half
+            keys: main.case_mean_wilcoxon.PSOC.p, main.subgroup_vs_phase1.groups.dsIILarge/dsILarge
+  [C33] PASS    VNS phase (D1): significant for SSA and LX-SSA (run level W > L with L = 0; case-mean p < 0.05, dL < 0), not significant for PSO (case-mean p >= 0.05)
+            keys: ablation.contrasts/case_mean SSABV-SSA, LXBV-LXSSA, PSOBV-PSOC
+  [C34] PASS    budget (D2): PSO-VNS has the best average rank on the six largest cases at all three budgets; first-place counts are generated for every budget and PSO-VNS is first in at least one case at 120,030
+            keys: feasbudget.rank, feasbudget.first_count
+  [C35] PASS    LX-SSA phase gives no gain over random sampling (D1): LX-SSA-VNS vs RS-VNS case-mean p >= 0.05, run level T >= 60, W and L <= 5
+            keys: ablation.case_mean.LXBV-RSVNS.p, ablation.contrasts.LXBV-RSVNS
+  [C36] PASS    component analysis: the Friedman test rejects equal average ranks (\NAblFriedVerb)
+            keys: ablation.friedman.p
+  [C37] PASS    budget, 120,030 evaluations (08): SSA-VNS ranks ahead of PSO on the six largest cases, and VNS, SSA-VNS, RS-VNS, LX-SSA-VNS and DE are all within 0.2 pp (\NBudCloseGapOneTwentyK) of the PSO-VNS mean wake loss
+            keys: feasbudget.rank.120030, feasbudget.close_gap_pp.120030
+  [C38] PASS    feasible starts (08): VNS alone has the lowest mean wake loss and the best average rank on the six largest cases; PSO and DE never move from their best initial layout (final objective = first checkpoint in every run)
+            keys: feasbudget.feasible.*.loss, feasbudget.rank_feasible_init, feasinit.runs_moved_from_best_initial
+  [C39] PASS    Horns Rev 1 (08): PSO-VNS has the highest mean AEP of all methods at 6,030 and 30,030 evaluations, but not at 120,030
+            keys: hr16.loss_by_setting.*.{6030R,30030R,120030R}.mean_aep
+  [C40] PASS    IEA37 CS1 (08): the best layout of all methods (both budgets) is below the best feasible published layout in both scenarios, and the gap is larger for 36 turbines
+            keys: iea37.*.published.our_best_vs_best_feasible_pct
+  [C41] PASS    boundary rule (09): SSA with radial projection has the higher mean objective than the original SSA in all six cases (Mann-Whitney p < 0.01 in every case)
+            keys: boundary_rule
+  [C42] PASS    quality (06): the PSO-VNS case-mean wake loss grows with N, falls as the farm becomes larger and is higher for Data Set II than for Data Set I (ties allowed)
+            keys: main.loss_monotone
+  [C43] PASS    seed pairing: every method has the same seed set in each case x budget x initialization, and the first logged (best initial) objective is identical across all methods for every case-seed pair at 6,030 evaluations where finite
+            keys: pairing
+  [C44] PASS    PSO phase (D1): a PSO phase gives a clearly larger gain over random sampling than an SSA phase (PSO-VNS vs RS-VNS case-mean p < 0.05 and dL at least twice that of SSA-VNS vs RS-VNS)
+            keys: ablation.case_mean.PSOBV-RSVNS, SSABV-RSVNS
+  [C45] PASS    budget (D3): at 120,030 evaluations SSA-VNS ranks ahead of PSO on the six largest cases
+            keys: feasbudget.rank.120030
+  [C46] PASS    cost (D6): the metaheuristics need a similar time per evaluation (max/min < 2.5) and MS-SLSQP needs more than every metaheuristic (slowdown vs PSO > 1)
+            keys: cost_per_eval
+  [C47] PASS    budget split (D7): omega = 0.75 is the best of the tested settings (lowest mean loss and average rank of 0.25, 0.5, 0.75, 0.9 [Phase 6, if present] and omega = 1 = PSO alone), and omega = 1 has a higher mean loss than omega = 0.75
+            keys: split.mean_loss, split.avg_rank
+  [C48] PASS    IEA37 CS1, 36 turbines, 30,030 evaluations: the best layout of all methods comes from the gradient-based MS-SLSQP
+            keys: iea37_compact.methods.*.36T_30030.best
+  [C49] PASS    equivalence (PSO-VNS vs PSO): the case means are practically equivalent at the margin (90 % bootstrap CI inside (-m, m)) and the Bayesian signed-rank test gives P(rope) > 0.99 (printed as \NBayPSOVNSvsPSORope = '>0.99')
+            keys: equivalence.pairs.PSOBV-PSOC.{equivalent, ci90_mean_dloss_pp, bayes.p_rope}, equivalence.margin_pp
+  [C50] PASS    equivalence (LX-SSA-VNS vs RS-VNS): practically equivalent at the margin (90 % bootstrap CI inside (-m, m))
+            keys: equivalence.pairs.LXBV-RSVNS.{equivalent, ci90_mean_dloss_pp}, equivalence.margin_pp
+  [C51] PASS    equivalence (SSA-VNS vs RS-VNS): NOT equivalent at the margin (90 % bootstrap CI not inside (-m, m)); SSA-VNS has the lower mean loss and a mean gain larger than m (the CI itself does not exclude gains below m)
+            keys: equivalence.pairs.SSABV-RSVNS.{equivalent, ci90_mean_dloss_pp, mean_dloss_pp}, equivalence.margin_pp
+  [C52] PASS    spread (PSO-VNS vs PSO, 68 cases, 6,030): no significant difference in the per-case SD of the feasible-run wake loss nor in the worst feasible run (Wilcoxon p >= 0.05 for both)
+            keys: spread.sd_p, spread.worst_p
+  [C53] PASS    SSA phase vs disc sampling: SSA-VNS is NOT better than RSD-VNS -- never significantly better at run level (W = 0), higher case mean in more cases than lower (losses > wins), case-mean Wilcoxon p_Holm < 0.05 AGAINST SSA-VNS (r_rb < 0) and mean dL > 0 (\NCmSSAVNSvsRSDVNSDL)
+            keys: ablation.contrasts.SSABV-RSDVNS, ablation.case_mean.SSABV-RSDVNS
+  [C54] PASS    SSA-VNS vs RSD-VNS, size of the difference: the 95 % bootstrap CI of the mean case-mean difference contains 0, practical equivalence at +-m is NOT shown (90 % CI not inside (-m, m)), and the Bayesian test gives P(SSA-VNS better) < 0.01 and P(rope) > 0.5 (\NBaySSAVNSvsRSDVNSRope)
+            keys: ablation.case_mean.SSABV-RSDVNS.ci95_mean_dloss_pp, equivalence.pairs.SSABV-RSDVNS
+  [C55] PASS    LX-SSA phase vs disc sampling: LX-SSA-VNS is worse than RSD-VNS -- run level L > W, case-mean p_Holm < 0.05 with dL > 0 and its 95 % CI above 0, not equivalent at +-m
+            keys: ablation.contrasts/case_mean LXBV-RSDVNS, equivalence.pairs.LXBV-RSDVNS
+  [C56] PASS    PSO phase vs disc sampling: PSO-VNS is better than RSD-VNS -- run level W >= 40 and L = 0, case-mean p_Holm < 0.05 with dL < 0, and the whole 90 % CI below -m (the gain exceeds the equivalence margin)
+            keys: ablation.contrasts/case_mean PSOBV-RSDVNS, equivalence.pairs.PSOBV-RSDVNS
+  [C57] PASS    disc sampling is the stronger control: RSD-VNS vs RS-VNS never significantly worse at run level (L = 0, W > 0), case-mean p_Holm < 0.05 with dL < 0; its Phase 1 is feasible at the switch more often and fewer of its runs have no feasible Phase-1 sample (geometry replay, verified against the stored curves)
+            keys: ablation.contrasts/case_mean RSDVNS-RSVNS, ablation.phase2_loss_reduction_pct, ablation.phase1_replay
+  [C58] PASS    component-analysis ranks with RSD-VNS: PSO-VNS first, PSO second, RSD-VNS third, i.e. the disc-sampling control ranks ahead of SSA-VNS, LX-SSA-VNS and RS-VNS (\NRankRSDVNS, \NAblOrder)
+            keys: ablation.friedman.avg_rank
+  [C59] PASS    budget split, omega = 0.9: no significant run-level difference from omega = 0.75 in any case (W = L = 0 from either side), case-mean p >= 0.05; omega = 0.9 has a higher mean loss and a worse average rank than 0.75 (so 0.75 stays the best tested setting, see C47) but a lower mean loss than omega = 1 (PSO alone) and than omega = 0.5
+            keys: split.wtl_90_vs_75, split.case_mean_omega90.PSOBV90-PSOBV75, split.mean_loss, split.avg_rank
+  [C60] PASS    RS-VNS weakness is mainly spacing, not the square (R3-6): paired over the same runs, fewer of the RS-VNS runs without a feasible Phase-1 sample are rescued by disc sampling (\NRsSquareExplains) than stay without one under disc sampling too (\NRsSpacingDominates); the counts add up to the RS-VNS total and the RSD-VNS total (\NRSRunsNoFeasSample, \NRSDRunsNoFeasSample); both replays reproduce the stored curves; and every RS-VNS run without a feasible sample does draw samples wholly inside the circle (\NRsNoFeasInside = \NRSRunsNoFeasSample), so spacing, not the boundary, is binding in all of them
+            keys: ablation.phase1_replay.square_vs_disc, ablation.phase1_replay.RSVNS/RSDVNS (incl. RSVNS.runs_no_feasible_but_inside_sample)
+  [C61] PASS    switch point (R3-9): RS-VNS and RSD-VNS switch after round(0.5 x 6,030) = 3,015 Phase-1 evaluations, the swarm hybrids after 3,030; the RS-VNS / RSD-VNS runs infeasible at the switch (read at the last checkpoint before it, call 3,000) equal the replayed runs without a feasible sample among the first 3,000 samples, and for RS-VNS also among all 3,015 (\NRSRunsNoFeasSample; RSD-VNS: at most 15 samples later, a few runs more are feasible)
+            keys: ablation.phase2_loss_reduction_pct.*.switch_call/feasible_at_switch_pct/runs, ablation.phase1_replay
+  [C62] PASS    Horns Rev (D16/D19): no claim of optimized runs above the installed layout -- no \NHR...Above... macro (runs_above_installed) is used in the text of the manuscript, optA/*.tex or the supplement
+            keys: manuscript text (comments stripped)
+  [C05] (not referenced in the manuscript)
+  [C09] (not referenced in the manuscript)
+  [C11] (not referenced in the manuscript)
+  [C19] (not referenced in the manuscript)
+  [C30] (not referenced in the manuscript)
+  [C39] (not referenced in the manuscript)
+  [C43] (not referenced in the manuscript)
+  referenced checks of the other scripts (not evaluated here; run the script named):
+    CHECK-EXTRA  (mpce_check_extra.py): 52 ids referenced: X02, X03, X04, X05, X06, X07, X08, X09, X10, X11, X13, X14, X16, X17, X18, X19, X20, X21, X22, X23, X24, X25, X26, X27, X30, X31, X32, X33, X34, X35, X36, X37, X38, X39, X40, X41, X42, X43, X44, X45, X46, X47, X48, X49, X50, X51, X52, X53, X54, X55, X56, X57; defined but not referenced: X01, X12, X15, X28, X29
+    CHECK-DIAG   (mpce_check_diag.py): 20 ids referenced: D01, D02, D03, D04, D05, D06, D07, D08, D09, D10, D11, D12, D13, D14, D15, D16, D17, D18, D20, D21; defined but not referenced: D19, D22
+    CHECK-DIR    (mpce_check_dir.py): 34 ids referenced: F01, F03, F04, F05, F06, F07, F08, F09, F10, F11, F12, F13, F14, F16, F17, F21, F22, F23, F24, F25, F26, F29, F31, F32, F33, F34, F35, F36, F41, F42, F43, F44, F45, F46; defined but not referenced: F02, F15, F20, F27, F28, F30, F40
+    CHECK-CSWEEP (mpce_check_csweep.py): 12 ids referenced: S01, S02, S03, S04, S05, S06, S07, S08, S09, S10, S11, S12; defined but not referenced: S13, S14, S15
+    CHECK-THEORY (make_theory_figures.py): 12 ids referenced: T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12; defined but not referenced: T13
+  summary: 62 PASS, 0 FAIL, 0 PENDING, 0 TAG ERRORS (0 malformed, 0 undefined ids)

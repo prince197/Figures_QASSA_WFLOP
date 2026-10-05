@@ -1,0 +1,32 @@
+  benchmark: SSA, LX-SSA, DE, old-setting PSO (fresh_grid)         8160
+  benchmark: VNS (fresh_vgrid)                                     2040
+  benchmark: SSA-VNS, LX-SSA-VNS (fresh_bgrid)                     4080
+  benchmark: PSO (mpce_psoc)                                       2040
+  benchmark: RS-VNS (mpce_rsvns)                                   2040
+  benchmark: MS-SLSQP (mpce_slsqp)                                 2040
+  benchmark: PSO-VNS (mpce_psobv, without superseded HR rows)      2040
+  RSD-VNS (mpce_rsdisc)                                            2040
+  split (mpce_psosplit + mpce_omega90)                             1080
+  PSO coefficient sweep (mpce_csweep)                              3240
+  budget 30,030 / 120,030 (mpce_b30k/b120k(+p), without HR)        3600
+  feasible initialization (mpce_feas + feasp, without HR)          1620
+  Horns Rev 1 (mpce_hrfix, 24 shards)                               970
+  IEA37 CS1 (mpce_iea16/iea36(+p))                                 1200
+original study records: 36190 (expected 36190)
+revision-2 records: 11640 (expected 11640): rev2_ga 2040, rev2_gahr 60, rev2_gaiea 120, rev2_grad 240, rev2_laplace 2160, rev2_lg16 270, rev2_lg16b 270, rev2_spacing 6480
+revision-3 files in run-record format (runs or re-evaluations): 6672 rows
+  rev3_constraint_deb.csv                                           900
+  rev3_constraint_pen.csv                                           900
+  rev3_constraint_proj.csv                                          900
+  rev3_fine15_s0of1.csv                                            1200
+  rev3_fine_s0of10.csv                                              120
+  rev3_fine_s1of10.csv                                              120
+  rev3_fine_s2of10.csv                                              120
+  rev3_fine_s3of10.csv                                              120
+  rev3_fine_s4of10.csv                                              120
+  rev3_fine_s5of10.csv                                              120
+  rev3_fine_s6of10.csv                                              120
+  rev3_fine_s7of10.csv                                              120
+  rev3_fine_s8of10.csv                                              120
+  rev3_fine_s9of10.csv                                              120
+  rev3_sites_reeval.csv                                            1572
