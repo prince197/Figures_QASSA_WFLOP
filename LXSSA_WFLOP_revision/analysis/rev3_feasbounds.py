@@ -619,9 +619,9 @@ def write_tex(out, path):
     # ---- table 2: worst case
     W = out["iea_worst_case"]["settings"]
     lines = []
-    scen = [("stored", "Stored labels"), ("A_adversarial_qualified", "Adversarial, qualified$^a$"),
-            ("W1_exactgrad_open_infeasible", "Open exact-grad.\\ infeasible"),
-            ("W2_plus_msslsqp_open_infeasible", "+ open MS-SLSQP infeasible")]
+    scen = [("stored", "Stored labels"), ("A_adversarial_qualified", "Adversarial$^a$"),
+            ("W1_exactgrad_open_infeasible", "Open exact infeas."),
+            ("W2_plus_msslsqp_open_infeasible", "+ open MS-SLSQP")]
     for n in (16, 36):
         for b in (6030, 30030):
             k = f"{n}T_{b}"
@@ -629,7 +629,11 @@ def write_tex(out, path):
                 d = W[k][s]
                 m = d["methods"]
                 best = LAB_SHORT.get(d["best"], d["best"])
-                ns = [LAB_SHORT.get(x, x) for x in d["best_family"]["not_significant"]]
+                ns0 = d["best_family"]["not_significant"]
+                sig = [x for x in d["best_family"]["outcomes"] if x not in ns0]
+                ns = [LAB_SHORT.get(x, x) for x in ns0]
+                if len(ns0) >= 6:
+                    ns = [f"{len(ns0)} of 12" + (" (all)" if not sig else ", not " + ", ".join(LAB_SHORT.get(x, x) for x in sig))]
                 c = [f"{m[a]['feasible']} / {m[a]['rank']:g}" for a in ("PSOSLSQPX", "SLSQPX", "SLSQP")]
                 pre = (f"\\multirow{{4}}{{*}}{{{n}, {b:,}}}".replace(",", "{,}").replace("{,} ", ", ", 1) if i == 0 else "")
                 lines.append(f"{pre} & {lab} & " + " & ".join(c) + f" & {best} & {big0(d['best_mean'])} & "
@@ -670,9 +674,9 @@ def write_tex(out, path):
            "ranks of the SLSQP-based methods, best method and the methods not significantly worse than it, when undecided "
            "labels are taken as infeasible.")
     tab2 = (f"\\begin{{table*}}[!htb]\n\\centering\n\\caption{{{cap}}}\n\\label{{tab:S-sa-feasworst}}\n"
-            "\\scriptsize\\setlength{\\tabcolsep}{2.5pt}\n\\begin{tabular}{llccclrp{5.2cm}}\n\\toprule\n"
-            "& & PSO-SLSQP, exact & MS-SLSQP, exact & MS-SLSQP & & & \\\\\n"
-            "Scenario & Labels & Feas.\\ / Rank & Feas.\\ / Rank & Feas.\\ / Rank & Best & Mean AEP & n.s.\\ vs.\\ best \\\\\n"
+            "\\scriptsize\\setlength{\\tabcolsep}{2.5pt}\n\\begin{tabular}{llccclrp{3.6cm}}\n\\toprule\n"
+            "& & PSO-SLSQP & MS-SLSQP & MS-SLSQP & & & \\\\\n& & exact grad. & exact grad. & fin. diff. & & & \\\\\n"
+            "Scen. & Labels & Feas.\\ / Rank & Feas.\\ / Rank & Feas.\\ / Rank & Best & Mean AEP & n.s.\\ vs.\\ best \\\\\n"
             "\\midrule\n" + "\n".join(lines) + "\n\\bottomrule\n\\end{tabular}\n"
             f"\\par\\vspace{{2pt}}\\parbox{{\\textwidth}}{{\\scriptsize {note}}}\n\\end{{table*}}\n")
     T.append(tab2)
@@ -714,7 +718,7 @@ def write_tex(out, path):
 
 LAB_SHORT = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "DE": "DE",
              "BVNS": "VNS", "SLSQP": "MS-SLSQP", "LXBV": "LX-SSA-VNS", "RSVNS": "RS-VNS", "RSDVNS": "RSD-VNS", "GA": "GA",
-             "SLSQPX": "MS-SLSQP (exact)", "PSOSLSQPX": "PSO-SLSQP (exact)"}
+             "SLSQPX": "MS-SLSQP (ex.)", "PSOSLSQPX": "PSO-SLSQP (ex.)"}
 
 
 def big0(v):

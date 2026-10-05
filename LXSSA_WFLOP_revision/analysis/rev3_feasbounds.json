@@ -1,6 +1,6 @@
 {
  "script": "rev3_feasbounds.py",
- "generated": "2026-10-05 17:12:42",
+ "generated": "2026-10-05 17:13:55",
  "tolerance_m": 1e-06,
  "float_pad_m": 1e-09,
  "taus_m": [
@@ -4194,7 +4194,7 @@
     "n_exact_zero": 0
    }
   },
-  "seconds": 55.872435331344604
+  "seconds": 58.013219594955444
  },
- "seconds": 60.63718223571777
+ "seconds": 62.28439378738403
 }
