@@ -26,27 +26,27 @@ DE & 0/30 & [0.00, 0.11] & -- & 21/30 & [0.52, 0.83] & 114.007 \\
 \caption{All-run paired outcomes for PSO-VNS on Lillgrund, using the archived feasibility labels.}
 \label{tab:archive-paired}
 \small\setlength{\tabcolsep}{4pt}
-\begin{tabular}{rlcccc}
+\begin{tabular}{rlccccc}
 \toprule
-Budget & Compared with & W/T/L & Superiority & 95\% CI & Holm $p$ \\
+Budget & Compared with & W/T/L & Superiority & 95\% CI & Exact 95\% CI, $W/(W+L)$ & Holm $p$ \\
 \midrule
-6,030 & VNS & 16/10/4 & 0.700 & [0.567, 0.817] & 0.0827 \\
-6,030 & DE & 17/13/0 & 0.783 & [0.700, 0.867] & 0.000168 \\
-6,030 & LX-SSA & 17/13/0 & 0.783 & [0.700, 0.867] & 0.000168 \\
-6,030 & PSO & 17/13/0 & 0.783 & [0.700, 0.867] & 0.000168 \\
-6,030 & RSD-VNS & 15/11/4 & 0.683 & [0.550, 0.800] & 0.0967 \\
-6,030 & MS-SLSQP & 10/0/20 & 0.333 & [0.167, 0.500] & 0.395 \\
-6,030 & SSA & 17/11/2 & 0.750 & [0.633, 0.850] & 0.00583 \\
-6,030 & SSA-VNS & 15/8/7 & 0.633 & [0.483, 0.767] & 0.395 \\
-30,030 & VNS & 20/0/10 & 0.667 & [0.500, 0.833] & 0.395 \\
-30,030 & DE & 22/0/8 & 0.733 & [0.567, 0.900] & 0.0967 \\
-30,030 & LX-SSA & 30/0/0 & 1.000 & [1.000, 1.000] & 2.98e-08 \\
-30,030 & PSO & 28/0/2 & 0.933 & [0.833, 1.000] & 1.22e-05 \\
-30,030 & RSD-VNS & 27/0/3 & 0.900 & [0.767, 1.000] & 0.000101 \\
-30,030 & MS-SLSQP & 28/0/2 & 0.933 & [0.833, 1.000] & 1.22e-05 \\
-30,030 & SSA & 29/0/1 & 0.967 & [0.900, 1.000] & 8.66e-07 \\
-30,030 & SSA-VNS & 19/0/11 & 0.633 & [0.467, 0.800] & 0.395 \\
+6,030 & VNS & 16/10/4 & 0.700 & [0.567, 0.817] & [0.563, 0.943] & 0.0827 \\
+6,030 & DE & 17/13/0 & 0.783 & [0.700, 0.867] & [0.805, 1.000] & 0.000168 \\
+6,030 & LX-SSA & 17/13/0 & 0.783 & [0.700, 0.867] & [0.805, 1.000] & 0.000168 \\
+6,030 & PSO & 17/13/0 & 0.783 & [0.700, 0.867] & [0.805, 1.000] & 0.000168 \\
+6,030 & RSD-VNS & 15/11/4 & 0.683 & [0.550, 0.800] & [0.544, 0.939] & 0.0967 \\
+6,030 & MS-SLSQP & 10/0/20 & 0.333 & [0.167, 0.500] & [0.173, 0.528] & 0.395 \\
+6,030 & SSA & 17/11/2 & 0.750 & [0.633, 0.850] & [0.669, 0.987] & 0.00583 \\
+6,030 & SSA-VNS & 15/8/7 & 0.633 & [0.483, 0.767] & [0.451, 0.861] & 0.395 \\
+30,030 & VNS & 20/0/10 & 0.667 & [0.500, 0.833] & [0.472, 0.827] & 0.395 \\
+30,030 & DE & 22/0/8 & 0.733 & [0.567, 0.900] & [0.541, 0.877] & 0.0967 \\
+30,030 & LX-SSA & 30/0/0 & 1.000 & [1.000, 1.000] & [0.884, 1.000] & 2.98e-08 \\
+30,030 & PSO & 28/0/2 & 0.933 & [0.833, 1.000] & [0.779, 0.992] & 1.22e-05 \\
+30,030 & RSD-VNS & 27/0/3 & 0.900 & [0.767, 1.000] & [0.735, 0.979] & 0.000101 \\
+30,030 & MS-SLSQP & 28/0/2 & 0.933 & [0.833, 1.000] & [0.779, 0.992] & 1.22e-05 \\
+30,030 & SSA & 29/0/1 & 0.967 & [0.900, 1.000] & [0.828, 0.999] & 8.66e-07 \\
+30,030 & SSA-VNS & 19/0/11 & 0.633 & [0.467, 0.800] & [0.439, 0.801] & 0.395 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\parbox{\textwidth}{\footnotesize A feasible run beats an infeasible run; if both are feasible, larger AEP wins (ties within $10^{-9}$ GWh); two infeasible runs tie. Superiority is $(W+T/2)/30$. CI: 20,000 paired-seed percentile bootstrap samples, seed $20261004+B$. Two-sided exact sign tests exclude ties; Holm correction covers all 16 comparisons in this table. This additional endpoint does not replace the signed-rank tests and gives no ordering between failed layouts.}
+\par\smallskip\parbox{\textwidth}{\footnotesize A feasible run beats an infeasible run; if both are feasible, larger AEP wins (ties within $10^{-9}$ GWh); two infeasible runs tie. Superiority is $(W+T/2)/30$. 95\% CI: percentile interval of the superiority from 20,000 paired-seed bootstrap samples, seed $20261004+B$; it is degenerate when no loss or tie occurs (30/0/0: every resample consists of wins only, hence [1.000, 1.000]), which does not mean that the win probability is known exactly. Exact 95\% CI: Clopper--Pearson interval of the conditional win probability $W/(W+L)$ over the discordant seed pairs (independent seeds), defined also at the boundary (30/0/0: [0.884, 1.000]); in the rows without ties (30,030 evaluations) it also serves as an interval for the superiority; with ties, $W/(W+L)$ and $(W+T/2)/30$ are different quantities. Two-sided exact sign tests exclude ties; Holm correction covers all 16 comparisons in this table. This additional endpoint does not replace the signed-rank tests and gives no ordering between failed layouts.}
 \end{table}

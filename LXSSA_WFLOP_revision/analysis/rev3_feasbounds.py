@@ -1,6 +1,7 @@
 """Bounds and sensitivity of the strict feasibility labels that the stored (rounded) coordinates cannot decide.
 
 Usage (from analysis/):  python3 rev3_feasbounds.py [--skip-transfer] [--out-dir DIR]
+         (--skip-transfer reuses the stored transfer block of rev3_feasbounds.json in DIR or in this folder)
 Outputs: rev3_feasbounds.json, rev3_feasbounds_tables.tex (labels tab:S-sa-feasbounds, tab:S-sa-feasworst,
          tab:S-sa-roundtransfer), rev3_feasbounds.log (stdout copy).
 
@@ -761,10 +762,14 @@ def main(argv=None):
     ALL = block_bench_worst(o, out)
     if not a.skip_transfer:
         block_transfer(f, ALL, out)
-    elif os.path.exists(os.path.join(a.out_dir, "rev3_feasbounds.json")):
-        prev = json.load(open(os.path.join(a.out_dir, "rev3_feasbounds.json")))
-        if "transfer" in prev:
-            out["transfer"] = prev["transfer"]
+    else:                       # reuse the stored transfer block (out-dir first, then this folder)
+        for d in (a.out_dir, HERE):
+            fn = os.path.join(d, "rev3_feasbounds.json")
+            if os.path.exists(fn):
+                prev = json.load(open(fn))
+                if "transfer" in prev:
+                    out["transfer"] = prev["transfer"]
+                    break
     out["seconds"] = time.time() - t0
     json.dump(clean(out), open(os.path.join(a.out_dir, "rev3_feasbounds.json"), "w"), indent=1)
     write_tex(clean(out), os.path.join(a.out_dir, "rev3_feasbounds_tables.tex"))

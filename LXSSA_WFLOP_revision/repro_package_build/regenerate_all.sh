@@ -62,6 +62,7 @@ step rev3_sites python3 rev3_sites.py --out-dir "$WORK/rev3_out"
 step rev3_precision_audit python3 rev3_precision_audit.py --out-dir "$WORK/rev3_out"
 step rev3_precision_collect python3 rev3_precision_rerun.py collect      # rewrites rev3_fullprec_<study>.csv in WORKDIR
 step rev3_precision_table python3 rev3_precision_rerun.py table
+step rev3_feasbounds python3 rev3_feasbounds.py --skip-transfer --out-dir "$WORK/rev3_out"   # bounds of undecided labels (transfer block reused)
 # 7. archive audit and focused checks of the additional experiments, in the layout they expect (experiments/ + validation/)   (~5 s)
 mkdir -p "$WORK/rev2_audit/experiments" "$WORK/rev2_audit/validation"
 cp "$A"/rev2_*_s*of*.csv "$A"/audit_archive.py "$A"/check_revision.py "$A"/record_io.py "$A"/rev2_site_model.py "$WORK/rev2_audit/experiments/"
@@ -85,12 +86,14 @@ if [ "${WITH_SLOW:-0}" = "1" ]; then
   step model_figures python3 make_model_figures.py
   mkdir -p "$WORK/rev3_slow"     # inference sensitivity analyses with the null calibrations (~50 min)
   step rev3_inference python3 rev3_inference.py --out-dir "$WORK/rev3_slow"
+  step rev3_dependence python3 rev3_dependence.py --out-dir "$WORK/rev3_slow"   # seed-level all-run inference + joint calibration (~12 min)
 fi
 if [ "${WITH_PYWAKE:-0}" = "1" ]; then
   mkdir -p "$WORK/pywake_out"
   step pywake_check python3 pywake_check.py --layouts --out-dir "$WORK/pywake_out"
   step lillgrund_pywake python3 rev2_site_model.py --pywake
 fi
+if [ "${WITH_PYWAKE:-0}" = "1" ]; then mkdir -p "$WORK/rev3_pw"; step rev3_feasbounds_transfer python3 rev3_feasbounds.py --out-dir "$WORK/rev3_pw"; fi
 [ "${WITH_DETERMINISM:-0}" = "1" ] && step determinism python3 "$PKG/verify_determinism.py" --analysis-dir "$A"
 
 # 9. compare with the stored copies
@@ -110,9 +113,11 @@ if [ "${WITH_SLOW:-0}" = "1" ]; then
   cmpf "$PKG/figures_final" "$WORK/figures_final" fig_wind_farm.pdf fig_wake_model.pdf fig_half_cone.pdf
 fi
 cmpf "$PKG/analysis" "$WORK/rev3_out" rev3_constraint.json rev3_constraint_tables.tex rev3_fine.json rev3_fine_tables.tex \
-     rev3_sites.json rev3_sites_tables.tex rev3_precision_audit.json rev3_precision_audit_records.csv
+     rev3_sites.json rev3_sites_tables.tex rev3_precision_audit.json rev3_precision_audit_records.csv \
+     rev3_feasbounds.json rev3_feasbounds_tables.tex
 cmpf "$PKG/analysis" "$A" rev3_precision_rerun_summary.json rev3_precision_tables.tex 'rev3_fullprec_*.csv'
-[ "${WITH_SLOW:-0}" = "1" ] && cmpf "$PKG/analysis" "$WORK/rev3_slow" rev3_inference.json rev3_inference_tables.tex
+[ "${WITH_SLOW:-0}" = "1" ] && cmpf "$PKG/analysis" "$WORK/rev3_slow" rev3_inference.json rev3_inference_tables.tex rev3_dependence.json rev3_dependence_tables.tex
+[ "${WITH_PYWAKE:-0}" = "1" ] && cmpf "$PKG/analysis" "$WORK/rev3_pw" rev3_feasbounds.json rev3_feasbounds_tables.tex
 [ "${WITH_PYWAKE:-0}" = "1" ] && cmpf "$PKG/analysis" "$WORK/pywake_out" pywake_check.csv pywake_check_hr16runs.csv pywake_check_hr16runs.json
 grep -h "files identical" "$C"
 echo "steps: $LOG/steps.txt; comparison: $C"

@@ -1,7 +1,7 @@
 """Dependence-aware inference for the all-run paired endpoint (synchronized seeds) and boundary-aware intervals.
 
 Usage (from any directory):  python3 analysis/rev3_dependence.py [--calib-reps 5000] [--calib-inner 10000]
-                                                                 [--skip-calib] [--out-dir DIR]
+                                                                 [--skip-calib] [--tables-only] [--out-dir DIR]
 Outputs (analysis/ by default): rev3_dependence.json, rev3_dependence_tables.tex (tab:S-sa-dep-bench,
 tab:S-sa-dep-studies), rev3_dependence.log (stdout, if redirected). No optimizer is run; only stored run records are
 read, through the loaders of the scripts that generate the paper's tables (imported, not modified):
@@ -546,6 +546,7 @@ def tables(R):
                   f"{ptex(r['p_signflip_holm5'])} & {ar['W']}/{ar['T']}/{ar['L']} & {s['score']:.3f} " +
                   (f"[{s['cp95_prob_seed_all_won'][0]:.2f}, 1]$^{{\\dagger}}$" if s["ci_degenerate"] else fci(s['ci95_joint_seed'], 2)) + " \\\\")
     cap = ("Seed-level inference for the pooled all-run tests of the constraint-handling study (Table~\\ref{tab:S-sa-constraint}; "
+           "variants (i) penalty with box clipping, (ii) Deb's rules with box clipping, (iii) Deb's rules with radial projection; "
            "six cases, seeds 31--60, 180 seed pairs per comparison) and of the direct 1$^\\circ$ study "
            "(Table~\\ref{tab:S-sa-fine}; eight cases, seeds 31--60, 240 seed pairs), all-run score of PSO-VNS against the "
            "method. Seed $k$ seeds every case of a study, so the 30 seed vectors are the independent replicates; definitions "
@@ -567,7 +568,7 @@ def tables(R):
     out += ["\\begin{table}[!htbp]", "\\centering", "\\caption{" + cap + "}", "\\label{tab:S-sa-dep-studies}",
             "\\scriptsize\\setlength{\\tabcolsep}{2.5pt}", "\\begin{tabular}{@{}llcccccc@{}}", "\\toprule",
             "Study & Method & $W/T/L$ & Score & 95\\% CI & Seeds $+/-$ & $p_{\\rm flip}$ & $p_{\\rm sign}$ \\\\", "\\midrule",
-            "\\multicolumn{8}{@{}l}{\\emph{Constraint handling: (i) penalty, box clipping; (ii) Deb's rules, box clipping; (iii) Deb's rules, radial projection}} \\\\"]
+            "\\multicolumn{8}{@{}l}{\\emph{Constraint handling, variants (i)--(iii) (Holm over 28 per variant)}} \\\\"]
     out += L + ["\\bottomrule", "\\end{tabular}", "\\par\\medskip", "\\setlength{\\tabcolsep}{2pt}",
                 "\\begin{tabular}{@{}lcccccccccc@{}}", "\\toprule",
                 "& & & \\multicolumn{6}{c}{Wake loss, jointly feasible seed pairs} & \\multicolumn{2}{c}{All-run, direct vs.\\ control} \\\\",
@@ -597,7 +598,12 @@ def main(argv=None):
     ap.add_argument("--calib-reps", type=int, default=5000)
     ap.add_argument("--calib-inner", type=int, default=10000)
     ap.add_argument("--skip-calib", action="store_true")
+    ap.add_argument("--tables-only", action="store_true", help="only rewrite the .tex from rev3_dependence.json")
     args = ap.parse_args(argv)
+    if args.tables_only:                                # rewrite the LaTeX tables from an existing JSON
+        R = json.load(open(os.path.join(args.out_dir, "rev3_dependence.json")))
+        open(os.path.join(args.out_dir, "rev3_dependence_tables.tex"), "w").write(tables(R))
+        return
     t0 = time.time()
     # self-check of the exact sign-flip routine against full enumeration (K = 12)
     rng = np.random.default_rng(1)
