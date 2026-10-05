@@ -440,12 +440,14 @@ def block_transfer(f, ALL, out):
         k = (r.Algorithm, r.Dataset, int(float(r.Radius)), int(r.Turbines), int(r.Seed))
         if k not in G.index:
             continue
+        src = G.loc[k, "Source"]
+        src = src.iloc[0] if isinstance(src, pd.Series) else src
+        if not (r.File == src or r.File.startswith(str(src) + "_")):   # not the record the pipeline uses
+            continue
         sc = stored_coords(r.File, r.Row)
         gc = G.loc[k, "Coordinates"]
-        if isinstance(gc, pd.Series):
-            gc = gc.iloc[0]
-        if gc != sc:                                  # this record is not the one the pipeline uses
-            continue
+        gc = gc.iloc[0] if isinstance(gc, pd.Series) else gc
+        assert gc == sc, (r.File, r.Row)
         xf = np.array(decode_coordinates(r.CoordinatesFull)); xr = parse_xy(sc)
         jf, i15 = D.bench_objective(xf, r.Dataset, 15); jr, _ = D.bench_objective(xr, r.Dataset, 15)
         gf, _ = D.bench_objective(xf, r.Dataset, 15, wake="gauss"); gr, _ = D.bench_objective(xr, r.Dataset, 15, wake="gauss")
@@ -655,8 +657,9 @@ def write_tex(out, path):
             "significantly different from the best method (seed-paired Wilcoxon signed-rank, infeasible runs below every "
             "feasible run, Holm over its 12 comparisons, $\\alpha=0.05$). Scenarios: stored labels; $^a$in each scenario the "
             "open runs with the highest AEP of each exact-gradient method are taken as infeasible until only 15 of its 30 runs "
-            "remain feasible (the lowest mean it can have while ranked by its mean); every open exact-gradient label taken "
-            "as infeasible; in addition every open label of MS-SLSQP with finite differences taken as infeasible. "
+            "remain feasible (the lowest mean it can have while ranked by its mean); open exact infeas.: every open "
+            "exact-gradient label taken as infeasible; + open MS-SLSQP: in addition every open label of MS-SLSQP with "
+            "finite-difference gradients (fin.\\ diff.) taken as infeasible; ex.: exact gradient. "
             f"Benchmark (68 cases, eight methods): with all {BW['flipped']} open MS-SLSQP labels infeasible "
             f"({BW['cases_with_open_msslsqp']} cases, at most {BW['max_open_per_case']} per case), MS-SLSQP has "
             f"{num(wc['msslsqp_feasible_pct'], 1)}\\% feasible runs and fewer than 15 feasible runs in "

@@ -47,33 +47,34 @@ All exact-gradient runs$^b$ (240) & 20/0/220 & 20/0/220 & 20/0/220 & 20/0/220 & 
 \caption{Worst-case effect of the undecided strict labels on the IEA37 comparison: feasible runs and feasibility-aware ranks of the SLSQP-based methods, best method and the methods not significantly worse than it, when undecided labels are taken as infeasible.}
 \label{tab:S-sa-feasworst}
 \scriptsize\setlength{\tabcolsep}{2.5pt}
-\begin{tabular}{llccclrp{5.2cm}}
+\begin{tabular}{llccclrp{3.6cm}}
 \toprule
-& & PSO-SLSQP, exact & MS-SLSQP, exact & MS-SLSQP & & & \\
-Scenario & Labels & Feas.\ / Rank & Feas.\ / Rank & Feas.\ / Rank & Best & Mean AEP & n.s.\ vs.\ best \\
+& & PSO-SLSQP & MS-SLSQP & MS-SLSQP & & & \\
+& & exact grad. & exact grad. & fin. diff. & & & \\
+Scen. & Labels & Feas.\ / Rank & Feas.\ / Rank & Feas.\ / Rank & Best & Mean AEP & n.s.\ vs.\ best \\
 \midrule
-\multirow{4}{*}{16, 6{,}030} & Stored labels & 30 / 1 & 30 / 2 & 18 / 10 & PSO-SLSQP (exact) & 407{,}891 & MS-SLSQP (exact) \\
- & Adversarial, qualified$^a$ & 15 / 2 & 15 / 1 & 18 / 10 & MS-SLSQP (exact) & 406{,}048 & PSO-VNS, SSA-VNS, LX-SSA-VNS, RS-VNS, VNS, PSO, SSA, LX-SSA, DE, MS-SLSQP, GA, PSO-SLSQP (exact) \\
- & Open exact-grad.\ infeasible & 6 / 12 & 3 / 13 & 18 / 8 & PSO-VNS & 395{,}032 & none \\
- & + open MS-SLSQP infeasible & 6 / 12 & 3 / 13 & 12 / 11 & PSO-VNS & 395{,}032 & none \\
+\multirow{4}{*}{16, 6{,}030} & Stored labels & 30 / 1 & 30 / 2 & 18 / 10 & PSO-SLSQP (ex.) & 407{,}891 & MS-SLSQP (ex.) \\
+ & Adversarial$^a$ & 15 / 2 & 15 / 1 & 18 / 10 & MS-SLSQP (ex.) & 406{,}048 & 12 of 12 (all) \\
+ & Open exact infeas. & 6 / 12 & 3 / 13 & 18 / 8 & PSO-VNS & 395{,}032 & none \\
+ & + open MS-SLSQP & 6 / 12 & 3 / 13 & 12 / 11 & PSO-VNS & 395{,}032 & none \\
 \midrule
-\multirow{4}{*}{16, 30{,}030} & Stored labels & 30 / 1 & 30 / 2 & 29 / 10 & PSO-SLSQP (exact) & 413{,}179 & none \\
- & Adversarial, qualified$^a$ & 15 / 1 & 15 / 2 & 29 / 10 & PSO-SLSQP (exact) & 411{,}359 & PSO-VNS, SSA-VNS, LX-SSA-VNS, RS-VNS, VNS, PSO, SSA, LX-SSA, DE, MS-SLSQP, GA, MS-SLSQP (exact) \\
- & Open exact-grad.\ infeasible & 4 / 13 & 7 / 12 & 29 / 8 & PSO-VNS & 402{,}583 & GA \\
- & + open MS-SLSQP infeasible & 4 / 13 & 7 / 12 & 11 / 11 & PSO-VNS & 402{,}583 & GA \\
+\multirow{4}{*}{16, 30{,}030} & Stored labels & 30 / 1 & 30 / 2 & 29 / 10 & PSO-SLSQP (ex.) & 413{,}179 & none \\
+ & Adversarial$^a$ & 15 / 1 & 15 / 2 & 29 / 10 & PSO-SLSQP (ex.) & 411{,}359 & 12 of 12 (all) \\
+ & Open exact infeas. & 4 / 13 & 7 / 12 & 29 / 8 & PSO-VNS & 402{,}583 & GA \\
+ & + open MS-SLSQP & 4 / 13 & 7 / 12 & 11 / 11 & PSO-VNS & 402{,}583 & GA \\
 \midrule
-\multirow{4}{*}{36, 6{,}030} & Stored labels & 30 / 2 & 30 / 1 & 4 / 12 & MS-SLSQP (exact) & 832{,}893 & PSO-SLSQP (exact) \\
- & Adversarial, qualified$^a$ & 15 / 2 & 15 / 1 & 4 / 12 & MS-SLSQP (exact) & 830{,}082 & PSO-VNS, SSA-VNS, LX-SSA-VNS, RS-VNS, VNS, PSO, SSA, LX-SSA, GA, PSO-SLSQP (exact) \\
- & Open exact-grad.\ infeasible & 0 / 12 & 0 / 12 & 4 / 10 & GA & 774{,}972 & none \\
- & + open MS-SLSQP infeasible & 0 / 12 & 0 / 12 & 4 / 10 & GA & 774{,}972 & none \\
+\multirow{4}{*}{36, 6{,}030} & Stored labels & 30 / 2 & 30 / 1 & 4 / 12 & MS-SLSQP (ex.) & 832{,}893 & PSO-SLSQP (ex.) \\
+ & Adversarial$^a$ & 15 / 2 & 15 / 1 & 4 / 12 & MS-SLSQP (ex.) & 830{,}082 & 10 of 12, not DE, MS-SLSQP \\
+ & Open exact infeas. & 0 / 12 & 0 / 12 & 4 / 10 & GA & 774{,}972 & none \\
+ & + open MS-SLSQP & 0 / 12 & 0 / 12 & 4 / 10 & GA & 774{,}972 & none \\
 \midrule
-\multirow{4}{*}{36, 30{,}030} & Stored labels & 30 / 1 & 30 / 2 & 14 / 12 & PSO-SLSQP (exact) & 842{,}557 & none \\
- & Adversarial, qualified$^a$ & 15 / 1 & 15 / 2 & 14 / 12 & PSO-SLSQP (exact) & 840{,}013 & PSO-VNS, SSA-VNS, LX-SSA-VNS, RS-VNS, VNS, PSO, SSA, LX-SSA, MS-SLSQP, GA, MS-SLSQP (exact) \\
- & Open exact-grad.\ infeasible & 0 / 12 & 0 / 12 & 14 / 10 & GA & 823{,}061 & none \\
- & + open MS-SLSQP infeasible & 0 / 12 & 0 / 12 & 4 / 10 & GA & 823{,}061 & none \\
+\multirow{4}{*}{36, 30{,}030} & Stored labels & 30 / 1 & 30 / 2 & 14 / 12 & PSO-SLSQP (ex.) & 842{,}557 & none \\
+ & Adversarial$^a$ & 15 / 1 & 15 / 2 & 14 / 12 & PSO-SLSQP (ex.) & 840{,}013 & 11 of 12, not DE \\
+ & Open exact infeas. & 0 / 12 & 0 / 12 & 14 / 10 & GA & 823{,}061 & none \\
+ & + open MS-SLSQP & 0 / 12 & 0 / 12 & 4 / 10 & GA & 823{,}061 & none \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\textwidth}{\scriptsize IEA37 Case Study~1, 13-method pool (scenario: turbines, evaluations; random starts, 30 seed-paired runs). Feas./Rank: feasible runs and feasibility-aware rank of the mean AEP (fewer than 15 feasible runs = ranked below the qualified methods). Best: rank-1 method and its mean AEP (MWh) over its feasible runs; n.s.: methods not significantly different from the best method (seed-paired Wilcoxon signed-rank, infeasible runs below every feasible run, Holm over its 12 comparisons, $\alpha=0.05$). Scenarios: stored labels; $^a$in each scenario the open runs with the highest AEP of each exact-gradient method are taken as infeasible until only 15 of its 30 runs remain feasible (the lowest mean it can have while ranked by its mean); every open exact-gradient label taken as infeasible; in addition every open label of MS-SLSQP with finite differences taken as infeasible. Benchmark (68 cases, eight methods): with all 448 open MS-SLSQP labels infeasible (67 cases, at most 16 per case), MS-SLSQP has 78.0\% feasible runs and fewer than 15 feasible runs in 1 case; average ranks PSO-VNS 1.82$\to$1.82, PSO 1.97$\to$1.98, SSA-VNS 3.45$\to$3.46, VNS 4.40$\to$4.40, SSA 5.38$\to$5.40, MS-SLSQP 5.88$\to$5.82, LX-SSA 6.06$\to$6.07, DE 7.04$\to$7.05 (order unchanged); all-run outcome PSO-VNS vs.\ MS-SLSQP 1649/218/173$\to$1716/185/139 (wins/ties/losses). Horns Rev~1 pool (11 methods), open MS-SLSQP labels infeasible: 6{,}030 evaluations: 20 labels, MS-SLSQP 30$\to$10 feasible runs, rank 8$\to$10, best method PSO-VNS; 30{,}030 evaluations: 20 labels, MS-SLSQP 30$\to$10 feasible runs, rank 8$\to$10, best method GA. Budget and initialization studies: 22 case groups contain open MS-SLSQP labels; MS-SLSQP keeps at least half of its runs feasible in 18 of them and loses that qualification in 4 (Horns Rev~1).}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize IEA37 Case Study~1, 13-method pool (scenario: turbines, evaluations; random starts, 30 seed-paired runs). Feas./Rank: feasible runs and feasibility-aware rank of the mean AEP (fewer than 15 feasible runs = ranked below the qualified methods). Best: rank-1 method and its mean AEP (MWh) over its feasible runs; n.s.: methods not significantly different from the best method (seed-paired Wilcoxon signed-rank, infeasible runs below every feasible run, Holm over its 12 comparisons, $\alpha=0.05$). Scenarios: stored labels; $^a$in each scenario the open runs with the highest AEP of each exact-gradient method are taken as infeasible until only 15 of its 30 runs remain feasible (the lowest mean it can have while ranked by its mean); open exact infeas.: every open exact-gradient label taken as infeasible; + open MS-SLSQP: in addition every open label of MS-SLSQP with finite-difference gradients (fin.\ diff.) taken as infeasible; ex.: exact gradient. Benchmark (68 cases, eight methods): with all 448 open MS-SLSQP labels infeasible (67 cases, at most 16 per case), MS-SLSQP has 78.0\% feasible runs and fewer than 15 feasible runs in 1 case; average ranks PSO-VNS 1.82$\to$1.82, PSO 1.97$\to$1.98, SSA-VNS 3.45$\to$3.46, VNS 4.40$\to$4.40, SSA 5.38$\to$5.40, MS-SLSQP 5.88$\to$5.82, LX-SSA 6.06$\to$6.07, DE 7.04$\to$7.05 (order unchanged); all-run outcome PSO-VNS vs.\ MS-SLSQP 1649/218/173$\to$1716/185/139 (wins/ties/losses). Horns Rev~1 pool (11 methods), open MS-SLSQP labels infeasible: 6{,}030 evaluations: 20 labels, MS-SLSQP 30$\to$10 feasible runs, rank 8$\to$10, best method PSO-VNS; 30{,}030 evaluations: 20 labels, MS-SLSQP 30$\to$10 feasible runs, rank 8$\to$10, best method GA. Budget and initialization studies: 22 case groups contain open MS-SLSQP labels; MS-SLSQP keeps at least half of its runs feasible in 18 of them and loses that qualification in 4 (Horns Rev~1).}
 \end{table*}
 
 \begin{table}[!htb]
@@ -85,9 +86,9 @@ Scenario & Labels & Feas.\ / Rank & Feas.\ / Rank & Feas.\ / Rank & Best & Mean 
 \toprule
 Site & Evaluator & $n$ & P95 $|\Delta|$ & Max $|\Delta|$ & $>0.05$ \\
 \midrule
-Benchmark & 15$^\circ$ (optimization model) & 1{,}484 & 0.0519 & 0.8927 & 79 \\
- & 1$^\circ$, Jensen & 1{,}484 & 0.0036 & 0.0595 & 1 \\
- & 1$^\circ$, Gaussian & 1{,}484 & $6.6\times10^{-6}$ & $2.3\times10^{-5}$ & 0 \\
+Benchmark & 15$^\circ$ (optimization model) & 1{,}424 & 0.0556 & 0.8927 & 79 \\
+ & 1$^\circ$, Jensen & 1{,}424 & 0.0042 & 0.0595 & 1 \\
+ & 1$^\circ$, Gaussian & 1{,}424 & $6.6\times10^{-6}$ & $2.3\times10^{-5}$ & 0 \\
 Horns Rev~1 & 5$^\circ$ (optimization model) & 211 & 0.1851 & 0.3540 & 29 \\
  & 1$^\circ$, Jensen & 211 & 0.0370 & 0.0708 & 4 \\
  & PyWake NOJ, 1$^\circ$ & 211 & $2.7\times10^{-5}$ & $4.2\times10^{-5}$ & 0 \\

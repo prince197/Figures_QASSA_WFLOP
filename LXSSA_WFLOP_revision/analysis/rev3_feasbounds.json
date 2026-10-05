@@ -1,6 +1,6 @@
 {
  "script": "rev3_feasbounds.py",
- "generated": "2026-10-05 17:13:55",
+ "generated": "2026-10-05 17:16:52",
  "tolerance_m": 1e-06,
  "float_pad_m": 1e-09,
  "taus_m": [
@@ -4074,7 +4074,7 @@
  "transfer": {
   "benchmark": {
    "set": "feasible 6,030-evaluation random-start runs of the 11 benchmark methods (mpce_direction.ALLM)",
-   "n_layouts": 1484,
+   "n_layouts": 1424,
    "by_algorithm": {
     "BVNS": 2,
     "DE": 5,
@@ -4084,40 +4084,40 @@
     "PSOC": 25,
     "RSDVNS": 3,
     "RSVNS": 2,
-    "SLSQP": 96,
+    "SLSQP": 36,
     "SSA": 838,
     "SSABV": 108
    },
    "reproduction": {
-    "bit": 1074,
-    "noise": 410
+    "bit": 1033,
+    "noise": 391
    },
    "jensen_1deg": {
-    "n": 1484,
+    "n": 1424,
     "max_pp": 0.05951051075485234,
-    "p95_pp": 0.003640680229134116,
-    "median_pp": 3.342293217534275e-07,
+    "p95_pp": 0.004245416661230931,
+    "median_pp": 3.6006882969585425e-07,
     "n_gt_0_05pp": 1,
     "n_gt_0_01pp": 47,
     "n_exact_zero": 0
    },
    "gauss_1deg": {
-    "n": 1484,
+    "n": 1424,
     "max_pp": 2.3201778648885112e-05,
-    "p95_pp": 6.57335475808397e-06,
-    "median_pp": 8.813637087350571e-07,
+    "p95_pp": 6.638038985408923e-06,
+    "median_pp": 9.47705601924316e-07,
     "n_gt_0_05pp": 0,
     "n_gt_0_01pp": 0,
     "n_exact_zero": 0
    },
    "paper_15deg": {
-    "n": 1484,
+    "n": 1424,
     "max_pp": 0.8926722124321652,
-    "p95_pp": 0.0519187781691001,
-    "median_pp": 1.2271766555913897e-07,
+    "p95_pp": 0.05556444438854775,
+    "median_pp": 1.3432161444571274e-07,
     "n_gt_0_05pp": 79,
     "n_gt_0_01pp": 142,
-    "n_exact_zero": 53
+    "n_exact_zero": 21
    }
   },
   "horns_rev": {
@@ -4194,7 +4194,7 @@
     "n_exact_zero": 0
    }
   },
-  "seconds": 58.013219594955444
+  "seconds": 56.002140522003174
  },
- "seconds": 62.28439378738403
+ "seconds": 60.048523902893066
 }
