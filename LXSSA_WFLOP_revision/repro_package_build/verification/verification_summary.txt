@@ -3,105 +3,38 @@ Verification of the SWEVO reproducibility package
 
 The package was verified in two steps:
   Verification 1 (records of the main study and the additional experiments), 2026-10-04;
-  Verification 2 (complete package, release 1.0.0), 2026-10-05 (at the end of this file).
-
-
-Verification 1 (records of the main study and the additional experiments)
-=========================================================================
-
-Environment: CPython 3.11.15, NumPy 2.4.6, SciPy 1.17.1, pandas 3.0.6, Matplotlib 3.11.2, PyWake 2.6.20,
-Linux x86_64 (Ubuntu 24.04), one worker process on a shared 4-core machine.
-
-Procedure: the zip was built with make_package.sh, unpacked into a scratch folder, its checksums verified
-(sha256sum -c MANIFEST.sha256: all files OK, manifest_check.txt), and then
-    WITH_SLOW=1 WITH_DETERMINISM=1 WITH_PYWAKE=1 MANUSCRIPT=<SWEVO latex_source, state of 2026-10-04> sh regenerate_all.sh <scratch>
-was run in the unpacked package (total 569 s; regenerate_all_logs/steps.txt). Every step exited with 0.
-
-1. Run records (count_records.py): 36,190 records of the main study (11 benchmark methods 22,440; RSD-VNS 2,040;
-   split 1,080; coefficient sweep 3,240; budget 3,600; feasible initialization 1,620; Horns Rev 1 970; IEA37 1,200)
-   and 11,640 records of the additional experiments, as stated in the article.
-
-2. Regenerated outputs compared with the stored copies (regenerate_all_logs/compare.txt): 91 files (86 regenerated;
-   the 5 diagnostics files listed at the end of this item are stored copies and compare trivially), 58 byte-identical, 33 identical after removing only generation time stamps (first-line comments of the .tex
-   files, "generated" fields of the JSON summaries), PDF creation dates, the gzip header time, the run-time field
-   of mpce_summary_extra.json, the recorded environment versions in archive_audit.json, and the Generated/Seconds
-   columns of pywake_check.csv; 0 different, 0 missing:
-   - mpce_results.py: 9 main-text tables mpce_tab_*.tex, mpce_supplementary.tex, mpce_summary.json,
-     mpce_numbers.tex (711 macros), the statistics CSVs, the re-evaluation file and cache, 14 figures (PDF + PNG);
-   - mpce_inference_extra.py: mpce_numbers_extra.tex, mpce_supp_inference.tex, mpce_summary_extra.json, equiv_curve.pdf;
-   - mpce_direction.py: mpce_numbers_dir.tex (641 macros), mpce_supp_direction.tex, mpce_summary_dir.json,
-     mpce_direction_layouts.csv.gz, mpce_direction_hr16.csv, iea37_projected.csv/.json;
-   - mpce_csweep.py: mpce_numbers_csweep.tex, mpce_supp_csweep.tex, mpce_summary_csweep.json, csweep.pdf;
-   - rev2_analysis.py: rev2_summary.json (4,670 values) and rev2_tables.tex (9 tables);
-   - audit_archive.py / check_revision.py (in their experiments/ + validation/ layout): archive_audit.json, reliability.csv,
-     paired_outcomes.csv, reliability_tables.tex, raw_data_checksums.json (140 CSV hashes), focused_checks.json;
-   - make_theory_figures.py: theory_stability.pdf; make_model_figures.py: the three model schematics;
-   - packing_capacity.py, analyze_authors_runs.py: packing_capacity.csv, authors_tables.tex, calibration_vs_recorded.csv,
-     equal_budget_tests.csv, hornsrev_tests.csv, authors_spacing_all.csv, authors_runtime_6030.csv;
-   - pywake_check.py --layouts: pywake_check.csv, pywake_check_hr16runs.csv/.json.
-   Not regenerated (stored, reused): mpce_numbers_diag.tex / mpce_supp_diag.tex / mpce_summary_diag.json /
-   diag_pso_dynamics.pdf/.png (instrumented diagnostic reruns, mpce_diagnostics.py, ~18 min on 2 cores); the
-   robustness re-evaluation cache was reused (its regenerated copy is byte-identical).
-
-3. Checks: CHECK-FINAL 62 PASS / 0 FAIL / 0 PENDING / 0 tag errors when scanning the SWEVO sources (state of 2026-10-04)
-   (61 PASS + C62 PENDING without the manuscript text, as designed); CHECK-EXTRA 57/57; CHECK-DIAG 22/22 (on the
-   stored diagnostics summary); CHECK-DIR 41/41; CHECK-CSWEEP 15/15; theory checks T01-T13 57 PASS / 0 FAIL against
-   the manuscript sections optA/sw/supp_theory.tex and 04_methods.tex; audit_archive.py PASS (11,640 records);
-   check_revision.py PASS (2,006 float round-trips, 140 raw CSV hashes).
-
-4. Evaluator and model checks: validate_evaluator.py: 720 archived objectives, max |dObj| 8.73e-11;
-   iea37_model.py: relative AEP error -8.81e-12 / -2.84e-12 / 2.87e-12 (16 / 36 / 64 turbines);
-   rev2_site_model.py --pywake: Lillgrund model vs PyWake 2.6.20 (lillgrund_pywake.log).
-
-5. Determinism (verify_determinism.py): seed 1 of benchmark cases (DS I, r = 500 m, N = 6) and (DS II, r = 1000 m,
-   N = 15), rerun with the original drivers for PSO-VNS (mpce_experiments.py -> mpce_psobv_s0of2.csv) and SSA-VNS
-   (full_grid_experiments.py -> fresh_bgrid.csv): 4 of 4 reruns bit-identical to the stored records in every
-   field except the wall-clock Seconds (objective as the shortest round-trip repr, coordinates, 201-point curve,
-   calls, feasibility, minimum spacing).
-
-Notes on the manuscript LaTeX sources (outside the package; the package files are not affected):
- a) The copies of the generated files in the LaTeX folder (SWEVO_rev2/latex_source/analysis/) and the
-    tables pasted into optA/sw/*.tex were edited by hand after generation: sentence-case captions, typography
-    ($-$), wording ("ranked below the qualified methods"), spelling ("relabeling"), the GA row of tab:hr-site and the
-    GA / analytic-gradient rows of tab:iea37 (all values traceable to rev2_summary.json). The package ships the
-    unedited pipeline outputs.
- b) Timing values: the pipeline generates \NMsEvalMin/Max/SLSQP/PSO = 0.23 / 0.45 / 0.53 / 0.23 ms and
-    \NSLSQPSlowdown = 2.3 (mpce_summary.json -> cost_per_eval, medians over the runs), while the generated cost table
-    tab:cost of mpce_supplementary.tex shows 0.244-0.467 ms and 1.820 ms for MS-SLSQP (means); the macro definitions
-    in mpce_numbers.py and the table use different timing summaries. In the sources checked by Verification 1,
-    SWEVO_rev2/latex_source/analysis/mpce_numbers.tex had the timing macros set by hand to the table values
-    (0.24 / 0.47 / 1.82 / 0.24 ms and 7.5), and 08_beyond.tex and the supplement typed these values. The sources
-    checked by Verification 2 use the generated macro values and quote the medians (0.23-0.45 ms; MS-SLSQP 0.53 ms,
-    about 2.3 times PSO) together with the MS-SLSQP mean of tab:cost (1.82 ms).
-
-
-Verification 2 (complete package, release 1.0.0), 2026-10-05
+  Verification 2 (complete package, release 1.0.0), 2026-10-05
 =============================================================
 
 In addition to the content checked by Verification 1, the complete package contains: the 5,100 runs of the
 sensitivity studies (constraint handling 2,700; direct 1-degree optimization 1,200 and its 15-degree control arm
 1,200), the 5,744 full-precision reruns (raw rev3_precision_results/*.jsonl, merged rev3_fullprec_<study>.csv) with
-the 35 cloud worker logs, the sensitivity analyses, their tables and the prespecifications, the eight superseded run
-files covered by the precision audit, and the corresponding steps of regenerate_all.sh.
+the 35 cloud worker logs, the sensitivity analyses (including rev3_dependence.py: seed-level all-run inference and
+joint-seed TOST calibration; rev3_feasbounds.py: bounds, tolerance sensitivity and worst case of the undecided
+feasibility labels, rounding sensitivity of re-evaluations), their tables and the prespecifications, the eight
+superseded run files covered by the precision audit, and the corresponding steps of regenerate_all.sh.
 
-Procedure (same environment as Verification 1): make_package.sh 1.0.0; the zip was unpacked into an empty scratch folder;
-sha256sum -c MANIFEST.sha256: 783 of 783 files OK (release_1.0.0/manifest_check.txt); then
+Procedure (same environment as Verification 1): make_package.sh 1.0.0; the zip was unpacked into an empty scratch
+folder; sha256sum -c MANIFEST.sha256: 804 of 804 files OK (release_1.0.0/manifest_check.txt); then
     WITH_SLOW=1 WITH_DETERMINISM=1 WITH_PYWAKE=1 MANUSCRIPT=<SWEVO latex_source, state of 2026-10-05> sh regenerate_all.sh <scratch>
-in the unpacked package: 31 steps, every step exit 0, total 3,733 s (rev3_inference.py with its null calibrations
-3,080 s on the shared machine) (release_1.0.0/steps.txt).
+in the unpacked package: 32 steps, total 4,069 s (rev3_inference.py with its null calibrations 2,930 s on the shared
+machine) (release_1.0.0/steps.txt). 31 steps exited with 0; rev3_dependence.py stopped because regenerate_all.sh did
+not copy SWEVO_rev2/validation/ (a reference file it reads) into the scratch folder. regenerate_all.sh was corrected
+(it now copies SWEVO_rev2/validation and SWEVO_rev2/experiments_docs into the scratch folder) and the step was rerun
+in the same scratch folder: exit 0, 470 s (release_1.0.0/rev3_dependence_rerun.log).
 
-Comparison (release_1.0.0/compare.txt): 202 regenerated files compared with the stored copies, 167 byte-identical,
-35 identical after removing generation time stamps / PDF dates / run-time fields / environment versions only,
-0 different, 0 missing. They include the 111 outputs of the sensitivity studies, sensitivity analyses and full-precision reruns
-(109 byte-identical, 2 after normalization):
-rev3_inference.json / _tables.tex, rev3_constraint.json / _tables.tex, rev3_fine.json / _tables.tex, rev3_sites.json /
-_tables.tex, rev3_precision_audit.json / _records.csv, rev3_precision_rerun_summary.json, rev3_precision_tables.tex and
-every rev3_fullprec_*.csv.
+Comparison (release_1.0.0/compare.txt and the rerun): 208 regenerated files compared with the stored copies,
+170 byte-identical, 38 identical after removing generation time stamps / PDF dates / run-time fields / environment
+versions only, 0 different, 0 missing. They include the 117 outputs of the sensitivity studies, sensitivity analyses
+and full-precision reruns (112 byte-identical, 5 after normalization): rev3_inference, rev3_dependence,
+rev3_constraint, rev3_fine, rev3_sites, rev3_feasbounds (json and tables; rev3_feasbounds also with the PyWake
+re-evaluations), rev3_precision_audit (json and records), rev3_precision_rerun_summary.json, rev3_precision_tables.tex
+and every rev3_fullprec_*.csv.
 
 Checks: CHECK-FINAL 62 PASS / 0 FAIL / 0 PENDING / 0 tag errors on the manuscript sources (state of 2026-10-05); X01-X57,
 D01-D22, F01-F46 (41 checks), S01-S15 and T01-T13 (57) all pass; audit_archive.py and check_revision.py pass;
 determinism: 4 of 4 reruns bit-identical to the stored records (all fields except Seconds).
 
-The released archive was rebuilt after this verification only to add these logs; it differs from the verified build
-in README.md, two run-time comments of regenerate_all.sh and the verification/ folder, and nothing else (compared
-via the two MANIFEST.sha256 files). Its checksums were verified again from a clean unpack.
+The released archive was rebuilt after this verification to add these logs and the corrected regenerate_all.sh; it
+differs from the verified build only in regenerate_all.sh (the one added copy line), README.md and the verification/
+folder (compared via the two MANIFEST.sha256 files). Its checksums were verified again from a clean unpack.

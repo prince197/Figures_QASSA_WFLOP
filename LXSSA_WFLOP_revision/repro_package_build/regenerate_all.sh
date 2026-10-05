@@ -25,6 +25,7 @@ case "$WORK" in /*) ;; *) WORK="$(pwd)/$WORK" ;; esac
 [ "$WORK" = "$PKG" ] && { echo "WORKDIR must not be the package folder"; exit 2; }
 rm -rf "$WORK"; mkdir -p "$WORK/logs"
 cp -R "$PKG/analysis" "$PKG/figures_mpce" "$PKG/figures_final" "$PKG/selected_30_run_data.csv" "$WORK"/
+mkdir -p "$WORK/SWEVO_rev2" && cp -R "$PKG/SWEVO_rev2/validation" "$PKG/SWEVO_rev2/experiments_docs" "$WORK/SWEVO_rev2/"   # reference files read by some analyses
 LOG="$WORK/logs"; FAIL=0
 step() { name=$1; shift; t0=$(date +%s); ( "$@" ) > "$LOG/$name.log" 2>&1; rc=$?
          [ $rc -eq 0 ] || FAIL=1; echo "$name: exit $rc, $(( $(date +%s) - t0 )) s" | tee -a "$LOG/steps.txt"; }

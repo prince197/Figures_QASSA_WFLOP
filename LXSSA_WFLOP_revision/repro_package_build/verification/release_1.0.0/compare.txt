@@ -20,7 +20,7 @@ IDENTICAL            mpce_supplementary.tex
 IDENTICAL-NORMALIZED mpce_summary.json (4 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL            mpce_summary_csweep.json
 IDENTICAL            mpce_summary_diag.json
-IDENTICAL-NORMALIZED mpce_summary_dir.json (3 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED mpce_summary_dir.json (2 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL-NORMALIZED mpce_summary_extra.json (3 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL            mpce_case_stats.csv
 IDENTICAL            mpce_case_tests.csv
@@ -100,7 +100,9 @@ IDENTICAL-NORMALIZED rev3_sites.json (2 line(s) differ only in time stamps / pat
 IDENTICAL            rev3_sites_tables.tex
 IDENTICAL            rev3_precision_audit.json
 IDENTICAL            rev3_precision_audit_records.csv
-8 of 8 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED rev3_feasbounds.json (2 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            rev3_feasbounds_tables.tex
+10 of 10 files identical (byte-identical or after normalization)
 IDENTICAL            rev3_precision_rerun_summary.json
 IDENTICAL            rev3_precision_tables.tex
 IDENTICAL            rev3_fullprec_fresh_bgrid.csv
@@ -205,6 +207,11 @@ IDENTICAL            rev3_fullprec_rev2_spacing_local.csv
 101 of 101 files identical (byte-identical or after normalization)
 IDENTICAL-NORMALIZED rev3_inference.json (13 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL            rev3_inference_tables.tex
+MISSING              rev3_dependence.json (stored: True, regenerated: False)
+MISSING              rev3_dependence_tables.tex (stored: True, regenerated: False)
+2 of 4 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED rev3_feasbounds.json (3 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            rev3_feasbounds_tables.tex
 2 of 2 files identical (byte-identical or after normalization)
 IDENTICAL-NORMALIZED pywake_check.csv (all cells identical except the columns Generated/Seconds)
 IDENTICAL            pywake_check_hr16runs.csv

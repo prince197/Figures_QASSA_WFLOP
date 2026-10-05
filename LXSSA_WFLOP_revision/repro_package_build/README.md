@@ -1,6 +1,6 @@
 # Reproducibility package — SWEVO paper on baseline configuration and random-sampling controls in WFLO
 
-**Version 1.0.0 (2026-10-04).** Package for the article
+**Version 1.0.0 (2026-10-05).** Package for the article
 *Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization*
 (P. Solanki, P. Dwivedi, V. Garg, V. Shukla; submitted to *Swarm and Evolutionary Computation*).
 
@@ -220,10 +220,10 @@ of two benchmark cases for PSO-VNS and SSA-VNS against the stored records (Secti
 The package was verified in two steps (`verification/verification_summary.txt`). Verification 1 covers the records
 of the main study and the additional experiments with all regeneration steps that use them (summarized in the next
 paragraph). Verification 2 covers the complete package, release 1.0.0, from a clean unpack (logs in
-`verification/release_1.0.0/`): 783 of 783 checksums OK; all 31 regeneration steps succeed; 202 regenerated files
-identical to the stored copies (167 byte-identical, 35 after removing time stamps only), including all 111 outputs of
-the sensitivity studies, sensitivity analyses and full-precision reruns; all checks pass; 4 of 4 determinism reruns
-bit-identical.
+`verification/release_1.0.0/`): 804 of 804 checksums OK; all 32 regeneration steps succeed (one after a fix of
+`regenerate_all.sh`, see the summary); 208 regenerated files identical to the stored copies (170 byte-identical, 38
+after removing time stamps only), including all 117 outputs of the sensitivity studies, sensitivity analyses and
+full-precision reruns; all checks pass; 4 of 4 determinism reruns bit-identical.
 
 See `verification/verification_summary.txt` and the logs next to it. In short: all regenerated tables, number
 macros, summaries, statistics files and figures are byte-identical to the stored copies or differ only in

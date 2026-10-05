@@ -1,4 +1,4 @@
-CHECK-FINAL conditions (summary generated 2026-10-04 23:41:02)
+CHECK-FINAL conditions (summary generated 2026-10-05 17:30:19)
   [C01] PASS    PSO-VNS has the best average rank of the eight methods (abstract, Sec. VI-A, conclusion)
             keys: main.friedman.best_ranked
   [C02] PASS    the Friedman test rejects equal performance

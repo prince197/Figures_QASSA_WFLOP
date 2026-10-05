@@ -1,0 +1,66 @@
+[1] open labels: 920 (labelled feasible: 920); by study: fresh_hr 28, mpce_b120k 40, mpce_b30k 44, mpce_feas 39, mpce_hrfix 67, mpce_iea 34, mpce_slsqp 448, rev2_grad 220
+  fresh_hr    SLSQP      hr   n=  28 d=[2] exc_r=0.004500 def_r=0.003511 | bound exc=0.011571 def=0.017653 | defM=-1.08e-03 bd_active=28 sp_active=2 spM_ok=28
+  mpce_slsqp  SLSQP      grid n= 448 d=[3] exc_r=0.000618 def_r=0.000102 | bound exc=0.001325 def=0.001517 | defM=-9.60e-06 bd_active=446 sp_active=6 spM_ok=448
+  mpce_feas   SLSQP      hr   n=  22 d=[2] exc_r=0.004582 def_r=-0.002645 | bound exc=0.011653 def=0.011497 | defM=-1.88e-05 bd_active=22 sp_active=1 spM_ok=22
+  mpce_feas   SLSQP      grid n=  17 d=[3] exc_r=0.000514 def_r=0.000542 | bound exc=0.001221 def=0.001956 | defM=-3.53e-04 bd_active=15 sp_active=2 spM_ok=17
+  mpce_b30k   SLSQP      hr   n=  18 d=[2] exc_r=0.004534 def_r=-0.019233 | bound exc=0.011605 def=-0.005091 | defM=-1.87e-02 bd_active=18 sp_active=0 spM_ok=18
+  mpce_b30k   SLSQP      grid n=  26 d=[3] exc_r=0.000412 def_r=-0.040519 | bound exc=0.001119 def=-0.039105 | defM=-4.10e-02 bd_active=26 sp_active=0 spM_ok=26
+  mpce_b120k  SLSQP      hr   n=   6 d=[2] exc_r=0.004534 def_r=-1.788789 | bound exc=0.011605 def=-1.774647 | defM=-1.79e+00 bd_active=6 sp_active=0 spM_ok=6
+  mpce_b120k  SLSQP      grid n=  34 d=[3] exc_r=0.000462 def_r=-0.000877 | bound exc=0.001169 def=0.000537 | defM=-3.24e-05 bd_active=32 sp_active=3 spM_ok=34
+  mpce_hrfix  SLSQP      hr   n=  67 d=[2] exc_r=0.004600 def_r=0.002079 | bound exc=0.011671 def=0.016221 | defM=-2.17e-03 bd_active=67 sp_active=3 spM_ok=67
+  mpce_iea    SLSQP      iea  n=  34 d=[3] exc_r=0.000590 def_r=0.000113 | bound exc=0.001297 def=0.001527 | defM=1.00e-07 bd_active=34 sp_active=8 spM_ok=34
+  rev2_grad   SLSQPX     iea  n= 110 d=[3] exc_r=0.000628 def_r=0.000936 | bound exc=0.001336 def=0.002350 | defM=0.00e+00 bd_active=110 sp_active=24 spM_ok=110
+  rev2_grad   PSOSLSQPX  iea  n= 110 d=[3] exc_r=0.000618 def_r=0.000720 | bound exc=0.001325 def=0.002134 | defM=0.00e+00 bd_active=110 sp_active=22 spM_ok=110
+[2] open920 (n=920): tau*_R=0.017653 m, tau*_M=0.011671 m; 1e-06: R 0/0/920 M 6/0/914; 0.0001: R 14/0/906 M 19/0/901; 0.001: R 492/0/428 M 500/0/420; 0.01: R 895/0/25 M 899/0/21
+[2] open_exact_gradient (n=220): tau*_R=0.002350 m, tau*_M=0.001336 m; 1e-06: R 0/0/220 M 0/0/220; 0.0001: R 0/0/220 M 0/0/220; 0.001: R 38/0/182 M 42/0/178; 0.01: R 220/0/0 M 220/0/0
+[2] exact_gradient240 (n=240): tau*_R=0.002350 m, tau*_M=0.001336 m; 1e-06: R 0/0/240 M 0/0/240; 0.0001: R 0/0/240 M 0/0/240; 0.001: R 43/0/197 M 47/0/193; 0.01: R 240/0/0 M 240/0/0
+[2] open_benchmark_circle (n=525): tau*_R=0.001956 m, tau*_M=0.001325 m; 1e-06: R 0/0/525 M 6/0/519; 0.0001: R 14/0/511 M 19/0/506; 0.001: R 438/0/87 M 441/0/84; 0.01: R 525/0/0 M 525/0/0
+[2] open_iea (n=254): tau*_R=0.002350 m, tau*_M=0.001336 m; 1e-06: R 0/0/254 M 0/0/254; 0.0001: R 0/0/254 M 0/0/254; 0.001: R 53/0/201 M 58/0/196; 0.01: R 254/0/0 M 254/0/0
+[2] open_hr (n=141): tau*_R=0.017653 m, tau*_M=0.011671 m; 1e-06: R 0/0/141 M 0/0/141; 0.0001: R 0/0/141 M 0/0/141; 0.001: R 1/0/140 M 1/0/140; 0.01: R 116/0/25 M 120/0/21
+[3] IEA 16T 6030 stored                           flipped=  0 best=PSOSLSQPX (407891) bestfree=PSOBV (395032) SLSQPX:30/2/407721 PSOSLSQPX:30/1/407891 SLSQP:18/10/382605 PSOBV:30/3/395032 | n.s. vs best: ['SLSQPX']
+[3] IEA 16T 6030 W1_exactgrad_open_infeasible     flipped= 51 best=PSOBV (395032) bestfree=PSOBV (395032) SLSQPX:3/13/408031 PSOSLSQPX:6/12/408363 SLSQP:18/8/382605 PSOBV:30/1/395032 | n.s. vs best: []
+[3] IEA 16T 6030 W2_plus_msslsqp_open_infeasible  flipped= 57 best=PSOBV (395032) bestfree=PSOBV (395032) SLSQPX:3/13/408031 PSOSLSQPX:6/12/408363 SLSQP:12/11/373886 PSOBV:30/1/395032 | n.s. vs best: []
+[3] IEA 16T 6030 A_adversarial_qualified          flipped= 30 best=SLSQPX (406048) bestfree=PSOBV (395032) SLSQPX:15/1/406048 PSOSLSQPX:15/2/405660 SLSQP:18/10/382605 PSOBV:30/3/395032 | n.s. vs best: ['PSOBV', 'SSABV', 'LXBV', 'RSVNS', 'BVNS', 'PSOC', 'SSA', 'LXSSA', 'DE', 'SLSQP', 'GA', 'PSOSLSQPX']
+[3] IEA 16T 30030 stored                           flipped=  0 best=PSOSLSQPX (413179) bestfree=PSOBV (402583) SLSQPX:30/2/409976 PSOSLSQPX:30/1/413179 SLSQP:29/10/394567 PSOBV:30/3/402583 | n.s. vs best: []
+[3] IEA 16T 30030 W1_exactgrad_open_infeasible     flipped= 49 best=PSOBV (402583) bestfree=PSOBV (402583) SLSQPX:7/12/409840 PSOSLSQPX:4/13/412318 SLSQP:29/8/394567 PSOBV:30/1/402583 | n.s. vs best: ['GA']
+[3] IEA 16T 30030 W2_plus_msslsqp_open_infeasible  flipped= 67 best=PSOBV (402583) bestfree=PSOBV (402583) SLSQPX:7/12/409840 PSOSLSQPX:4/13/412318 SLSQP:11/11/386104 PSOBV:30/1/402583 | n.s. vs best: ['GA']
+[3] IEA 16T 30030 A_adversarial_qualified          flipped= 30 best=PSOSLSQPX (411359) bestfree=PSOBV (402583) SLSQPX:15/2/408822 PSOSLSQPX:15/1/411359 SLSQP:29/10/394567 PSOBV:30/3/402583 | n.s. vs best: ['PSOBV', 'SSABV', 'LXBV', 'RSVNS', 'BVNS', 'PSOC', 'SSA', 'LXSSA', 'DE', 'SLSQP', 'GA', 'SLSQPX']
+[3] IEA 36T 6030 stored                           flipped=  0 best=SLSQPX (832893) bestfree=GA (774972) SLSQPX:30/1/832893 PSOSLSQPX:30/2/832404 SLSQP:4/12/733342 PSOBV:30/5/736832 | n.s. vs best: ['PSOSLSQPX']
+[3] IEA 36T 6030 W1_exactgrad_open_infeasible     flipped= 60 best=GA (774972) bestfree=GA (774972) SLSQPX:0/12/0 PSOSLSQPX:0/12/0 SLSQP:4/10/733342 PSOBV:30/3/736832 | n.s. vs best: []
+[3] IEA 36T 6030 W2_plus_msslsqp_open_infeasible  flipped= 60 best=GA (774972) bestfree=GA (774972) SLSQPX:0/12/0 PSOSLSQPX:0/12/0 SLSQP:4/10/733342 PSOBV:30/3/736832 | n.s. vs best: []
+[3] IEA 36T 6030 A_adversarial_qualified          flipped= 30 best=SLSQPX (830082) bestfree=GA (774972) SLSQPX:15/1/830082 PSOSLSQPX:15/2/827330 SLSQP:4/12/733342 PSOBV:30/5/736832 | n.s. vs best: ['PSOBV', 'SSABV', 'LXBV', 'RSVNS', 'BVNS', 'PSOC', 'SSA', 'LXSSA', 'GA', 'PSOSLSQPX']
+[3] IEA 36T 30030 stored                           flipped=  0 best=PSOSLSQPX (842557) bestfree=GA (823061) SLSQPX:30/2/838853 PSOSLSQPX:30/1/842557 SLSQP:14/12/798913 PSOBV:30/4/807446 | n.s. vs best: []
+[3] IEA 36T 30030 W1_exactgrad_open_infeasible     flipped= 60 best=GA (823061) bestfree=GA (823061) SLSQPX:0/12/0 PSOSLSQPX:0/12/0 SLSQP:14/10/798913 PSOBV:30/2/807446 | n.s. vs best: []
+[3] IEA 36T 30030 W2_plus_msslsqp_open_infeasible  flipped= 70 best=GA (823061) bestfree=GA (823061) SLSQPX:0/12/0 PSOSLSQPX:0/12/0 SLSQP:4/10/738577 PSOBV:30/2/807446 | n.s. vs best: []
+[3] IEA 36T 30030 A_adversarial_qualified          flipped= 30 best=PSOSLSQPX (840013) bestfree=GA (823061) SLSQPX:15/2/837128 PSOSLSQPX:15/1/840013 SLSQP:14/12/798913 PSOBV:30/4/807446 | n.s. vs best: ['PSOBV', 'SSABV', 'LXBV', 'RSVNS', 'BVNS', 'PSOC', 'SSA', 'LXSSA', 'SLSQP', 'GA', 'SLSQPX']
+[3] stored scenario reproduces rev3_sites.json iea_pool: True
+[3] HR1 6030: flipped 20; MS-SLSQP feasible/rank/mean stored 30/8/136.308 -> 10/10/136.433; best PSOBV -> PSOBV; order of the other methods unchanged: True
+[3] HR1 30030: flipped 20; MS-SLSQP feasible/rank/mean stored 30/8/137.177 -> 10/10/137.063; best GA -> GA; order of the other methods unchanged: True
+[3] benchmark 68 cases: flipped 448 MS-SLSQP labels in 67 cases (max 16 per case); MS-SLSQP feasible 100.0% -> 78.0%, unqualified cases 0 -> 1; cases with any rank change 5
+    avg ranks stored: PSOBV 1.82, PSOC 1.97, SSABV 3.45, BVNS 4.40, SSA 5.38, SLSQP 5.88, LXSSA 6.06, DE 7.04
+    avg ranks worst : PSOBV 1.82, PSOC 1.98, SSABV 3.46, BVNS 4.40, SSA 5.40, SLSQP 5.82, LXSSA 6.07, DE 7.05
+    all-run PSO-VNS vs MS-SLSQP stored {'n': 2040, 'W': 1649, 'T': 218, 'L': 173, 'score': 0.861764705882353, 'p_sign': 5.200928980537675e-302} -> worst {'n': 2040, 'W': 1716, 'T': 185, 'L': 139, 'score': 0.8865196078431372, 'p_sign': 0.0}
+[3] budget/init groups with open MS-SLSQP labels: 22; qualification lost under the worst case: 4
+    mpce_feas  1/500/10 6030 feasible: feasible 30/30, open 3
+    mpce_feas  1/750/12 6030 feasible: feasible 30/30, open 3
+    mpce_feas  1/1000/15 6030 feasible: feasible 30/30, open 2
+    mpce_feas  2/500/10 6030 feasible: feasible 30/30, open 2
+    mpce_feas  2/750/12 6030 feasible: feasible 30/30, open 3
+    mpce_feas  2/1000/15 6030 feasible: feasible 30/30, open 4
+    mpce_b30k  1/500/10 30030 random: feasible 30/30, open 3
+    mpce_b30k  1/750/12 30030 random: feasible 30/30, open 2
+    mpce_b30k  1/1000/15 30030 random: feasible 30/30, open 5
+    mpce_b30k  2/500/10 30030 random: feasible 30/30, open 4
+    mpce_b30k  2/750/12 30030 random: feasible 30/30, open 5
+    mpce_b30k  2/1000/15 30030 random: feasible 30/30, open 7
+    mpce_b120k 1/500/10 120030 random: feasible 30/30, open 7
+    mpce_b120k 1/750/12 120030 random: feasible 30/30, open 7
+    mpce_b120k 1/1000/15 120030 random: feasible 30/30, open 5
+    mpce_b120k 2/500/10 120030 random: feasible 30/30, open 5
+    mpce_b120k 2/750/12 120030 random: feasible 30/30, open 4
+    mpce_b120k 2/1000/15 120030 random: feasible 30/30, open 6
+    mpce_hrfix HR/0/16 6030 feasible: feasible 30/30, open 20
+    mpce_hrfix HR/0/16 6030 random: feasible 30/30, open 20
+    mpce_hrfix HR/0/16 30030 random: feasible 30/30, open 20
+    mpce_hrfix HR/0/16 120030 random: feasible 10/10, open 7
+done in 5 s

@@ -395,6 +395,14 @@ analysis/rev3_constraint_tables.tex
 analysis/rev3_constraint_validate.csv
 analysis/rev3_constraint_validate.json
 analysis/rev3_constraint_validate.log
+analysis/rev3_dependence.json
+analysis/rev3_dependence.log
+analysis/rev3_dependence.py
+analysis/rev3_dependence_tables.tex
+analysis/rev3_feasbounds.json
+analysis/rev3_feasbounds.log
+analysis/rev3_feasbounds.py
+analysis/rev3_feasbounds_tables.tex
 analysis/rev3_fine.json
 analysis/rev3_fine.py
 analysis/rev3_fine15_s0of1.csv
