@@ -1,0 +1,212 @@
+IDENTICAL-NORMALIZED mpce_numbers.tex (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            mpce_numbers_csweep.tex
+IDENTICAL            mpce_numbers_diag.tex
+IDENTICAL-NORMALIZED mpce_numbers_dir.tex (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED mpce_numbers_extra.tex (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            mpce_tab_ablation.tex
+IDENTICAL            mpce_tab_baseline.tex
+IDENTICAL            mpce_tab_feasbudget.tex
+IDENTICAL            mpce_tab_friedman68.tex
+IDENTICAL            mpce_tab_hr16.tex
+IDENTICAL            mpce_tab_iea37.tex
+IDENTICAL            mpce_tab_robust_final.tex
+IDENTICAL            mpce_tab_split.tex
+IDENTICAL            mpce_tab_wtl.tex
+IDENTICAL            mpce_supp_csweep.tex
+IDENTICAL            mpce_supp_diag.tex
+IDENTICAL-NORMALIZED mpce_supp_direction.tex (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED mpce_supp_inference.tex (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            mpce_supplementary.tex
+IDENTICAL-NORMALIZED mpce_summary.json (4 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            mpce_summary_csweep.json
+IDENTICAL            mpce_summary_diag.json
+IDENTICAL-NORMALIZED mpce_summary_dir.json (3 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED mpce_summary_extra.json (3 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            mpce_case_stats.csv
+IDENTICAL            mpce_case_tests.csv
+IDENTICAL            mpce_ablation_tests.csv
+IDENTICAL            mpce_feasinit_tests.csv
+IDENTICAL            mpce_budget_case_stats.csv
+IDENTICAL            mpce_best_layouts_maxN.csv
+IDENTICAL            mpce_reevaluation.csv
+IDENTICAL            mpce_reevaluation_cache.csv
+IDENTICAL-NORMALIZED mpce_direction_layouts.csv.gz (decompressed content byte-identical; gzip header time differs)
+IDENTICAL            mpce_direction_hr16.csv
+IDENTICAL            iea37_projected.csv
+IDENTICAL            iea37_projected.json
+36 of 36 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED ablation_convergence.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED avg_ranks.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED boxplots_max.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED boxplots_mid.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED budget_scaling.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED convergence_max.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED convergence_mid.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED csweep.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            diag_pso_dynamics.pdf
+IDENTICAL-NORMALIZED equiv_curve.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED feasibility_vs_n.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED hr16.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED iea37_convergence.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED iea37_layouts.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED layouts_iea37_hr16.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED layouts_max.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED theory_stability.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED wakeloss_vs_n.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            ablation_convergence.png
+IDENTICAL            avg_ranks.png
+IDENTICAL            boxplots_max.png
+IDENTICAL            boxplots_mid.png
+IDENTICAL            budget_scaling.png
+IDENTICAL            convergence_max.png
+IDENTICAL            convergence_mid.png
+IDENTICAL            csweep.png
+IDENTICAL            diag_pso_dynamics.png
+IDENTICAL            feasibility_vs_n.png
+IDENTICAL            hr16.png
+IDENTICAL            iea37_convergence.png
+IDENTICAL            iea37_layouts.png
+IDENTICAL            layouts_iea37_hr16.png
+IDENTICAL            layouts_max.png
+IDENTICAL            wakeloss_vs_n.png
+34 of 34 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED rev2_summary.json (2 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            rev2_tables.tex
+2 of 2 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED archive_audit.json (3 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            focused_checks.json
+IDENTICAL            paired_outcomes.csv
+IDENTICAL            raw_data_checksums.json
+IDENTICAL            reliability.csv
+IDENTICAL            reliability_tables.tex
+6 of 6 files identical (byte-identical or after normalization)
+IDENTICAL            packing_capacity.csv
+IDENTICAL            authors_tables.tex
+IDENTICAL            calibration_vs_recorded.csv
+IDENTICAL            equal_budget_tests.csv
+IDENTICAL            hornsrev_tests.csv
+IDENTICAL            authors_spacing_all.csv
+IDENTICAL            authors_runtime_6030.csv
+7 of 7 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED fig_wind_farm.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED fig_wake_model.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED fig_half_cone.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
+3 of 3 files identical (byte-identical or after normalization)
+IDENTICAL            rev3_constraint.json
+IDENTICAL            rev3_constraint_tables.tex
+IDENTICAL            rev3_fine.json
+IDENTICAL            rev3_fine_tables.tex
+IDENTICAL-NORMALIZED rev3_sites.json (2 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            rev3_sites_tables.tex
+IDENTICAL            rev3_precision_audit.json
+IDENTICAL            rev3_precision_audit_records.csv
+8 of 8 files identical (byte-identical or after normalization)
+IDENTICAL            rev3_precision_rerun_summary.json
+IDENTICAL            rev3_precision_tables.tex
+IDENTICAL            rev3_fullprec_fresh_bgrid.csv
+IDENTICAL            rev3_fullprec_fresh_bgrid_local.csv
+IDENTICAL            rev3_fullprec_fresh_bsplit.csv
+IDENTICAL            rev3_fullprec_fresh_bsplit_local.csv
+IDENTICAL            rev3_fullprec_fresh_grid.csv
+IDENTICAL            rev3_fullprec_fresh_grid_local.csv
+IDENTICAL            rev3_fullprec_fresh_grid_s0of2.csv
+IDENTICAL            rev3_fullprec_fresh_grid_s1of2.csv
+IDENTICAL            rev3_fullprec_fresh_hgrid.csv
+IDENTICAL            rev3_fullprec_fresh_hgrid_local.csv
+IDENTICAL            rev3_fullprec_fresh_hr.csv
+IDENTICAL            rev3_fullprec_fresh_hr_local.csv
+IDENTICAL            rev3_fullprec_fresh_hsplit.csv
+IDENTICAL            rev3_fullprec_fresh_hsplit_local.csv
+IDENTICAL            rev3_fullprec_fresh_vgrid.csv
+IDENTICAL            rev3_fullprec_fresh_vgrid_local.csv
+IDENTICAL            rev3_fullprec_mpce_b120k.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_local.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s0of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s10of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s11of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s12of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s13of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s14of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s15of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s16of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s17of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s18of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s1of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s2of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s3of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s4of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s5of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s6of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s7of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s8of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120k_s9of19.csv
+IDENTICAL            rev3_fullprec_mpce_b120kp.csv
+IDENTICAL            rev3_fullprec_mpce_b120kp_local.csv
+IDENTICAL            rev3_fullprec_mpce_b120kp_s0of1.csv
+IDENTICAL            rev3_fullprec_mpce_b30k.csv
+IDENTICAL            rev3_fullprec_mpce_b30k_local.csv
+IDENTICAL            rev3_fullprec_mpce_b30k_s0of4.csv
+IDENTICAL            rev3_fullprec_mpce_b30k_s1of4.csv
+IDENTICAL            rev3_fullprec_mpce_b30k_s2of4.csv
+IDENTICAL            rev3_fullprec_mpce_b30k_s3of4.csv
+IDENTICAL            rev3_fullprec_mpce_b30kp.csv
+IDENTICAL            rev3_fullprec_mpce_b30kp_local.csv
+IDENTICAL            rev3_fullprec_mpce_csweep.csv
+IDENTICAL            rev3_fullprec_mpce_csweep_local.csv
+IDENTICAL            rev3_fullprec_mpce_feas.csv
+IDENTICAL            rev3_fullprec_mpce_feas_local.csv
+IDENTICAL            rev3_fullprec_mpce_feas_s0of1.csv
+IDENTICAL            rev3_fullprec_mpce_feasp.csv
+IDENTICAL            rev3_fullprec_mpce_feasp_local.csv
+IDENTICAL            rev3_fullprec_mpce_hr16new.csv
+IDENTICAL            rev3_fullprec_mpce_hr16new_local.csv
+IDENTICAL            rev3_fullprec_mpce_hrfix.csv
+IDENTICAL            rev3_fullprec_mpce_hrfix_local.csv
+IDENTICAL            rev3_fullprec_mpce_hrfix_s0of4.csv
+IDENTICAL            rev3_fullprec_mpce_hrfix_s1of4.csv
+IDENTICAL            rev3_fullprec_mpce_hrfix_s2of4.csv
+IDENTICAL            rev3_fullprec_mpce_hrfix_s3of4.csv
+IDENTICAL            rev3_fullprec_mpce_iea.csv
+IDENTICAL            rev3_fullprec_mpce_iea_local.csv
+IDENTICAL            rev3_fullprec_mpce_omega90.csv
+IDENTICAL            rev3_fullprec_mpce_omega90_local.csv
+IDENTICAL            rev3_fullprec_mpce_psobv.csv
+IDENTICAL            rev3_fullprec_mpce_psobv_local.csv
+IDENTICAL            rev3_fullprec_mpce_psoc.csv
+IDENTICAL            rev3_fullprec_mpce_psoc_local.csv
+IDENTICAL            rev3_fullprec_mpce_psosplit.csv
+IDENTICAL            rev3_fullprec_mpce_psosplit_local.csv
+IDENTICAL            rev3_fullprec_mpce_rsdisc.csv
+IDENTICAL            rev3_fullprec_mpce_rsdisc_local.csv
+IDENTICAL            rev3_fullprec_mpce_rsvns.csv
+IDENTICAL            rev3_fullprec_mpce_rsvns_local.csv
+IDENTICAL            rev3_fullprec_mpce_slsqp.csv
+IDENTICAL            rev3_fullprec_mpce_slsqp_local.csv
+IDENTICAL            rev3_fullprec_mpce_slsqp_s0of2.csv
+IDENTICAL            rev3_fullprec_mpce_slsqp_s1of2.csv
+IDENTICAL            rev3_fullprec_rev2_ga.csv
+IDENTICAL            rev3_fullprec_rev2_ga_local.csv
+IDENTICAL            rev3_fullprec_rev2_gahr.csv
+IDENTICAL            rev3_fullprec_rev2_gahr_local.csv
+IDENTICAL            rev3_fullprec_rev2_gaiea.csv
+IDENTICAL            rev3_fullprec_rev2_gaiea_local.csv
+IDENTICAL            rev3_fullprec_rev2_grad.csv
+IDENTICAL            rev3_fullprec_rev2_grad_local.csv
+IDENTICAL            rev3_fullprec_rev2_grad_s0of2.csv
+IDENTICAL            rev3_fullprec_rev2_grad_s1of2.csv
+IDENTICAL            rev3_fullprec_rev2_laplace.csv
+IDENTICAL            rev3_fullprec_rev2_laplace_local.csv
+IDENTICAL            rev3_fullprec_rev2_lg16.csv
+IDENTICAL            rev3_fullprec_rev2_lg16_local.csv
+IDENTICAL            rev3_fullprec_rev2_lg16b.csv
+IDENTICAL            rev3_fullprec_rev2_lg16b_local.csv
+IDENTICAL            rev3_fullprec_rev2_spacing.csv
+IDENTICAL            rev3_fullprec_rev2_spacing_local.csv
+101 of 101 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED rev3_inference.json (13 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            rev3_inference_tables.tex
+2 of 2 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED pywake_check.csv (all cells identical except the columns Generated/Seconds)
+IDENTICAL            pywake_check_hr16runs.csv
+IDENTICAL-NORMALIZED pywake_check_hr16runs.json (1 line(s) differ only in time stamps / paths / run times / version strings)
+3 of 3 files identical (byte-identical or after normalization)

@@ -9,7 +9,7 @@
 #   PROCS=1            worker processes for mpce_results.py / mpce_direction.py (default 1)
 #   WITH_SLOW=1        also run the slower optional steps: theory Monte Carlo check (~3-6 min), packing bounds,
 #                      evaluator validation, IEA37 calculator check, authors-run tables, model schematics,
-#                      revision-3 inference with null calibrations (rev3_inference.py, ~15 min)
+#                      revision-3 inference with null calibrations (rev3_inference.py, ~50 min)
 #   WITH_PYWAKE=1      also run the PyWake cross-checks (needs requirements-pywake.txt)
 #   WITH_DETERMINISM=1 also rerun seed 1 of two benchmark cases for PSO-VNS and SSA-VNS (verify_determinism.py, ~30 s)
 #   MANUSCRIPT=DIR     a folder with the SWEVO LaTeX sources (SWEVO_manuscript.tex, SWEVO_supplement.tex, optA/sw/*.tex);
@@ -83,7 +83,7 @@ if [ "${WITH_SLOW:-0}" = "1" ]; then
   step packing_capacity python3 packing_capacity.py
   step analyze_authors_runs python3 analyze_authors_runs.py
   step model_figures python3 make_model_figures.py
-  mkdir -p "$WORK/rev3_slow"     # revision-3 inference B1/B3/B4/B5/B7 with the null calibrations (~15 min)
+  mkdir -p "$WORK/rev3_slow"     # revision-3 inference B1/B3/B4/B5/B7 with the null calibrations (~50 min)
   step rev3_inference python3 rev3_inference.py --out-dir "$WORK/rev3_slow"
 fi
 if [ "${WITH_PYWAKE:-0}" = "1" ]; then

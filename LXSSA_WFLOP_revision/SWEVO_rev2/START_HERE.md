@@ -6,7 +6,7 @@ original run records, the 11,640 revision-2 records and the revision-3 records a
 all model, optimizer, driver, analysis and check scripts. The revision-2 statement that the original records and
 fifteen core modules were missing was wrong (they are in `analysis/`). For revision 3 the complete analysis pipeline
 was re-executed from a deposit-ready reproducibility package (`repro_package_build/`). Release 1.0.0 of the package
-contains all records, including the 5,100 revision-3 runs and the 5,744 full-precision reruns. It was verified from a
+contains all records, including the 5,100 revision-3 runs and the full-precision reruns (5,714 records + a 30-record determinism sample). It was verified from a
 clean unpack: all checksums pass, all regenerated outputs are identical to the stored ones apart from time stamps,
 all automated checks pass, and reruns of stored gradient-free runs are bit-identical except for the elapsed time
 (SLSQP-based runs are not bit-reproducible across CPU/BLAS builds). The archive is

@@ -45,11 +45,12 @@ the counts of the full-precision reruns still running on cloud workers (C4: M 9.
 \concern{R2}{Public availability.}
 \emph{Resolved up to the public deposit.} A versioned reproducibility package contains all models, optimizers,
 drivers, analysis and check scripts, an environment specification (requirements, Dockerfile) and SHA-256 checksums;
-its README maps every table, figure and number to the command that regenerates it. Its release candidate (1.0.0-rc),
-with the 36,190 original and 11,640 first-revision run records, was verified from a clean unpack: checksums pass,
-and the full regeneration reproduces all 91 outputs. The final package (release 1.0.0, rebuilt with the 5,100 runs of
-this revision and the full-precision reruns) is verified by checksums and regeneration
-\TBD{lead: confirm after package rebuild}. The Data availability statement describes the package and states that the
+its README maps every table, figure and number to the command that regenerates it. Release 1.0.0 contains the
+36,190 original and 11,640 first-revision run records, the 5,100 runs of this revision and the full-precision reruns of
+the 5,714 records whose labels the rounded coordinates cannot decide. It was verified from a clean unpack: all checksums pass, every regeneration step succeeds, and all 202
+regenerated tables, figures, number files and summaries (111 of them from this revision) are identical to the stored
+copies apart from time stamps. All automated checks pass, and reruns of stored gradient-free runs are bit-identical
+except for the elapsed time. The Data availability statement describes the package and states that the
 public DOI will be added before publication; until then, the package is available to the editor and reviewers.
 Changes: M 6.4, Data availability, S9 (Reproducibility Map), S12.
 

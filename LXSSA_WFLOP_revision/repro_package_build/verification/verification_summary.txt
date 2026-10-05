@@ -1,5 +1,7 @@
-Verification of the SWEVO reproducibility package 1.0.0-rc (2026-10-04)
-=========================================================================
+Verification of the SWEVO reproducibility package
+=================================================
+
+Part A: release candidate 1.0.0-rc (2026-10-04). Part B (at the end): release 1.0.0 (2026-10-05).
 
 Environment: CPython 3.11.15, NumPy 2.4.6, SciPy 1.17.1, pandas 3.0.6, Matplotlib 3.11.2, PyWake 2.6.20,
 Linux x86_64 (Ubuntu 24.04), one worker process on a shared 4-core machine.
@@ -63,3 +65,33 @@ Findings outside the package (reported to the authors, not changed here):
     (mpce_summary.json -> cost_per_eval), while the generated cost table tab:cost of mpce_supplementary.tex shows
     0.244-0.467 ms and 1.820 ms for MS-SLSQP. The macro definitions in mpce_numbers.py and the table use different
     timing summaries; the authors should decide which is quoted and make the macro and the table agree.
+
+
+Part B: release 1.0.0 (2026-10-05)
+==================================
+
+Release 1.0.0 adds to 1.0.0-rc: the 5,100 revision-3 runs (constraint handling 2,700; direct 1-degree optimization
+1,200 and its 15-degree control arm 1,200), the 5,744 full-precision reruns (raw rev3_precision_results/*.jsonl,
+merged rev3_fullprec_<study>.csv) with the 35 cloud worker logs, the revision-3 analyses, tables and prespecifications,
+the eight superseded run files covered by the precision audit, and the revision-3 steps of regenerate_all.sh.
+
+Procedure (same environment as Part A): make_package.sh 1.0.0; the zip was unpacked into an empty scratch folder;
+sha256sum -c MANIFEST.sha256: 783 of 783 files OK (release_1.0.0/manifest_check.txt); then
+    WITH_SLOW=1 WITH_DETERMINISM=1 WITH_PYWAKE=1 MANUSCRIPT=<SWEVO revision-3 latex_source> sh regenerate_all.sh <scratch>
+in the unpacked package: 31 steps, every step exit 0, total 3,733 s (rev3_inference.py with its null calibrations
+3,080 s on the shared machine) (release_1.0.0/steps.txt).
+
+Comparison (release_1.0.0/compare.txt): 202 regenerated files compared with the stored copies, 167 byte-identical,
+35 identical after removing generation time stamps / PDF dates / run-time fields / environment versions only,
+0 different, 0 missing. They include the 111 revision-3 outputs (109 byte-identical, 2 after normalization):
+rev3_inference.json / _tables.tex, rev3_constraint.json / _tables.tex, rev3_fine.json / _tables.tex, rev3_sites.json /
+_tables.tex, rev3_precision_audit.json / _records.csv, rev3_precision_rerun_summary.json, rev3_precision_tables.tex and
+every rev3_fullprec_*.csv.
+
+Checks: CHECK-FINAL 62 PASS / 0 FAIL / 0 PENDING / 0 tag errors on the revision-3 manuscript sources; X01-X57,
+D01-D22, F01-F46 (41 checks), S01-S15 and T01-T13 (57) all pass; audit_archive.py and check_revision.py pass;
+determinism: 4 of 4 reruns bit-identical to the stored records (all fields except Seconds).
+
+The released archive was rebuilt after this verification only to add these logs; it differs from the verified build
+in README.md, two run-time comments of regenerate_all.sh and the verification/ folder, and nothing else (compared
+via the two MANIFEST.sha256 files). Its checksums were verified again from a clean unpack.

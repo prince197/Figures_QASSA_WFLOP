@@ -88,8 +88,8 @@ One command regenerates everything that is computed from the stored run records,
 each regenerated file with the stored copy:
 
 ```sh
-sh regenerate_all.sh /tmp/regen                     # ~6 min on one core
-WITH_SLOW=1 WITH_DETERMINISM=1 sh regenerate_all.sh /tmp/regen     # + theory figure, evaluator, packing, schematics, reruns
+sh regenerate_all.sh /tmp/regen                     # ~8 min on one core (incl. revision-3 analyses)
+WITH_SLOW=1 WITH_DETERMINISM=1 sh regenerate_all.sh /tmp/regen     # + theory figure, evaluator, packing, schematics, reruns, revision-3 inference (~50 min)
 WITH_PYWAKE=1 sh regenerate_all.sh /tmp/regen       # + PyWake cross-checks (requirements-pywake.txt)
 MANUSCRIPT=/path/to/latex_source WITH_SLOW=1 sh regenerate_all.sh /tmp/regen   # + CHECK-tag scan and theory text checks
 ```
@@ -135,7 +135,7 @@ Commands are run in `analysis/`; runtimes are wall-clock seconds on one core of 
 | Revision-3 constraint handling (`tab:S-r3-constraint`, `-constraint-cases`; C1) | `rev3_constraint_analysis.py` | `python3 rev3_constraint_analysis.py --out-dir OUT` | `rev3_constraint_{pen,deb,proj}.csv` | 9 s |
 | Revision-3 direct 1° optimization (`tab:S-r3-fine`, C2) | `rev3_fine_analysis.py` | `python3 rev3_fine_analysis.py --out-dir OUT` | `rev3_fine_s*of10.csv`, `rev3_fine15_s0of1.csv` | 11 s |
 | Revision-3 site pools, budgets, 1° / PyWake re-evaluation, initialization cost (`tab:S-r3-hr-pool`, `-iea-pool`, `-hr-eval`, `-lg-eval`, `-time`, `-time-sites`; B2, B6, C3) | `rev3_sites.py` | `python3 rev3_sites.py --out-dir OUT` (uses the stored caches `rev3_sites_reeval.csv`, `rev3_sites_inittime.csv`, `rev3_sites_slsqp_probe.csv`; `--recompute-eval`, `--recompute-init`, `--recompute-probe` rebuild them) | Horns Rev 1, IEA37, Lillgrund, GA and gradient run files | 7 s |
-| Revision-3 inference (`tab:S-r3-allrun`, `-tostaudit`, `-syncseed`, `-imputation`, `-eqclus`; B1, B3, B4, B5, B7) | `rev3_inference.py` | `python3 rev3_inference.py --out-dir OUT` (`--skip-null` without the null calibrations, ~1 min) | benchmark run files | ~15 min |
+| Revision-3 inference (`tab:S-r3-allrun`, `-tostaudit`, `-syncseed`, `-imputation`, `-eqclus`; B1, B3, B4, B5, B7) | `rev3_inference.py` | `python3 rev3_inference.py --out-dir OUT` (`--skip-null` without the null calibrations, ~1 min) | benchmark run files | ~50 min (shared machine) |
 | Revision-3 precision audit and full-precision reruns (`tab:S-r3-precision`, C4) | `rev3_precision_audit.py`, `rev3_precision_rerun.py` | `python3 rev3_precision_audit.py --out-dir OUT`; `python3 rev3_precision_rerun.py collect`; `python3 rev3_precision_rerun.py table` | all run files; `rev3_precision_results/*.jsonl` | 39 s; 4 s; 2 s |
 | Supplementary `tab:S-eqclus`, `tab:S-allrun-spacing`, `tab:S-time` (added in revision 2) | typed by the revision-2 authors from stored tables and records; no generating script in the revision-2 archive. `rev3_inference.py` recomputes `tab:S-eqclus` (as `tab:S-r3-eqclus`); `rev3_numbers_audit.py` traces the other numbers | — | stored tables, `rev2_spacing_*.csv` | — |
 
@@ -216,7 +216,10 @@ of two benchmark cases for PSO-VNS and SSA-VNS against the stored records (Secti
 
 Release 1.0.0 = release candidate 1.0.0-rc (whose full verification is summarized below) + the revision-3 records,
 reruns, analyses and the revision-3 steps of `regenerate_all.sh`; `verification/verification_summary.txt`, Part B,
-records the verification of 1.0.0 from a clean unpack.
+records the verification of 1.0.0 from a clean unpack (logs in `verification/release_1.0.0/`): 783 of 783 checksums OK; all
+31 regeneration steps succeed; 202 regenerated files identical to the stored copies (167 byte-identical, 35 after
+removing time stamps only), including all 111 revision-3 outputs; all checks pass; 4 of 4 determinism reruns
+bit-identical.
 
 See `verification/verification_summary.txt` and the logs next to it. In short: all regenerated tables, number
 macros, summaries, statistics files and figures are byte-identical to the stored copies or differ only in
