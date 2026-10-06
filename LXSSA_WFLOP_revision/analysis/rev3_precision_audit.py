@@ -291,6 +291,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out-dir", default=HERE)
     a = ap.parse_args()
+    os.makedirs(a.out_dir, exist_ok=True)
     rows = []
     for st, pat, desc, role in STUDIES:
         files = sorted(glob.glob(os.path.join(HERE, pat)))

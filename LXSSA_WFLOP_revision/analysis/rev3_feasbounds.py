@@ -750,6 +750,7 @@ def main(argv=None):
     ap.add_argument("--skip-transfer", action="store_true")
     ap.add_argument("--out-dir", default=HERE)
     a = ap.parse_args(argv)
+    os.makedirs(a.out_dir, exist_ok=True)
     t0 = time.time()
     r, f = load_audit()
     out = dict(script="rev3_feasbounds.py", generated=time.strftime("%Y-%m-%d %H:%M:%S"), tolerance_m=TOL,

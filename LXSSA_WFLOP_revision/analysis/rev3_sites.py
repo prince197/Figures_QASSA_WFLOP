@@ -1059,6 +1059,7 @@ def main(argv=None):
     ap.add_argument("--recompute-init", action="store_true")
     ap.add_argument("--out-dir", default=HERE)
     args = ap.parse_args(argv)
+    os.makedirs(args.out_dir, exist_ok=True)
     t0 = time.time()
     blocks = [b.strip() for b in args.only.split(",") if b.strip()]
     jf = os.path.join(args.out_dir, "rev3_sites.json")

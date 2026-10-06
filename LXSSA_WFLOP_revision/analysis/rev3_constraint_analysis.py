@@ -402,6 +402,7 @@ def main():
     ap.add_argument("--out-dir", default=HERE)
     ap.add_argument("--data-dir", default=HERE, help="where rev3_constraint_<variant>.csv are read (default analysis/)")
     a = ap.parse_args()
+    os.makedirs(a.out_dir, exist_ok=True)
     seeds = list(RC.SEEDS)
     boot = Boot(len(CASES), len(seeds))
     data, R, arr = {}, {}, {}

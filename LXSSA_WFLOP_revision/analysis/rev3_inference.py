@@ -663,6 +663,7 @@ def main(argv=None):
     ap.add_argument("--b1-boot", type=int, default=B1_BOOT)
     ap.add_argument("--skip-null", action="store_true")
     args = ap.parse_args(argv)
+    os.makedirs(args.out_dir, exist_ok=True)
     t0 = time.time()
     A = X.load(args.data_dir)
     G = A[A.Algorithm.isin(set(X.MAIN8) | set(X.ABL))].copy()

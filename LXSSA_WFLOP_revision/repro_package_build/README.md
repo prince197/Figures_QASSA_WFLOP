@@ -99,6 +99,13 @@ Results: `/tmp/regen/logs/steps.txt` (exit code and seconds of every step), `/tm
 only time stamps of the generation, PDF creation dates, gzip header times, absolute paths, run-time statements
 and environment version strings (see `compare_outputs.py`). The package files themselves are never written.
 
+Figures (PDF/PNG) compare byte for byte (after normalization) only in the pinned environment of Section 3, in
+particular Matplotlib 3.11.2: other Matplotlib versions serialize figures differently and may choose other automatic
+axis ticks, so `compare.txt` then reports figure files as DIFFERENT and the exit code is nonzero although every
+plotted value is the same. The reproduction target in other environments is the numerical outputs (tables, number
+macros, JSON summaries, CSV statistics), which are expected to agree. Scripts that write into an output folder
+(`--out-dir`) of the sensitivity analyses (`rev3_*.py`) create it if it does not exist.
+
 ### 5.1 Map: manuscript item -> script -> command -> input files -> runtime
 
 Commands are run in `analysis/`; runtimes are wall-clock seconds on one core of the verification machine

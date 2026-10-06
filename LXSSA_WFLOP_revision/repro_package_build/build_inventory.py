@@ -142,6 +142,7 @@ RULES = [
     ("analysis/mpce_csweep.py", "analysis", "include", "PSO coefficient sweep analysis"),
     ("analysis/make_theory_figures.py", "analysis", "include", "theory figure and checks T01-T13"),
     ("analysis/make_model_figures.py", "analysis", "include", "model schematics (figures_final/)"),
+    ("analysis/make_graphical_abstract.py", "analysis", "include", "graphical abstract (figures_final/graphical_abstract.*)"),
     ("analysis/analyze_authors_runs.py", "analysis", "include", "authors_tables.tex (spacing table) and calibration table"),
     ("analysis/rev2_analysis.py", "analysis", "include", "statistics and tables of the additional experiments (rev2_summary.json, rev2_tables.tex)"),
     ("analysis/audit_archive.py", "check", "include", "archive audit of the records of the additional experiments (expects the experiments/ + validation/ layout)"),
@@ -194,6 +195,7 @@ RULES = [
     ("figures_final/fig_wind_farm.pdf", "figure", "include", "model schematic (make_model_figures.py)"),
     ("figures_final/fig_wake_model.pdf", "figure", "include", "model schematic (make_model_figures.py)"),
     ("figures_final/fig_half_cone.pdf", "figure", "include", "model schematic (make_model_figures.py)"),
+    ("figures_final/graphical_abstract.*", "figure", "include", "graphical abstract (make_graphical_abstract.py)"),
     ("figures_final/*", "legacy", "exclude", "figures of an earlier paper"),
     # ---- documents of the additional experiments ------------------------------------------------------------
     ("SWEVO_rev2/experiments_docs/rev2_summary.json", "output", "include", "summary of the additional experiments (rev2_analysis.py)"),
