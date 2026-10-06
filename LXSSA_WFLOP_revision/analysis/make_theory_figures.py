@@ -216,14 +216,14 @@ def box_rows_tex(rows):
 
 # ----------------------------------------------------------------------------------------------------------
 def figure(st):
-    fig, ax = plt.subplots(figsize=(0.44 * 16.0 / 2.54, 2.45))
+    fig, ax = plt.subplots(figsize=(0.44 * 16.0 / 2.54, 2.2))
     w = np.linspace(-1, 1, 801)
     ax.fill_between(w, 0, order1_bound(w), color=BLUE_XL, lw=0, zorder=1)
     ax.fill_between(w, 0, order2_bound(w), color=BLUE, alpha=0.28, lw=0, zorder=2)
     ax.plot(w, order1_bound(w), color=BLUE, lw=1.0, ls=(0, (4, 2)), zorder=3)
     ax.plot(w, order2_bound(w), color=BLUE, lw=1.4, zorder=3)
     ax.text(0.80, 5.6, "order-1\nonly", ha="center", va="center", fontsize=7.5, color=INK, linespacing=1.0)
-    ax.text(-0.66, 2.05, r"$c_1+c_2=4(1+w)$", ha="left", va="bottom", fontsize=7.0, color=MUTED,
+    ax.text(-0.66, 2.05, r"$c_1+c_2=4(1+w)$", ha="left", va="bottom", fontsize=7.5, color=MUTED,
             rotation=np.degrees(np.arctan(4.0)), rotation_mode="anchor", transform_rotates_text=True)
     ax.text(0.0, 1.2, "order-1 and order-2\n" r"$c_1+c_2<24(1-w^2)/(7-5w)$", ha="center", va="center",
             fontsize=7.5, color=INK, linespacing=1.2)
@@ -233,7 +233,7 @@ def figure(st):
                     label=f"old setting: $w=0.7$, $c_1+c_2=4$ (order-2 bound {o['b2']:.2f})")
     hc = ax.scatter([c["w"]], [c["sum"]], s=40, marker="o", color=GREEN, edgecolor="white", lw=0.8, zorder=6,
                     label=f"constriction: $w=0.7298$, $c_1+c_2=2.99$ (order-2 bound {c['b2']:.2f})")
-    ax.legend(handles=[ho, hc], loc="upper left", bbox_to_anchor=(-0.2, -0.2), frameon=False, fontsize=7.5,
+    ax.legend(handles=[ho, hc], loc="upper left", bbox_to_anchor=(-0.17, -0.2), frameon=False, fontsize=7.5,
               handletextpad=0.2, borderaxespad=0.0, labelspacing=0.3)
     ax.set_xlim(-1, 1); ax.set_ylim(0, 8)
     ax.set_xlabel(r"inertia weight $w$"); ax.set_ylabel(r"$c_1+c_2$")

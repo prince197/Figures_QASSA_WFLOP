@@ -335,7 +335,7 @@ def figure(out, D):
     fig, axes = plt.subplots(1, 3, figsize=(0.8 * TW_MAIN, 2.15))
     spec = [("feas_pct", "feasible final layouts (%)", False, 1.0),
             ("loss_common", f"mean wake loss (%)\n(feasible runs, {out['n_common_loss_cases']} common cases)", False, 1.0),
-            ("spread_rel_median", "final swarm spread / r (%)", True, 100.0)]
+            ("spread_rel_median", "final swarm spread / $r$ (%)", True, 100.0)]
     xs = np.array(C_SWEEP)
     handles = {}
     for ax, (key, yl, logy, sc) in zip(axes, spec):

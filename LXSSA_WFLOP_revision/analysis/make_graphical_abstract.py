@@ -64,6 +64,7 @@ for val, paper, nd in checks:
 assert (pos_old, pos_con, N_CASES) == (5, 1, 68) and lead15 == lead1 == ["PSOBV"]
 
 # ---- style ----
+# method colours as in the paper's figures (mpce_results.COL): PSO-VNS blue, SSA-VNS sky blue, PSO green
 OI = dict(blue="#0072B2", orange="#E69F00", green="#009E73", verm="#D55E00", sky="#56B4E9",
           purple="#CC79A7", yellow="#F0E442", black="#000000")
 GREY, LIGHT, INK = "#6E6E6E", "#EFEFEF", "#1A1A1A"
@@ -163,9 +164,9 @@ def slope(ax, a0, a1, b0, b1, ca, cb, la, lb, xt, ylim, yticks, right_axis=True)
 
 
 # A: PSO baseline setting
-x, y = panel(0, "PSO baseline setting", f"PSO: rank {pos_old} → rank {pos_con}", OI["blue"])
+x, y = panel(0, "PSO baseline setting", f"PSO: rank {pos_old} → rank {pos_con}", OI["green"])
 a = ax_mm(x + 15.0, y + 8.6, 16.0, 7.6)
-slope(a, pso_old, pso_con, ssa_old, ssa_con, OI["blue"], OI["orange"], "PSO", "SSA-VNS",
+slope(a, pso_old, pso_con, ssa_old, ssa_con, OI["green"], OI["sky"], "PSO", "SSA-VNS",
       ["old", "constr."], (5.6, 0.8), [1, 3, 5])
 
 # B: random-sampling control
@@ -190,14 +191,14 @@ text_mm(x + 11.5 + 21.5 * 0.06 / 0.19, y + 6.4, "SSA-phase gain (pp)", ha="cente
 # C: constraint handling
 x, y = panel(2, "Constraint handling", "leader changes", OI["verm"])
 c = ax_mm(x + 16.8, y + 8.6, 15.0, 7.6)
-slope(c, pv_pen, pv_deb, ga_pen, ga_deb, OI["green"], OI["verm"], "PSO-VNS", "GA",
+slope(c, pv_pen, pv_deb, ga_pen, ga_deb, OI["blue"], OI["verm"], "PSO-VNS", "GA",
       ["penalty", "Deb"], (2.75, 1.45), [1.5, 2.5], right_axis=False)
 
 # D: wind-direction bins
-x, y = panel(3, "Wind bins (eval. 1°)", "leader stays, gap ×2", OI["green"])
+x, y = panel(3, "Wind bins (eval. 1°)", "leader stays, gap ×2", OI["blue"])
 d = ax_mm(x + 12.5, y + 8.0, 20.5, 9.6)
 vals = [adv1, adv15]
-d.barh([0, 1], vals, height=0.62, color=[OI["green"], "#7CC7AE"], zorder=2)
+d.barh([0, 1], vals, height=0.62, color=[OI["blue"], "#7FB3D9"], zorder=2)
 d.axvline(0, color=INK, lw=0.6, zorder=3)
 d.set_yticks([0, 1], ["opt. 1°", "opt. 15°"])
 d.set_ylim(-0.55, 1.55)

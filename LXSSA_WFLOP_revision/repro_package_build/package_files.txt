@@ -109,6 +109,7 @@ analysis/iea37_published_results.csv
 analysis/init_hook.py
 analysis/literature_values.csv
 analysis/literature_values.md
+analysis/make_graphical_abstract.py
 analysis/make_model_figures.py
 analysis/make_theory_figures.py
 analysis/mpce_ablation_tests.csv
@@ -712,6 +713,9 @@ analysis/wflop_model.py
 figures_final/fig_half_cone.pdf
 figures_final/fig_wake_model.pdf
 figures_final/fig_wind_farm.pdf
+figures_final/graphical_abstract.pdf
+figures_final/graphical_abstract.png
+figures_final/graphical_abstract.tif
 figures_mpce/ablation_convergence.pdf
 figures_mpce/ablation_convergence.png
 figures_mpce/avg_ranks.pdf

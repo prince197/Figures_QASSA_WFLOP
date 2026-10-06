@@ -162,9 +162,10 @@ analysis/init_hook.py,optimizer,include,602,initial-population hook (random / fe
 analysis/layout_reevaluation.csv,legacy,exclude,151617,earlier analyses (superseded)
 analysis/literature_values.csv,input,include,135032,hand-collected literature values (Section S-literature)
 analysis/literature_values.md,input,include,13959,hand-collected literature values (Section S-literature)
-analysis/make_model_figures.py,analysis,include,9960,model schematics (figures_final/)
+analysis/make_graphical_abstract.py,analysis,include,11749,graphical abstract (figures_final/graphical_abstract.*)
+analysis/make_model_figures.py,analysis,include,10624,model schematics (figures_final/)
 analysis/make_robustness_tables.py,legacy,exclude,5127,earlier analyses (superseded)
-analysis/make_theory_figures.py,analysis,include,17074,theory figure and checks T01-T13
+analysis/make_theory_figures.py,analysis,include,17469,theory figure and checks T01-T13
 analysis/mpce_ablation_tests.csv,output,include,94135,generated statistics
 analysis/mpce_b120k_s0of8.csv,runs-original,include,468243,per-run records of mpce_experiments.py / iea37_experiments.py
 analysis/mpce_b120k_s1of8.csv,runs-original,include,469691,per-run records of mpce_experiments.py / iea37_experiments.py
@@ -191,7 +192,7 @@ analysis/mpce_check_diag.py,check,include,11624,check scripts (C/X/D/F/S ids)
 analysis/mpce_check_dir.py,check,include,26339,check scripts (C/X/D/F/S ids)
 analysis/mpce_check_extra.py,check,include,33605,check scripts (C/X/D/F/S ids)
 analysis/mpce_check_final.py,check,include,40776,check scripts (C/X/D/F/S ids)
-analysis/mpce_csweep.py,analysis,include,26330,PSO coefficient sweep analysis
+analysis/mpce_csweep.py,analysis,include,26247,PSO coefficient sweep analysis
 analysis/mpce_csweep_s0of1.csv,runs-original,include,6686707,per-run records of mpce_experiments.py / iea37_experiments.py
 analysis/mpce_diagnostics.py,driver,include,87419,instrumented diagnostic reruns (Section S-diag)
 analysis/mpce_direction.py,analysis,include,67137,"direction resolution, Horns Rev 1 re-evaluation"
@@ -238,7 +239,7 @@ analysis/mpce_iea16_s0of1.csv,runs-original,include,1275680,per-run records of m
 analysis/mpce_iea16p_s0of1.csv,runs-original,include,150851,per-run records of mpce_experiments.py / iea37_experiments.py
 analysis/mpce_iea36_s0of1.csv,runs-original,include,1217792,per-run records of mpce_experiments.py / iea37_experiments.py
 analysis/mpce_iea36p_s0of1.csv,runs-original,include,152560,per-run records of mpce_experiments.py / iea37_experiments.py
-analysis/mpce_inference_extra.py,analysis,include,138887,"equivalence at three levels, inference robustness"
+analysis/mpce_inference_extra.py,analysis,include,139869,"equivalence at three levels, inference robustness"
 analysis/mpce_numbers.py,analysis,include,41349,number macros mpce_numbers.tex
 analysis/mpce_numbers.tex,output,include,29677,generated number macros
 analysis/mpce_numbers_csweep.tex,output,include,6407,generated number macros
@@ -252,7 +253,7 @@ analysis/mpce_psoc_s0of1.csv,runs-original,include,4486602,per-run records of mp
 analysis/mpce_psosplit_s0of1.csv,runs-original,include,1568127,per-run records of mpce_experiments.py / iea37_experiments.py
 analysis/mpce_reevaluation.csv,output,include,4213975,generated statistics
 analysis/mpce_reevaluation_cache.csv,input,include,2873889,re-evaluation cache (key md5 of data set + coordinates)
-analysis/mpce_results.py,analysis,include,202542,"main tables, figures, mpce_summary.json"
+analysis/mpce_results.py,analysis,include,205391,"main tables, figures, mpce_summary.json"
 analysis/mpce_robustness.py,analysis,include,8265,cubic-curve / Gaussian-wake re-evaluation (cached)
 analysis/mpce_rsdisc_s0of1.csv,runs-original,include,4297734,per-run records of mpce_experiments.py / iea37_experiments.py
 analysis/mpce_rsvns_s0of1.csv,runs-original,include,4115146,per-run records of mpce_experiments.py / iea37_experiments.py
@@ -438,7 +439,7 @@ analysis/rev3_bib_order.py,rev3-code,include,5299,script of the sensitivity stud
 analysis/rev3_constraint.json,rev3-output,include,100208,output of the sensitivity studies and analyses
 analysis/rev3_constraint.py,rev3-code,include,17631,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_constraint_analysis.log,rev3-log,include,5004,log of the sensitivity studies and analyses
-analysis/rev3_constraint_analysis.py,rev3-code,include,24464,script of the sensitivity studies / sensitivity analyses / full-precision reruns
+analysis/rev3_constraint_analysis.py,rev3-code,include,24506,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_constraint_deb.csv,rev3-data,include,1933025,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_constraint_manifest.md,rev3-doc,include,10721,prespecification (sensitivity study or full-precision reruns)
 analysis/rev3_constraint_pen.csv,rev3-data,include,1982983,run records / outputs of the sensitivity studies and analyses
@@ -450,13 +451,13 @@ analysis/rev3_constraint_tables.tex,rev3-output,include,6035,table of the sensit
 analysis/rev3_constraint_validate.csv,rev3-data,include,5332,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_constraint_validate.json,rev3-output,include,2699,output of the sensitivity studies and analyses
 analysis/rev3_constraint_validate.log,rev3-log,include,2700,log of the sensitivity studies and analyses
-analysis/rev3_dependence.json,rev3-output,include,120275,output of the sensitivity studies and analyses
-analysis/rev3_dependence.log,rev3-log,include,8360,log of the sensitivity studies and analyses
-analysis/rev3_dependence.py,rev3-code,include,43216,script of the sensitivity studies / sensitivity analyses / full-precision reruns
-analysis/rev3_dependence_tables.tex,rev3-output,include,9841,table of the sensitivity studies and analyses
+analysis/rev3_dependence.json,rev3-output,include,130081,output of the sensitivity studies and analyses
+analysis/rev3_dependence.log,rev3-log,include,8562,log of the sensitivity studies and analyses
+analysis/rev3_dependence.py,rev3-code,include,50320,script of the sensitivity studies / sensitivity analyses / full-precision reruns
+analysis/rev3_dependence_tables.tex,rev3-output,include,11041,table of the sensitivity studies and analyses
 analysis/rev3_feasbounds.json,rev3-output,include,93922,output of the sensitivity studies and analyses
 analysis/rev3_feasbounds.log,rev3-log,include,10559,log of the sensitivity studies and analyses
-analysis/rev3_feasbounds.py,rev3-code,include,50344,script of the sensitivity studies / sensitivity analyses / full-precision reruns
+analysis/rev3_feasbounds.py,rev3-code,include,50386,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_feasbounds_tables.tex,rev3-output,include,11049,table of the sensitivity studies and analyses
 analysis/rev3_fine.json,rev3-output,include,69928,output of the sensitivity studies and analyses
 analysis/rev3_fine.py,rev3-code,include,22249,script of the sensitivity studies / sensitivity analyses / full-precision reruns
@@ -589,7 +590,7 @@ analysis/rev3_fullprec_rev2_spacing.csv,rev3-data,include,364563,run records / o
 analysis/rev3_fullprec_rev2_spacing_local.csv,rev3-data,include,325201,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_inference.json,rev3-output,include,86351,output of the sensitivity studies and analyses
 analysis/rev3_inference.log,rev3-log,include,6185,log of the sensitivity studies and analyses
-analysis/rev3_inference.py,rev3-code,include,52242,script of the sensitivity studies / sensitivity analyses / full-precision reruns
+analysis/rev3_inference.py,rev3-code,include,52287,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_inference_tables.tex,rev3-output,include,15339,table of the sensitivity studies and analyses
 analysis/rev3_numbers_audit.json,rev3-output,include,3698669,output of the sensitivity studies and analyses
 analysis/rev3_numbers_audit.py,rev3-code,include,66312,script of the sensitivity studies / sensitivity analyses / full-precision reruns
@@ -597,7 +598,7 @@ analysis/rev3_numbers_checks.log,rev3-log,include,65190,log of the sensitivity s
 analysis/rev3_numbers_report.md,rev3-doc,include,17486,prespecification (sensitivity study or full-precision reruns)
 analysis/rev3_numbers_theory_check.py,rev3-code,include,17821,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_precision_audit.json,rev3-output,include,63747,output of the sensitivity studies and analyses
-analysis/rev3_precision_audit.py,rev3-code,include,18326,script of the sensitivity studies / sensitivity analyses / full-precision reruns
+analysis/rev3_precision_audit.py,rev3-code,include,18368,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_precision_audit_records.csv,rev3-data,include,12116900,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_precision_manifest.md,rev3-doc,include,2866,prespecification (sensitivity study or full-precision reruns)
 analysis/rev3_precision_notes.md,rev3-doc,include,1828,prespecification (sensitivity study or full-precision reruns)
@@ -645,7 +646,7 @@ analysis/rev3_refs_report.md,rev3-editorial,exclude,19546,internal reference-lis
 analysis/rev3_review_report.md,rev3-editorial,exclude,16584,internal editorial notes on the manuscript text
 analysis/rev3_sites.json,rev3-output,include,201496,output of the sensitivity studies and analyses
 analysis/rev3_sites.log,rev3-log,include,11823,log of the sensitivity studies and analyses
-analysis/rev3_sites.py,rev3-code,include,75939,script of the sensitivity studies / sensitivity analyses / full-precision reruns
+analysis/rev3_sites.py,rev3-code,include,75984,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_sites_inittime.csv,rev3-data,include,21796,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_sites_reeval.csv,rev3-data,include,173817,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_sites_slsqp_probe.csv,rev3-data,include,370,run records / outputs of the sensitivity studies and analyses
@@ -797,12 +798,15 @@ figures_final/convergence_mid.pdf,legacy,exclude,136360,figures of an earlier pa
 figures_final/convergence_mid.png,legacy,exclude,272051,figures of an earlier paper
 figures_final/feasibility_vs_n.pdf,legacy,exclude,33573,figures of an earlier paper
 figures_final/feasibility_vs_n.png,legacy,exclude,135656,figures of an earlier paper
-figures_final/fig_half_cone.pdf,figure,include,13887,model schematic (make_model_figures.py)
-figures_final/fig_half_cone.png,legacy,exclude,36774,figures of an earlier paper
-figures_final/fig_wake_model.pdf,figure,include,9734,model schematic (make_model_figures.py)
-figures_final/fig_wake_model.png,legacy,exclude,21967,figures of an earlier paper
-figures_final/fig_wind_farm.pdf,figure,include,18271,model schematic (make_model_figures.py)
-figures_final/fig_wind_farm.png,legacy,exclude,127112,figures of an earlier paper
+figures_final/fig_half_cone.pdf,figure,include,13861,model schematic (make_model_figures.py)
+figures_final/fig_half_cone.png,legacy,exclude,31773,figures of an earlier paper
+figures_final/fig_wake_model.pdf,figure,include,9694,model schematic (make_model_figures.py)
+figures_final/fig_wake_model.png,legacy,exclude,19524,figures of an earlier paper
+figures_final/fig_wind_farm.pdf,figure,include,16830,model schematic (make_model_figures.py)
+figures_final/fig_wind_farm.png,legacy,exclude,69537,figures of an earlier paper
+figures_final/graphical_abstract.pdf,figure,include,33327,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.png,figure,include,445073,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.tif,figure,include,225272,graphical abstract (make_graphical_abstract.py)
 figures_final/hr_convergence.pdf,legacy,exclude,20991,figures of an earlier paper
 figures_final/hr_convergence.png,legacy,exclude,82693,figures of an earlier paper
 figures_final/hr_layouts.pdf,legacy,exclude,19850,figures of an earlier paper
@@ -811,38 +815,38 @@ figures_final/layouts_max.pdf,legacy,exclude,35148,figures of an earlier paper
 figures_final/layouts_max.png,legacy,exclude,190116,figures of an earlier paper
 figures_final/wakeloss_vs_n.pdf,legacy,exclude,40335,figures of an earlier paper
 figures_final/wakeloss_vs_n.png,legacy,exclude,173406,figures of an earlier paper
-figures_mpce/ablation_convergence.pdf,figure,include,49683,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/ablation_convergence.png,figure,include,240830,PNG previews of the generated figures
-figures_mpce/avg_ranks.pdf,figure,include,14077,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/avg_ranks.png,figure,include,31316,PNG previews of the generated figures
-figures_mpce/boxplots_max.pdf,figure,include,30722,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/boxplots_max.png,figure,include,131682,PNG previews of the generated figures
-figures_mpce/boxplots_mid.pdf,figure,include,33351,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/boxplots_mid.png,figure,include,122864,PNG previews of the generated figures
-figures_mpce/budget_scaling.pdf,figure,include,44077,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/budget_scaling.png,figure,include,240925,PNG previews of the generated figures
-figures_mpce/convergence_max.pdf,figure,include,105279,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/convergence_max.png,figure,include,223898,PNG previews of the generated figures
-figures_mpce/convergence_mid.pdf,figure,include,150120,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/convergence_mid.png,figure,include,280913,PNG previews of the generated figures
-figures_mpce/csweep.pdf,figure,include,34404,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/csweep.png,figure,include,94618,PNG previews of the generated figures
+figures_mpce/ablation_convergence.pdf,figure,include,39552,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/ablation_convergence.png,figure,include,156282,PNG previews of the generated figures
+figures_mpce/avg_ranks.pdf,figure,include,9732,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/avg_ranks.png,figure,include,29142,PNG previews of the generated figures
+figures_mpce/boxplots_max.pdf,figure,include,24227,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/boxplots_max.png,figure,include,126558,PNG previews of the generated figures
+figures_mpce/boxplots_mid.pdf,figure,include,27488,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/boxplots_mid.png,figure,include,122191,PNG previews of the generated figures
+figures_mpce/budget_scaling.pdf,figure,include,36425,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/budget_scaling.png,figure,include,157875,PNG previews of the generated figures
+figures_mpce/convergence_max.pdf,figure,include,99581,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/convergence_max.png,figure,include,217138,PNG previews of the generated figures
+figures_mpce/convergence_mid.pdf,figure,include,143925,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/convergence_mid.png,figure,include,272679,PNG previews of the generated figures
+figures_mpce/csweep.pdf,figure,include,18542,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/csweep.png,figure,include,74936,PNG previews of the generated figures
 figures_mpce/diag_pso_dynamics.pdf,figure,include,47082,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
 figures_mpce/diag_pso_dynamics.png,figure,include,97189,PNG previews of the generated figures
-figures_mpce/equiv_curve.pdf,figure,include,39093,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/feasibility_vs_n.pdf,figure,include,35130,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/feasibility_vs_n.png,figure,include,111733,PNG previews of the generated figures
-figures_mpce/hr16.pdf,figure,include,27847,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/hr16.png,figure,include,98188,PNG previews of the generated figures
-figures_mpce/iea37_convergence.pdf,figure,include,28093,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/iea37_convergence.png,figure,include,146817,PNG previews of the generated figures
-figures_mpce/iea37_layouts.pdf,figure,include,24475,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/iea37_layouts.png,figure,include,87371,PNG previews of the generated figures
-figures_mpce/layouts_iea37_hr16.pdf,figure,include,26642,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/layouts_iea37_hr16.png,figure,include,82179,PNG previews of the generated figures
-figures_mpce/layouts_max.pdf,figure,include,35543,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/layouts_max.png,figure,include,197273,PNG previews of the generated figures
-figures_mpce/theory_stability.pdf,figure,include,34942,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/wakeloss_vs_n.pdf,figure,include,42852,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
-figures_mpce/wakeloss_vs_n.png,figure,include,192732,PNG previews of the generated figures
+figures_mpce/equiv_curve.pdf,figure,include,21423,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/feasibility_vs_n.pdf,figure,include,29108,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/feasibility_vs_n.png,figure,include,102172,PNG previews of the generated figures
+figures_mpce/hr16.pdf,figure,include,24076,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/hr16.png,figure,include,95400,PNG previews of the generated figures
+figures_mpce/iea37_convergence.pdf,figure,include,23423,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/iea37_convergence.png,figure,include,138513,PNG previews of the generated figures
+figures_mpce/iea37_layouts.pdf,figure,include,18856,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/iea37_layouts.png,figure,include,84337,PNG previews of the generated figures
+figures_mpce/layouts_iea37_hr16.pdf,figure,include,23182,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/layouts_iea37_hr16.png,figure,include,88302,PNG previews of the generated figures
+figures_mpce/layouts_max.pdf,figure,include,28161,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/layouts_max.png,figure,include,162209,PNG previews of the generated figures
+figures_mpce/theory_stability.pdf,figure,include,34955,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/wakeloss_vs_n.pdf,figure,include,35775,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
+figures_mpce/wakeloss_vs_n.png,figure,include,126287,PNG previews of the generated figures
 selected_30_run_data.csv,runs-archived,include,249641,"720 archived runs of the original code (evaluator validation, calibration, boundary-rule check)"

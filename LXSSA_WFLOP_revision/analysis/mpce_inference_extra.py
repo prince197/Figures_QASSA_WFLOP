@@ -1166,7 +1166,7 @@ def equiv_figure(EL, fn):
              ("case", "#d55e00", "-", "case level", r["case"]["min_margin_pp"]),
              ("cluster_cr2", "#009e73", "-", "cluster level, CR2 $t_5$", r["cluster"]["cr2"]["min_margin_pp"]),
              ("cluster_wild", "#009e73", (0, (3, 1.5)), "cluster level, wild bootstrap", r["cluster"]["wild"]["min_margin_pp"])]
-    fig, ax = plt.subplots(figsize=(0.45 * 16.0 / 2.54, 2.75))
+    fig, ax = plt.subplots(figsize=(0.45 * 16.0 / 2.54, 2.5))
     floor = 1.0 / (BOOT_N + 1)
     ax.axhline(0.05, color=MUTED, lw=0.8, ls=":", zorder=1)
     ax.axvline(EQ_MARGIN, color=MUTED, lw=0.8, ls=":", zorder=1)

@@ -9,6 +9,7 @@
 #   PROCS=1            worker processes for mpce_results.py / mpce_direction.py (default 1)
 #   WITH_SLOW=1        also run the slower optional steps: theory Monte Carlo check (~3-6 min), packing bounds,
 #                      evaluator validation, IEA37 calculator check, authors-run tables, model schematics,
+#                      graphical abstract,
 #                      inference sensitivity analyses with null calibrations (rev3_inference.py, ~50 min)
 #   WITH_PYWAKE=1      also run the PyWake cross-checks (needs requirements-pywake.txt)
 #   WITH_DETERMINISM=1 also rerun seed 1 of two benchmark cases for PSO-VNS and SSA-VNS (verify_determinism.py, ~30 s)
@@ -85,6 +86,7 @@ if [ "${WITH_SLOW:-0}" = "1" ]; then
   step packing_capacity python3 packing_capacity.py
   step analyze_authors_runs python3 analyze_authors_runs.py
   step model_figures python3 make_model_figures.py
+  step graphical_abstract python3 make_graphical_abstract.py
   mkdir -p "$WORK/rev3_slow"     # inference sensitivity analyses with the null calibrations (~50 min)
   step rev3_inference python3 rev3_inference.py --out-dir "$WORK/rev3_slow"
   step rev3_dependence python3 rev3_dependence.py --out-dir "$WORK/rev3_slow"   # seed-level all-run inference + joint calibration (~12 min)
@@ -111,7 +113,7 @@ cmpf "$PKG/SWEVO_rev2/validation" "$WORK/rev2_audit/validation" archive_audit.js
 if [ "${WITH_SLOW:-0}" = "1" ]; then
   cmpf "$PKG/analysis" "$A" packing_capacity.csv authors_tables.tex calibration_vs_recorded.csv equal_budget_tests.csv \
        hornsrev_tests.csv authors_spacing_all.csv authors_runtime_6030.csv
-  cmpf "$PKG/figures_final" "$WORK/figures_final" fig_wind_farm.pdf fig_wake_model.pdf fig_half_cone.pdf
+  cmpf "$PKG/figures_final" "$WORK/figures_final" fig_wind_farm.pdf fig_wake_model.pdf fig_half_cone.pdf graphical_abstract.pdf graphical_abstract.png graphical_abstract.tif
 fi
 cmpf "$PKG/analysis" "$WORK/rev3_out" rev3_constraint.json rev3_constraint_tables.tex rev3_fine.json rev3_fine_tables.tex \
      rev3_sites.json rev3_sites_tables.tex rev3_precision_audit.json rev3_precision_audit_records.csv \
