@@ -230,7 +230,7 @@ os.makedirs(OUT, exist_ok=True)
 pdf = os.path.join(OUT, "graphical_abstract.pdf")
 png = os.path.join(OUT, "graphical_abstract.png")
 tif = os.path.join(OUT, "graphical_abstract.tif")
-meta = {"Title": "Graphical abstract", "Creator": "analysis/make_graphical_abstract.py"}
+meta = {"Title": "Graphical abstract", "Creator": "analysis/make_graphical_abstract.py", "CreationDate": None}
 fig.savefig(pdf, metadata=meta)
 fig.savefig(png, dpi=600)          # 3071 x 1228 px
 try:
