@@ -10,10 +10,10 @@ BENCH SSABV-RSVNS    964/315/761 score 0.550 seedCI [0.528 0.57 ] seeds +21/-8 p
 BENCH RSDVNS-RSVNS   1010/318/712 score 0.573 seedCI [0.557 0.588] seeds +27/-3 p_flip 9.69e-08 (Holm 3.87e-07) p_W 5.5e-06 | pooled Holm 2.9e-12 | groups +6/-0 p_grp 0.0312
 BENCH LXBV-RSDVNS    718/321/1001 score 0.431 seedCI [0.41  0.452] seeds +3/-26 p_flip 2.18e-06 (Holm 6.53e-06) p_W 2.02e-05 | pooled Holm 2.8e-11 | groups +0/-5 p_grp 0.0625
 BENCH PSOBV-RSDVNS   1320/322/398 score 0.726 seedCI [0.712 0.74 ] seeds +30/-0 p_flip 1.86e-09 (Holm 9.31e-09) p_W 1.69e-06 | pooled Holm 1.59e-114 | groups +6/-0 p_grp 0.0312
-CALIB PSOBV-PSOC minus: size (equivalence decision) 6.94% [6.25 7.68]; one-sided 6.94%; calibrated p 0.0002 [118.4 s]
-CALIB PSOBV-PSOC plus: size (equivalence decision) 4.30% [3.75 4.9 ]; one-sided 4.30%; calibrated p 0.0002 [118.3 s]
-CALIB SSABV-RSDVNS minus: size (equivalence decision) 5.42% [4.81 6.08]; one-sided 5.42%; calibrated p 0.0002 [122.1 s]
-CALIB SSABV-RSDVNS plus: size (equivalence decision) 5.68% [5.05 6.36]; one-sided 5.68%; calibrated p 0.0584 [121.9 s]
+CALIB PSOBV-PSOC minus: size (equivalence decision) 6.94% [6.25 7.68]; one-sided 6.94%; calibrated p 0.0002 [95.7 s]
+CALIB PSOBV-PSOC plus: size (equivalence decision) 4.30% [3.75 4.9 ]; one-sided 4.30%; calibrated p 0.0002 [95.1 s]
+CALIB SSABV-RSDVNS minus: size (equivalence decision) 5.42% [4.81 6.08]; one-sided 5.42%; calibrated p 0.0002 [94.9 s]
+CALIB SSABV-RSDVNS plus: size (equivalence decision) 5.68% [5.05 6.36]; one-sided 5.68%; calibrated p 0.0584 [92.6 s]
 CONSTR pen  PSOC   122/0/58 score 0.678 seedCI [0.617 0.739] seeds +20/-1 p_flip 1.14e-05 Holm28 0.000229 | paper pooled Holm 3.99e-05 (PSO-VNS better) -> PSO-VNS better
 CONSTR pen  GA     113/0/67 score 0.628 seedCI [0.561 0.7  ] seeds +17/-4 p_flip 0.00214 Holm28 0.03 | paper pooled Holm 0.012 (PSO-VNS better) -> PSO-VNS better
 CONSTR pen  SSABV  124/0/56 score 0.689 seedCI [0.628 0.75 ] seeds +22/-2 p_flip 1.19e-05 Holm28 0.000229 | paper pooled Holm 8.73e-06 (PSO-VNS better) -> PSO-VNS better
@@ -43,30 +43,24 @@ MATCHED PSOC   feas 238/238 L direct 3.820 control 4.831 diff -1.011 CI95 [-1.07
 MATCHED GA     feas 230/230 L direct 3.948 control 4.789 diff -0.840 CI95 [-0.897 -0.786] seeds lower 30/30 p_flip 1.86e-09 | all-run 226/10/4 score 0.963 [0.942 0.983]
 MATCHED SLSQP  feas 239/239 L direct 4.315 control 4.636 diff -0.322 CI95 [-0.398 -0.251] seeds lower 29/30 p_flip 7.45e-09 | all-run 168/0/72 score 0.700 [0.654 0.746]
 MATCHED RSDVNS feas 238/238 L direct 3.927 control 5.019 diff -1.092 CI95 [-1.168 -1.019] seeds lower 30/30 p_flip 1.86e-09 | all-run 234/2/4 score 0.979 [0.962 0.996]
+DID PSO-VNS - PSO, direct minus control: -0.11523 pp CI95 [-0.16732 -0.05991] (arm diffs -0.21093 / -0.09570; pairs 238/240 [29, 30, 30, 30, 29, 30, 30, 30]) seeds lower 22/30 p_flip 0.000391 p_W 0.00017
 FINE PSO-VNS - PSO direct: -0.1937 indep90 [-0.2339 -0.1516] joint90 [-0.2393 -0.1436]
 FINE PSO-VNS - PSO ctrl1: -0.0862 indep90 [-0.1294 -0.0431] joint90 [-0.1367 -0.0365]
-Traceback (most recent call last):
-  File "<scratch>/regen/analysis/rev3_dependence.py", line 659, in <module>
-    main()
-  File "<scratch>/regen/analysis/rev3_dependence.py", line 634, in main
-    R["lillgrund"] = lillgrund_block()
-                     ^^^^^^^^^^^^^^^^^
-  File "<scratch>/regen/analysis/rev3_dependence.py", line 439, in lillgrund_block
-    ref = pd.read_csv(os.path.join(VALID, "paired_outcomes.csv"))
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/dist-packages/pandas/io/parsers/readers.py", line 872, in read_csv
-    return _read(filepath_or_buffer, kwds)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/dist-packages/pandas/io/parsers/readers.py", line 300, in _read
-    parser = TextFileReader(filepath_or_buffer, **kwds)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/dist-packages/pandas/io/parsers/readers.py", line 1643, in __init__
-    self._engine = self._make_engine(f, self.engine)
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/dist-packages/pandas/io/parsers/readers.py", line 1907, in _make_engine
-    self.handles = get_handle(
-                   ^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/dist-packages/pandas/io/common.py", line 930, in get_handle
-    handle = open(
-             ^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '<scratch>/regen/SWEVO_rev2/validation/paired_outcomes.csv'
+LG  6030 VNS      16/10/4 score 0.700 W/(W+L) 0.800 CP95 [0.5634, 0.9427]
+LG  6030 DE       17/13/0 score 0.783 W/(W+L) 1.000 CP95 [0.8049, 1.0000]
+LG  6030 LX-SSA   17/13/0 score 0.783 W/(W+L) 1.000 CP95 [0.8049, 1.0000]
+LG  6030 PSO      17/13/0 score 0.783 W/(W+L) 1.000 CP95 [0.8049, 1.0000]
+LG  6030 RSD-VNS  15/11/4 score 0.683 W/(W+L) 0.789 CP95 [0.5443, 0.9395]
+LG  6030 MS-SLSQP 10/0/20 score 0.333 W/(W+L) 0.333 CP95 [0.1729, 0.5281]
+LG  6030 SSA      17/11/2 score 0.750 W/(W+L) 0.895 CP95 [0.6686, 0.9870]
+LG  6030 SSA-VNS  15/8/7 score 0.633 W/(W+L) 0.682 CP95 [0.4513, 0.8614]
+LG 30030 VNS      20/0/10 score 0.667 W/(W+L) 0.667 CP95 [0.4719, 0.8271]
+LG 30030 DE       22/0/8 score 0.733 W/(W+L) 0.733 CP95 [0.5411, 0.8772]
+LG 30030 LX-SSA   30/0/0 score 1.000 W/(W+L) 1.000 CP95 [0.8843, 1.0000]
+LG 30030 PSO      28/0/2 score 0.933 W/(W+L) 0.933 CP95 [0.7793, 0.9918]
+LG 30030 RSD-VNS  27/0/3 score 0.900 W/(W+L) 0.900 CP95 [0.7347, 0.9789]
+LG 30030 MS-SLSQP 28/0/2 score 0.933 W/(W+L) 0.933 CP95 [0.7793, 0.9918]
+LG 30030 SSA      29/0/1 score 0.967 W/(W+L) 0.967 CP95 [0.8278, 0.9992]
+LG 30030 SSA-VNS  19/0/11 score 0.633 W/(W+L) 0.633 CP95 [0.4386, 0.8007]
+verdict changes (pooled sign test vs seed level, Holm 0.05): []
+done in 381.1 s

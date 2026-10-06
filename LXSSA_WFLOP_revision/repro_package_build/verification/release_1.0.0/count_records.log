@@ -13,8 +13,8 @@
   Horns Rev 1 (mpce_hrfix, 24 shards)                               970
   IEA37 CS1 (mpce_iea16/iea36(+p))                                 1200
 original study records: 36190 (expected 36190)
-revision-2 records: 11640 (expected 11640): rev2_ga 2040, rev2_gahr 60, rev2_gaiea 120, rev2_grad 240, rev2_laplace 2160, rev2_lg16 270, rev2_lg16b 270, rev2_spacing 6480
-revision-3 files in run-record format (runs or re-evaluations): 6672 rows
+additional-experiment records: 11640 (expected 11640): rev2_ga 2040, rev2_gahr 60, rev2_gaiea 120, rev2_grad 240, rev2_laplace 2160, rev2_lg16 270, rev2_lg16b 270, rev2_spacing 6480
+sensitivity-study files in run-record format (runs or re-evaluations): 6672 rows
   rev3_constraint_deb.csv                                           900
   rev3_constraint_pen.csv                                           900
   rev3_constraint_proj.csv                                          900

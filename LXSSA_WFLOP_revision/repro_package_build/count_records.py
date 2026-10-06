@@ -2,7 +2,7 @@
 """Count the per-run records of the study from the run files (the 36,190 / 11,640 accounting of Table tab:design).
 
 Usage:  python3 count_records.py [--analysis-dir DIR]
-Original study (36,190): the 11 methods of the benchmark (SSA, LX-SSA, DE, old-setting PSO from fresh_grid.csv; VNS from
+Main study (36,190): the 11 methods of the benchmark (SSA, LX-SSA, DE, old-setting PSO from fresh_grid.csv; VNS from
 fresh_vgrid.csv; SSA-VNS and LX-SSA-VNS from fresh_bgrid.csv; PSO, RS-VNS, MS-SLSQP, PSO-VNS from mpce_*) = 22,440,
 RSD-VNS 2,040, split 1,080, PSO coefficient sweep 3,240, budget 3,600 and feasible initialization 1,620 (both without
 the superseded Horns Rev rows, which hrfix replaces), Horns Rev 1 (hrfix) 970, IEA37 1,200.
@@ -46,7 +46,7 @@ c["IEA37 CS1 (mpce_iea16/iea36(+p))"] = sum(len(rd(f"mpce_{e}_s*of*.csv")) for e
 orig = sum(c.values())
 for k, v in c.items():
     print(f"  {k:62s} {v:6d}")
-print(f"original study records: {orig} (expected 36190)")
+print(f"main-study records: {orig} (expected 36190)")
 r2 = {}
 for f in sorted(glob.glob(os.path.join(D, "rev2_*_s*of*.csv"))):
     fam = re.sub(r"_s\d+of\d+\.csv$", "", os.path.basename(f))

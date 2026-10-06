@@ -1,6 +1,6 @@
 # Reproducibility package — SWEVO paper on baseline configuration and random-sampling controls in WFLO
 
-**Version 1.0.0 (2026-10-05).** Package for the article
+**Version 1.0.0 (2026-10-06).** Package for the article
 *Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization*
 (P. Solanki, P. Dwivedi, V. Garg, V. Shukla; submitted to *Swarm and Evolutionary Computation*).
 
@@ -222,21 +222,14 @@ of two benchmark cases for PSO-VNS and SSA-VNS against the stored records (Secti
   adds them); the CHECK-tag scan and the theory text checks need them.
 - Third-party inputs (IEA37 files, PyWake-derived site data) keep their own terms (`LICENSE_SUGGESTION.md`).
 
-## 8. Verification of this release (2026-10-04 and 2026-10-05)
+## 8. Verification of this release (2026-10-06)
 
-The package was verified in two steps (`verification/verification_summary.txt`). Verification 1 covers the records
-of the main study and the additional experiments with all regeneration steps that use them (summarized in the next
-paragraph). Verification 2 covers the complete package, release 1.0.0, from a clean unpack (logs in
-`verification/release_1.0.0/`): 804 of 804 checksums OK; all 32 regeneration steps succeed (one after a fix of
-`regenerate_all.sh`, see the summary); 208 regenerated files identical to the stored copies (170 byte-identical, 38
-after removing time stamps only), including all 117 outputs of the sensitivity studies, sensitivity analyses and
-full-precision reruns; all checks pass; 4 of 4 determinism reruns bit-identical.
-
-See `verification/verification_summary.txt` and the logs next to it. In short: all regenerated tables, number
-macros, summaries, statistics files and figures are byte-identical to the stored copies or differ only in
-generation time stamps / PDF creation dates / gzip header times / recorded environment versions; all check
-scripts pass (C01–C62, X01–X57, D01–D22, F01–F46, S01–S15, T01–T13); the summary (`rev2_summary.json`) and tables
-of the additional experiments are reproduced; reruns of stored PSO-VNS and SSA-VNS runs are bit-identical to the records.
+The complete package, release 1.0.0, was verified from a clean unpack (`verification/verification_summary.txt`,
+logs in `verification/release_1.0.0/`): 802 of 802 checksums OK; all 33 regeneration steps succeed; 211 regenerated
+files identical to the stored copies (173 byte-identical, 38 after removing time stamps only), including all 117
+outputs of the sensitivity studies, sensitivity analyses and full-precision reruns; all check scripts pass (C01–C62,
+X01–X57, D01–D22, F01–F46, S01–S15, T01–T13); the summary and tables of the additional experiments are reproduced;
+reruns of stored PSO-VNS and SSA-VNS runs are bit-identical to the records.
 
 ## 9. How to cite
 

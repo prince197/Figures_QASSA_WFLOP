@@ -20,7 +20,7 @@ IDENTICAL            mpce_supplementary.tex
 IDENTICAL-NORMALIZED mpce_summary.json (4 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL            mpce_summary_csweep.json
 IDENTICAL            mpce_summary_diag.json
-IDENTICAL-NORMALIZED mpce_summary_dir.json (2 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL-NORMALIZED mpce_summary_dir.json (3 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL-NORMALIZED mpce_summary_extra.json (3 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL            mpce_case_stats.csv
 IDENTICAL            mpce_case_tests.csv
@@ -91,7 +91,10 @@ IDENTICAL            authors_runtime_6030.csv
 IDENTICAL-NORMALIZED fig_wind_farm.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL-NORMALIZED fig_wake_model.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL-NORMALIZED fig_half_cone.pdf (1 line(s) differ only in time stamps / paths / run times / version strings)
-3 of 3 files identical (byte-identical or after normalization)
+IDENTICAL            graphical_abstract.pdf
+IDENTICAL            graphical_abstract.png
+IDENTICAL            graphical_abstract.tif
+6 of 6 files identical (byte-identical or after normalization)
 IDENTICAL            rev3_constraint.json
 IDENTICAL            rev3_constraint_tables.tex
 IDENTICAL            rev3_fine.json
@@ -207,9 +210,9 @@ IDENTICAL            rev3_fullprec_rev2_spacing_local.csv
 101 of 101 files identical (byte-identical or after normalization)
 IDENTICAL-NORMALIZED rev3_inference.json (13 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL            rev3_inference_tables.tex
-MISSING              rev3_dependence.json (stored: True, regenerated: False)
-MISSING              rev3_dependence_tables.tex (stored: True, regenerated: False)
-2 of 4 files identical (byte-identical or after normalization)
+IDENTICAL-NORMALIZED rev3_dependence.json (8 line(s) differ only in time stamps / paths / run times / version strings)
+IDENTICAL            rev3_dependence_tables.tex
+4 of 4 files identical (byte-identical or after normalization)
 IDENTICAL-NORMALIZED rev3_feasbounds.json (3 line(s) differ only in time stamps / paths / run times / version strings)
 IDENTICAL            rev3_feasbounds_tables.tex
 2 of 2 files identical (byte-identical or after normalization)

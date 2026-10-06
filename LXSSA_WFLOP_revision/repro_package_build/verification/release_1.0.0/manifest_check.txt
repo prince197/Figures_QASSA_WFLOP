@@ -13,8 +13,6 @@ SWEVO_rev2/validation/paired_outcomes.csv: OK
 SWEVO_rev2/validation/raw_data_checksums.json: OK
 SWEVO_rev2/validation/reliability.csv: OK
 SWEVO_rev2/validation/reliability_tables.tex: OK
-SWEVO_rev2/validation/revision_verification.json: OK
-analysis/README_reproduce.md: OK
 analysis/analyze_authors_runs.py: OK
 analysis/audit_archive.py: OK
 analysis/authors_experiments.log: OK
@@ -34,7 +32,6 @@ analysis/check_csweep.log: OK
 analysis/check_diag.log: OK
 analysis/check_dir.log: OK
 analysis/check_extra.log: OK
-analysis/check_final.log: OK
 analysis/check_revision.py: OK
 analysis/csweep.log: OK
 analysis/direction.log: OK
@@ -113,6 +110,7 @@ analysis/iea37_published_results.csv: OK
 analysis/init_hook.py: OK
 analysis/literature_values.csv: OK
 analysis/literature_values.md: OK
+analysis/make_graphical_abstract.py: OK
 analysis/make_model_figures.py: OK
 analysis/make_theory_figures.py: OK
 analysis/mpce_ablation_tests.csv: OK
@@ -383,7 +381,6 @@ analysis/rev2_spacing_s6of40.csv: OK
 analysis/rev2_spacing_s7of40.csv: OK
 analysis/rev2_spacing_s8of40.csv: OK
 analysis/rev2_spacing_s9of40.csv: OK
-analysis/rev3_bib_order.py: OK
 analysis/rev3_constraint.json: OK
 analysis/rev3_constraint.py: OK
 analysis/rev3_constraint_analysis.log: OK
@@ -540,16 +537,10 @@ analysis/rev3_inference.json: OK
 analysis/rev3_inference.log: OK
 analysis/rev3_inference.py: OK
 analysis/rev3_inference_tables.tex: OK
-analysis/rev3_numbers_audit.json: OK
-analysis/rev3_numbers_audit.py: OK
-analysis/rev3_numbers_checks.log: OK
-analysis/rev3_numbers_report.md: OK
-analysis/rev3_numbers_theory_check.py: OK
 analysis/rev3_precision_audit.json: OK
 analysis/rev3_precision_audit.py: OK
 analysis/rev3_precision_audit_records.csv: OK
 analysis/rev3_precision_manifest.md: OK
-analysis/rev3_precision_notes.md: OK
 analysis/rev3_precision_plan.json: OK
 analysis/rev3_precision_rerun.py: OK
 analysis/rev3_precision_rerun_summary.json: OK
@@ -719,6 +710,9 @@ count_records.py: OK
 figures_final/fig_half_cone.pdf: OK
 figures_final/fig_wake_model.pdf: OK
 figures_final/fig_wind_farm.pdf: OK
+figures_final/graphical_abstract.pdf: OK
+figures_final/graphical_abstract.png: OK
+figures_final/graphical_abstract.tif: OK
 figures_mpce/ablation_convergence.pdf: OK
 figures_mpce/ablation_convergence.png: OK
 figures_mpce/avg_ranks.pdf: OK
@@ -796,6 +790,10 @@ verification/release_1.0.0/mpce_check_diag.log: OK
 verification/release_1.0.0/mpce_check_dir.log: OK
 verification/release_1.0.0/mpce_check_extra.log: OK
 verification/release_1.0.0/mpce_check_final_tags.log: OK
+verification/release_1.0.0/rev3_dependence.log: OK
+verification/release_1.0.0/rev3_dependence_rerun.log: OK
+verification/release_1.0.0/rev3_feasbounds.log: OK
+verification/release_1.0.0/rev3_feasbounds_transfer.log: OK
 verification/release_1.0.0/rev3_precision_collect.log: OK
 verification/release_1.0.0/steps.txt: OK
 verification/release_1.0.0/theory_check.log: OK
