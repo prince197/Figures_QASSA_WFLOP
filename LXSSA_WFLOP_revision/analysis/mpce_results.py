@@ -2316,7 +2316,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         for src, y in x.groupby("Source"):
             pvl.append(f"{st_} & {b:,} & {i} & {', '.join(PROV_LAB.get(a, LAB.get(a, a)) for a in sorted(y.Algorithm.unique()))} & "
                        f"\\texttt{{{src.replace('_', chr(92) + '_')}}} & {len(y)} \\\\".replace(",", "{,}", 1))
-    supp.append(table("table*", "Provenance of the per-run results used in this paper: study, budget (evaluations), initialization, methods, source file (\\texttt{mpce\\_<exp>}: all shards \\texttt{mpce\\_<exp>\\_s<i>of<k>.csv} of experiment \\texttt{<exp>} of \\texttt{mpce\\_experiments.py} / \\texttt{iea37\\_experiments.py}; \\texttt{fresh\\_*.csv}: earlier grid runs, see the repository README) and number of runs.",
+    supp.append(table("table*", "Provenance of the per-run results used in this paper: study, budget (evaluations), initialization, methods, source file (\\texttt{mpce\\_<exp>}: all shards \\texttt{mpce\\_<exp>\\_s<i>of<k>.csv} of experiment \\texttt{<exp>} of \\texttt{mpce\\_experiments.py} / \\texttt{iea37\\_experiments.py}; \\texttt{fresh\\_*.csv}: grid runs of the preliminary comparison, see the repository README) and number of runs.",
                       "tab:provenance", "lccp{7.2cm}ll", "Study & Budget & Init. & Methods & Source & Runs",
                       [l_.replace("PSOBV25", "PSO-VNS (0.25)").replace("PSOBV75", "PSO-VNS (0.75)").replace("PSOBV90", "PSO-VNS (0.9)") for l_ in pvl], size="\\scriptsize", pos="p"))
 

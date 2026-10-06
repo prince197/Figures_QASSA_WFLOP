@@ -16,7 +16,7 @@ contradicted, because the rerun did not recover the original layout; all belong 
 bit-reproducible across CPU/BLAS builds (near, or a different trajectory). Replay: maximum $|$objective recomputed from
 the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
 $^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Not used in the results.
-Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the earlier direction binning of Section~\ref{sec:S-hrmodel} (replayed and rerun with that binning). Residual bounds of the open records and the tolerances that would decide them: Table~\ref{tab:S-sa-feasbounds}.}
+Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the alternative direction binning of Section~\ref{sec:S-hrmodel} (bins centred at 0$^\circ$, 5$^\circ$, \ldots, 355$^\circ$; replayed and rerun with that binning). Residual bounds of the open records and the tolerances that would decide them: Table~\ref{tab:S-sa-feasbounds}.}
 \label{tab:S-sa-precision}
 \scriptsize\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{lrrrrrrrrrrrrr}
@@ -31,7 +31,7 @@ Bench., VNS & 2,040 & 2,040 & 2,038 & 0 & 2 & 2 & 1 & 1 & 0 & 2 & 0 & 0 & 0.000 
 Split, LX-SSA-VNS & 720 & 701 & 685 & 0 & 35 & 35 & 29 & 6 & 0 & 35 & 0 & 0 & 1.278 \\
 Bench., LX-VNS$^s$ & 2,040 & 2,002 & 1,997 & 0 & 43 & 43 & 28 & 15 & 0 & 43 & 0 & 0 & 0.261 \\
 Split, LX-VNS$^s$ & 720 & 649 & 697 & 0 & 23 & 23 & 19 & 4 & 0 & 23 & 0 & 0 & 0.031 \\
-HR1, earlier$^{s,h}$ & 390 & 245 & 344 & 0 & 46 & 46 & 17 & 1 & 1 & 18 & 0 & 28 & 0.075 \\
+HR1, alt.\ bins$^{s,h}$ & 390 & 245 & 344 & 0 & 46 & 46 & 17 & 1 & 1 & 18 & 0 & 28 & 0.075 \\
 Bench., PSO-VNS$^h$ & 2,070 & 2,070 & 2,061 & 0 & 9 & 9 & 5 & 4 & 0 & 9 & 0 & 0 & 0.174 \\
 Bench., PSO & 2,040 & 2,040 & 2,015 & 0 & 25 & 25 & 18 & 7 & 0 & 25 & 0 & 0 & 0.000 \\
 Bench., MS-SLSQP & 2,040 & 2,039 & 1,556 & 0 & 484 & 484 & 1 & 35 & 18 & 36 & 0 & 448 & 0.656 \\

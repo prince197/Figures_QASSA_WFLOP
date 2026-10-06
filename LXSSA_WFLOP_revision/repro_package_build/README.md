@@ -16,7 +16,7 @@ supplement from the stored per-run records, and to rerun every optimization stud
 
 | Part | Where | Count |
 |---|---|---|
-| Per-run records of the main study (one row per run: method, case, seed, budget, initialization, evaluations, objective, feasibility, minimum spacing, seconds, final coordinates, convergence curve) | `analysis/fresh_{grid,vgrid,bgrid}.csv`, `analysis/mpce_*_s<i>of<k>.csv` | **36,190** runs (`count_records.py`) + the superseded Horns Rev rows that the analysis drops + the 8 `feasx` shards merged into `mpce_feas_s0of1.csv` |
+| Per-run records of the main study (one row per run: method, case, seed, budget, initialization, evaluations, objective, feasibility, minimum spacing, seconds, final coordinates, convergence curve) | `analysis/fresh_{grid,vgrid,bgrid}.csv`, `analysis/mpce_*_s<i>of<k>.csv` | **36,190** runs (`count_records.py`) + the Horns Rev rows with the alternative direction binning that the analysis does not use + the 8 `feasx` shards merged into `mpce_feas_s0of1.csv` |
 | Per-run records of the additional experiments (GA, exact gradients, Laplace ablation, 5D/6D spacing, Lillgrund) | `analysis/rev2_*_s<i>of<k>.csv` | **11,640** runs |
 | Per-run records of the sensitivity studies (constraint handling; direct 1° optimization with its 15° control arm) | `analysis/rev3_constraint_{pen,deb,proj}.csv`, `analysis/rev3_fine_s<i>of10.csv`, `analysis/rev3_fine15_s0of1.csv` | **5,100** runs (2,700 + 1,200 + 1,200) |
 | Full-precision reruns of stored records | `analysis/rev3_precision_results/*.jsonl` (raw), `analysis/rev3_fullprec_<study>.csv` (merged, 17 significant digits) | **5,744** reruns (the 5,714 records whose stored label the rounded coordinates cannot certify + a 30-record determinism sample) |
@@ -29,9 +29,9 @@ supplement from the stored per-run records, and to rerun every optimization stud
 | Package tools | `regenerate_all.sh`, `compare_outputs.py`, `verify_determinism.py`, `count_records.py`, `build_inventory.py`, `make_package.sh`, `inventory.csv`, `MANIFEST.sha256` | |
 | Verification logs of this release | `verification/` | |
 
-Files of the repository that belong to earlier papers or superseded versions (manuscript builders of earlier
+Files of the repository that belong to other papers or to variants not used here (manuscript builders of other
 papers, `superseded_linear_penalty/`, `final_*`, `hybrid_*`, `bvns_*`, `fresh_results.py`, `extra_*`, the
-earlier `figures_final/` content, ...) are excluded, except the superseded run files that the precision audit covers
+other `figures_final/` content, ...) are excluded, except the unused run files that the precision audit covers
 (`fresh_{bsplit,hgrid,hsplit,hr80,vhr80,bhr80,hhr16,hhr80}.csv`, category `runs-audited`); `inventory.csv` lists every candidate file with its decision
 (include / exclude / pending) and the reason.
 
@@ -165,7 +165,7 @@ produced the runs; divide by the number of workers).
 | `fresh_grid.csv` (SSA, LX-SSA, DE, old PSO; + unused SLSQP/VNS rows) | `python3 full_grid_experiments.py grid` | 12,240 | 8.8 h |
 | `fresh_vgrid.csv` (VNS) | `python3 full_grid_experiments.py vgrid` | 2,040 | 1.3 h |
 | `fresh_bgrid.csv` (SSA-VNS, LX-SSA-VNS) | `python3 full_grid_experiments.py bgrid` | 4,080 | 2.7 h |
-| `fresh_{hr16,vhr16,bhr16}.csv` (old HR binning, superseded by `hrfix`) | `full_grid_experiments.py hr16 / vhr16 / bhr16` | 270 | 0.4 h |
+| `fresh_{hr16,vhr16,bhr16}.csv` (alternative HR direction binning, not used for the results; the results use `hrfix`) | `full_grid_experiments.py hr16 / vhr16 / bhr16` | 270 | 0.4 h |
 | `mpce_psoc_s0of1.csv` (PSO) | `python3 mpce_experiments.py psoc` | 2,040 | 0.8 h |
 | `mpce_psobv_s<i>of2.csv` (PSO-VNS) | `python3 mpce_experiments.py psobv <i> 2` | 2,070 | 1.2 h |
 | `mpce_rsvns_s0of1.csv` (RS-VNS) | `python3 mpce_experiments.py rsvns` | 2,040 | 1.0 h |
@@ -177,7 +177,7 @@ produced the runs; divide by the number of workers).
 | `mpce_b30k_s<i>of3.csv`, `mpce_b30kp_s0of1.csv` | `mpce_experiments.py b30k <i> 3`; `b30kp` | 2,100 | 17.0 h |
 | `mpce_b120k_s<i>of8.csv`, `mpce_b120kp_s<i>of4.csv` | `mpce_experiments.py b120k <i> 8`; `b120kp <i> 4` | 1,900 | 51.6 h |
 | `mpce_hrfix_s<i>of24.csv` (all Horns Rev 1 runs) | `python3 mpce_experiments.py hrfix <i> 24` (i = 0..23) | 970 | 9.6 h |
-| `mpce_hr16new_s0of1.csv` (superseded) | `python3 mpce_experiments.py hr16new` | 60 | 0.2 h |
+| `mpce_hr16new_s0of1.csv` (not used for the results) | `python3 mpce_experiments.py hr16new` | 60 | 0.2 h |
 | `mpce_iea16/iea36(+p)_s0of1.csv` (IEA37) | `python3 iea37_experiments.py iea16 / iea36 / iea16p / iea36p` | 1,200 | 3.2 h |
 | `rev2_laplace_s<i>of12.csv` | `python3 rev2_laplace.py laplace <i> 12 --procs 2` | 2,160 | 1.3 h |
 | `rev2_ga_s<i>of10.csv`, `rev2_gahr_s<i>of2.csv`, `rev2_gaiea_s<i>of2.csv` | `python3 rev2_ga.py ga <i> 10` / `gahr <i> 2` / `gaiea <i> 2` | 2,220 | 1.6 h |
