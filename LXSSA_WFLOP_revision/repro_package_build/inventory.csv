@@ -383,7 +383,7 @@ analysis/rev3_constraint.py,rev3-code,17607,script of the sensitivity studies / 
 analysis/rev3_constraint_analysis.log,rev3-log,5004,log of the sensitivity studies and analyses
 analysis/rev3_constraint_analysis.py,rev3-code,24517,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_constraint_deb.csv,rev3-data,1933025,run records / outputs of the sensitivity studies and analyses
-analysis/rev3_constraint_manifest.md,rev3-doc,10721,prespecification (sensitivity study or full-precision reruns)
+analysis/rev3_constraint_manifest.md,rev3-doc,10721,study design notes of the sensitivity studies
 analysis/rev3_constraint_pen.csv,rev3-data,1982983,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_constraint_proj.csv,rev3-data,2223287,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_constraint_run_deb.log,rev3-log,1752,log of the sensitivity studies and analyses
@@ -407,7 +407,7 @@ analysis/rev3_fine15_s0of1.csv,rev3-data,2874151,run records / outputs of the se
 analysis/rev3_fine15_s0of1.log,rev3-log,114654,log of the sensitivity studies and analyses
 analysis/rev3_fine_analysis.log,rev3-log,4320,log of the sensitivity studies and analyses
 analysis/rev3_fine_analysis.py,rev3-code,25155,script of the sensitivity studies / sensitivity analyses / full-precision reruns
-analysis/rev3_fine_manifest.md,rev3-doc,9994,prespecification (sensitivity study or full-precision reruns)
+analysis/rev3_fine_manifest.md,rev3-doc,9994,study design notes of the sensitivity studies
 analysis/rev3_fine_s0of10.csv,rev3-data,288810,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_fine_s0of10.log,rev3-log,11478,log of the sensitivity studies and analyses
 analysis/rev3_fine_s1of10.csv,rev3-data,289419,run records / outputs of the sensitivity studies and analyses
@@ -537,7 +537,7 @@ analysis/rev3_inference_tables.tex,rev3-output,15327,table of the sensitivity st
 analysis/rev3_precision_audit.json,rev3-output,63810,output of the sensitivity studies and analyses
 analysis/rev3_precision_audit.py,rev3-code,18432,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_precision_audit_records.csv,rev3-data,12116900,run records / outputs of the sensitivity studies and analyses
-analysis/rev3_precision_manifest.md,rev3-doc,2866,prespecification (sensitivity study or full-precision reruns)
+analysis/rev3_precision_manifest.md,rev3-doc,2866,study design notes of the sensitivity studies
 analysis/rev3_precision_plan.json,rev3-output,232799,output of the sensitivity studies and analyses
 analysis/rev3_precision_rerun.py,rev3-code,37027,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_precision_rerun_summary.json,rev3-output,375338,output of the sensitivity studies and analyses

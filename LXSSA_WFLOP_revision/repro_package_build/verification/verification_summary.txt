@@ -39,5 +39,6 @@ calibrations 2,185 s; rev3_dependence.py with the joint-seed calibration 382 s) 
    records in every field except the wall-clock Seconds.
 
 After this verification the archive was rebuilt only to add these logs; it differs from the verified build in
-README.md, this folder and one printed label of count_records.py (compared via the two MANIFEST.sha256 files), and its
-checksums were verified again from a clean unpack.
+README.md, the file descriptions in build_inventory.py and inventory.csv, this folder and one printed label of count_records.py (compared via the
+two MANIFEST.sha256 files); no analysis script, run record or generated output differs. Its checksums were verified
+again from a clean unpack.

@@ -102,7 +102,7 @@ RULES = [
     ("analysis/rev3_*.json", "rev3-output", "include", "output of the sensitivity studies and analyses"),
     ("analysis/rev3_*.tex", "rev3-output", "include", "table of the sensitivity studies and analyses"),
     ("analysis/rev3_*.log", "rev3-log", "include", "log of the sensitivity studies and analyses"),
-    ("analysis/rev3_*.md", "rev3-doc", "include", "prespecification (sensitivity study or full-precision reruns)"),
+    ("analysis/rev3_*.md", "rev3-doc", "include", "study design notes of the sensitivity studies"),
     ("analysis/rev3_*", "unclassified", "exclude", "rev3_* file of an unexpected type (check by hand)"),
     # ---- models, objectives and site data ---------------------------------------------------------------------
     ("analysis/wflop_model.py", "model", "include", "Kusiak-Song benchmark evaluator (Jensen wake, Weibull rose), cubic curve, Gaussian wake"),
@@ -218,7 +218,7 @@ EXTRA_FILES = ["selected_30_run_data.csv"]
 # until a matching file exists. Pattern -> what it is.
 PENDING_HOOKS = [
     ("analysis/rev3_fullprec_*.csv", "full-precision (17 significant digits) side files of the legacy coordinates"),
-    ("analysis/rev3_*_manifest.md", "prespecification of every run set of the sensitivity studies and the full-precision reruns"),
+    ("analysis/rev3_*_manifest.md", "study design notes of the sensitivity studies"),
     ("analysis/rev3_*.py", "drivers and analyses of the sensitivity studies and sensitivity analyses"),
     ("analysis/rev3_*.csv", "run records of the sensitivity studies (seeds 31-60 unless stated)"),
     ("analysis/rev3_*.tex", "tables of the sensitivity studies and analyses (tab:S-sa-* in the article)"),

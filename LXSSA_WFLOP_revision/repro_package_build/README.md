@@ -20,7 +20,7 @@ supplement from the stored per-run records, and to rerun every optimization stud
 | Per-run records of the additional experiments (GA, exact gradients, Laplace ablation, 5D/6D spacing, Lillgrund) | `analysis/rev2_*_s<i>of<k>.csv` | **11,640** runs |
 | Per-run records of the sensitivity studies (constraint handling; direct 1° optimization with its 15° control arm) | `analysis/rev3_constraint_{pen,deb,proj}.csv`, `analysis/rev3_fine_s<i>of10.csv`, `analysis/rev3_fine15_s0of1.csv` | **5,100** runs (2,700 + 1,200 + 1,200) |
 | Full-precision reruns of stored records | `analysis/rev3_precision_results/*.jsonl` (raw), `analysis/rev3_fullprec_<study>.csv` (merged, 17 significant digits) | **5,744** reruns (the 5,714 records whose stored label the rounded coordinates cannot certify + a 30-record determinism sample) |
-| Sensitivity studies and sensitivity analyses: code, tables and prespecifications | `analysis/rev3_*.py`, `rev3_*_tables.tex` (`tab:S-sa-*` in the article; the generated files carry the same labels with the prefix `tab:S-r3-`), `rev3_*.json`, `rev3_*_manifest.md`, logs | |
+| Sensitivity studies and sensitivity analyses: code and tables | `analysis/rev3_*.py`, `rev3_*_tables.tex` (`tab:S-sa-*` in the article; the generated files carry the same labels with the prefix `tab:S-r3-`), `rev3_*.json`, logs | |
 | Models and objectives | `analysis/wflop_model.py`, `authors_objective.py`, `objective_original.py`, `hornsrev_model.py`, `iea37_model.py` (+ `iea37_data/`), `rev2_site_model.py` (Lillgrund), `record_io.py` | |
 | Optimizers | `analysis/authors_optimizers.py`, `extra_baselines.py`, `original_vns.py`, `hybrid_lxssa_bvns.py`, `rs_vns.py`, `feasible_init.py`, `init_hook.py` (+ `hybrid_lxssa_vns.py`, imported by `full_grid_experiments.py`) | |
 | Experiment drivers | `analysis/full_grid_experiments.py`, `mpce_experiments.py`, `iea37_experiments.py`, `rev2_{ga,gradient,laplace,site,spacing}.py`, `authors_experiments.py`, `ssa_reference.py`, `mpce_diagnostics.py`, `packing_capacity.py`, `pywake_check.py`, `iea37_projected.py`; launch scripts `SWEVO_rev2/experiments_docs/run_rev2_*.sh` | |
@@ -188,7 +188,6 @@ produced the runs; divide by the number of workers).
 | `rev3_fine_s<i>of10.csv` (direct 1° optimization, 1° arm; seeds 31–60) | `python3 rev3_fine.py <i> 10` (i = 0..9); check: `python3 rev3_fine.py --validate` | 1,200 | 1.7 h |
 | `rev3_fine15_s0of1.csv` (direct 1° optimization, 15° control arm) | `python3 rev3_fine.py 0 1 --rose 15` | 1,200 | 1.7 h |
 | `rev3_precision_results/*.jsonl` -> `rev3_fullprec_<study>.csv` (full-precision reruns) | `python3 rev3_precision_rerun.py run STUDY SHARD NSHARDS` (the 35 shard commands are listed in `rev3_precision_plan.json`; local studies: `run STUDY`), then `collect` | 5,744 | 21.2 h |
-| Prespecifications | `analysis/rev3_constraint_manifest.md`, `rev3_fine_manifest.md`, `rev3_precision_manifest.md` (written before the runs) | — | — |
 
 Total stored run time (sum of the per-run wall-clock `Seconds`, i.e. aggregate worker-hours) of the main study and the
 additional experiments, including the auxiliary rows stored with them: about 126 h; sensitivity studies and full-precision

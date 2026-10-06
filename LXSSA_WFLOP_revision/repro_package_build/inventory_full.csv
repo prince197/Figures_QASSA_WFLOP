@@ -441,7 +441,7 @@ analysis/rev3_constraint.py,rev3-code,include,17607,script of the sensitivity st
 analysis/rev3_constraint_analysis.log,rev3-log,include,5004,log of the sensitivity studies and analyses
 analysis/rev3_constraint_analysis.py,rev3-code,include,24517,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_constraint_deb.csv,rev3-data,include,1933025,run records / outputs of the sensitivity studies and analyses
-analysis/rev3_constraint_manifest.md,rev3-doc,include,10721,prespecification (sensitivity study or full-precision reruns)
+analysis/rev3_constraint_manifest.md,rev3-doc,include,10721,study design notes of the sensitivity studies
 analysis/rev3_constraint_pen.csv,rev3-data,include,1982983,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_constraint_proj.csv,rev3-data,include,2223287,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_constraint_run_deb.log,rev3-log,include,1752,log of the sensitivity studies and analyses
@@ -465,7 +465,7 @@ analysis/rev3_fine15_s0of1.csv,rev3-data,include,2874151,run records / outputs o
 analysis/rev3_fine15_s0of1.log,rev3-log,include,114654,log of the sensitivity studies and analyses
 analysis/rev3_fine_analysis.log,rev3-log,include,4320,log of the sensitivity studies and analyses
 analysis/rev3_fine_analysis.py,rev3-code,include,25155,script of the sensitivity studies / sensitivity analyses / full-precision reruns
-analysis/rev3_fine_manifest.md,rev3-doc,include,9994,prespecification (sensitivity study or full-precision reruns)
+analysis/rev3_fine_manifest.md,rev3-doc,include,9994,study design notes of the sensitivity studies
 analysis/rev3_fine_s0of10.csv,rev3-data,include,288810,run records / outputs of the sensitivity studies and analyses
 analysis/rev3_fine_s0of10.log,rev3-log,include,11478,log of the sensitivity studies and analyses
 analysis/rev3_fine_s1of10.csv,rev3-data,include,289419,run records / outputs of the sensitivity studies and analyses
@@ -600,7 +600,7 @@ analysis/rev3_numbers_theory_check.py,manuscript-tool,exclude,17821,internal num
 analysis/rev3_precision_audit.json,rev3-output,include,63810,output of the sensitivity studies and analyses
 analysis/rev3_precision_audit.py,rev3-code,include,18432,script of the sensitivity studies / sensitivity analyses / full-precision reruns
 analysis/rev3_precision_audit_records.csv,rev3-data,include,12116900,run records / outputs of the sensitivity studies and analyses
-analysis/rev3_precision_manifest.md,rev3-doc,include,2866,prespecification (sensitivity study or full-precision reruns)
+analysis/rev3_precision_manifest.md,rev3-doc,include,2866,study design notes of the sensitivity studies
 analysis/rev3_precision_notes.md,manuscript-tool,exclude,1828,internal drafting notes for the manuscript text
 analysis/rev3_precision_plan.json,rev3-output,include,232799,output of the sensitivity studies and analyses
 analysis/rev3_precision_rerun.py,rev3-code,include,37027,script of the sensitivity studies / sensitivity analyses / full-precision reruns
