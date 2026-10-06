@@ -33,9 +33,17 @@ Designed-group sensitivity (benchmark): the six (data set, radius) groups of rev
 group score = outcome mean over the cases and seeds of a group; exact sign-flip test of the case-weighted score over
 the 2^6 = 64 group sign patterns (smallest attainable two-sided p = 1/32), t_5 interval of the equal-group mean.
 Matched 1-deg comparison: direct 1-deg arm minus the 15-deg control arm (same seeds 31-60 and cases), wake loss under
-the 1-deg objective over the jointly feasible seed pairs (case means, then mean over the 8 cases), joint-seed 95%
-interval and sign-flip test of the per-seed case-average difference; matched all-run score (direct vs control run of
-the same method and seed).
+the 1-deg objective over the jointly feasible seed pairs. With I_ck = 1 for a jointly feasible pair, delta_ck = direct
+minus control loss, n_c = sum_k I_ck (C = 8 cases, K = 30 seeds): estimate Delta = (1/C) sum_c sum_k I_ck delta_ck / n_c
+(equal case weights); joint-seed 95% percentile interval (complete seed vectors resampled jointly, n_c and the case
+means recomputed within each resample; a case without a jointly feasible pair in a resample keeps its full-sample
+mean); exact sign-flip test, Wilcoxon check and seed sign counts on the aligned seed contributions
+g_k = (K/C) sum_c I_ck delta_ck / n_c, so that mean_k g_k = Delta (estimate, interval and test share the equal case
+weights); matched all-run score (direct vs control run of the same method and seed).
+Difference in differences (PSO-VNS vs PSO): z_ck = (L_direct_PSOVNS - L_direct_PSO) - (L_ctrl_PSOVNS - L_ctrl_PSO), all
+four losses under the 1-deg objective, on the common mask where all four runs are feasible; same equal-case estimate,
+joint-seed interval (B = 10,000, RNG seed DID_SEED) and aligned sign-flip test as the matched comparison (a single
+pre-specified contrast, not Holm-adjusted).
 Calibration (optional): the joint-seed percentile-bootstrap TOST of tab:S-sa-syncseed for PSO-VNS vs PSO and SSA-VNS
 vs RSD-VNS under a shifted null (first method's losses shifted so the benchmark estimand is -m or +m), replicate
 samples drawn as 30 complete seed vectors with replacement (the dependence structure kept), inner joint bootstrap as
@@ -56,6 +64,7 @@ import rev3_constraint_analysis as RCA      # noqa: E402
 import rev3_fine_analysis as RF             # noqa: E402
 
 BOOT_B, BOOT_SEED = 10000, 20261007
+DID_SEED = 20261006                          # RNG seed of the difference-in-differences interval
 CALIB_SEED = 20261008
 M = X.EQ_MARGIN
 ALPHA = 0.05
@@ -323,30 +332,89 @@ def fine_outcome(A, B):
     return O
 
 
-def matched_loss(D, C, boot_seed, B=BOOT_B):
-    """direct minus control, wake loss (%) under the 1-deg objective, jointly feasible seed pairs; per case mean,
-    then mean over cases; joint-seed bootstrap and sign flip of the per-seed case-average difference."""
-    both = D["feas"] & C["feas"]
-    nc, ns = both.shape
-    dd = np.where(both, D["loss"] - C["loss"], 0.0); bf = both.astype(float)
-    cmD = np.array([D["loss"][i][both[i]].mean() for i in range(nc)]); cmC = np.array([C["loss"][i][both[i]].mean() for i in range(nc)])
-    est = float((cmD - cmC).mean())
-    full = dd.sum(1) / np.maximum(bf.sum(1), 1)
-    rng = np.random.default_rng(boot_seed)
+def eq_case_contrib(dd, mask):
+    """Aligned seed contributions g_k = (K/C) sum_c I_ck d_ck / n_c (I = mask, n_c = sum_k I_ck), so that mean_k g_k is
+    the equal-case mean of the case means over the mask."""
+    nc, ns = mask.shape
+    n = mask.sum(1)
+    assert (n > 0).all()
+    return (ns / nc) * (np.where(mask, dd, 0.0) / n[:, None]).sum(0)
+
+
+def joint_case_boot(dd, mask, rng, B=BOOT_B):
+    """Joint-seed percentile bootstrap of the equal-case mean of the case means over the mask: one seed-index vector
+    per resample for all cases (counts-matrix form); per case the sum over the resampled seeds of I_ck d_ck and the
+    resampled n_c are recomputed; a case with n_c = 0 in a resample keeps its full-sample case mean."""
+    nc, ns = mask.shape
+    dz = np.where(mask, dd, 0.0); bf = mask.astype(float)
+    full = dz.sum(1) / np.maximum(bf.sum(1), 1)
     I = rng.integers(0, ns, (B, ns))
     Cn = np.bincount((I + ns * np.arange(B)[:, None]).ravel(), minlength=B * ns).reshape(B, ns).astype(float)
-    sd_, nd_ = Cn @ dd.T, Cn @ bf.T
-    bm = np.where(nd_ > 0, sd_ / np.maximum(nd_, 1), full[None]).mean(1)
-    # per seed: mean over the cases in which the pair is jointly feasible
-    ps = np.array([dd[:, k][both[:, k]].mean() for k in range(ns)])
-    p2, pg, pl = signflip_exact(ps, tol=1e-12 * np.abs(ps).sum())
+    sd_, nd_ = Cn @ dz.T, Cn @ bf.T
+    return np.where(nd_ > 0, sd_ / np.maximum(nd_, 1), full[None]).mean(1), int((nd_ == 0).sum())
+
+
+def aligned_tests(g):
+    """Exact sign-flip test, Wilcoxon check and sign counts of the aligned seed contributions g_k."""
+    p2, pg, pl = signflip_exact(g, tol=1e-12 * np.abs(g).sum())
+    return dict(seed_contributions=[float(v) for v in g], per_seed_mean=float(g.mean()),
+                seeds_lower=int((g < -1e-12).sum()), seeds_higher=int((g > 1e-12).sum()),
+                seeds_zero=int((np.abs(g) <= 1e-12).sum()), p_signflip=p2, p_signflip_less=pl, p_signflip_greater=pg,
+                p_wilcoxon=wil_p(g))
+
+
+SEED_WEIGHTS = ("equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and "
+                "seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of "
+                "the same estimand with n_c recomputed in each resample")
+
+
+def matched_loss(D, C, boot_seed, B=BOOT_B):
+    """direct minus control, wake loss (%) under the 1-deg objective, jointly feasible seed pairs; per case mean,
+    then mean over cases (equal case weights); joint-seed bootstrap of that estimand and exact sign flip of the
+    aligned seed contributions g_k (mean_k g_k = estimate)."""
+    both = D["feas"] & C["feas"]
+    nc, ns = both.shape
+    dd = np.where(both, D["loss"] - C["loss"], 0.0)
+    cmD = np.array([D["loss"][i][both[i]].mean() for i in range(nc)]); cmC = np.array([C["loss"][i][both[i]].mean() for i in range(nc)])
+    est = float((cmD - cmC).mean())
+    bm, fb = joint_case_boot(dd, both, np.random.default_rng(boot_seed), B)
+    g = eq_case_contrib(dd, both)
+    assert abs(g.mean() - est) < 1e-12
     fdm = lambda X_: float(np.mean([X_["loss"][i][X_["feas"][i]].mean() for i in range(nc)]))
-    return dict(jointly_feasible_pairs=int(both.sum()), n_cases=int(nc), loss_direct=float(cmD.mean()),
-                loss_control=float(cmC.mean()), diff=est, ci95_joint_seed=[float(v) for v in np.quantile(bm, [0.025, 0.975])],
-                ci90_joint_seed=[float(v) for v in np.quantile(bm, [0.05, 0.95])], per_seed_mean=float(ps.mean()),
-                seeds_lower=int((ps < 0).sum()), seeds_higher=int((ps > 0).sum()), p_signflip=p2, p_wilcoxon=wil_p(ps),
-                loss_direct_all_feasible=fdm(D), loss_control_all_feasible=fdm(C),
-                feasible_direct=int(D["feas"].sum()), feasible_control=int(C["feas"].sum()), runs=int(D["feas"].size))
+    r = dict(jointly_feasible_pairs=int(both.sum()), pairs_per_case=[int(v) for v in both.sum(1)], n_cases=int(nc),
+             loss_direct=float(cmD.mean()), loss_control=float(cmC.mean()), diff=est,
+             ci95_joint_seed=[float(v) for v in np.quantile(bm, [0.025, 0.975])],
+             ci90_joint_seed=[float(v) for v in np.quantile(bm, [0.05, 0.95])], boot_fallback_cases=fb)
+    r.update(aligned_tests(g))
+    r.update(weights=SEED_WEIGHTS, loss_direct_all_feasible=fdm(D), loss_control_all_feasible=fdm(C),
+             feasible_direct=int(D["feas"].sum()), feasible_control=int(C["feas"].sum()), runs=int(D["feas"].size))
+    return r
+
+
+def did_contrast(MT, a="PSOBV", b="PSOC", B=BOOT_B, seed=DID_SEED):
+    """Difference in differences z_ck = (L_direct_a - L_direct_b) - (L_ctrl1_a - L_ctrl1_b), 1-deg objective, on the
+    common mask where all four runs are feasible; equal-case estimate, joint-seed interval, aligned sign-flip test."""
+    Da, Db, Ca, Cb = MT["direct"][a], MT["direct"][b], MT["ctrl1"][a], MT["ctrl1"][b]
+    mask = Da["feas"] & Db["feas"] & Ca["feas"] & Cb["feas"]
+    nc, ns = mask.shape
+    dD, dC = Da["loss"] - Db["loss"], Ca["loss"] - Cb["loss"]
+    z = np.where(mask, dD - dC, 0.0)
+    cm = lambda x: np.array([x[i][mask[i]].mean() for i in range(nc)])
+    est = float(cm(dD - dC).mean())
+    bm, fb = joint_case_boot(z, mask, np.random.default_rng(seed), B)
+    g = eq_case_contrib(z, mask)
+    assert abs(g.mean() - est) < 1e-12
+    r = dict(a=a, b=b, definition="z_ck = (L_direct_a - L_direct_b) - (L_ctrl1_a - L_ctrl1_b), 1-deg objective",
+             mask="all four runs feasible", pairs_retained=int(mask.sum()), pairs_total=int(mask.size),
+             pairs_per_case=[int(v) for v in mask.sum(1)], n_cases=int(nc),
+             diff_direct=float(cm(dD).mean()), diff_control=float(cm(dC).mean()), did=est,
+             case_means=[float(v) for v in cm(dD - dC)],
+             ci95_joint_seed=[float(v) for v in np.quantile(bm, [0.025, 0.975])],
+             ci90_joint_seed=[float(v) for v in np.quantile(bm, [0.05, 0.95])], boot_B=B, boot_seed=seed,
+             boot_fallback_cases=fb, holm="none (single pre-specified contrast)")
+    r.update(aligned_tests(g))
+    r["weights"] = SEED_WEIGHTS
+    return r
 
 
 def fine_block():
@@ -396,6 +464,14 @@ def fine_block():
     ps = X.holm([out["matched"][a]["p_signflip"] for a in RF.METHODS])
     for a, h in zip(RF.METHODS, ps):
         out["matched"][a]["p_signflip_holm5"] = float(h)
+    ws = X.holm([out["matched"][a]["p_wilcoxon"] for a in RF.METHODS])
+    for a, h in zip(RF.METHODS, ws):
+        out["matched"][a]["p_wilcoxon_holm5"] = float(h)
+    dz = out["did_psovns_pso"] = did_contrast(MT)
+    print(f"DID PSO-VNS - PSO, direct minus control: {dz['did']:+.5f} pp CI95 {np.round(dz['ci95_joint_seed'], 5)} "
+          f"(arm diffs {dz['diff_direct']:+.5f} / {dz['diff_control']:+.5f}; pairs {dz['pairs_retained']}/{dz['pairs_total']} "
+          f"{dz['pairs_per_case']}) seeds lower {dz['seeds_lower']}/30 p_flip {dz['p_signflip']:.3g} p_W {dz['p_wilcoxon']:.3g}",
+          flush=True)
     # PSO-VNS - PSO conditional contrast, joint-seed version (estimand of the lower panel of tab:S-sa-fine)
     out["psovns_pso_joint"] = {}
     import mpce_results as MR
@@ -542,9 +618,15 @@ def tables(R):
     for a in RF.METHODS:
         r = FN["matched"][a]; ar = r["allrun_direct_vs_control"]; s = ar["seed"]
         L3.append(f"{LAB[a]} & {r['feasible_direct']}/{r['feasible_control']} & {r['jointly_feasible_pairs']} & {f3(r['loss_direct'])} & "
-                  f"{f3(r['loss_control'])} & {f3(r['diff'])} & {fci(r['ci95_joint_seed'])} & {r['seeds_lower']}/{30 - r['seeds_lower']} & "
+                  f"{f3(r['loss_control'])} & {f3(r['diff'])} & {fci(r['ci95_joint_seed'])} & {r['seeds_lower']}/{r['seeds_higher']} & "
                   f"{ptex(r['p_signflip_holm5'])} & {ar['W']}/{ar['T']}/{ar['L']} & {s['score']:.3f} " +
                   (f"[{s['cp95_prob_seed_all_won'][0]:.2f}, 1]$^{{\\dagger}}$" if s["ci_degenerate"] else fci(s['ci95_joint_seed'], 2)) + " \\\\")
+    dz = FN.get("did_psovns_pso")
+    if dz:
+        L3 += ["\\midrule",
+               f"PSO-VNS$-$PSO$^{{\\ddagger}}$ & -- & {dz['pairs_retained']} & {f3(dz['diff_direct'])} & {f3(dz['diff_control'])} & "
+               f"{f3(dz['did'])} & {fci(dz['ci95_joint_seed'])} & {dz['seeds_lower']}/{dz['seeds_higher']} & "
+               f"{ptex(dz['p_signflip'])} & -- & -- \\\\"]
     cap = ("Seed-level inference for the pooled all-run tests of the constraint-handling study (Table~\\ref{tab:S-sa-constraint}; "
            "variants (i) penalty with box clipping, (ii) Deb's rules with box clipping, (iii) Deb's rules with radial projection; "
            "six cases, seeds 31--60, 180 seed pairs per comparison) and of the direct 1$^\\circ$ study "
@@ -557,14 +639,30 @@ def tables(R):
            "test over all discordant seed pairs (pairs treated as independent) with the Holm adjustment of the source table. "
            "Bottom: matched comparison of the direct 1$^\\circ$ arm with the 15$^\\circ$ control arm (same methods, cases and "
            "seeds 31--60), wake loss $L$ (\\%) under the 1$^\\circ$ objective. Feas.: feasible runs of 240 (direct/control); "
-           "$n$: seed pairs with both runs feasible; $\\bar L$: mean over the 8 cases of the case means over these pairs; "
-           "$\\Delta\\bar L$ direct minus control (pp; negative = direct better) with 95\\% joint-seed interval; Seeds $-/+$: "
-           "seeds whose case-average difference is negative/positive; $p_{\\rm flip}$ exact sign-flip test of the 30 per-seed "
-           "differences, Holm over the 5 methods. All-run: direct run vs.\\ control run of the same method and seed "
+           "$n$: seed pairs with both runs feasible ($I_{ck}=1$, $n_c=\\sum_k I_{ck}$ in case $c$); $\\bar L$: mean over the "
+           "8 cases of the case means over these pairs; $\\Delta\\bar L=\\frac{1}{8}\\sum_c\\sum_k I_{ck}\\delta_{ck}/n_c$, "
+           "$\\delta_{ck}$ direct minus control (pp; negative = direct better), with 95\\% joint-seed interval (10{,}000 "
+           "joint resamples of the 30 seed vectors, case means and $n_c$ recomputed in each resample). Estimate, interval and "
+           "test use the same equal case weights: Seeds $-/+$ count the seeds with negative/positive contribution "
+           "$g_k=\\frac{30}{8}\\sum_c I_{ck}\\delta_{ck}/n_c$ (so $\\overline{g}=\\Delta\\bar L$), and $p_{\\rm flip}$ is the "
+           "exact sign-flip test of $\\overline{g}$ over all $2^{30}$ sign patterns, Holm over the 5 methods. "
+           "$^{\\ddagger}$Difference in differences $z_{ck}=(L^{\\rm dir}_{\\text{PSO-VNS}}-L^{\\rm dir}_{\\text{PSO}})-"
+           "(L^{\\rm ctl}_{\\text{PSO-VNS}}-L^{\\rm ctl}_{\\text{PSO}})$ (all four losses under the 1$^\\circ$ objective) on the "
+           "common mask of the case--seed pairs in which all four runs are feasible ($n$ = pairs retained of 240; per case "
+           "PAIRS_PER_CASE); $\\bar L$ direct and control: PSO-VNS minus PSO in each arm over this mask, "
+           "$\\Delta\\bar L$ their difference (negative = larger PSO-VNS advantage under direct 1$^\\circ$ optimization), with "
+           "the same equal case weights for estimate, interval (RNG seed DID_SEED) and sign-flip test; a single "
+           "contrast, $p_{\\rm flip}$ unadjusted. All-run: direct run vs.\\ control run of the same method and seed "
            "(feasible beats infeasible, two feasible runs by the 1$^\\circ$ objective), score with 95\\% joint-seed interval; "
            "$^{\\dagger}$all pairs won, so the percentile interval is degenerate ([1, 1]); given instead is the exact "
            "(Clopper--Pearson) 95\\% interval for the probability that a seed vector is won in all 8 cases (30 of 30 "
            "seeds), whose lower limit bounds the score from below.")
+    if not dz:                                          # JSON without the contrast (tables-only on an old file)
+        i, j = cap.index("$^{\\ddagger}$Difference"), cap.index("unadjusted. ") + len("unadjusted. ")
+        cap = cap[:i] + cap[j:]
+    else:
+        cap = cap.replace("PAIRS_PER_CASE", ", ".join(str(v) for v in dz["pairs_per_case"])).replace(
+            "DID_SEED", str(dz["boot_seed"]))
     out += ["\\begin{table}[!htbp]", "\\centering", "\\caption{" + cap + "}", "\\label{tab:S-sa-dep-studies}",
             "\\scriptsize\\setlength{\\tabcolsep}{2.5pt}", "\\begin{tabular}{@{}llcccccc@{}}", "\\toprule",
             "Study & Method & $W/T/L$ & Score & 95\\% CI & Seeds $+/-$ & $p_{\\rm flip}$ & $p_{\\rm sign}$ \\\\", "\\midrule",
@@ -600,6 +698,7 @@ def main(argv=None):
     ap.add_argument("--skip-calib", action="store_true")
     ap.add_argument("--tables-only", action="store_true", help="only rewrite the .tex from rev3_dependence.json")
     args = ap.parse_args(argv)
+    os.makedirs(args.out_dir, exist_ok=True)            # before any computation (the final save needs it)
     if args.tables_only:                                # rewrite the LaTeX tables from an existing JSON
         R = json.load(open(os.path.join(args.out_dir, "rev3_dependence.json")))
         open(os.path.join(args.out_dir, "rev3_dependence_tables.tex"), "w").write(tables(R))
@@ -619,6 +718,8 @@ def main(argv=None):
                                     "H0: within a seed the two methods are exchangeable (label swap leaves the joint "
                                     "distribution of the seed's run pairs unchanged), seeds independent"),
                               check="Wilcoxon signed-rank of the K seed scores against 1/2 (zeros dropped)",
+                              matched_loss=SEED_WEIGHTS,
+                              did=dict(boot_seed=DID_SEED, mask="all four runs feasible", weights=SEED_WEIGHTS),
                               alpha=ALPHA))
     t1 = time.time()
     bench, G, S, cases, RM = bench_block()

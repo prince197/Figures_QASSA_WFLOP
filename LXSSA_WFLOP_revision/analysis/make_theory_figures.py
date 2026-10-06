@@ -34,11 +34,16 @@ FAST = "--fast" in sys.argv
 SEED = 20260928
 
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
-BLUE, BLUE_XL = "#2a78d6", "#e6f0fc"
-ORANGE, GREEN = "#eb6834", "#008300"
-plt.rcParams.update({"font.family": "STIXGeneral", "mathtext.fontset": "stix", "font.size": 8.5,
+# Okabe-Ito colours as in all figures of the paper: old PSO setting vermillion, constriction setting (= PSO of the
+# main comparison) bluish green, stability regions in shades of blue
+BLUE, BLUE_XL = "#0072b2", "#dfecf6"
+ORANGE, GREEN = "#d55e00", "#009e73"
+# figure style shared by all figures of the paper (= mpce_results.FIG_STYLE): STIX text and math, 8 pt, drawn at the
+# printed width (0.44 x 16 cm of the main text), so that the fonts print at their nominal size
+plt.rcParams.update({"font.family": "STIXGeneral", "mathtext.fontset": "stix", "font.size": 8,
+                     "axes.labelsize": 8, "xtick.labelsize": 7.5, "ytick.labelsize": 7.5,
                      "text.color": INK, "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED,
-                     "pdf.fonttype": 42})
+                     "xtick.major.pad": 2, "ytick.major.pad": 2, "axes.labelpad": 2.5, "pdf.fonttype": 42})
 
 SETTINGS = {"old": (0.7, 2.0, 2.0), "constriction": (0.7298, 1.49618, 1.49618)}
 
@@ -211,26 +216,26 @@ def box_rows_tex(rows):
 
 # ----------------------------------------------------------------------------------------------------------
 def figure(st):
-    fig, ax = plt.subplots(figsize=(3.45, 2.45))
+    fig, ax = plt.subplots(figsize=(0.44 * 16.0 / 2.54, 2.3))
     w = np.linspace(-1, 1, 801)
     ax.fill_between(w, 0, order1_bound(w), color=BLUE_XL, lw=0, zorder=1)
-    ax.fill_between(w, 0, order2_bound(w), color=BLUE, alpha=0.30, lw=0, zorder=2)
+    ax.fill_between(w, 0, order2_bound(w), color=BLUE, alpha=0.28, lw=0, zorder=2)
     ax.plot(w, order1_bound(w), color=BLUE, lw=1.0, ls=(0, (4, 2)), zorder=3)
     ax.plot(w, order2_bound(w), color=BLUE, lw=1.4, zorder=3)
-    ax.text(0.68, 5.4, "order-1 only", ha="center", va="center", fontsize=7.5, color=INK)
-    ax.text(-0.84, 1.22, r"$c_1+c_2=4(1+w)$", ha="left", va="bottom", fontsize=7.0, color=MUTED,
+    ax.text(0.80, 5.25, "order-1\nonly", ha="center", va="center", fontsize=7.5, color=INK, linespacing=1.0)
+    ax.text(-0.80, 1.45, r"$c_1+c_2=4(1+w)$", ha="left", va="bottom", fontsize=7.0, color=MUTED,
             rotation=np.degrees(np.arctan(4.0)), rotation_mode="anchor", transform_rotates_text=True)
-    ax.text(-0.22, 1.05, "order-1 and order-2\n" r"$c_1+c_2<\frac{24(1-w^2)}{7-5w}$", ha="center", va="center",
-            fontsize=7.5, color=INK)
-    ax.text(-0.93, 7.55, "not order-1 stable", ha="left", va="center", fontsize=7.2, color=MUTED)
+    ax.text(-0.12, 1.15, "order-1 and order-2\n" r"$c_1+c_2<24(1-w^2)/(7-5w)$", ha="center", va="center",
+            fontsize=7.5, color=INK, linespacing=1.15)
+    ax.text(-0.95, 7.45, "not order-1 stable", ha="left", va="center", fontsize=7.5, color=MUTED)
     o, c = st["old"], st["constriction"]
     ax.scatter([o["w"]], [o["sum"]], s=34, marker="s", color=ORANGE, edgecolor="white", lw=0.8, zorder=6)
     ax.scatter([c["w"]], [c["sum"]], s=40, marker="o", color=GREEN, edgecolor="white", lw=0.8, zorder=6)
     ax.annotate(f"old setting\n$w=0.7$, $c_1+c_2=4$\n(order-2 bound {o['b2']:.2f})", (o["w"], o["sum"]),
-                xytext=(-0.33, 6.45), fontsize=7.2, ha="center", va="center", color=INK,
+                xytext=(-0.30, 5.75), fontsize=7.5, ha="center", va="center", color=INK, linespacing=1.05,
                 arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6, shrinkA=1, shrinkB=4))
     ax.annotate(f"constriction\n$w=0.7298$, $c_1+c_2=2.99$\n(order-2 bound {c['b2']:.2f})", (c["w"], c["sum"]),
-                xytext=(0.55, 1.0), fontsize=7.2, ha="center", va="center", color=INK,
+                xytext=(0.52, 0.95), fontsize=7.5, ha="center", va="center", color=INK, linespacing=1.05,
                 arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.6, shrinkA=1, shrinkB=4))
     ax.set_xlim(-1, 1); ax.set_ylim(0, 8)
     ax.set_xlabel(r"inertia weight $w$"); ax.set_ylabel(r"$c_1+c_2$")

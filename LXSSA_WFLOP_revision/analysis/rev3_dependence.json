@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-05 17:09:11",
+ "generated": "2026-10-06 03:42:15",
  "script": "rev3_dependence.py",
  "margin_pp": 0.05,
  "conventions": {
@@ -12,6 +12,12 @@
   },
   "test": "exact two-sided sign-flip randomization test of mean_k(s_k - 1/2), all 2^K patterns; H0: within a seed the two methods are exchangeable (label swap leaves the joint distribution of the seed's run pairs unchanged), seeds independent",
   "check": "Wilcoxon signed-rank of the K seed scores against 1/2 (zeros dropped)",
+  "matched_loss": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample",
+  "did": {
+   "boot_seed": 20261006,
+   "mask": "all four runs feasible",
+   "weights": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample"
+  },
   "alpha": 0.05
  },
  "benchmark": {
@@ -1464,7 +1470,7 @@
    ],
    "p_calibrated_binding": 0.0001999600079984003,
    "fallback_resamples": 0,
-   "seconds": 155.1
+   "seconds": 70.9
   },
   "PSOBV-PSOC|plus": {
    "reps": 5000,
@@ -1486,7 +1492,7 @@
    ],
    "p_calibrated_binding": 0.0001999600079984003,
    "fallback_resamples": 0,
-   "seconds": 205.3
+   "seconds": 70.4
   },
   "PSOBV-PSOC|implementation_check": {
    "paper_joint_ci90": [
@@ -1519,7 +1525,7 @@
    ],
    "p_calibrated_binding": 0.0001999600079984003,
    "fallback_resamples": 0,
-   "seconds": 193.3
+   "seconds": 121.6
   },
   "SSABV-RSDVNS|plus": {
    "reps": 5000,
@@ -1541,7 +1547,7 @@
    ],
    "p_calibrated_binding": 0.05838832233553289,
    "fallback_resamples": 0,
-   "seconds": 95.6
+   "seconds": 79.0
   },
   "SSABV-RSDVNS|implementation_check": {
    "paper_joint_ci90": [
@@ -1559,7 +1565,7 @@
   "reps": 5000,
   "inner": 10000,
   "seed": 20261008,
-  "seconds": 650.5
+  "seconds": 342.7
  },
  "constraint": {
   "pen": {
@@ -4149,6 +4155,16 @@
   "matched": {
    "PSOBV": {
     "jointly_feasible_pairs": 240,
+    "pairs_per_case": [
+     30,
+     30,
+     30,
+     30,
+     30,
+     30,
+     30,
+     30
+    ],
     "n_cases": 8,
     "loss_direct": 3.6262886594938375,
     "loss_control": 4.744939540525706,
@@ -4161,11 +4177,48 @@
      -1.172915320980042,
      -1.064425186369656
     ],
+    "boot_fallback_cases": 0,
+    "seed_contributions": [
+     -1.1374013936034137,
+     -0.8334208124277905,
+     -1.1373392445221049,
+     -1.3104990908405505,
+     -1.1993843738400591,
+     -1.119030474296637,
+     -0.9164185674481415,
+     -1.1252588984149388,
+     -0.9727737243391527,
+     -0.8872269591818613,
+     -1.296372755668064,
+     -1.3695244757491942,
+     -0.8133116884344936,
+     -1.1707984426173283,
+     -0.8829079573245225,
+     -1.1908685291649335,
+     -1.2984699175174177,
+     -0.7974090870293106,
+     -1.226104063297997,
+     -1.462059690202018,
+     -0.9253252769931829,
+     -1.0542341470735415,
+     -1.1848553299011213,
+     -1.3687142423314798,
+     -1.1341805807369343,
+     -1.0490141131623247,
+     -0.9929050008906886,
+     -1.1067827138039736,
+     -1.3583311532862359,
+     -1.238603726856626
+    ],
     "per_seed_mean": -1.1186508810318678,
     "seeds_lower": 30,
     "seeds_higher": 0,
+    "seeds_zero": 0,
     "p_signflip": 1.862645149230957e-09,
+    "p_signflip_less": 9.313225746154785e-10,
+    "p_signflip_greater": 1.0,
     "p_wilcoxon": 1.862645149230957e-09,
+    "weights": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample",
     "loss_direct_all_feasible": 3.6262886594938375,
     "loss_control_all_feasible": 4.744939540525706,
     "feasible_direct": 240,
@@ -4239,10 +4292,21 @@
       ]
      }
     },
-    "p_signflip_holm5": 9.313225746154785e-09
+    "p_signflip_holm5": 9.313225746154785e-09,
+    "p_wilcoxon_holm5": 9.313225746154785e-09
    },
    "PSOC": {
     "jointly_feasible_pairs": 238,
+    "pairs_per_case": [
+     29,
+     30,
+     30,
+     30,
+     29,
+     30,
+     30,
+     30
+    ],
     "n_cases": 8,
     "loss_direct": 3.8200368433622076,
     "loss_control": 4.831104245044003,
@@ -4255,11 +4319,48 @@
      -1.0673693565228568,
      -0.9539461066349216
     ],
-    "per_seed_mean": -1.0111788099600019,
+    "boot_fallback_cases": 0,
+    "seed_contributions": [
+     -0.8134609607106439,
+     -0.8718991328419361,
+     -1.014959865945371,
+     -1.0277694668577992,
+     -1.0821177253379128,
+     -0.7890070707613424,
+     -0.8870735363511204,
+     -1.0159871403897214,
+     -0.6845787494709761,
+     -0.7885118243324617,
+     -1.3346310191496282,
+     -1.1855876591843164,
+     -1.0912147659487823,
+     -1.2878241401038142,
+     -0.9051097075579982,
+     -1.045534426450293,
+     -1.0577279694292196,
+     -0.8363415388793417,
+     -1.1346023110333268,
+     -1.3775032651594847,
+     -0.8126543203750726,
+     -0.9464101723218536,
+     -0.8271414068516136,
+     -1.2113427842967228,
+     -1.2456877603315148,
+     -0.9194756306724563,
+     -0.825004225195302,
+     -0.9981234527605116,
+     -1.3792601095776211,
+     -0.9354799121756667
+    ],
+    "per_seed_mean": -1.011067401681794,
     "seeds_lower": 30,
     "seeds_higher": 0,
+    "seeds_zero": 0,
     "p_signflip": 1.862645149230957e-09,
+    "p_signflip_less": 9.313225746154785e-10,
+    "p_signflip_greater": 1.0,
     "p_wilcoxon": 1.862645149230957e-09,
+    "weights": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample",
     "loss_direct_all_feasible": 3.8200368433622076,
     "loss_control_all_feasible": 4.831104245044003,
     "feasible_direct": 238,
@@ -4333,10 +4434,21 @@
       ]
      }
     },
-    "p_signflip_holm5": 9.313225746154785e-09
+    "p_signflip_holm5": 9.313225746154785e-09,
+    "p_wilcoxon_holm5": 9.313225746154785e-09
    },
    "GA": {
     "jointly_feasible_pairs": 230,
+    "pairs_per_case": [
+     25,
+     30,
+     30,
+     30,
+     25,
+     30,
+     30,
+     30
+    ],
     "n_cases": 8,
     "loss_direct": 3.9483274195588836,
     "loss_control": 4.788588193061254,
@@ -4349,11 +4461,48 @@
      -0.8878971662661052,
      -0.7947651678540922
     ],
-    "per_seed_mean": -0.8575524711977143,
+    "boot_fallback_cases": 0,
+    "seed_contributions": [
+     -0.8032922564426829,
+     -0.7210815523268085,
+     -0.853498823051199,
+     -0.7624736957619161,
+     -0.7876060012532298,
+     -0.8678897052932698,
+     -0.7914399197079236,
+     -0.6845476732834488,
+     -0.740507720527518,
+     -0.6425376830690225,
+     -0.9293185826252806,
+     -0.7337738936441652,
+     -0.9226337846301478,
+     -1.097474140779479,
+     -0.938198373428042,
+     -1.01693165489964,
+     -0.8878339415846853,
+     -0.7753838561408453,
+     -0.8884128056011186,
+     -0.551100227472148,
+     -0.9756595557676468,
+     -0.7130684415771119,
+     -0.555194013088318,
+     -0.8445661395782027,
+     -0.7699281835529899,
+     -0.9223040287720674,
+     -1.1473017730967758,
+     -0.7925576903340187,
+     -1.27996272783988,
+     -0.8113443599415318
+    ],
+    "per_seed_mean": -0.8402607735023704,
     "seeds_lower": 30,
     "seeds_higher": 0,
+    "seeds_zero": 0,
     "p_signflip": 1.862645149230957e-09,
+    "p_signflip_less": 9.313225746154785e-10,
+    "p_signflip_greater": 1.0,
     "p_wilcoxon": 1.862645149230957e-09,
+    "weights": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample",
     "loss_direct_all_feasible": 3.9483274195588836,
     "loss_control_all_feasible": 4.788588193061254,
     "feasible_direct": 230,
@@ -4427,10 +4576,21 @@
       ]
      }
     },
-    "p_signflip_holm5": 9.313225746154785e-09
+    "p_signflip_holm5": 9.313225746154785e-09,
+    "p_wilcoxon_holm5": 9.313225746154785e-09
    },
    "SLSQP": {
     "jointly_feasible_pairs": 238,
+    "pairs_per_case": [
+     30,
+     30,
+     30,
+     30,
+     28,
+     30,
+     30,
+     30
+    ],
     "n_cases": 8,
     "loss_direct": 4.31471799975809,
     "loss_control": 4.636306271047644,
@@ -4443,11 +4603,48 @@
      -0.3856432369481896,
      -0.2613410697967931
     ],
-    "per_seed_mean": -0.32129064933889057,
+    "boot_fallback_cases": 0,
+    "seed_contributions": [
+     -0.6940272438753367,
+     -0.2481695895302291,
+     -0.6857316609615443,
+     0.08367531125671411,
+     -0.11410838845662644,
+     -0.1522200016220044,
+     -0.03276529499198904,
+     -0.953996261532535,
+     -0.28031487395787524,
+     -0.3143252643629468,
+     -0.37299503245251747,
+     -0.3396484638136853,
+     -0.33969550109001756,
+     -0.08246364617584175,
+     -0.5056055048204356,
+     -0.16582830310486196,
+     -0.359872026838368,
+     -0.4328939378532622,
+     -0.2540416355890129,
+     -0.2956915373491446,
+     -0.3102019621442094,
+     -0.18931644557385896,
+     -0.4928334601609337,
+     -0.2909714057867265,
+     -0.4496207555105805,
+     -0.3561991124499951,
+     -0.1521198322810865,
+     -0.27506406055448673,
+     -0.48874457184200515,
+     -0.10185767526123506
+    ],
+    "per_seed_mean": -0.32158827128955453,
     "seeds_lower": 29,
     "seeds_higher": 1,
+    "seeds_zero": 0,
     "p_signflip": 7.450580596923828e-09,
+    "p_signflip_less": 3.725290298461914e-09,
+    "p_signflip_greater": 0.9999999972060323,
     "p_wilcoxon": 9.313225746154785e-09,
+    "weights": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample",
     "loss_direct_all_feasible": 4.314062576327192,
     "loss_control_all_feasible": 4.639533921822496,
     "feasible_direct": 239,
@@ -4521,10 +4718,21 @@
       ]
      }
     },
-    "p_signflip_holm5": 9.313225746154785e-09
+    "p_signflip_holm5": 9.313225746154785e-09,
+    "p_wilcoxon_holm5": 9.313225746154785e-09
    },
    "RSDVNS": {
     "jointly_feasible_pairs": 238,
+    "pairs_per_case": [
+     29,
+     30,
+     30,
+     30,
+     29,
+     30,
+     30,
+     30
+    ],
     "n_cases": 8,
     "loss_direct": 3.92701150213677,
     "loss_control": 5.018715630660029,
@@ -4537,11 +4745,48 @@
      -1.1553264618056895,
      -1.030436581752916
     ],
-    "per_seed_mean": -1.0919094673907812,
+    "boot_fallback_cases": 0,
+    "seed_contributions": [
+     -1.0509530578391295,
+     -1.4831861154610277,
+     -1.2454658847268156,
+     -1.0092275765904681,
+     -0.7814341764913584,
+     -1.176696083774607,
+     -1.0778854839990228,
+     -0.9320484522072099,
+     -0.8990715039573105,
+     -0.9996958369631526,
+     -1.1030496625480373,
+     -0.9923735091846444,
+     -1.0244762613841198,
+     -0.7636578462811227,
+     -1.0570457502905881,
+     -1.206495926618776,
+     -0.9728823217409881,
+     -1.5204893906783716,
+     -0.9129878757137044,
+     -0.8370954429422922,
+     -1.343138000119518,
+     -1.354514518591799,
+     -0.8832241917942114,
+     -1.5107075028445693,
+     -1.1176606841065688,
+     -1.2344414886629287,
+     -1.3289496053880598,
+     -0.7650176448977243,
+     -0.8995433369818069,
+     -1.2677087229178226
+    ],
+    "per_seed_mean": -1.0917041285232585,
     "seeds_lower": 30,
     "seeds_higher": 0,
+    "seeds_zero": 0,
     "p_signflip": 1.862645149230957e-09,
+    "p_signflip_less": 9.313225746154785e-10,
+    "p_signflip_greater": 1.0,
     "p_wilcoxon": 1.862645149230957e-09,
+    "weights": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample",
     "loss_direct_all_feasible": 3.92701150213677,
     "loss_control_all_feasible": 5.018715630660029,
     "feasible_direct": 238,
@@ -4615,8 +4860,94 @@
       ]
      }
     },
-    "p_signflip_holm5": 9.313225746154785e-09
+    "p_signflip_holm5": 9.313225746154785e-09,
+    "p_wilcoxon_holm5": 9.313225746154785e-09
    }
+  },
+  "did_psovns_pso": {
+   "a": "PSOBV",
+   "b": "PSOC",
+   "definition": "z_ck = (L_direct_a - L_direct_b) - (L_ctrl1_a - L_ctrl1_b), 1-deg objective",
+   "mask": "all four runs feasible",
+   "pairs_retained": 238,
+   "pairs_total": 240,
+   "pairs_per_case": [
+    29,
+    30,
+    30,
+    30,
+    29,
+    30,
+    30,
+    30
+   ],
+   "n_cases": 8,
+   "diff_direct": -0.21092665444002903,
+   "diff_control": -0.0956957136508927,
+   "did": -0.1152309407891363,
+   "case_means": [
+    -0.18137939075484913,
+    -0.019413986177680326,
+    -0.047535140282879675,
+    -0.18631568475057872,
+    -0.06216141413018314,
+    -0.007090966902295707,
+    -0.1921447817239944,
+    -0.22580616159062933
+   ],
+   "ci95_joint_seed": [
+    -0.16732270930798945,
+    -0.059910120220813164
+   ],
+   "ci90_joint_seed": [
+    -0.1595795552238452,
+    -0.06938176229823091
+   ],
+   "boot_B": 10000,
+   "boot_seed": 20261006,
+   "boot_fallback_cases": 0,
+   "holm": "none (single pre-specified contrast)",
+   "seed_contributions": [
+    -0.3336685384901303,
+    0.033468297213129994,
+    -0.13092354115332516,
+    -0.2918094507775029,
+    -0.131029101643022,
+    -0.33961734231911056,
+    -0.037461036266412145,
+    -0.12639264369325426,
+    -0.29309623928507006,
+    -0.10928381195847656,
+    0.02119649939365619,
+    -0.1990509374406061,
+    0.27394871406427745,
+    0.09982221613089884,
+    0.12158149517865918,
+    -0.155774183258065,
+    -0.2508829913574515,
+    0.031065755176606546,
+    -0.1011876337619994,
+    -0.09736892723234745,
+    -0.12621356161010852,
+    -0.12080406816342101,
+    -0.3686471809616242,
+    -0.1742508907918713,
+    0.09586191786576387,
+    -0.14256143788412576,
+    -0.17952554978971672,
+    -0.12210592939560823,
+    0.009646369711381912,
+    -0.311864491175214
+   ],
+   "per_seed_mean": -0.11523094078913629,
+   "seeds_lower": 22,
+   "seeds_higher": 8,
+   "seeds_zero": 0,
+   "p_signflip": 0.00039124302566051483,
+   "p_signflip_less": 0.00019562151283025742,
+   "p_signflip_greater": 0.9998043794184923,
+   "p_wilcoxon": 0.00016989745199680328,
+   "weights": "equal case weights: estimate = (1/C) sum_c sum_k I_ck d_ck / n_c; sign-flip test, Wilcoxon check and seed sign counts on g_k = (K/C) sum_c I_ck d_ck / n_c (mean_k g_k = estimate); joint-seed bootstrap of the same estimand with n_c recomputed in each resample"
   },
   "psovns_pso_joint": {
    "direct": {
@@ -5258,5 +5589,5 @@
   }
  ],
  "verdict_changes": [],
- "seconds": 652.5
+ "seconds": 344.6
 }

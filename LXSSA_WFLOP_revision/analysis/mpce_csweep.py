@@ -325,16 +325,14 @@ def figure(out, D):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import matplotlib.ticker
-    INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
-    # validated categorical slots (dataviz validator, --pairs all, light: CVD dE >= 9.2, normal dE >= 16.3);
-    # identity also carried by marker shape and direct labels
-    COL = dict(sweep="#2a78d6", vzero="#eb6834", ref="#1baf7a", vmax="#4a3aa7")
-    plt.rcParams.update({"font.family": "serif", "font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
-                         "xtick.color": MUTED, "ytick.color": MUTED, "axes.grid": True, "grid.color": GRID,
-                         "grid.linewidth": 0.5, "axes.spines.top": False, "axes.spines.right": False,
-                         "legend.frameon": False, "lines.linewidth": 1.4, "pdf.fonttype": 42})
+    from mpce_results import FIG_STYLE, TW_MAIN, MUTED   # the figure style shared by all figures of the paper
+    # Okabe-Ito slots (dataviz validator, --pairs all, light: normal-vision dE >= 15.6); identity also carried by
+    # marker shape; the constriction setting (= PSO of the main comparison) has the PSO colour of all figures
+    COL = dict(sweep="#0072b2", vzero="#e69f00", ref="#009e73", vmax="#cc79a7")
+    plt.rcParams.update(FIG_STYLE)
     st = out["settings"]
-    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.5))
+    # printed in the main text at 0.8 of the text width (\swResNarrowGraphics), in the supplement at full width
+    fig, axes = plt.subplots(1, 3, figsize=(0.8 * TW_MAIN, 2.15))
     spec = [("feas_pct", "feasible final layouts (%)", False, 1.0),
             ("loss_common", f"mean wake loss (%)\n(feasible runs, {out['n_common_loss_cases']} common cases)", False, 1.0),
             ("spread_rel_median", "final swarm spread / r (%)", True, 100.0)]
@@ -343,7 +341,7 @@ def figure(out, D):
     for ax, (key, yl, logy, sc) in zip(axes, spec):
         ax.axvline(out["c_star"], color=MUTED, ls=(0, (4, 2)), lw=0.9, zorder=1)
         y = np.array([st[a][key] if st[a][key] is not None else np.nan for a in SWEEP], float) * sc
-        h, = ax.plot(xs, y, color=COL["sweep"], marker="o", ms=4.5, lw=1.6, mec="white", mew=0.8, zorder=3,
+        h, = ax.plot(xs, y, color=COL["sweep"], marker="o", ms=4, lw=1.4, mec="white", mew=0.7, zorder=3,
                      label="$w=0.7$, $c_1=c_2=c$; clip, keep $v$ ($c=2$: old setting)")
         handles["sweep"] = h
         for a, col, mk, dx, lab in (("PSOOLD_VZERO", COL["vzero"], "s", 0.035, "$c=2$, clipped $v$ set to 0"),
@@ -352,7 +350,7 @@ def figure(out, D):
             v = st[a][key]
             if v is None or not np.isfinite(v):
                 continue
-            h, = ax.plot([C_OF[a] + dx], [v * sc], ls="none", marker=mk, ms=5.5, color=col, mec="white", mew=0.8,
+            h, = ax.plot([C_OF[a] + dx], [v * sc], ls="none", marker=mk, ms=5.5, color=col, mec="white", mew=0.7,
                          zorder=4, label=lab)
             handles[a] = h
         if logy:
@@ -361,13 +359,14 @@ def figure(out, D):
         ax.set_xlabel("$c$ ($c_1=c_2$)"); ax.set_ylabel(yl)
         ax.set_xlim(1.12, 2.13)
         ax.set_xticks([1.2, 1.4, 1.6, 1.8, 2.0])
+        ax.set_xticklabels(["1.2", "1.4", "1.6", "1.8", "2.0"])
     axes[0].set_ylim(-3, 103)
     axes[0].text(out["c_star"] - 0.02, 8, f"order-2\nboundary\n$c^*={out['c_star']:.4f}$", ha="right", va="bottom",
-                 fontsize=6.8, color=MUTED)
-    fig.tight_layout(w_pad=1.2, rect=(0, 0, 1, 0.80))
+                 fontsize=7.5, color=MUTED, linespacing=1.1)
+    fig.tight_layout(w_pad=0.8, rect=(0, 0, 1, 0.80))
     order = ["sweep", "PSOOLD_VZERO", "PSOOLD_VMAX", "PSOC"]
     fig.legend([handles[k] for k in order if k in handles], [handles[k].get_label() for k in order if k in handles],
-               loc="upper center", ncol=2, fontsize=7, bbox_to_anchor=(0.5, 1.0), handletextpad=0.4, columnspacing=1.2)
+               loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.0), handletextpad=0.3, columnspacing=1.0)
     d = os.path.join(HERE, "..", "figures_mpce")
     fig.savefig(os.path.join(d, "csweep.pdf"), bbox_inches="tight")
     fig.savefig(os.path.join(d, "csweep.png"), dpi=170, bbox_inches="tight")

@@ -51,6 +51,12 @@
 We show how baseline configuration, random-sampling controls and the treatment of unsuccessful runs change comparisons of wind farm layout optimizers on the discretized Kusiak--Song benchmark (68 cases, 30 paired seeds, 6,030 evaluations). The PSO setting $w=0.7$, $c_1=c_2=2$, variance-unstable under stagnation, puts PSO behind salp-swarm hybrids; Clerc--Kennedy constriction puts it ahead. Against equal-cost disc sampling, an SSA first phase gains at most 0.05 percentage points (pp) of wake loss at $4D$ and $5D$ spacing, not at $6D$; against square sampling it appears to help. PSO followed by variable neighborhood search (PSO-VNS) ranks first; on this fixed benchmark its mean advantage over well-configured PSO lies within a post hoc $\pm0.05$~pp margin (not over scenario clusters), but reaches 0.19~pp when optimizing with 1$^\circ$ direction bins (eight cases). PSO-VNS reaches feasibility more often than PSO on two measured-wind blocks; conditional-quality rankings can miss the most reliable method. A real-coded genetic algorithm leads at the larger budget on Horns Rev~1 and among gradient-free methods with 36 IEA37 turbines; SLSQP with exact gradients, reported-feasible in all runs, beats every metaheuristic on IEA37 at equal charged budget. In a constraint-handling study (six cases, five methods), Deb's rules with box clipping change the ranking. Conclusions concern the tested implementations and models, not universal superiority.
 \end{abstract}
 
+% Graphical abstract (elsarticle 3.3: typeset by \maketitle on a separate page before the title page;
+% figure from analysis/make_graphical_abstract.py, also submitted as a separate file)
+\begin{graphicalabstract}
+\includegraphics[width=\textwidth]{figures_final/graphical_abstract.pdf}
+\end{graphicalabstract}
+
 \begin{keyword}
 Benchmarking \sep equivalence testing \sep particle swarm optimization \sep random-sampling control \sep constraint handling \sep wake effect \sep wind farm layout optimization
 \end{keyword}

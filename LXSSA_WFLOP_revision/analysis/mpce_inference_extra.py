@@ -1147,24 +1147,34 @@ def equiv_figure(EL, fn):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
-    plt.rcParams.update({"font.family": "serif", "font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
-                         "xtick.color": MUTED, "ytick.color": MUTED, "axes.grid": True, "grid.color": GRID,
-                         "grid.linewidth": 0.5, "axes.spines.top": False, "axes.spines.right": False,
-                         "legend.frameon": False, "lines.linewidth": 1.4, "pdf.fonttype": 42})
+    # figure style shared by all figures of the paper (= mpce_results.FIG_STYLE; STIX text, drawn at the printed
+    # width 0.45 x 16 cm of the main text, so that the fonts print at their nominal size)
+    plt.rcParams.update({"font.family": "STIXGeneral", "mathtext.fontset": "stix", "font.size": 8, "axes.titlesize": 8,
+                         "axes.labelsize": 8, "xtick.labelsize": 7.5, "ytick.labelsize": 7.5, "legend.fontsize": 7.5,
+                         "axes.edgecolor": MUTED, "axes.labelcolor": INK, "text.color": INK, "xtick.color": MUTED,
+                         "ytick.color": MUTED, "axes.linewidth": 0.6, "xtick.major.width": 0.6, "ytick.major.width": 0.6,
+                         "xtick.minor.width": 0.4, "ytick.minor.width": 0.4, "xtick.major.size": 2.5,
+                         "ytick.major.size": 2.5, "xtick.minor.size": 1.5, "ytick.minor.size": 1.5, "xtick.major.pad": 2,
+                         "ytick.major.pad": 2, "axes.labelpad": 2.5, "axes.titlepad": 3.5, "axes.grid": True,
+                         "grid.color": GRID, "grid.linewidth": 0.5, "axes.spines.top": False, "axes.spines.right": False,
+                         "legend.frameon": False, "legend.handlelength": 2.2, "legend.columnspacing": 1.2,
+                         "legend.handletextpad": 0.5, "legend.borderaxespad": 0.2, "lines.linewidth": 1.2,
+                         "savefig.pad_inches": 0.02, "pdf.fonttype": 42})
     C = EL["curve"]; x = np.array(C["margins"]); r = EL["pairs"][C["pair"]]
-    lines = [("seed", "#2a78d6", "-", "seed level", r["seed"]["min_margin_pp"]),
-             ("case", "#eb6834", "-", "case level", r["case"]["min_margin_pp"]),
-             ("cluster_cr2", "#1baf7a", "-", "cluster, CR2 $t_5$", r["cluster"]["cr2"]["min_margin_pp"]),
-             ("cluster_wild", "#1baf7a", (0, (3, 1.5)), "cluster, wild bootstrap", r["cluster"]["wild"]["min_margin_pp"])]
-    fig, ax = plt.subplots(figsize=(3.45, 2.35))
+    # Okabe-Ito colours (colour-blind safe); the two cluster-level curves share green and differ by dash pattern
+    lines = [("seed", "#0072b2", "-", "seed level", r["seed"]["min_margin_pp"]),
+             ("case", "#d55e00", "-", "case level", r["case"]["min_margin_pp"]),
+             ("cluster_cr2", "#009e73", "-", "cluster level, CR2 $t_5$", r["cluster"]["cr2"]["min_margin_pp"]),
+             ("cluster_wild", "#009e73", (0, (3, 1.5)), "cluster level, wild bootstrap", r["cluster"]["wild"]["min_margin_pp"])]
+    fig, ax = plt.subplots(figsize=(0.45 * 16.0 / 2.54, 2.75))
     floor = 1.0 / (BOOT_N + 1)
     ax.axhline(0.05, color=MUTED, lw=0.8, ls=":", zorder=1)
     ax.axvline(EQ_MARGIN, color=MUTED, lw=0.8, ls=":", zorder=1)
-    ax.text(0.001, 0.05 * 0.8, r"$\alpha=0.05$", color=MUTED, ha="left", va="top", fontsize=6.5)
-    ax.text(EQ_MARGIN - 0.0008, 2.0e-3, f"margin {EQ_MARGIN:g} pp", color=MUTED, ha="right", va="center", fontsize=6.5, rotation=90)
-    box = dict(boxstyle="square,pad=0.1", fc="white", ec="none")
-    # direct labels in ink next to a swatch of the line; the dot on the alpha line marks each minimal margin
-    pos = {"seed": (0.0405, 1.5e-4), "case": (0.0855, 1.5e-4), "cluster_cr2": (0.0665, 0.50), "cluster_wild": (0.0665, 0.22)}
+    ax.text(0.001, 0.05 * 0.8, r"$\alpha=0.05$", color=MUTED, ha="left", va="top", fontsize=7.5)
+    ax.text(EQ_MARGIN - 0.001, 1.2e-3, f"$m$ = {EQ_MARGIN:g} pp", color=MUTED, ha="right", va="center", fontsize=7.5,
+            rotation=90)
+    # legend below the axes (keeps the curves free); the dot on the alpha line marks each minimal margin
+    hs = []
     for k, col, ls, lab, mm in lines:
         y = np.array(C[k], float)
         if k in ("seed", "case"):                               # bootstrap p has the resolution floor 1/(B+1): stop there
@@ -1175,15 +1185,16 @@ def equiv_figure(EL, fn):
                 x_, y_ = x, y
         else:
             x_, y_ = x, y
-        ax.plot(x_, y_, color=col, ls=ls, lw=1.6 if k != "cluster_wild" else 1.3, zorder=3)
-        ax.plot([mm], [0.05], marker="o", ms=4, color=col, mec="white", mew=0.6, zorder=4)
-        tx, ty = pos[k]
-        ax.text(tx, ty, f"{lab}" + (", " if k.startswith("cluster") else "\n") + f"$m_{{\min}}={mm:.3f}$", fontsize=6.3, color=INK, ha="left", va="center", bbox=box, zorder=5)
-        if k.startswith("cluster"):
-            ax.plot([tx - 0.0065, tx - 0.001], [ty, ty], color=col, ls=ls, lw=1.6, zorder=5)
+        h, = ax.plot(x_, y_, color=col, ls=ls, lw=1.5 if k != "cluster_wild" else 1.3, zorder=3,
+                     label=f"{lab}, $m_{{\min}}={mm:.3f}$")
+        hs.append(h)
+        ax.plot([mm], [0.05], marker="o", ms=4.5, color=col, mec="white", mew=0.6, zorder=4)
     ax.set_yscale("log"); ax.set_ylim(8e-5, 1.3); ax.set_xlim(0, 0.12)
+    ax.set_xticks([0, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12])
+    ax.set_xticklabels(["0", "0.02", "0.04", "0.06", "0.08", "0.10", "0.12"])
     ax.set_xlabel("equivalence margin $m$ (pp of wake loss)")
     ax.set_ylabel(r"TOST $p$ (PSO-VNS $-$ PSO)")
+    ax.legend(handles=hs, loc="upper left", bbox_to_anchor=(-0.2, -0.2), ncol=1, handlelength=2.4, labelspacing=0.25)
     fig.tight_layout(pad=0.3)
     fig.savefig(fn, bbox_inches="tight")
     plt.close(fig)

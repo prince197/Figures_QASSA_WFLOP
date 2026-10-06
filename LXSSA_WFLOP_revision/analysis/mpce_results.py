@@ -77,18 +77,16 @@ LAB = {"PSOBV": "PSO-VNS", "SSABV": "SSA-VNS", "SSABV25": "SSA-VNS (25\\%)", "SS
        "PSOBV25": "PSO-VNS (25\\%)", "PSOBV75": "PSO-VNS (75\\%)", "PSOBV90": "PSO-VNS (90\\%)", "LXBV": "LX-SSA-VNS",
        "RSVNS": "RS-VNS", "RSDVNS": "RSD-VNS", "BVNS": "VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "PSOC": "PSO", "PSO": "PSO (old)",
        "DE": "DE", "SLSQP": "MS-SLSQP"}
-# Colour follows the method, independent of the focus (categorical palette of final_results.py; the
-# eight slots blue, orange, aqua, yellow, magenta, green, violet, red go to the eight methods of the
-# main comparison). The three focus candidates take violet / blue / aqua, the only trio of the palette
-# that passes the all-pairs CVD and normal-vision checks of the dataviz validator (worst pair
-# blue-violet: CVD dE 13.0, normal dE 16.3; red-aqua would be CVD dE 6.9 and red-orange a hard fail).
-# Hence PSO-VNS = violet, LX-SSA moves to magenta and VNS to red. LX-SSA-VNS and RS-VNS appear only in
-# the ablation / nine-method sections: two neutral greys (dE 15.5) with their own markers and dashes
-# (composite encoding instead of generated hues). The disc-sampling control RSD-VNS (Phase 6) is a third, lighter
-# grey with its own marker (octagon) and dash pattern (same composite encoding). The focus is additionally drawn
-# with a star marker, a solid, thicker line and on top (see mk / ls / lw).
-COL = {"PSOBV": "#4a3aa7", "SSABV": "#2a78d6", "PSOC": "#1baf7a", "PSO": "#1baf7a", "SSA": "#eb6834",
-       "DE": "#eda100", "LXSSA": "#e87ba4", "SLSQP": "#008300", "BVNS": "#e34948", "LXBV": "#5f5e5a",
+# Colour follows the method, independent of the focus, and is the same in every figure of the paper (main text and
+# supplement). Colour-blind-safe Okabe-Ito palette (Okabe & Ito 2008) without its yellow (too light for lines on
+# white), extended by one dark wine (#882255, Tol) for the eighth method of the main comparison: PSO-VNS blue,
+# SSA-VNS sky blue, PSO bluish green, SSA vermillion, LX-SSA reddish purple, DE orange, VNS wine, MS-SLSQP black
+# (dataviz validator, --pairs all, light: normal-vision dE >= 15.6, worst CVD pair dE 7.6, legal because every
+# series also has its own marker and dash pattern). LX-SSA-VNS, RS-VNS and RSD-VNS (component-analysis controls)
+# are three neutral greys with their own markers and dashes (composite encoding instead of generated hues). The
+# focus is additionally drawn with a star marker, a solid, thicker line and on top (see mk / ls / lw).
+COL = {"PSOBV": "#0072b2", "SSABV": "#56b4e9", "PSOC": "#009e73", "PSO": "#009e73", "SSA": "#d55e00",
+       "DE": "#e69f00", "LXSSA": "#cc79a7", "SLSQP": "#000000", "BVNS": "#882255", "LXBV": "#5f5e5a",
        "RSVNS": "#8d8b85", "RSDVNS": "#aeaba4"}
 MRK = {"PSOBV": "p", "SSABV": "d", "SSA": "s", "PSOC": "^", "PSO": "^", "DE": "v", "BVNS": "D", "SLSQP": "P",
        "LXSSA": "o", "LXBV": "X", "RSVNS": "h", "RSDVNS": "8"}
@@ -216,11 +214,23 @@ RANK_RULE = ("Within each case a method is ranked by the mean objective of its f
              "runs (more = better, ties averaged). This removes the survivorship bias of ranking by the "
              "mean feasible objective.")
 
-plt.rcParams.update({"font.family": "serif", "font.size": 8, "axes.edgecolor": MUTED,
-                     "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED,
-                     "axes.grid": True, "grid.color": GRID, "grid.linewidth": 0.5,
-                     "axes.spines.top": False, "axes.spines.right": False,
-                     "legend.frameon": False, "lines.linewidth": 1.4, "pdf.fonttype": 42})
+# Figure style shared by all figure scripts (mpce_csweep, mpce_inference_extra, make_theory_figures,
+# make_model_figures use the same values). STIX (Times-like) text and math, as in the typeset journal. Every figure
+# is drawn at the width at which it is printed (TW_MAIN / TW_SUPP times the \includegraphics width factor of the
+# manuscript), so that 8 pt in the figure is 8 pt on the page (no text below 7 pt).
+TW_MAIN, TW_SUPP = 16.0 / 2.54, 17.0 / 2.54          # text widths (in) of the manuscript and of the supplement
+FIG_STYLE = {"font.family": "STIXGeneral", "mathtext.fontset": "stix", "font.size": 8, "axes.titlesize": 8,
+             "axes.labelsize": 8, "xtick.labelsize": 7.5, "ytick.labelsize": 7.5, "legend.fontsize": 7.5,
+             "axes.edgecolor": MUTED, "axes.labelcolor": INK, "text.color": INK, "xtick.color": MUTED,
+             "ytick.color": MUTED, "axes.linewidth": 0.6, "xtick.major.width": 0.6, "ytick.major.width": 0.6,
+             "xtick.minor.width": 0.4, "ytick.minor.width": 0.4, "xtick.major.size": 2.5, "ytick.major.size": 2.5,
+             "xtick.minor.size": 1.5, "ytick.minor.size": 1.5, "xtick.major.pad": 2, "ytick.major.pad": 2,
+             "axes.labelpad": 2.5, "axes.titlepad": 3.5, "axes.grid": True, "grid.color": GRID,
+             "grid.linewidth": 0.5, "axes.spines.top": False, "axes.spines.right": False,
+             "legend.frameon": False, "legend.handlelength": 2.2, "legend.columnspacing": 1.2,
+             "legend.handletextpad": 0.5, "legend.borderaxespad": 0.2, "lines.linewidth": 1.2,
+             "savefig.pad_inches": 0.02, "pdf.fonttype": 42}
+plt.rcParams.update(FIG_STYLE)
 
 LOG = []
 
@@ -932,12 +942,16 @@ def legend_row(fig, algs, y=1.0, ncol=None):
     h = [plt.Line2D([], [], color=COL[a], ls=ls(a), lw=lw(a), marker=mk(a), ms=ms(a, 4), label=LAB[a].replace("\\%", "%"))
          for a in algs]
     fig.legend(handles=h, loc="lower center", ncol=ncol or (len(algs) if len(algs) <= 7 else int(np.ceil(len(algs) / 2))),
-               bbox_to_anchor=(0.5, y), fontsize=7.5)
+               bbox_to_anchor=(0.5, y))
 
 
 def log_axis(ax):
     ax.set_yscale("log")
-    ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(subs=(1.0, 2.0, 3.0, 5.0)))
+    lo, hi = ax.get_ylim()
+    subs = (1.0, 2.0, 3.0, 5.0)
+    if sum(lo <= m * 10.0 ** e <= hi for e in range(-3, 4) for m in subs) < 3:     # short range: label more values
+        subs = (1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)
+    ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(subs=subs))
     ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:g}"))
     ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
@@ -1469,12 +1483,12 @@ def main(argv=None):
                           bl_, size="\\tiny", sep="2.5pt", pos="p"))
 
     # --- figures: average ranks
-    fig, ax = plt.subplots(figsize=(3.4, 2.1))
+    fig, ax = plt.subplots(figsize=(0.55 * TW_SUPP, 2.2))          # printed at 0.55 of the supplement width
     for pos, a in enumerate(order[::-1]):
         v = FR["avg_rank"][a]
         ax.plot([1, v], [pos, pos], color=GRID, lw=2, zorder=1)
         ax.scatter(v, pos, s=90 if a == FOCUS else 36, color=COL[a], marker=mk(a), zorder=zo(a), edgecolor="white", lw=0.6)
-        ax.text(v + 0.08, pos, f"{v:.2f}", va="center", fontsize=7, color=INK)
+        ax.text(v + 0.12, pos, f"{v:.2f}", va="center", fontsize=7.5, color=INK)
     ax.set_yticks(range(len(order))); ax.set_yticklabels([LAB[a] for a in order[::-1]])
     ax.set_xlim(1, len(MAINP) + 0.3); ax.set_xlabel(f"Average rank over {FR['n_cases']} cases (1 = best)")
     ax.grid(axis="y", visible=False)
@@ -1483,7 +1497,9 @@ def main(argv=None):
     # wake loss vs N (only case means of methods with >= 15 feasible runs are drawn)
     for what, name, ylab in (("Loss", "wakeloss_vs_n", "Mean wake loss (% of ideal)"),
                              ("Feas", "feasibility_vs_n", "Feasible runs (%)")):
-        fig, axes = plt.subplots(2, 3, figsize=(7.1, 4.0 if what == "Loss" else 3.6), sharey="row" if what == "Loss" else True)
+        # wakeloss_vs_n: main text, 0.72 of the text width; feasibility_vs_n: supplement, full width
+        fig, axes = plt.subplots(2, 3, figsize=(0.72 * TW_MAIN, 3.55) if what == "Loss" else (TW_SUPP, 3.6),
+                                 sharey="row" if what == "Loss" else True)
         for i, ds in enumerate(("1", "2")):
             for j, (r, nmax) in enumerate(RADII.items()):
                 ax = axes[i, j]
@@ -1491,11 +1507,11 @@ def main(argv=None):
                 for a in MAINP:
                     m = s[s.Algorithm == a].sort_values("Turbines")
                     y = m.Loss.where(m.Qualified) if what == "Loss" else 100 * m.NFeas / m.N
-                    ax.plot(m.Turbines, y, color=COL[a], ls=ls(a), lw=lw(a), marker=mk(a), ms=ms(a), zorder=zo(a))
+                    ax.plot(m.Turbines, y, color=COL[a], ls=ls(a), lw=lw(a, 1.0), marker=mk(a), ms=ms(a, 2.8), zorder=zo(a))
                 if what == "Feas":
                     ax.set_ylim(-5, 105)
-                ax.set_title(f"{DSN[ds]}, $r$ = {r} m", fontsize=8, color=INK)
-                ax.set_xticks(range(2, nmax + 1, 2 if nmax > 10 else 1))
+                ax.set_title(f"{DSN[ds]}, $r$ = {r} m", color=INK)
+                ax.set_xticks(range(2, nmax + 1, 2 if (nmax > 10 or what == "Loss") else 1))
                 if i == 1: ax.set_xlabel("Number of turbines $N$")
                 if j == 0: ax.set_ylabel(ylab)
         legend_row(fig, MAINP)
@@ -1504,13 +1520,13 @@ def main(argv=None):
 
     # convergence at mid and max N
     for tag, lv in (("mid", MID), ("max", RADII)):
-        fig, axes = plt.subplots(2, 3, figsize=(7.1, 4.0))
+        fig, axes = plt.subplots(2, 3, figsize=(TW_SUPP, 4.1))
         for i, ds in enumerate(("1", "2")):
             for j, r in enumerate(RADII):
                 ax = axes[i, j]; n = lv[r]
                 conv_panel(ax, G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n)], MAINP)
                 log_axis(ax)
-                ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
+                ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", color=INK)
                 if i == 1: ax.set_xlabel("Evaluations")
                 if j == 0: ax.set_ylabel("Best wake loss (% of ideal)")
         legend_row(fig, MAINP)
@@ -1519,28 +1535,29 @@ def main(argv=None):
 
     # box plots (mid and max N)
     for tag, lv in (("mid", MID), ("max", RADII)):
-        fig, axes = plt.subplots(2, 3, figsize=(7.1, 3.8))
+        fig, axes = plt.subplots(2, 3, figsize=(TW_SUPP, 4.3))
         for i, ds in enumerate(("1", "2")):
             for j, r in enumerate(RADII):
                 ax = axes[i, j]; n = lv[r]
                 sub = G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n) & G.Feasible]
                 data = [sub[sub.Algorithm == a].LossPct.values for a in MAINP]
                 bp = ax.boxplot(data, widths=0.6, patch_artist=True, showfliers=True,
-                                flierprops=dict(marker=".", ms=3, mec=MUTED), medianprops=dict(color=INK, lw=1),
-                                whiskerprops=dict(color=MUTED), capprops=dict(color=MUTED))
+                                flierprops=dict(marker=".", ms=3, mec=MUTED), medianprops=dict(color=INK, lw=1.2),
+                                whiskerprops=dict(color=MUTED, lw=0.8), capprops=dict(color=MUTED, lw=0.8))
                 for patch, a in zip(bp["boxes"], MAINP):
-                    patch.set_facecolor(COL[a]); patch.set_alpha(0.55); patch.set_edgecolor(COL[a])
+                    patch.set_facecolor(matplotlib.colors.to_rgba(COL[a], 0.4)); patch.set_edgecolor(COL[a]); patch.set_linewidth(1.0)
                 cnt = [len(d) for d in data]
                 ax.set_xticks(range(1, len(MAINP) + 1))
-                ax.set_xticklabels([LAB[a] + ("" if c == 30 else f"\n({c})") for a, c in zip(MAINP, cnt)], rotation=40, fontsize=6)
-                ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
+                ax.set_xticklabels([LAB[a] + ("" if c == 30 else f" ({c})") for a, c in zip(MAINP, cnt)], rotation=45,
+                                   ha="right", rotation_mode="anchor", fontsize=7)
+                ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", color=INK)
                 if j == 0: ax.set_ylabel("Wake loss (% of ideal)")
                 ax.grid(axis="x", visible=False)
         fig.tight_layout()
         FG.save(fig, f"boxplots_{tag}")
 
     # best layouts, largest N
-    fig, axes = plt.subplots(2, 3, figsize=(7.1, 4.8))
+    fig, axes = plt.subplots(2, 3, figsize=(TW_SUPP, 5.3))
     best_rows = []
     for i, ds in enumerate(("1", "2")):
         for j, (r, n) in enumerate(RADII.items()):
@@ -1561,14 +1578,16 @@ def main(argv=None):
             t = np.linspace(0, 2 * np.pi, 200)
             ax.plot(r * np.cos(t), r * np.sin(t), color=MUTED, lw=0.8)
             ax.set_aspect("equal"); ax.set_xlim(-1.08 * r, 1.08 * r); ax.set_ylim(-1.08 * r, 1.08 * r)
-            gap = "" if lx is None else f" (best {fl}: +{100 * (top.Objective - lx.Objective) / top.Ideal:.2f} pp loss)"
+            gap = "" if lx is None else f"\n(best {fl}: +{100 * (top.Objective - lx.Objective) / top.Ideal:.2f} pp loss)"
             ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}\nbest of all methods: {LAB[top.Algorithm]}{gap if top.Algorithm != FOCUS else ''}",
-                         fontsize=8, color=INK)
-            ax.tick_params(labelsize=6)
+                         color=INK, fontsize=7.5)
+            ax.tick_params(labelsize=7)
+            if i == 1: ax.set_xlabel("$x$ (m)")
+            if j == 0: ax.set_ylabel("$y$ (m)")
     hl = [plt.Line2D([], [], ls="none", marker="s", ms=6, mfc="none", mec=INK, mew=1, label="best layout of all methods"),
           plt.Line2D([], [], ls="none", marker="o", ms=4.5, color=COL[FOCUS], label=f"best {fl} layout")]
-    fig.legend(handles=hl, loc="lower center", ncol=2, bbox_to_anchor=(0.5, 1.0), fontsize=7.5)
-    fig.tight_layout()
+    fig.legend(handles=hl, loc="lower center", ncol=2, bbox_to_anchor=(0.5, 1.0))
+    fig.tight_layout(h_pad=0.6)
     FG.save(fig, "layouts_max")
     BL = pd.DataFrame(best_rows).drop_duplicates()
     BL.to_csv(OUT("mpce_best_layouts_maxN.csv"), index=False)
@@ -1815,17 +1834,18 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             + ("" if not dropped else " [--common-seeds dropped runs: check not applicable]"))
 
     # ablation convergence (largest N)
-    fig, axes = plt.subplots(2, 3, figsize=(7.1, 4.2))
+    fig, axes = plt.subplots(2, 3, figsize=(0.7 * TW_MAIN, 3.75))          # main text, 0.7 of the text width
     for i, ds in enumerate(("1", "2")):
         for j, (r, n) in enumerate(RADII.items()):
             ax = axes[i, j]
             conv_panel(ax, GB[(GB.Dataset == ds) & (GB.Radius == r) & (GB.Turbines == n)], ablp, band=False)
             ax.axvline(switch_call(H0, 6030), color=MUTED, lw=0.7, ls=(0, (1, 2)))
             log_axis(ax)
-            ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", fontsize=8, color=INK)
+            ax.set_title(f"{DSN[ds]}\n$r$ = {r} m, $N$ = {n}", color=INK, linespacing=1.0)
+            ax.set_xticks([2000, 4000, 6000])
             if i == 1: ax.set_xlabel("Evaluations")
             if j == 0: ax.set_ylabel("Median best wake loss (%)")
-    legend_row(fig, ablp)
+    legend_row(fig, ablp, ncol=3)
     fig.tight_layout()
     FG.save(fig, "ablation_convergence")
 
@@ -1908,12 +1928,12 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                                sources=H.groupby("Algorithm").Source.first().to_dict())
         log("  mean AEP: " + ", ".join(f"{LAB[a]} {hrsum[a]['mean']:.2f}({hrsum[a]['feasible']})" for a in hm) + f"; installed {inst:.2f}")
         # convergence + layouts
-        fig, axes = plt.subplots(1, 2, figsize=(7.1, 2.8), gridspec_kw=dict(width_ratios=[1.25, 1]))
+        fig, axes = plt.subplots(1, 2, figsize=(TW_SUPP, 3.0), gridspec_kw=dict(width_ratios=[1.25, 1]))
         ax = axes[0]
         conv_panel(ax, H, hm, loss=False, band=False)
         ax.axhline(inst, color=INK, lw=0.9, ls=(0, (1, 1)))
-        ax.text(1000, inst, "installed layout", va="bottom", fontsize=6.5, color=INK)
-        ax.set_title("Horns Rev 1, 16 turbines: median best feasible AEP", fontsize=8, color=INK)
+        ax.text(1000, inst, "installed layout", va="bottom", fontsize=7.5, color=INK)
+        ax.set_title("Horns Rev 1, 16 turbines: median best feasible AEP", color=INK)
         ax.set_xlabel("Evaluations"); ax.set_ylabel("AEP (GWh/yr)")
         lo = np.nanmin([SH.Mean[a] for a in hm if SH.NFeas[a]] + [inst])
         ax.set_ylim(bottom=lo - 2.0)
@@ -1934,9 +1954,10 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                    facecolor="none" if top.Algorithm != FOCUS else COL[FOCUS], edgecolor=INK if top.Algorithm != FOCUS else COL[FOCUS],
                    lw=1, label=f"best of all methods: {LAB[top.Algorithm]} ({top.Objective:.2f})", zorder=3)
         summary["hr16"]["best_overall"] = dict(method=top.Algorithm, aep=float(top.Objective), seed=int(top.Seed))
-        ax.set_aspect("equal"); ax.tick_params(labelsize=6)
-        ax.set_title("Layouts (m); AEP in GWh/yr", fontsize=8, color=INK)
-        ax.legend(fontsize=6, loc="upper left", bbox_to_anchor=(0, -0.1), ncol=1)
+        ax.set_aspect("equal"); ax.tick_params(labelsize=7)
+        ax.set_xlabel("$x$ (m)"); ax.set_ylabel("$y$ (m)")
+        ax.set_title("Layouts; AEP in GWh/yr", color=INK)
+        ax.legend(fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=1)
         legend_row(fig, hm, ncol=5)
         fig.tight_layout()
         FG.save(fig, "hr16")
@@ -2114,7 +2135,8 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                    "Method & " + " & ".join(f"{b:,}".replace(",", "{,}") + " & Feas." for b in bl), dl, pos="p")
         supp.append(tb)
         # figure
-        fig, axes = plt.subplots(2, 4, figsize=(7.1, 3.9))
+        # main text, 0.64 of the text width: 3 x 3 grid (rows Data Set I, Data Set II, Horns Rev 1 + legend)
+        fig, axes = plt.subplots(3, 3, figsize=(0.64 * TW_MAIN, 4.1))
         for ax, c in zip(axes.flat, cases7):
             sc = SB[(SB.Dataset == c[0]) & (SB.Radius == c[1]) & (SB.Turbines == c[2])]
             isHR = c[0] == "HR"
@@ -2123,15 +2145,22 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                 v = y.Loss.where(y.Qualified)
                 ax.plot(y.Budget, v, color=COL[a], ls=ls(a), marker=mk(a), ms=ms(a), lw=lw(a, 1.1), zorder=zo(a))
             ax.set_xscale("log")
-            ax.set_xticks(bl); ax.set_xticklabels([f"{b // 1000}k" if b % 1000 == 30 else str(b) for b in bl], fontsize=6)
+            ax.set_xticks(bl); ax.set_xticklabels([f"{b // 1000}k" if b % 1000 == 30 else str(b) for b in bl])
             ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-            ax.set_title(case_name("-".join(map(str, c))), fontsize=6.5, color=INK)
-            ax.set_ylabel("Mean AEP loss (%)" if isHR else "Mean wake loss (%)", fontsize=7)
-        axes.flat[-1].axis("off")
+            ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+            ax.set_title(case_name("-".join(map(str, c))).replace(", $r$", "\n$r$").replace(", 16", "\n16"), color=INK,
+                         fontsize=7.5, linespacing=1.0)
+            if ax in axes[:, 0]:
+                ax.set_ylabel("Mean AEP loss (%)" if isHR else "Mean wake loss (%)")
+        for ax in axes.flat[len(cases7):]:
+            ax.axis("off")
         h = [plt.Line2D([], [], color=COL[a], ls=ls(a), lw=lw(a), marker=mk(a), ms=ms(a, 4), label=LAB[a]) for a in ms_all]
-        axes.flat[-1].legend(handles=h, loc="center", fontsize=7)
-        fig.supxlabel("Evaluations (log scale)", fontsize=8)
-        fig.tight_layout()
+        fig.supxlabel("Evaluations (log scale)", fontsize=8, y=0.0, va="bottom")
+        fig.tight_layout(h_pad=0.5, w_pad=0.6)
+        lx0 = axes.flat[len(cases7)].get_position().x0
+        fig.legend(handles=h, loc="center", ncol=2, bbox_to_anchor=((lx0 + 1.0) / 2, axes.flat[len(cases7)].get_position().y0
+                                                                     + axes.flat[len(cases7)].get_position().height / 2),
+                   handlelength=2.4, columnspacing=1.0)
         FG.save(fig, "budget_scaling")
     else:
         log("  SKIPPED: mpce_b30k / mpce_b120k not available")
@@ -2243,12 +2272,12 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             fig.tight_layout()
             FG.save(fig, "iea37_layouts")
         # convergence per scenario (largest budget)
-        fig, axes = plt.subplots(1, IE.Turbines.nunique(), figsize=(7.1, 2.6), squeeze=False)
+        fig, axes = plt.subplots(1, IE.Turbines.nunique(), figsize=(TW_SUPP, 2.7), squeeze=False)
         for ax, (n, x) in zip(axes[0], IE.groupby("Turbines")):
             y = x[x.Budget == x.Budget.max()]
             mets = [a for a in M10 if a in set(y.Algorithm)]
             conv_panel(ax, y, mets, loss=True, band=False)
-            ax.set_title(f"{IEA_NAME.get(n, n)}, {int(y.Budget.iloc[0]):,} evaluations", fontsize=8, color=INK)
+            ax.set_title(f"{IEA_NAME.get(n, n)}, {int(y.Budget.iloc[0]):,} evaluations", color=INK)
             ax.set_xlabel("Evaluations"); ax.set_ylabel("Median best wake loss (%)")
         legend_row(fig, [a for a in M10 if a in set(IE.Algorithm)], ncol=5)
         fig.tight_layout()
@@ -2638,7 +2667,7 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
                   "methods: supplementary material." % (68, LAB[FOCUS])) + "\\end{table}\n")
 
     # ---------------- combined layout figure: IEA37 16 / 36 (best focus layout at the largest budget) + Horns Rev 16
-    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.75))
+    fig, axes = plt.subplots(1, 3, figsize=(TW_SUPP, 2.75))
     for ax, n in zip(axes[:2], (16, 36)):
         rad = {16: 1300, 36: 2000}[n]
         t = np.linspace(0, 2 * np.pi, 200)
@@ -2659,9 +2688,10 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
                        label=f"best {LAB[FOCUS]}, {int(bst.Budget):,} evaluations ({bst.Objective:,.1f})", zorder=4)
         else:
             ax.text(0, 0, f"{LAB[FOCUS]} runs pending", ha="center", va="center", fontsize=7, color="#c00000")
-        ax.set_aspect("equal"); ax.tick_params(labelsize=6)
+        ax.set_aspect("equal"); ax.tick_params(labelsize=7)
+        ax.set_xlabel("$x$ (m)")
         ax.set_title(f"IEA37 CS1, {n} turbines (AEP in MWh)", fontsize=7.5, color=INK)
-        ax.legend(fontsize=5.8, loc="upper left", bbox_to_anchor=(0, -0.08), ncol=1)
+        ax.legend(fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=1)
     ax = axes[2]
     H6 = H[(H.Budget == 6030) & (H.Init == "random") & H.Feasible]
     if hr is not None:
@@ -2673,10 +2703,12 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
     if len(y):
         bst = y.sort_values("Objective").iloc[-1]; xy = coords(bst.Coordinates)
         ax.scatter(xy[:, 0], xy[:, 1], marker="o", s=12, color=COL[FOCUS], label=f"best {LAB[FOCUS]}, 6,030 evaluations ({bst.Objective:.2f})", zorder=4)
-    ax.set_aspect("equal"); ax.tick_params(labelsize=6)
+    ax.set_aspect("equal"); ax.tick_params(labelsize=7)
+    ax.set_xlabel("$x$ (m)")
     ax.set_title("Horns Rev 1, 16 turbines (AEP in GWh/yr)", fontsize=7.5, color=INK)
-    ax.legend(fontsize=5.8, loc="upper left", bbox_to_anchor=(0, -0.08), ncol=1)
-    fig.tight_layout()
+    ax.legend(fontsize=7, loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=1)
+    axes[0].set_ylabel("$y$ (m)")
+    fig.tight_layout(w_pad=1.0)
     FG.save(fig, "layouts_iea37_hr16")
 
 

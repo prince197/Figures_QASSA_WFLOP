@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-29 01:27:40",
+ "generated": "2026-10-06 03:48:15",
  "focus": "PSOBV",
  "focus_label": "PSO-VNS",
  "options": {
@@ -7,15 +7,15 @@
   "common_seeds": false
  },
  "colours": {
-  "PSOBV": "#4a3aa7",
-  "SSABV": "#2a78d6",
-  "PSOC": "#1baf7a",
-  "PSO": "#1baf7a",
-  "SSA": "#eb6834",
-  "DE": "#eda100",
-  "LXSSA": "#e87ba4",
-  "SLSQP": "#008300",
-  "BVNS": "#e34948",
+  "PSOBV": "#0072b2",
+  "SSABV": "#56b4e9",
+  "PSOC": "#009e73",
+  "PSO": "#009e73",
+  "SSA": "#d55e00",
+  "DE": "#e69f00",
+  "LXSSA": "#cc79a7",
+  "SLSQP": "#000000",
+  "BVNS": "#882255",
   "LXBV": "#5f5e5a",
   "RSVNS": "#8d8b85",
   "RSDVNS": "#aeaba4"
@@ -8055,6 +8055,6 @@
   "  feasbudget: pending []; ranks {6030: {'PSOBV': 1.5, 'SSABV': 4.333333333333333, 'LXBV': 5.166666666666667, 'RSVNS': 4.666666666666667, 'BVNS': 6.5, 'PSOC': 1.8333333333333333, 'SSA': 8.333333333333334, 'LXSSA': 8.666666666666666, 'DE': 10.0, 'SLSQP': 4.0}, 30030: {'PSOBV': 1.1666666666666667, 'SSABV': 4.166666666666667, 'LXBV': 5.666666666666667, 'RSVNS': 6.333333333333333, 'BVNS': 4.833333333333333, 'PSOC': 2.5, 'SSA': 8.666666666666666, 'LXSSA': 9.833333333333334, 'DE': 5.166666666666667, 'SLSQP': 6.666666666666667}, 120030: {'PSOBV': 2.1666666666666665, 'SSABV': 4.166666666666667, 'LXBV': 5.833333333333333, 'RSVNS': 4.666666666666667, 'BVNS': 3.1666666666666665, 'PSOC': 5.833333333333333, 'SSA': 8.833333333333334, 'LXSSA': 10.0, 'DE': 3.3333333333333335, 'SLSQP': 7.0}}",
   "  published IEA37 results: /home/user/Figures_QASSA_WFLOP/LXSSA_WFLOP_revision/analysis/iea37_published_results.csv (26 rows; AEP column AEP_MWh_official_calc; feasibility column Feasible_tol1e-3m)",
   "\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)",
-  "\nwrote 9 tables, 14 figures, mpce_summary.json in 50 s"
+  "\nwrote 9 tables, 14 figures, mpce_summary.json in 45 s"
  ]
 }
