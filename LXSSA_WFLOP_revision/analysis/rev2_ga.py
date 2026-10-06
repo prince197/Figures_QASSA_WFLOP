@@ -1,4 +1,4 @@
-"""Review round 2 (R1.7, R2.5, AE.6): a standard real-coded genetic algorithm baseline (label GA).
+"""Additional baseline: a standard real-coded genetic algorithm baseline (label GA).
 
 Usage:  python3 rev2_ga.py EXP SHARD NSHARDS [--procs P | --procs=P]
 Output: rev2_<EXP>_s<SHARD>of<NSHARDS>.csv, same columns as mpce_experiments.run_grid / run_hr and

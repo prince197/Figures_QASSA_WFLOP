@@ -1,4 +1,4 @@
-"""Additional baselines requested by Reviewer 3 (R3-3), with the same interface, seeding and
+"""Additional baselines (VNS, MS-SLSQP), with the same interface, seeding and
 initial population as the authors' optimizers.
 
 VNS   : continuous variable neighbourhood search (shake k turbines with a k-dependent radius,

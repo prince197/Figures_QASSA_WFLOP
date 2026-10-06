@@ -1,7 +1,7 @@
 """Re-implementation of the Kusiak--Song Jensen/Weibull WFLOP benchmark objective.
 
 Used only to re-evaluate stored layouts and to run the sensitivity checks reported in the
-revised manuscript. Parameters follow Section V-A of the manuscript.
+manuscript. Parameters follow Section V-A of the manuscript.
 """
 import numpy as np
 

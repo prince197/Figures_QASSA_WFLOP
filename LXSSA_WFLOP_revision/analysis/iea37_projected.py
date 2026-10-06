@@ -1,4 +1,4 @@
-"""IEA37 Case Study 1: published layouts that violate the boundary slightly, projected onto it (R4 issue 5).
+"""IEA37 Case Study 1: published layouts that violate the boundary slightly, projected onto it.
 
 Usage:  python3 analysis/iea37_projected.py      (also run from mpce_direction.py, which writes the \\NFIEA... macros)
 

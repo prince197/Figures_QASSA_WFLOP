@@ -1,4 +1,4 @@
-"""Review round 2, reviewer R1.2 (the 4D minimum spacing is untested): re-optimization at 5D and 6D.
+"""Sensitivity to the minimum spacing (4D in the main study): re-optimization at 5D and 6D.
 
 Usage:  python3 rev2_spacing.py EXP [SHARD NSHARDS] [--procs P | --procs=P]
 Output: rev2_<EXP>_s<SHARD>of<NSHARDS>.csv (columns of mpce_experiments.run_grid plus Spacing, SMin)
@@ -49,7 +49,7 @@ CAPACITY = {(500, "4D"): 13, (500, "5D"): 8, (500, "6D"): 7, (750, "4D"): 26, (7
 
 def run_grid_sp(task):
     """mpce_experiments.run_grid with the minimum spacing as a task parameter (smin = SMIN[spacing]) and the
-    Phase-6 dispatcher run_method_x (RSDVNS; every other label falls through to run_method unchanged)."""
+    dispatcher run_method_x (RSDVNS; every other label falls through to run_method unchanged)."""
     alg, ds, rad, n, seed, budget, init, spacing = task
     smin = SMIN[spacing]
     init_hook.GEN = make_generator(smin, circle_r=rad) if init == "feasible" else None

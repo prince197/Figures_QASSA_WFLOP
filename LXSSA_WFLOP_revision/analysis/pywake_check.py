@@ -1,4 +1,4 @@
-"""Horns Rev 1 wake model (hornsrev_model.py) against DTU PyWake at identical direction and speed bins (R4 issue 2).
+"""Horns Rev 1 wake model (hornsrev_model.py) against DTU PyWake at identical direction and speed bins.
 
 OPTIONAL dependency (not in requirements.txt):  python3 -m pip install py_wake==2.6.20
 (it pulls xarray, netCDF4, h5netcdf, autograd, numpy_financial, tqdm, pooch, joblib). Run:

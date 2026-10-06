@@ -1,4 +1,4 @@
-"""Revision 2 (R1.9, AE.8): second measured-wind site, the Lillgrund 16-turbine block (rev2_site_model.py).
+"""Additional experiment: second measured-wind site, the Lillgrund 16-turbine block (rev2_site_model.py).
 
 Usage:  python3 rev2_site.py EXP SHARD NSHARDS [--procs=P]
 Output: rev2_<EXP>_s<SHARD>of<NSHARDS>.csv with the columns of mpce_experiments.run_hr (Dataset = "LG") plus Spacing.

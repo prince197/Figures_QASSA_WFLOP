@@ -1,4 +1,4 @@
-"""Review round 2 (R1.5, R2.3, AE.5): role and parameterization of the Laplace step of LX-SSA (ablation).
+"""Additional experiment: role and parameterization of the Laplace step of LX-SSA (ablation).
 
 Usage:  python3 rev2_laplace.py EXP [SHARD NSHARDS] [--procs P | --procs=P]
 Output: rev2_<EXP>_s<SHARD>of<NSHARDS>.csv  (columns of mpce_experiments.run_grid plus Iters = iterations run)

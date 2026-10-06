@@ -1,4 +1,4 @@
-"""Review round 2, Reviewer 3 issue 3: gradient-based baselines with EXACT (analytic) gradients on IEA37 Case Study 1.
+"""Additional baselines: gradient-based baselines with EXACT (analytic) gradients on IEA37 Case Study 1.
 
 Usage:  python3 rev2_gradient.py EXP [SHARD NSHARDS] [--procs=P]
         python3 rev2_gradient.py check      # analytic gradient vs central finite differences + timing (c_g)

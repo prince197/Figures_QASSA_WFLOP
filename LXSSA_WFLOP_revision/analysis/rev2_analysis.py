@@ -1,4 +1,4 @@
-"""Review round 2: statistics and supplementary tables of the new experiments (rev2_*.csv).
+"""Statistics and supplementary tables of the additional experiments (rev2_*.csv).
 
 Usage:  python3 rev2_analysis.py [--data-dir D] [--out-dir O] [--only BLOCK[,BLOCK...]]
         BLOCK in {spacing, laplace, ga, site, grad}; default: all blocks whose input CSVs exist.

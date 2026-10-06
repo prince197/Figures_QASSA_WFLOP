@@ -1037,7 +1037,7 @@ def macros(Sm):
         M[f"NDDescentEvals{p}"] = fmt(A["descent_evals_median"], 0)
         M[f"NDDescentEvalsPct{p}"] = fmt(A["descent_evals_pct_of_phase2"], 1)
         M[f"NDDescentEvalsPctMedian{p}"] = fmt(A["descent_evals_pct_median"], 1)
-        M[f"NDCycleEvalsPct{p}"] = fmt(A["cycle_evals_pct_of_phase2"], 1)          # R3-2: pooled share of Phase-2 evaluations
+        M[f"NDCycleEvalsPct{p}"] = fmt(A["cycle_evals_pct_of_phase2"], 1)          # pooled share of Phase-2 evaluations
         M[f"NDCycleEvalsPctMedian{p}"] = fmt(A["cycle_evals_pct_median"], 1)
         M[f"NDCycleEvalsPctImp{p}"] = fmt(A["cycle_evals_pct_of_phase2_imp_runs"], 1)   # same runs as the gain shares
         M[f"NDCycleAllShare{p}"] = fmt(A["imp_cycles_all_share_pct"], 1)          # gain of accepted + cut-off cycles

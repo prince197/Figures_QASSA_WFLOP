@@ -1653,7 +1653,7 @@ def main(argv=None):
     CONTR += [(H0, "BVNS", "swarm start vs.\\ best initial point"),
               (H0, "RSVNS", f"{LAB[P1]} vs.\\ random sampling")]
     CONTR += [(h, "RSVNS", f"{LAB[PHASE1[h]]} vs.\\ random sampling") for h in HYBRIDS if h != H0]
-    # Phase 6: the disc-sampling control RSD-VNS (experiment rsdisc), a stronger random-sampling Phase 1
+    # the disc-sampling control RSD-VNS (experiment rsdisc), a stronger random-sampling Phase 1
     CONTR += [(H0, "RSDVNS", f"{LAB[P1]} vs.\\ disc sampling")]
     CONTR += [(h, "RSDVNS", f"{LAB[PHASE1[h]]} vs.\\ disc sampling") for h in HYBRIDS if h != H0]
     CONTR += [("RSDVNS", "RSVNS", "disc vs.\\ square sampling")]

@@ -1,4 +1,4 @@
-"""Fresh numerical study for the revised manuscript.
+"""Main numerical study of the manuscript (full benchmark grid and Horns Rev 1).
 
 grid : all 68 benchmark cases (Data Sets I and II; 500 m: N = 2..10, 750 m: N = 2..12,
        1000 m: N = 2..15), six methods, 30 seed-paired runs, 6,030 objective calls each.
