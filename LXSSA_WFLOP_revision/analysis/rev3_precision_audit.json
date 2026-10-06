@@ -1,12 +1,12 @@
 {
- "description": "Revision 3, item C4 (precision parts of R2 / A8): audit of the stored (rounded) coordinates of ALL run records.",
+ "description": "Precision audit: audit of the stored (rounded) coordinates of ALL run records.",
  "tolerance_m": 1e-06,
  "float_pad_m": 1e-09,
  "bounds": "b_sp = 2 sqrt(2) eps, b_bd = sqrt(2) eps, eps = 0.5 10^-d per record",
  "total": {
   "records": 56540,
   "original": 44900,
-  "revision": 11640,
+  "additional": 11640,
   "class_i": 50826,
   "class_ii": 0,
   "class_iii": 5714,

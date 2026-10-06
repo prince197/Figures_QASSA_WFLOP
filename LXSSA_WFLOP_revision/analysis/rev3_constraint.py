@@ -1,4 +1,4 @@
-"""Revision 3, item C1 (reviewer concern R5): alternative constraint handling.
+"""Sensitivity study: alternative constraint handling.
 
 Question: do the method conclusions survive a constraint handling that does not mix m^2 and m violations and does
 not depend on mu = 1e10?  Design, seeds, budget, outcomes and comparison family: rev3_constraint_manifest.md

@@ -1,4 +1,4 @@
-"""Additional experiments for the MPCE resubmission (SSA-VNS study).
+"""Additional experiments of the MPCE study (SSA-VNS study).
 
 Usage:  python mpce_experiments.py EXP [SHARD NSHARDS] [--procs P]
 Output: mpce_<EXP>_s<SHARD>of<NSHARDS>.csv (same columns as fresh_*.csv plus Budget, Init).
@@ -24,9 +24,9 @@ Experiments
   feasp / b30kp / b120kp   the PSO-VNS arm of feas / b30k / b120k;  psosplit  PSO-VNS with 25 % / 75 % split
   hrfix    all Horns Rev 1 16-turbine runs again after the direction-binning fix of hornsrev_model (2026-09-28):
            10 methods; 6,030 random / 6,030 feasible (no RS-VNS) / 30,030 random (30 seeds), 120,030 (10 seeds)
-  omega90  (Phase 6) PSO-VNS with split 0.9 (PSOBV90) on the 12 split cases, 30 seeds, 6,030 calls
-  rsdisc   (Phase 6) RS-VNS with Phase-1 samples uniform in the farm disc (RSDVNS), 68 cases, 30 seeds, 6,030 calls
-  csweep   (review round 2, R3 #1) stand-alone PSO on the 12 split cases, 30 seeds, 6,030 calls: w = 0.7 with
+  omega90  (additional) PSO-VNS with split 0.9 (PSOBV90) on the 12 split cases, 30 seeds, 6,030 calls
+  rsdisc   (additional) RS-VNS with Phase-1 samples uniform in the farm disc (RSDVNS), 68 cases, 30 seeds, 6,030 calls
+  csweep   (sensitivity study) stand-alone PSO on the 12 split cases, 30 seeds, 6,030 calls: w = 0.7 with
            c1 = c2 = c in {1.2, 1.4, 1.6, 1.7, 1.8, 1.9, 2.0} (PSOW07C12 ... PSOW07C20), the old setting with velocity
            zeroed on clip (PSOOLD_VZERO) or clamped to 0.2 (ub - lb) (PSOOLD_VMAX); 3,240 runs; see CSWEEP
 Convergence curves: one checkpoint every (B-30)//200 calls, i.e. 201 checkpoints at 6,030 calls and 200 at
@@ -204,7 +204,7 @@ def tasks(exp):
         tl = [(run_hr, (a, 16, s, budget, init)) for a in methods for s in hseeds]
         tl += [(run_grid, (a, *c, s, budget, init)) for c in LARGE[::-1] for a in methods for s in S30]
         return tl
-    # ---- Phase 6 (W3) controls: new labels only, run through run_grid_x (see below) ----
+    # ---- additional controls: new labels only, run through run_grid_x (see below) ----
     if exp == "omega90":
         # PSO-VNS with split omega = 0.9 (label PSOBV90) on the 12 split cases, 30 seeds, 6,030 calls: completes
         # the split curve 0.25 / 0.5 / 0.75 / 0.9 / 1 (= PSO) of the psosplit design
@@ -213,7 +213,7 @@ def tasks(exp):
         # RS-VNS with Phase-1 samples uniform in the farm disc instead of the bounding square (label RSDVNS),
         # 68 cases, 30 seeds, 6,030 calls; heaviest cases first
         return [(run_grid_x, ("RSDVNS", *c, s, 6030, "random")) for c in GRID[::-1] for s in S30]
-    # ---- Review round 2 (R3 issue 1): PSO coefficient sweep and bound handling, run through run_grid_cs ----
+    # ---- sensitivity study: PSO coefficient sweep and bound handling, run through run_grid_cs ----
     if exp == "csweep":
         # stand-alone PSO on the 12 split cases (psosplit design), 30 seeds, 6,030 calls, random starts:
         # w = 0.7, c1 = c2 = c in CS_C (PSOW07C12 ... PSOW07C20; c = 2 = old setting), the old setting with
@@ -227,12 +227,12 @@ def tasks(exp):
 
 # ---------------------------------------------------------------------------------------------------------
 _RUN_METHOD = run_method          # the original function (run_grid_x swaps the module-level name)
-# Phase 6 (W3) additions. Nothing above is changed: the existing labels keep their code path (run_method /
+# Additional controls. Nothing above is changed: the existing labels keep their code path (run_method /
 # run_grid); the two new labels are handled by run_method_x, and run_grid_x runs the unchanged run_grid with
 # run_method_x in place of run_method (every other label falls through to run_method unchanged).
 class RSDVNS(RSVNS):
     """RS-VNS whose Phase-1 samples are uniform in the farm disc (polar sampling: angle U(0, 2 pi), radius
-    r sqrt(U(0, 1)) per turbine) instead of the bounding square, a stronger random-sampling control (R2 #8).
+    r sqrt(U(0, 1)) per turbine) instead of the bounding square, a stronger random-sampling control.
     The seeded initial population of 30 is the common one drawn by init_pop (so runs stay seed-paired with
     all other methods); the remaining round(split B) - 30 Phase-1 samples are disc samples. Every turbine of
     a disc sample lies inside the site, so only the spacing constraint can be violated. Phase 2 is the
@@ -269,7 +269,7 @@ class RSDVNS(RSVNS):
 
 
 def run_method_x(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, bcons=None):
-    """run_method for the Phase-6 labels PSOBV90 (PSO-VNS, omega = 0.9) and RSDVNS (disc-sampling RS-VNS);
+    """run_method for the additional labels PSOBV90 (PSO-VNS, omega = 0.9) and RSDVNS (disc-sampling RS-VNS);
     any other label is passed to run_method unchanged."""
     if alg not in ("PSOBV90", "RSDVNS"):
         return _RUN_METHOD(alg, seed, budget, f, wake, feasible, dim, lb, ub, radius, smin, bcons)
@@ -296,7 +296,7 @@ def run_grid_x(task):
 
 
 # ---------------------------------------------------------------------------------------------------------
-# Review round 2 (R3 issue 1) additions: experiment csweep. Nothing above is changed (the only edit above is
+# Sensitivity study: experiment csweep. Nothing above is changed (the only edit above is
 # the new `if exp == "csweep"` block in tasks()). The new labels are handled by run_method_cs; run_grid_cs runs
 # the unchanged run_grid with run_method_cs in place of run_method and appends the dynamics columns logged by
 # PSOBH (Spread, VelMean, ClipPct, ClipLatePct, FeasEvalLatePct) after the standard columns.

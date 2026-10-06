@@ -1,4 +1,4 @@
-"""Revision 3, item C1 (R5): analysis of the constraint-handling study (pre-specified in rev3_constraint_manifest.md).
+"""Analysis of the constraint-handling sensitivity study (pre-specified in rev3_constraint_manifest.md).
 
 Usage (from analysis/):  python3 rev3_constraint_analysis.py [--out-dir DIR]
 Inputs:  rev3_constraint_{pen,deb,proj}.csv (seeds 31-60), stored seeds 1-30 of the five methods (replication check of
@@ -310,7 +310,7 @@ def latex(R, comp):
     L.append(r"% rev3_constraint_tables.tex -- written by analysis/rev3_constraint_analysis.py (do not edit by hand)")
     L.append(r"\begin{table}[!htbp]")
     L.append(r"\centering")
-    L.append(r"\caption{Alternative constraint handling (item C1): five methods under (i) the implemented penalty $F_p$ "
+    L.append(r"\caption{Alternative constraint handling: five methods under (i) the implemented penalty $F_p$ "
              r"($\mu=10^{10}$, $g^{\rm b}$ in m$^2$, $g^{\rm s}$ in m) with box clipping, (ii) Deb's feasibility rules on "
              r"dimensionless violations ($g^{\rm b}/r^2$, $g^{\rm s}/\ell_{\min}$) with box clipping, and (iii) Deb's rules "
              r"with radial projection onto the circle; six cases (data sets I and II; $r=500$~m, $N=10$; $r=750$~m, $N=6$; "
@@ -359,7 +359,7 @@ def latex(R, comp):
     # per-case table
     L.append(r"\begin{table}[!htbp]")
     L.append(r"\centering")
-    L.append(r"\caption{Alternative constraint handling (item C1), per case: feasible runs (of 30) and all-run paired score "
+    L.append(r"\caption{Alternative constraint handling, per case: feasible runs (of 30) and all-run paired score "
              r"of PSO-VNS against each method, $(W+T/2)/30$, for the variants (i) penalty with box clipping, (ii) Deb's rules "
              r"with box clipping and (iii) Deb's rules with radial projection; seeds 31--60, 6,030 evaluations, random "
              r"starts. $^{*}$: Holm-adjusted exact sign test $p<0.05$ (family of 28 tests per variant). Case: data set / "

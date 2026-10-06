@@ -7261,7 +7261,7 @@
    },
    "note": "mpce_iea16/36 (nine methods), mpce_iea16p/36p (PSO-VNS arm, separate batch), rev2_gaiea, rev2_grad (batches of the additional experiments); ratios across batches indicative"
   },
-  "revision_studies": {
+  "additional_studies": {
    "spacing": {
     "median_s": {
      "BVNS": 2.063164703500661,
@@ -7374,7 +7374,7 @@
    },
    "original_records": 36190,
    "original_cpu_h": 101.10429270502749,
-   "revision_components": {
+   "additional_components": {
     "ga": {
      "records": 2040,
      "cpu_h": 1.1126311931391657
@@ -7408,8 +7408,8 @@
      "cpu_h": 2.412819977185553
     }
    },
-   "revision_records": 11640,
-   "revision_cpu_h": 12.436047614846672,
+   "additional_records": 11640,
+   "additional_cpu_h": 12.436047614846672,
    "shard_logs": {
     "b120k": {
      "shards_with_log": 19,

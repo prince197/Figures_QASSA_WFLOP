@@ -164,18 +164,18 @@ def slope(ax, a0, a1, b0, b1, ca, cb, la, lb, xt, ylim, yticks, right_axis=True)
 
 
 # A: PSO baseline setting
-x, y = panel(0, "PSO baseline setting", f"PSO: rank {pos_old} → rank {pos_con}", OI["green"])
+x, y = panel(0, "PSO baseline setting", f"PSO rank {pso_old:.1f} → {pso_con:.1f}", OI["green"])
 a = ax_mm(x + 15.0, y + 8.6, 16.0, 7.6)
 slope(a, pso_old, pso_con, ssa_old, ssa_con, OI["green"], OI["sky"], "PSO", "SSA-VNS",
       ["old", "constr."], (5.6, 0.8), [1, 3, 5])
 
 # B: random-sampling control
-x, y = panel(1, "Sampling control (4D)", "no gain in-site", OI["orange"])
+x, y = panel(1, "Sampling control (4D)", "no gain vs disc", OI["orange"])
 b = ax_mm(x + 11.5, y + 8.0, 21.5, 9.6)
 vals = [gain_disc, gain_sq]
 b.barh([0, 1], vals, height=0.62, color=[GREY, OI["orange"]], zorder=2)
 b.axvline(0, color=INK, lw=0.6, zorder=3)
-b.set_yticks([0, 1], ["in-site", "square"])
+b.set_yticks([0, 1], ["disc", "square"])
 b.set_ylim(-0.55, 1.55)
 b.set_xlim(-0.06, 0.13)
 b.set_xticks([])
@@ -190,12 +190,13 @@ text_mm(x + 11.5 + 21.5 * 0.06 / 0.19, y + 6.4, "SSA-phase gain (pp)", ha="cente
 
 # C: constraint handling
 x, y = panel(2, "Constraint handling", "leader changes", OI["verm"])
-c = ax_mm(x + 16.8, y + 8.6, 15.0, 7.6)
+c = ax_mm(x + 16.3, y + 8.6, 13.4, 7.6)
 slope(c, pv_pen, pv_deb, ga_pen, ga_deb, OI["blue"], OI["verm"], "PSO-VNS", "GA",
-      ["penalty", "Deb"], (2.75, 1.45), [1.5, 2.5], right_axis=False)
+      ["penalty", "Deb+clip"], (2.75, 1.45), [1.5, 2.5], right_axis=False)
+c.tick_params(axis="x", labelsize=8.5)
 
 # D: wind-direction bins
-x, y = panel(3, "Wind bins (eval. 1°)", "leader stays, gap ×2", OI["blue"])
+x, y = panel(3, "Wind bins (eval. 1°)", "leader stays, gap ≈×2", OI["blue"])
 d = ax_mm(x + 12.5, y + 8.0, 20.5, 9.6)
 vals = [adv1, adv15]
 d.barh([0, 1], vals, height=0.62, color=[OI["blue"], "#7FB3D9"], zorder=2)
@@ -215,7 +216,7 @@ text_mm(x + PW / 2 + 1.5, y + 6.4, "gain over PSO (pp)", ha="center", va="center
 # ---- right: take-away ----
 box_mm(RX, 1.0, RW, 50.0, "#E3F0F8")
 text_mm(RX + RW / 2, TOP - 1.0, "Report", ha="center", va="top", fontsize=10, fontweight="bold")
-items = [("baseline", "settings"), ("in-site", "controls"), ("all-run", "reliability"),
+items = [("baseline", "settings"), ("in-farm", "controls"), ("all-run", "reliability"),
          ("constraint &", "bin checks")]
 for i, (l1, l2) in enumerate(items):
     yy = 41.5 - i * 10.4

@@ -1,10 +1,10 @@
-"""Revision 3, item C4 (precision parts of R2 / A8): audit of the stored (rounded) coordinates of ALL run records.
+"""Precision audit: audit of the stored (rounded) coordinates of ALL run records.
 
 Usage:  python3 rev3_precision_audit.py [--out-dir DIR]
 Output: rev3_precision_audit.json            (summary per study and per file)
         rev3_precision_audit_records.csv     (one row per record: keys, decimals, slacks, class, replay difference)
 
-For every record with coordinates (original: fresh_*.csv, mpce_*_s*of*.csv; revision: rev2_*_s*of*.csv) the script
+For every record with coordinates (original: fresh_*.csv, mpce_*_s*of*.csv; additional experiments: rev2_*_s*of*.csv) the script
   1. reads the number of decimals d actually stored in that record's Coordinates (max over its tokens) and sets the
      per-coordinate rounding bound eps = 0.5 * 10^-d (+ 1e-9 m for binary64 parsing / arithmetic);
   2. recomputes, from the rounded coordinates, the two constraint slacks of the strict label used by every driver
@@ -308,7 +308,7 @@ def main():
     summ = summarize(rec)
     cnt = rec[rec.Role != "duplicate"]
     tot = dict(records=int(len(cnt)), original=int(cnt.File.str.match(r"(fresh|mpce)_").sum()),
-               revision=int(cnt.File.str.startswith("rev2_").sum()),
+               additional=int(cnt.File.str.startswith("rev2_").sum()),
                class_i=int((cnt.Class == "i").sum()), class_ii=int((cnt.Class == "ii").sum()),
                class_iii=int((cnt.Class == "iii").sum()),
                hybrid_i=int((cnt.ClassHybrid == "i").sum()), hybrid_ii=int((cnt.ClassHybrid == "ii").sum()),

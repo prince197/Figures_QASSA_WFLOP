@@ -12,8 +12,8 @@ The main comparison uses the old-platform MS-SLSQP runs until mpce_slsqp exists 
 these macros are NOT marked pending, because the SLSQP rerun only replaces one baseline.
 
 Macro names contain letters only. Method codes: PSOVNS (PSOBV), PSO (PSOC, constriction coefficients),
-SSAVNS (SSABV), SSA, LXSSA, DE, VNS (BVNS), SLSQP (MS-SLSQP), LXSSAVNS (LXBV), RSVNS, RSDVNS (RSD-VNS, the Phase-6
-disc-sampling control, experiment rsdisc). Split settings: TwentyFive / Fifty / SeventyFive / Ninety (PSOBV90, Phase-6
+SSAVNS (SSABV), SSA, LXSSA, DE, VNS (BVNS), SLSQP (MS-SLSQP), LXSSAVNS (LXBV), RSVNS, RSDVNS (RSD-VNS, the
+disc-sampling control, experiment rsdisc). Split settings: TwentyFive / Fifty / SeventyFive / Ninety (PSOBV90,
 experiment omega90) / Hundred (PSO alone).
 """
 import os, json, argparse, math
@@ -35,8 +35,8 @@ BTXT = {6030: "6{,}030", 30030: "30{,}030", 120030: "120{,}030"}
 
 # experiments each group of macros needs (see the module docstring)
 REQ_MAIN = ("psobv", "psoc")
-REQ_ABL = ("psobv", "psoc", "rsvns", "rsdisc")    # Phase 6: RSD-VNS is a variant of the component analysis (ranks, Holm family)
-REQ_SPLIT = ("psosplit", "omega90")                # Phase 6: omega = 0.9 is a setting of the split table (ranks, Holm family)
+REQ_ABL = ("psobv", "psoc", "rsvns", "rsdisc")    # RSD-VNS is a variant of the component analysis (ranks, Holm family)
+REQ_SPLIT = ("psosplit", "omega90")                # omega = 0.9 is a setting of the split table (ranks, Holm family)
 REQ_HR = ("psobv", "hr16new")
 REQ_FEAS = ("feas", "feasp")
 REQ_B30 = ("b30k", "b30kp")
@@ -72,7 +72,7 @@ def pval(p):
 
 
 def pval_up(p):
-    """like pval, but rounded UP (for bounds such as "p_Holm <= x", R3 item 9): the printed value is never
+    """like pval, but rounded UP (for bounds such as "p_Holm <= x"): the printed value is never
     smaller than p."""
     if p is None or not math.isfinite(p):
         raise ValueError("missing p")
@@ -428,7 +428,7 @@ def build(s, allow_partial=False):
     P("NSpSixAll", lambda: num(sh["all"]["pct_6d"], 0), REQ_MAIN)
     P("NSpFiveLarge", lambda: num(sh["n11_15"]["pct_5d"], 1), REQ_MAIN)
     P("NSpSixLarge", lambda: num(sh["n11_15"]["pct_6d"], 1), REQ_MAIN)
-    # ---------------- Phase-4 macro contract (optA/PHASE4.md)
+    # ---------------- macros of the component analysis, budgets, Horns Rev 1 and IEA37
     # case-mean Wilcoxon of the component-analysis contrasts (summary ablation.case_mean; procedure of
     # case_mean_wilcoxon, the same as \NPW...): P unadjusted two-sided p (PHolm: Holm over the contrasts of
     # Table ablation), Wins / Losses = cases in which A has the lower / higher case-mean loss (cases in which
@@ -520,8 +520,8 @@ def build(s, allow_partial=False):
     P("NBudCloseGapOneTwentyK", lambda: ceil_num(fb["close_gap_pp"]["120030"]["max_gap"], 2), REQ_B120)  # rounded up ("within")
     P("NBudCloseListOneTwentyK", lambda: listing(LAB[a] for a in fb["close_gap_pp"]["120030"]["methods"]), REQ_B120)
     # Horns Rev: validation of the 80-turbine farm against PyWake, methods below PSO-VNS at 120,030
-    # R4-2 / D19: the reference is PyWake 2.6.20 NOJ(k=0.04) at bins IDENTICAL to ours (pywake_check.csv, row
-    # HR80 / ours_5deg_2.5 / NOJ_k0.04), no longer the stale constant 662.5; same value as \NFPyWakeDiffPct
+    # the reference is PyWake 2.6.20 NOJ(k=0.04) at bins IDENTICAL to ours (pywake_check.csv, row
+    # HR80 / ours_5deg_2.5 / NOJ_k0.04), not the constant 662.5; same value as \NFPyWakeDiffPct
     hv = s.get("hr_validation") or {}
     P("NHRPyWakeDiff", lambda: num(abs(hv["rel_diff_pct"]), 2), ())                 # plain number (text adds \%); our AEP higher
     P("NHRPyWakeOurs", lambda: num(hv["installed80_aep"], 1), ())
@@ -545,7 +545,7 @@ def build(s, allow_partial=False):
     P("NBoundDiffMin", lambda: num(br["min_diff"], 0), ())
     P("NBoundDiffMax", lambda: num(br["max_diff"], 0), ())
 
-    # ---------------- Phase-6 macro contract (optA/phase6_macros_stub.tex): omega = 0.9 and the disc-sampling control
+    # ---------------- macros of the additional controls: omega = 0.9 and the disc-sampling control
     # budget split with omega = 0.9 (PSOBV90, 5,430 PSO evaluations): mean loss (%), average rank among the settings of
     # Table split, and the run-level W/T/L of omega = 0.9 against omega = 0.75 FROM THE omega = 0.9 SIDE (W = 0.9
     # significantly better; same Holm family as the table, over the comparisons of each case). SeventyFiveVsNinety:
@@ -580,7 +580,7 @@ def build(s, allow_partial=False):
     P("NRSRunsNoFeasSample", lambda: replay_runs("RSVNS"), REQ_ABL)
     P("NRSDPctFeasSamples", lambda: num(rp["RSDVNS"]["pct_feasible_samples"], 1), REQ_ABL)
     P("NRSPctFeasSamples", lambda: num(rp["RSVNS"]["pct_feasible_samples"], 1), REQ_ABL)
-    # R3-6 (review round 2): square vs disc, paired over the same runs. \NRsSquareExplains RS-VNS runs without a feasible
+    # square vs disc, paired over the same runs. \NRsSquareExplains RS-VNS runs without a feasible
     # sample would have one with disc sampling (the most the square can explain); \NRsSpacingDominates have none either
     # way (spacing / packing density); \NRsNoFeasInside of the RS-VNS runs without a feasible sample do sample layouts
     # with all turbines inside the circle, but none of them is spaced

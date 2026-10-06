@@ -42,7 +42,8 @@ Blocks
                Check: the regenerated population contains the stored final layout of the feasible-start PSO run of
                the same seed (PSO never leaves the best initial layout from feasible starts).
 
-All statistics reuse mpce_results.py (MR) and rev2_analysis.py (R2) functions; no existing file is modified.
+All statistics reuse functions of mpce_results.py (imported as MR) and rev2_analysis.py (imported as R2); no existing
+file is modified.
 """
 import os, sys, glob, re, json, time, math, argparse, warnings
 import numpy as np, pandas as pd
@@ -777,7 +778,7 @@ def block_time(summ, tex):
         d, _ = R2.read_rev2(e, HERE)
         med = d.groupby("Algorithm").Seconds.median()
         rv[e] = dict(median_s=med.to_dict(), ratio_to_psovns=(med / med["PSOBV"]).to_dict())
-    out["revision_studies"] = rv
+    out["additional_studies"] = rv
     # ---------------- total compute: the 36,190 original records (composition of 05_setup.tex) + additional-experiment records
     def secs(df):
         return float(df.Seconds.sum())
@@ -822,8 +823,8 @@ def block_time(summ, tex):
                            ratio_cpu_to_shard_wall=float(ss / g.wall_s.sum()) if g.wall_s.sum() else None)
     out["compute"] = dict(original_components={k: dict(records=v[0], cpu_h=v[1] / 3600) for k, v in comp.items()},
                           original_records=tot_n, original_cpu_h=tot_s / 3600,
-                          revision_components={k: dict(records=v[0], cpu_h=v[1] / 3600) for k, v in rev.items()},
-                          revision_records=rev_n, revision_cpu_h=rev_s / 3600,
+                          additional_components={k: dict(records=v[0], cpu_h=v[1] / 3600) for k, v in rev.items()},
+                          additional_records=rev_n, additional_cpu_h=rev_s / 3600,
                           shard_logs=wt,
                           note="Seconds of a run = serial wall-clock time of that run in one process; the sum over the "
                                "records is the total serial-equivalent compute (CPU-seconds). Runs were executed in "
@@ -1006,8 +1007,8 @@ def time_table(summ, tex):
             "$^{a}$Same method, runs of the earlier study (fresh\\_grid). n/r: not run. Total serial compute (sum of Seconds): "
             "%.1f CPU-hours for the %s original records and %.1f for the %s additional-experiment records; the runs were executed in four "
             "parallel worker processes, so the elapsed time of a study was about a quarter of its total."
-            % (cp["original_cpu_h"], f"{cp['original_records']:,}".replace(",", "{,}"), cp["revision_cpu_h"],
-               f"{cp['revision_records']:,}".replace(",", "{,}")))
+            % (cp["original_cpu_h"], f"{cp['original_records']:,}".replace(",", "{,}"), cp["additional_cpu_h"],
+               f"{cp['additional_records']:,}".replace(",", "{,}")))
     tex.append(MR.table("table*", "Elapsed time per evaluation and per run in the original benchmark records (median seconds; ratio "
                         "to PSO-VNS), and wall time of the feasibility-preserving initialization.", "tab:S-r3-time",
                         "lcccccccc", head, lines, sep="1.7pt", pos="!htb", note=note))

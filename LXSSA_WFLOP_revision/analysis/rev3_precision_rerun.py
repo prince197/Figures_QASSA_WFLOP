@@ -1,4 +1,4 @@
-"""Revision 3, item C4: full-precision reruns of stored records through the UNCHANGED experiment drivers.
+"""Full-precision reruns of stored records through the UNCHANGED experiment drivers.
 
 Usage
   python3 rev3_precision_rerun.py sample  [--procs=2]                 determinism sample (one record per study x
@@ -578,7 +578,7 @@ def table():
     tex = r"""\begin{table}[!htbp]
 \centering
 \caption{Verification of the strict feasibility labels ($10^{-6}$~m) of all stored run records with coordinates
-(original and revision studies; all cases, methods, seeds 1--30 or 1--10 and budgets as stored).
+(main study and additional experiments; all cases, methods, seeds 1--30 or 1--10 and budgets as stored).
 Class (i): label confirmed from the rounded coordinates with slack beyond the rounding bound
 ($2\sqrt2\,\varepsilon$ for spacing, $\sqrt2\,\varepsilon$ for the boundary, $\varepsilon=0.5\cdot10^{-d}$~m for $d$
 stored decimals); (ii): contradicted beyond the bound; (iii): undecidable within the bound. Rerun: class (ii)/(iii)

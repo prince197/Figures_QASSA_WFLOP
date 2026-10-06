@@ -1,4 +1,4 @@
-"""Check the statements drawn from the Phase-6 diagnostics (mpce_diagnostics.py) against mpce_summary_diag.json.
+"""Check the statements drawn from the diagnostics (mpce_diagnostics.py) against mpce_summary_diag.json.
 
 Usage (from analysis/):  python3 mpce_check_diag.py [--summary mpce_summary_diag.json]
 
@@ -42,7 +42,7 @@ CONDITIONS = [
             "> 25 % for constriction) and returns fewer feasible global bests (constriction: all)",
      lambda s: g(s, "T1", "PSO", "feas_particles_pct_late") < 10 and g(s, "T1", "PSOC", "feas_particles_pct_late") > 25
      and g(s, "T1", "PSO", "gbest_feasible_final") < g(s, "T1", "PSOC", "gbest_feasible_final") == g(s, "T1", "runs_per_setting")),
-    ("D06", "stored runs, classified with the paper's 1e-6 m rule (R3-7, R5-F2): the infeasible finals of the old setting "
+    ("D06", "stored runs, classified with the paper's 1e-6 m rule: the infeasible finals of the old setting "
             "are exactly the runs without the Feasible flag (runs - feasible, 2,040 - 1,754 = 286, i.e. 86.0 % feasible), "
             "boundary-only + spacing-only + both add up to them, none is undecidable at the 1-mm storage precision after the "
             "reproduced runs (all reproduced runs match the stored ones) and none contradicts the flag; most violate ONLY "
@@ -105,17 +105,17 @@ CONDITIONS = [
      > g(s, "first_feasible", "RSVNS", "pct_by_switch")),
     ("D19", "the planned cloud experiments are small: omega90 and rsdisc each < 2 CPU-hours (stored run times)",
      lambda s: g(s, "T4", "omega90", "cpu_hours") < 2 and g(s, "T4", "rsdisc", "cpu_hours") < 2),
-    ("D20", "VNS cycles (R3-2): the shake-plus-search cycles take a sizeable share of the Phase-2 evaluations but give "
+    ("D20", "VNS cycles: the shake-plus-search cycles take a sizeable share of the Phase-2 evaluations but give "
             "little of the Phase-2 gain -- for every method their evaluation share (runs with a feasible switch point, "
             "pooled) is more than twice their gain share (accepted cycles plus the cycle cut off by the budget); for "
             "PSO-VNS the cycles take >= 15 % of the evaluations and give < 5 % of the gain (accepted cycles < 1 %)",
      lambda s: all(g(s, "T2", a, "cycle_evals_pct_of_phase2_imp_runs") > 2 * g(s, "T2", a, "imp_cycles_all_share_pct") for a in V3)
      and g(s, "T2", "PSOBV", "cycle_evals_pct_of_phase2") >= 15 and g(s, "T2", "PSOBV", "imp_cycles_all_share_pct") < 5
      and g(s, "T2", "PSOBV", "imp_cycles_share_pct") < 1),
-    ("D21", "old-setting boundary violations are box-tangent pinning (R3-7): at least 90 % of the stored old-setting "
+    ("D21", "old-setting boundary violations are box-tangent pinning: at least 90 % of the stored old-setting "
             "finals that violate the boundary (1e-6 m rule) have an outside turbine with a coordinate on the box bound",
      lambda s: g(s, "T1_stored", "PSO", "tangent") >= 0.9 * g(s, "T1_stored", "PSO", "any_boundary") > 0),
-    ("D22", "mpce_numbers_diag.tex is in sync with mpce_summary_diag.json (R5 reproducibility 2): the macros regenerated "
+    ("D22", "mpce_numbers_diag.tex is in sync with mpce_summary_diag.json: the macros regenerated "
             "from the stored summary with mpce_diagnostics.macros equal the file",
      lambda s: _macros_in_sync(s)),
 ]

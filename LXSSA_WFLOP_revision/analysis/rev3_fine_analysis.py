@@ -1,4 +1,4 @@
-"""Revision 3 (item C2 / R8): analysis of experiment rev3_fine (direct optimization with 1-deg direction bins).
+"""Analysis of the sensitivity study rev3_fine (direct optimization with 1-deg direction bins).
 
 Usage:  python3 rev3_fine_analysis.py [--data-dir D] [--out-dir O]
 Inputs (--data-dir, default this folder): rev3_fine_s<i>of<k>.csv (primary arm, required) and, if present,

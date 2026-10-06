@@ -1,4 +1,4 @@
-"""Checks F01... of the direction-resolution, PyWake and IEA37-projection analyses (Phase 6, D16; R4 issues 1-3, 5).
+"""Checks F01... of the direction-resolution, PyWake and IEA37-projection analyses (sensitivity analyses).
 
 Usage:  python3 analysis/mpce_check_dir.py [--summary analysis/mpce_summary_dir.json]
 

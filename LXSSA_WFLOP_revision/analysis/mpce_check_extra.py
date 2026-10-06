@@ -1,4 +1,4 @@
-"""Checks X01... of the inference-robustness analyses (Phase 6, W2) against mpce_summary_extra.json.
+"""Checks X01... of the inference-robustness analyses against mpce_summary_extra.json.
 
 Usage:  python3 analysis/mpce_check_extra.py [--summary analysis/mpce_summary_extra.json]
 
@@ -12,7 +12,7 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SIG_PAIRS_EXPECTED_NS = {"PSOBV-PSOC", "LXBV-RSVNS"}          # the two pairs the paper calls not significant
-RSD = ["SSABV-RSDVNS", "LXBV-RSDVNS", "PSOBV-RSDVNS", "RSDVNS-RSVNS"]  # Phase 6 disc-sampling control contrasts
+RSD = ["SSABV-RSDVNS", "LXBV-RSDVNS", "PSOBV-RSDVNS", "RSDVNS-RSVNS"]  # disc-sampling control contrasts
 EQ_MARGIN = 0.05                     # overwritten in main() by mpce_summary_extra.json["equivalence_levels"]["margin_pp"]
 
 
@@ -28,7 +28,7 @@ def mt(s, key):
     return next(t for t in s["multiplicity"]["tests"] if t["key"] == key)
 
 
-# ---- review round 2 (D13) helpers
+# ---- helpers of the further sensitivity analyses
 def eq(s, k):
     return s["equivalence_levels"]["pairs"][k]
 
@@ -222,7 +222,7 @@ CHECKS = [
                    and s["cluster_split"][k]["cluster_boot_excludes_zero"] and s["loco_split"]["pairs"][k]["verdict_changes"] == 0
                    for k in ("PSOBV-PSOBV25", "PSOBV-PSOBV75", "PSOBV75-PSOC"))
      and min(s["cluster_split"]["PSOBV-PSOC"]["clusters_favour_first"], s["cluster_split"]["PSOBV-PSOC"]["clusters_favour_second"]) > 0),
-    # ---------------- review round 2 (R2 statistics, lead decision D13)
+    # ---------------- further sensitivity analyses (equivalence levels, Bayes, heterogeneity, HL, McNemar)
     ("X38", "The case-level equivalence results (mean, 90%/95% CIs, bootstrap TOST p, t-TOST p, minimal margin, verdict) and "
             "the Bayesian signed-rank probabilities and posterior means of all 18 pairs of tab:equivalence are reproduced "
             "exactly from the per-run data (margin \\NXEqMarginSource).",
@@ -300,7 +300,7 @@ CHECKS = [
             "p = \\NXHRMcNemarP.",
      lambda s: (lambda c: c["only_second"] == 0 and c["only_first"] > 0 and c["p_exact"] < 0.01 and c["matches_summary"]
                 and c["feasible_first"] == c["n_seeds"])(s["hr_mcnemar"])),
-    ("X53", "D14 (one-sided): a gain of the SSA phase over sampling in the disc larger than the margin is ruled out at the seed and case "
+    ("X53", "One-sided: a gain of the SSA phase over sampling in the disc larger than the margin is ruled out at the seed and case "
             "levels (lower 90% limits of SSA-VNS - RSD-VNS above -margin: \\NXEqSeedSSAVNSvsRSDVNSCI, \\NXEqCaseSSAVNSvsRSDVNSCI) but "
             "NOT at the cluster level, where the lower limit lies just beyond it (CR2 \\NXEqClustSSAVNSvsRSDVNSCI, wild "
             "\\NXEqClustSSAVNSvsRSDVNSCIWild).",

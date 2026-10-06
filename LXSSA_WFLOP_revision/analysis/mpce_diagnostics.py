@@ -1,4 +1,4 @@
-"""Phase-6 diagnostics (workstream W3): instrumented runs that explain the mechanisms behind the component
+"""Diagnostics: instrumented runs that explain the mechanisms behind the component
 analysis. No new optimizer; the instrumentation only observes.
 
 Usage (from analysis/):  python3 mpce_diagnostics.py [--procs=2] [--cache=DIR]
@@ -6,18 +6,18 @@ Outputs: mpce_summary_diag.json, mpce_numbers_diag.tex (\\ND... macros), mpce_su
 labels tab:D-*, fig:D-*), ../figures_mpce/diag_pso_dynamics.pdf (+ .png). Checks: mpce_check_diag.py.
 
 Studies
-  T1 PSO dynamics (R2 #1, #2). PSO with the old setting (w = 0.7, c1 = c2 = 2, label PSO) and the constriction
+  T1 PSO dynamics. PSO with the old setting (w = 0.7, c1 = c2 = 2, label PSO) and the constriction
      setting (PSOC) on 6 cases x 10 seeds at 6,030 calls (200 iterations). Per iteration: swarm spread (mean
      over particles of the RMS turbine distance to the global best, m), mean |velocity| per coordinate (m),
      share of coordinates clipped to the box in that iteration (position outside [-r, r] before clipping),
      share of particle evaluations with a feasible layout / a turbine outside the circle / a spacing
      violation, and the global best. Plus, on all 2,040 stored runs of each setting: how the infeasible final
      layouts violate the constraints and how many final layouts have a coordinate on the box bound.
-  T2 VNS internals (R2 #9). Phase 2 of PSO-VNS, SSA-VNS and RS-VNS on the 12 split cases x 10 seeds: shaking
+  T2 VNS internals. Phase 2 of PSO-VNS, SSA-VNS and RS-VNS on the 12 split cases x 10 seeds: shaking
      steps, accepted moves per neighbourhood k, evaluations of the local search, the improvement of the first
      descent from the switch point vs. the shake + local-search cycles, feasibility changes; also whether the
      start handed to VNS is the best feasible Phase-1 layout (question of an "rsbest" control).
-  T3 Feasible starts (R2 #15). PSO (constriction) and DE with feasibility-preserving initialization on
+  T3 Feasible starts. PSO (constriction) and DE with feasibility-preserving initialization on
      3 cases x 3 seeds: every candidate is logged (feasibility, spacing, comparison with the bests), the
      first update is dissected, and a counterfactual computation (separate RNG, after the run) measures how
      often the first-update PSO move between two feasible layouts is feasible with the original turbine
@@ -446,7 +446,7 @@ def all_jobs():
         for c in T3_CASES:
             for s in T3_SEEDS:
                 J.append(("T3", alg, *c, s, "feasible", s == 1))
-    # T1b (review round 2, R3-7): reproduce the stored old-setting runs whose final boundary status is not decidable
+    # T1b: reproduce the stored old-setting runs whose final boundary status is not decidable
     # from the 1-mm coordinates (about 1 min); the cached T1 runs already hold the unrounded positions of their runs
     t1 = {(ds, rad, n, s) for ds, rad, n in T1_CASES for s in T1_SEEDS}
     for ds, rad, n, s in ambiguous_old_runs():
@@ -706,7 +706,7 @@ def t2_summary(res):
             descent_evals_pct_of_phase2=100 * float(P.descent_evals.sum() / P.phase2_evals.sum()),
             ls_evals_pct_of_phase2=100 * float((P.descent_evals.sum() + P.ls_evals.sum()) / P.phase2_evals.sum()),
             shake_evals_pct_of_phase2=100 * float(P.shake_evals.sum() / P.phase2_evals.sum()),
-            # R3-2 / R3-18 (review round 2): evaluations spent in shake-plus-local-search cycles (everything after the
+            # evaluations spent in shake-plus-local-search cycles (everything after the
             # first descent), pooled over the runs and as the median of the per-run shares
             cycle_evals_pct_of_phase2=100 * float((P.shake_evals.sum() + P.ls_evals.sum()) / P.phase2_evals.sum()),
             descent_evals_pct_median=float(np.median(100 * P.descent_evals / P.phase2_evals)),
@@ -1020,8 +1020,8 @@ def macros(Sm):
         M[f"NDStoredBoundOnly{s}"] = v["boundary_only"]; M[f"NDStoredSpacingOnly{s}"] = v["spacing_only"]
         M[f"NDStoredBoth{s}"] = v["both"]; M[f"NDStoredOnBox{s}"] = v["final_on_box"]
         M[f"NDStoredInfeasOnBox{s}"] = v["infeasible_on_box"]
-        # review round 2 (R3-7, R5-F2): classification with the paper's 1e-6 m rule; tangent = an outside turbine pinned
-        # at a box tangent point; the earlier 1-mm classification kept for the reconciliation 282 vs 286
+        # classification with the paper's 1e-6 m rule; tangent = an outside turbine pinned
+        # at a box tangent point; the 1-mm classification is kept for the reconciliation 282 vs 286
         M[f"NDStoredFeas{s}"] = fmt(v["feasible_flag"]); M[f"NDStoredFeasPct{s}"] = fmt(100 * v["feasible_flag"] / v["runs"], 1)
         M[f"NDStoredAnyBound{s}"] = v["any_boundary"]
         M[f"NDStoredTangent{s}"] = v["tangent"]; M[f"NDStoredTangentBoth{s}"] = v["tangent_both"]
@@ -1127,7 +1127,7 @@ def write_tex(M, path):
 def supp_tex(Sm, path):
     S1, V, S2, S3, FF = Sm["T1"], Sm["T1_stored"], Sm["T2"], Sm["T3"], Sm["first_feasible"]
     L = ["%% generated by mpce_diagnostics.py -- do not edit by hand",
-         "%% Supplementary diagnostics (Phase 6, W3); requires booktabs, graphicx and mpce_numbers_diag.tex", ""]
+         "%% Supplementary diagnostics; requires booktabs, graphicx and mpce_numbers_diag.tex", ""]
     DSR = {1: "I", 2: "II"}
     # Figure
     L += ["\\begin{figure*}[!t]", "\\centering",

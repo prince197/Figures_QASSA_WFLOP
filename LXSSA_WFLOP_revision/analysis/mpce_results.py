@@ -1,4 +1,4 @@
-"""Results and statistics pipeline for the MPCE resubmission; the proposed ("focus") method is switchable.
+"""Results and statistics pipeline of the MPCE study; the proposed ("focus") method is switchable.
 
 Usage:  python mpce_results.py [--focus {PSOBV,PSOC,SSABV}] [--data-dir D] [--out-dir O] [--fig-dir F]
                                [--procs 4] [--partial] [--common-seeds] [--skip-robust] [--only-robust]
@@ -24,8 +24,8 @@ Inputs (all runs at 6,030 calls with random initialization unless stated)
   mpce_<exp>_s<i>of<k>.csv from mpce_experiments.py / iea37_experiments.py (read from --data-dir; all
   shards of an experiment are merged; an experiment is used only when all k shards are present, unless
   --partial is given): rsvns, psoc, psobv (68 cases + HR16), slsqp, psosplit (PSOBV25 / PSOBV75 on the
-  12 split cases), omega90 (Phase 6: PSOBV90 = PSO-VNS with omega = 0.9 on the 12 split cases), rsdisc (Phase 6:
-  RSDVNS = RS-VNS whose Phase-1 samples are uniform in the farm disc, 68 cases; component-analysis control),
+  12 split cases), omega90 (additional experiment: PSOBV90 = PSO-VNS with omega = 0.9 on the 12 split cases),
+  rsdisc (additional experiment: RSDVNS = RS-VNS whose Phase-1 samples are uniform in the farm disc, 68 cases; component-analysis control),
   ssasplit (dropped; used if present), hr16new (PSOC, RSVNS on HR16), feas, b30k,
   b120k, iea16, iea36 (nine methods M9) and the PSO-VNS-only arms feasp, b30kp, b120kp, iea16p, iea36p,
   which are merged with the nine-method experiments so that PSO-VNS is a tenth method (M10).
@@ -129,9 +129,9 @@ def switch_call(alg, budget, np_=30, split=0.5):
     Swarm hybrids (HybridBVNS iteration arithmetic): np_ + round((split B - np_) / per) x per, e.g. 3,030 for
     PSO-VNS at 6,030. Split variants carry the share in their label: PSOBV25 / PSOBV75 / PSOBV90 (omega = 0.25 /
     0.75 / 0.9; PSOBV90 -> 30 + 180 x 30 = 5,430 PSO evaluations at 6,030). RSVNS and the disc-sampling control
-    RSDVNS (Phase 6) sample one layout per call: n1 = round(split B) = 3,015 Phase-1 evaluations at 6,030 (rs_vns.RSVNS,
-    self.n1; incl. the common initial population of 30). (Until R3-9 of review round 2 RS/RSD used the iteration
-    arithmetic too, which gave 3,030 and read the switch 15 VNS evaluations late.)"""
+    RSDVNS sample one layout per call: n1 = round(split B) = 3,015 Phase-1 evaluations at 6,030 (rs_vns.RSVNS,
+    self.n1; incl. the common initial population of 30). (The iteration arithmetic would give 3,030 for RS/RSD and
+    read the switch 15 VNS evaluations late.)"""
     if alg in ("RSVNS", "RSDVNS"):
         return int(round(split * budget))
     p1 = PHASE1[alg.rstrip("0123456789")]
@@ -173,10 +173,10 @@ INSTALLED_HR16 = 139.821         # GWh/yr, installed 16-turbine block, fixed bin
 # old binning; while they are still loaded (no hrfix file yet), the installed AEP of the same (old) model is
 # used so that the comparison stays within one model. Recognized by the wake-free AEP stored with the runs.
 LEGACY_HR16 = dict(ideal=149.2632720953485, installed=139.51300511740232)
-# PyWake reference for the complete 80-turbine farm (R4-2, D19): read from pywake_check.csv (pywake_check.py,
+# PyWake reference for the complete 80-turbine farm: read from pywake_check.csv (pywake_check.py,
 # PyWake 2.6.20 NOJ(Hornsrev1Site(), V80(), k=0.04) at direction/speed bins IDENTICAL to hornsrev_model.py, row
-# Farm=HR80, Bins=ours_5deg_2.5, Model=NOJ_k0.04). The former constant 662.5 GWh/yr (10.96 %, quoted from an older
-# text) is not reproduced by PyWake at any bin setting and is no longer used. \NHRPyWakeDiff = relative
+# Farm=HR80, Bins=ours_5deg_2.5, Model=NOJ_k0.04). A constant of 662.5 GWh/yr (10.96 %, quoted
+# elsewhere) is not reproduced by PyWake at any bin setting and is not used. \NHRPyWakeDiff = relative
 # difference (%) of the installed 80-turbine AEP of hornsrev_model.py from that PyWake value; pending if the file
 # is missing.
 PYWAKE_CHECK_CSV = "pywake_check.csv"
@@ -266,7 +266,7 @@ def goodness(df):
 def wil(d):
     """Two-sided Wilcoxon signed-rank on paired differences d (zeros dropped) + rank-biserial r.
 
-    Zero handling (R3 item 17), exposed as is: differences with |d| <= 1e-9 are dropped before both the test
+    Zero handling, exposed as is: differences with |d| <= 1e-9 are dropped before both the test
     and the matched-pairs rank-biserial correlation (Wilcoxon's "wilcox" zero method), so r_rb describes only
     the non-tied pairs; if every difference is zero the test is not run and p = 1, r_rb = 0 (this happens
     for the small-N cases in which all methods reach the same layout). The median r_rb over cases therefore
@@ -453,7 +453,7 @@ def _bayes_selftest():
 
 
 # the component-analysis pairs of the \NCm... macros (ablation.case_mean keys; first minus second): the nine of
-# Phase 4 and (Phase 6) the four contrasts of the disc-sampling control RSD-VNS (used only if its runs exist)
+# the main component analysis and the four contrasts of the disc-sampling control RSD-VNS (used only if its runs exist)
 EQ_PAIRS_ABL = ["SSABV-RSVNS", "LXBV-RSVNS", "PSOBV-RSVNS", "SSABV-LXBV", "LXSSA-SSA", "SSABV-SSA", "LXBV-LXSSA",
                 "PSOBV-PSOC", "PSOBV-BVNS", "SSABV-RSDVNS", "LXBV-RSDVNS", "PSOBV-RSDVNS", "RSDVNS-RSVNS"]
 
@@ -769,7 +769,7 @@ def phase1_replay(D, n1=3015, npop=30):
         log(f"  Phase-1 replay {LAB[alg]}: {out[alg]['runs_no_feasible_sample']} of {out[alg]['runs']} runs without a feasible "
             f"sample ({out[alg]['runs_no_feasible_sample_sampled_part']} ignoring the initial population); feasible samples "
             f"{out[alg]['pct_feasible_samples']:.2f}%; curve check {agree}/{chk}")
-    # R3-6 (review round 2): how many RS-VNS runs without a feasible sample can the square be blamed for? Paired over
+    # How many RS-VNS runs without a feasible sample can the square be blamed for? Paired over
     # the same runs (case, seed; same initial population): disc sampling (RSD-VNS) rescues a run iff it has a feasible
     # sample where square sampling has none; runs without a feasible sample under both are limited by the spacing
     # constraint (packing density), not by the square.
@@ -797,7 +797,7 @@ def phase1_replay(D, n1=3015, npop=30):
 
 def split_section(R6, base, tabs, key, label, primary=True, supp=None):
     """Budget-split table of hybrid `base` (omega = 25 / 50 / 75 % of the calls for phase 1, if its split runs
-    exist; omega = 90 % if its runs exist (Phase 6, experiment omega90: PSOBV90, 5,430 PSO evaluations); and
+    exist; omega = 90 % if its runs exist (experiment omega90: PSOBV90, 5,430 PSO evaluations); and
     omega = 100 %, i.e. the phase-1 swarm alone at the same budget and seeds: PSO for PSO-VNS).
     Run-level tests: per case, seed-paired Wilcoxon of 50 % vs 25 %, 50 % vs 75 %, [50 % vs 90 %,] 50 % vs 100 %,
     75 % vs 100 % [and 90 % vs 75 %], Holm-adjusted over these comparisons of the case (one family per case: four
@@ -1138,7 +1138,7 @@ def common_seeds(ALL):
 
 # ------------------------------------------------------------------ LaTeX helpers
 def tnote(text, width="\\columnwidth"):
-    """Table note below the tabular (R1-20: captions are short noun phrases; definitions, test families and case
+    """Table note below the tabular (captions are short noun phrases; definitions, test families and case
     sets go here, in scriptsize, instead of the all-caps IEEE caption)."""
     return "\\par\\vspace{2pt}\\parbox{%s}{\\scriptsize %s}\n" % (width, text)
 
@@ -1338,7 +1338,7 @@ def main(argv=None):
         note="a case in which exactly one of the two methods has >= 15 feasible runs enters the case-mean test with "
              "a difference larger than every observed one in favour of that method (imputed); cases in which "
              "neither has are dropped; counts summed over the comparisons of the main table")
-    # PSO-VNS vs PSO has two different run-level tallies in the paper (R3 item 5): Table wtl counts
+    # PSO-VNS vs PSO has two different run-level tallies in the paper: Table wtl counts
     # significant cases with Holm over the 7 comparisons of the focus with the other methods of the main
     # comparison in each case; Table ablation uses Holm over the planned ablation contrasts of each case.
     # The raw per-case p-values are identical; only the Holm family (and thus the adjusted p) differs.
@@ -1610,7 +1610,7 @@ def main(argv=None):
     rt = (G.Seconds / G.Calls * 1000).groupby(G.Algorithm).mean().reindex(MAINP)
     rn = G.groupby(["Algorithm", "Turbines"]).Seconds.mean().unstack().reindex(MAINP)
     src = G.groupby("Algorithm").Source.agg(lambda s: ",".join(sorted(set(s))))
-    # time per evaluation (D6): ms per evaluation = Seconds / Calls * 1000 of every run, median over the runs of
+    # time per evaluation: ms per evaluation = Seconds / Calls * 1000 of every run, median over the runs of
     # each method. Data: the 6,030-evaluation runs (random initialization) of the 68 benchmark cases of the main
     # comparison (G: 30 runs x 68 cases per method; Seconds = wall-clock time of the run incl. optimizer
     # overhead, measured by the experiment scripts on the machine that produced each file).
@@ -1658,7 +1658,7 @@ def main(argv=None):
     CONTR += [(h, "RSDVNS", f"{LAB[PHASE1[h]]} vs.\\ disc sampling") for h in HYBRIDS if h != H0]
     CONTR += [("RSDVNS", "RSVNS", "disc vs.\\ square sampling")]
     CONTR += [(H0, h, f"{LAB[P1]} vs.\\ {LAB[PHASE1[h]]} as Phase~1") for h in HYBRIDS if h != H0]
-    CONTR += [("SSABV", "LXBV", "LX-SSA as published (hybrid)")] if H0 != "LXBV" else []   # R1-2 / D14: not "Laplace step"
+    CONTR += [("SSABV", "LXBV", "LX-SSA as published (hybrid)")] if H0 != "LXBV" else []   # named "as published", not "Laplace step"
     CONTR += [("LXSSA", "SSA", "LX-SSA as published (alone)")]
     CONTR = list(dict.fromkeys(CONTR))
     CONTR = [c for c in CONTR if c[0] in ablp and c[1] in ablp]
@@ -2534,8 +2534,8 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
     hl.append("\\midrule")
     for a in meth:
         m6 = (hsum.get("methods") or {}).get(a)
-        # R4-10 (lead): the run-level p_Holm (infeasible runs ranked last) mixes feasibility with AEP; the main table
-        # no longer shows it (still in summary["hr16"]["methods"] and in the supplement table tab:hr-site-full)
+        # the run-level p_Holm (infeasible runs ranked last) mixes feasibility with AEP; the main table
+        # does not show it (still in summary["hr16"]["methods"] and in the supplement table tab:hr-site-full)
         c = [f"{m6['mean']:.2f}" if m6 and m6.get("feasible") else ("--" if m6 else PEND),
              f"{m6['feasible']}/{m6['runs']}" if m6 else PEND]
         hloss[a] = {}
@@ -2585,7 +2585,7 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
     num = lambda v: PEND if v is None or not np.isfinite(v) else f"{v:,.1f}".replace(",", "{,}")
     il.append("Example layout & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\" % (num(pubv[16]["base"]), num(pubv[36]["base"])))
     il.append("Best published, strict$^{a}$ & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\" % (num(pubv[16]["best_feasible"]), num(pubv[36]["best_feasible"])))
-    # R4-5 / D19: second convention -- published layouts projected radially onto the boundary (iea37_projected.py ->
+    # second convention -- published layouts projected radially onto the boundary (iea37_projected.py ->
     # iea37_projected.json, read only; the \NF... macros of mpce_numbers_dir.tex come from the same file). Without
     # the file the table keeps the strict row only and says so in the note.
     proj = None
@@ -2974,7 +2974,7 @@ def load_published(data_dir):
     return None
 
 def evals(t):
-    """Terminology of the paper in generated tables: "evaluations" for objective calls (R6-12, R6-32)."""
+    """Terminology of the paper in generated tables: "evaluations" for objective calls."""
     t = re.sub(r"\b[Oo]bjective(?:-function)? calls\b", "evaluations", t)
     t = re.sub(r"\bper (?:objective )?call\b", "per evaluation", t)
     t = re.sub(r"\bCalls\b", "Evaluations", t)

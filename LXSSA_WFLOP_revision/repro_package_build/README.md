@@ -157,10 +157,10 @@ typography, the GA / analytic-gradient rows of `tab:hr-site` and `tab:iea37`, wh
 ## 6. Rerun the studies (optimization runs)
 
 Every run file is produced by one command (run in `analysis/`; `--procs P` sets the worker processes; shards
-`i k` split a study into k parts). Expected CPU time = sum of the stored per-run `Seconds` (single-core time of the
-original machines; divide by the number of workers).
+`i k` split a study into k parts). Expected run time = sum of the stored per-run wall-clock `Seconds` (aggregate worker-hours on the machines that
+produced the runs; divide by the number of workers).
 
-| Run files | Command | Runs | CPU time |
+| Run files | Command | Runs | Run time (h) |
 |---|---|---|---|
 | `fresh_grid.csv` (SSA, LX-SSA, DE, old PSO; + unused SLSQP/VNS rows) | `python3 full_grid_experiments.py grid` | 12,240 | 8.8 h |
 | `fresh_vgrid.csv` (VNS) | `python3 full_grid_experiments.py vgrid` | 2,040 | 1.3 h |
@@ -191,8 +191,9 @@ original machines; divide by the number of workers).
 | `rev3_precision_results/*.jsonl` -> `rev3_fullprec_<study>.csv` (full-precision reruns) | `python3 rev3_precision_rerun.py run STUDY SHARD NSHARDS` (the 35 shard commands are listed in `rev3_precision_plan.json`; local studies: `run STUDY`), then `collect` | 5,744 | 21.2 h |
 | Prespecifications | `analysis/rev3_constraint_manifest.md`, `rev3_fine_manifest.md`, `rev3_precision_manifest.md` (written before the runs) | — | — |
 
-Total stored CPU time of the main study and the additional experiments: about 126 CPU-hours; sensitivity studies and
-full-precision reruns: about 28 CPU-hours. The launchers of the additional experiments with the exact shard counts are `SWEVO_rev2/experiments_docs/run_rev2_resumable.sh` (resumable) and `run_rev2_hpc.sh`.
+Total stored run time (sum of the per-run wall-clock `Seconds`, i.e. aggregate worker-hours) of the main study and the
+additional experiments, including the auxiliary rows stored with them: about 126 h; sensitivity studies and full-precision
+reruns: about 28 h. The launchers of the additional experiments with the exact shard counts are `SWEVO_rev2/experiments_docs/run_rev2_resumable.sh` (resumable) and `run_rev2_hpc.sh`.
 Determinism: a rerun of a stored run reproduces all fields except `Seconds`; `verify_determinism.py` checks seed 1
 of two benchmark cases for PSO-VNS and SSA-VNS against the stored records (Section 8).
 

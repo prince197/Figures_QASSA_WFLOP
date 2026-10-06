@@ -1,4 +1,4 @@
-"""Revision 3 (item C2 / R8): direct optimization with 1-degree direction bins (experiment rev3_fine).
+"""Sensitivity study: direct optimization with 1-degree direction bins (experiment rev3_fine).
 
 Usage:  python3 rev3_fine.py SHARD NSHARDS [--procs P] [--rose 15]
         python3 rev3_fine.py --validate          (checks (1) and (2) of rev3_fine_manifest.md; ~3 min, 1 process)

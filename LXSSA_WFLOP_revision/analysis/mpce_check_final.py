@@ -91,7 +91,7 @@ CONDITIONS = [
      "ablation.contrasts.PSOBV-BVNS, PSOBV-RSVNS",
      lambda s: wtl(g(s, "ablation", "contrasts", "PSOBV-BVNS"))[0] >= 40 and wtl(g(s, "ablation", "contrasts", "PSOBV-BVNS"))[2] <= 2
      and wtl(g(s, "ablation", "contrasts", "PSOBV-RSVNS"))[0] >= 40 and wtl(g(s, "ablation", "contrasts", "PSOBV-RSVNS"))[2] == 0),
-    ("C15", "SSA phase gives only a small gain over random sampling (D1): SSA-VNS vs RS-VNS case-mean p < 0.05 with SSA-VNS lower "
+    ("C15", "SSA phase gives only a small gain over random sampling: SSA-VNS vs RS-VNS case-mean p < 0.05 with SSA-VNS lower "
             "(dL < 0, |dL| < 0.1 pp and less than half of |dL| of PSO-VNS vs RS-VNS), tied at run level in most cases (T > 34 of 68)",
      "ablation.case_mean.SSABV-RSVNS / PSOBV-RSVNS, ablation.contrasts.SSABV-RSVNS",
      lambda s: (lambda c, cp, w: c["p"] < 0.05 and c["mean_dloss_pp"] < 0 and abs(c["mean_dloss_pp"]) < 0.1
@@ -103,7 +103,7 @@ CONDITIONS = [
      lambda s: all(wtl(g(s, "ablation", "contrasts", k))[2] == 0 and wtl(g(s, "ablation", "contrasts", k))[0] >= 34 for k in ("PSOBV-SSABV", "PSOBV-LXBV"))
      and (lambda p: all(p["PSOBV"]["feasible_at_switch_pct"] > p[h]["feasible_at_switch_pct"] and p["PSOBV"]["mean_loss_at_switch_pct"] < p[h]["mean_loss_at_switch_pct"]
                         for h in ("SSABV", "LXBV")))(g(s, "ablation", "phase2_loss_reduction_pct"))),
-    ("C17", "LX-SSA as published is worse (D1, D14; Table IV rows 'LX-SSA as published (hybrid)' / '(alone)'): LX-SSA never "
+    ("C17", "LX-SSA as published is worse (Table IV rows 'LX-SSA as published (hybrid)' / '(alone)'): LX-SSA never "
             "significantly better than SSA and LX-SSA-VNS never significantly better than SSA-VNS (run level); on the case means "
             "SSA-VNS beats LX-SSA-VNS and SSA beats LX-SSA (p < 0.05)",
      "ablation.contrasts.LXSSA-SSA.W, SSABV-LXBV.L, ablation.case_mean.SSABV-LXBV / LXSSA-SSA",
@@ -115,7 +115,7 @@ CONDITIONS = [
      lambda s: (lambda p: p["n_lower_loss_than_50"]["PSOBV75"] >= 10 and p["wtl_50_vs_75"]["W"] == 0 and p["wtl_50_vs_25"]["L"] == 0
                 and p["avg_rank"]["PSOBV75"] < p["avg_rank"]["PSOBV"] < p["avg_rank"]["PSOBV25"])(g(s, "split"))),
     ("C19", "Horns Rev 16 (6,030, random starts, the paper's 5-deg bins): PSO-VNS has the highest mean AEP and is significantly "
-            "better than every other method in the run-level test (DATA condition; D19: the AEP edge vanishes with 1-deg bins "
+            "better than every other method in the run-level test (DATA condition; the AEP edge vanishes with 1-deg bins "
             "and PyWake, see mpce_check_dir.py F24/F25, so the text states the 6,030 result as a feasibility result)",
      "hr16.methods.*.mean/p_holm",
      lambda s: (lambda h: all(h["PSOBV"]["mean"] > v["mean"] for a, v in h.items() if a != "PSOBV" and v.get("mean") is not None)
@@ -151,9 +151,9 @@ CONDITIONS = [
      "feasbudget.rank.{6030,30030,120030}",
      lambda s: all((lambda r: all(r["PSOBV"] < v for a, v in r.items() if a != "PSOBV"))(g(s, "feasbudget", "rank", b))
                    for b in ("6030", "30030", "120030"))),
-    ("C30", "Horns Rev 1 at 30,030 evaluations (5-deg bins): PSO-VNS has the highest mean AEP (reworded, D16/D19: the former "
-            "second part 'at least one of its runs exceeds the installed layout' is dropped -- no run does with 1-deg bins, F21 -- "
-            "and is no longer evaluated; see C62; survival at 1 deg / PyWake: F26)",
+    ("C30", "Horns Rev 1 at 30,030 evaluations (5-deg bins): PSO-VNS has the highest mean AEP (no claim "
+            "that 'at least one of its runs exceeds the installed layout' -- no run does with 1-deg bins, F21 -- "
+            "so that part is not evaluated; see C62; survival at 1 deg / PyWake: F26)",
      "hr16.loss_by_setting.*.30030R.mean_aep",
      lambda s: (lambda L: all(L["PSOBV"]["30030R"]["mean_aep"] > v["30030R"]["mean_aep"] for a, v in L.items()
                               if a != "PSOBV" and v and v.get("30030R") and v["30030R"].get("mean_aep") is not None))(
@@ -162,8 +162,8 @@ CONDITIONS = [
 
 
 
-# Phase-4 conditions (optA/PHASE4.md D1-D7; R5 proposals C31-C43, with the meanings of C37-C40 set by the 08
-# section and of C43 by the lead). Conditions whose sentences are being rewritten evaluate DATA only.
+# Further conditions C31-C52 (component analysis, budgets, Horns Rev 1, IEA37, equivalence, spread). DATA conditions
+# evaluate the data only; the sentences follow them.
 def _cm(s, k):
     return g(s, "ablation", "case_mean", k)
 
@@ -181,25 +181,25 @@ CONDITIONS += [
             "neither the mean nor any run is claimed to exceed it, C62)",
      "hr16.methods.PSOBV.mean, hr16.installed_aep",
      lambda s: g(s, "hr16", "methods", "PSOBV", "mean") < g(s, "hr16", "installed_aep")),
-    ("C32", "PSO-VNS vs PSO (D2): not significant over all 68 cases (case-mean p >= 0.05); Data Set II, N >= 10: PSO-VNS lower "
+    ("C32", "PSO-VNS vs PSO: not significant over all 68 cases (case-mean p >= 0.05); Data Set II, N >= 10: PSO-VNS lower "
             "case-mean loss in more cases than PSO (wins > losses, mean dL < 0); Data Set I, N >= 10: PSO lower in at least half",
      "main.case_mean_wilcoxon.PSOC.p, main.subgroup_vs_phase1.groups.dsIILarge/dsILarge",
      lambda s: (lambda G2, G1: g(s, "main", "case_mean_wilcoxon", "PSOC", "p") >= 0.05
                 and G2["wins"] > G2["losses"] and G2["mean_dloss_pp"] < 0 and G1["losses"] >= G1["n_cases"] / 2)(
          g(s, "main", "subgroup_vs_phase1", "groups", "dsIILarge"), g(s, "main", "subgroup_vs_phase1", "groups", "dsILarge"))),
-    ("C33", "VNS phase (D1): significant for SSA and LX-SSA (run level W > L with L = 0; case-mean p < 0.05, dL < 0), "
+    ("C33", "VNS phase: significant for SSA and LX-SSA (run level W > L with L = 0; case-mean p < 0.05, dL < 0), "
             "not significant for PSO (case-mean p >= 0.05)",
      "ablation.contrasts/case_mean SSABV-SSA, LXBV-LXSSA, PSOBV-PSOC",
      lambda s: all(_wtl_abl(s, k)[0] > _wtl_abl(s, k)[2] == 0 and _cm(s, k)["p"] < 0.05 and _cm(s, k)["mean_dloss_pp"] < 0
                    for k in ("SSABV-SSA", "LXBV-LXSSA")) and _cm(s, "PSOBV-PSOC")["p"] >= 0.05),
-    ("C34", "budget (D2): PSO-VNS has the best average rank on the six largest cases at all three budgets; first-place counts are "
+    ("C34", "budget: PSO-VNS has the best average rank on the six largest cases at all three budgets; first-place counts are "
             "generated for every budget and PSO-VNS is first in at least one case at 120,030",
      "feasbudget.rank, feasbudget.first_count",
      lambda s: all((lambda r: all(r["PSOBV"] < v for a, v in r.items() if a != "PSOBV"))(g(s, "feasbudget", "rank", b))
                    for b in ("6030", "30030", "120030"))
      and all(g(s, "feasbudget", "first_count", b, "PSOBV") >= 0 for b in ("6030", "30030", "120030"))
      and g(s, "feasbudget", "first_count", "120030", "PSOBV") >= 1),
-    ("C35", "LX-SSA phase gives no gain over random sampling (D1): LX-SSA-VNS vs RS-VNS case-mean p >= 0.05, run level T >= 60, W and L <= 5",
+    ("C35", "LX-SSA phase gives no gain over random sampling: LX-SSA-VNS vs RS-VNS case-mean p >= 0.05, run level T >= 60, W and L <= 5",
      "ablation.case_mean.LXBV-RSVNS.p, ablation.contrasts.LXBV-RSVNS",
      lambda s: _cm(s, "LXBV-RSVNS")["p"] >= 0.05 and (lambda w: w[1] >= 60 and w[0] <= 5 and w[2] <= 5)(_wtl_abl(s, "LXBV-RSVNS"))),
     ("C36", "component analysis: the Friedman test rejects equal average ranks (\\NAblFriedVerb)",
@@ -240,18 +240,18 @@ CONDITIONS += [
             "(best initial) objective is identical across all methods for every case-seed pair at 6,030 evaluations where finite",
      "pairing", lambda s: (lambda p: p["groups_with_different_seed_sets"] == 0 and p["pairs_first_checkpoint_differs"] == 0
                            and p["pairs_compared"] > 0)(g(s, "pairing"))),
-    ("C44", "PSO phase (D1): a PSO phase gives a clearly larger gain over random sampling than an SSA phase (PSO-VNS vs RS-VNS "
+    ("C44", "PSO phase: a PSO phase gives a clearly larger gain over random sampling than an SSA phase (PSO-VNS vs RS-VNS "
             "case-mean p < 0.05 and dL at least twice that of SSA-VNS vs RS-VNS)",
      "ablation.case_mean.PSOBV-RSVNS, SSABV-RSVNS",
      lambda s: _cm(s, "PSOBV-RSVNS")["p"] < 0.05 and _cm(s, "PSOBV-RSVNS")["mean_dloss_pp"] < 2 * _cm(s, "SSABV-RSVNS")["mean_dloss_pp"] < 0),
-    ("C45", "budget (D3): at 120,030 evaluations SSA-VNS ranks ahead of PSO on the six largest cases",
+    ("C45", "budget: at 120,030 evaluations SSA-VNS ranks ahead of PSO on the six largest cases",
      "feasbudget.rank.120030", lambda s: g(s, "feasbudget", "rank", "120030", "SSABV") < g(s, "feasbudget", "rank", "120030", "PSOC")),
-    ("C46", "cost (D6): the metaheuristics need a similar time per evaluation (max/min < 2.5) and MS-SLSQP needs more than every "
+    ("C46", "cost: the metaheuristics need a similar time per evaluation (max/min < 2.5) and MS-SLSQP needs more than every "
             "metaheuristic (slowdown vs PSO > 1)",
      "cost_per_eval", lambda s: (lambda c: c["meta_max_ms"] / c["meta_min_ms"] < 2.5 and c["slsqp_ms"] > c["meta_max_ms"]
                                  and c["slsqp_over_pso"] > 1)(g(s, "cost_per_eval"))),
-    ("C47", "budget split (D7): omega = 0.75 is the best of the tested settings (lowest mean loss and average rank of 0.25, 0.5, "
-            "0.75, 0.9 [Phase 6, if present] and omega = 1 = PSO alone), and omega = 1 has a higher mean loss than omega = 0.75",
+    ("C47", "budget split: omega = 0.75 is the best of the tested settings (lowest mean loss and average rank of 0.25, 0.5, "
+            "0.75, 0.9 [if present] and omega = 1 = PSO alone), and omega = 1 has a higher mean loss than omega = 0.75",
      "split.mean_loss, split.avg_rank",
      lambda s: (lambda p: p["mean_loss"]["PSOC"] > p["mean_loss"]["PSOBV75"] and min(p["mean_loss"], key=p["mean_loss"].get) == "PSOBV75"
                 and min(p["avg_rank"], key=p["avg_rank"].get) == "PSOBV75")(g(s, "split"))),
@@ -282,7 +282,7 @@ CONDITIONS += [
 ]
 
 
-# Phase-6 conditions: the disc-sampling control RSD-VNS (experiment rsdisc; component analysis, Holm over the grown
+# Conditions of the additional experiments: the disc-sampling control RSD-VNS (experiment rsdisc; component analysis, Holm over the grown
 # family of contrasts) and the split omega = 0.9 (experiment omega90). DATA conditions; the sentences follow them.
 def _eq(s, k):
     return g(s, "equivalence", "pairs", k)
@@ -337,7 +337,7 @@ CONDITIONS += [
                 and p["case_mean_omega90"]["PSOBV90-PSOBV75"]["p"] >= 0.05
                 and p["mean_loss"]["PSOBV90"] > p["mean_loss"]["PSOBV75"] and p["avg_rank"]["PSOBV90"] > p["avg_rank"]["PSOBV75"]
                 and p["mean_loss"]["PSOBV90"] < p["mean_loss"]["PSOC"] and p["mean_loss"]["PSOBV90"] < p["mean_loss"]["PSOBV"])(g(s, "split"))),
-    ("C60", "RS-VNS weakness is mainly spacing, not the square (R3-6): paired over the same runs, fewer of the RS-VNS runs "
+    ("C60", "RS-VNS weakness is mainly spacing, not the square: paired over the same runs, fewer of the RS-VNS runs "
             "without a feasible Phase-1 sample are rescued by disc sampling (\\NRsSquareExplains) than stay without one "
             "under disc sampling too (\\NRsSpacingDominates); the counts add up to the RS-VNS total and the RSD-VNS total "
             "(\\NRSRunsNoFeasSample, \\NRSDRunsNoFeasSample); both replays reproduce the stored curves; and every RS-VNS run "
@@ -350,7 +350,7 @@ CONDITIONS += [
                             and rp["RSVNS"]["verification_ok"] and rp["RSDVNS"]["verification_ok"]
                             and rp["RSVNS"]["runs_no_feasible_but_inside_sample"] == rp["RSVNS"]["runs_no_feasible_sample"])(
          rp["square_vs_disc"]))(g(s, "ablation", "phase1_replay"))),
-    ("C61", "switch point (R3-9): RS-VNS and RSD-VNS switch after round(0.5 x 6,030) = 3,015 Phase-1 evaluations, the swarm "
+    ("C61", "switch point: RS-VNS and RSD-VNS switch after round(0.5 x 6,030) = 3,015 Phase-1 evaluations, the swarm "
             "hybrids after 3,030; the RS-VNS / RSD-VNS runs infeasible at the switch (read at the last checkpoint before it, "
             "call 3,000) equal the replayed runs without a feasible sample among the first 3,000 samples, and for RS-VNS also "
             "among all 3,015 (\\NRSRunsNoFeasSample; RSD-VNS: at most 15 samples later, a few runs more are feasible)",
@@ -364,7 +364,7 @@ CONDITIONS += [
 ]
 
 
-# Text conditions: evaluated on the manuscript text (comments stripped), not on the summary. D16/D19: with 1-deg
+# Text conditions: evaluated on the manuscript text (comments stripped), not on the summary. With 1-deg
 # bins (F21) and under PyWake no optimized Horns Rev run exceeds the installed block, so the paper must not claim
 # runs above the installed layout: none of the \NHR...Above... macros (runs_above_installed) may be used.
 ABOVE_MACRO = re.compile(r"\\NHR[A-Za-z]*Above[A-Za-z]*")
@@ -382,7 +382,7 @@ def _above_uses(T):
 
 
 TEXT_CONDITIONS = [
-    ("C62", "Horns Rev (D16/D19): no claim of optimized runs above the installed layout -- no \\NHR...Above... macro "
+    ("C62", "Horns Rev: no claim of optimized runs above the installed layout -- no \\NHR...Above... macro "
             "(runs_above_installed) is used in the text of the manuscript, optA/*.tex or the supplement",
      "manuscript text (comments stripped)", lambda T: not _above_uses(T)),
 ]
@@ -398,7 +398,7 @@ MALFORMED = []
 
 def scan_refs(files):
     """{kind: {id: set(files)}} of the ids referenced by the % CHECK-<kind> comments of the given .tex files.
-    Malformed tags (unknown kind, or no id of the kind's letter such as "CHECK-FINAL [NEW, D2]") go to MALFORMED."""
+    Malformed tags (unknown kind, or no id of the kind's letter such as "CHECK-FINAL [NEW]") go to MALFORMED."""
     refs = {k: {} for k in KIND_LETTER}
     for fn in files:
         for no, line in enumerate(open(fn, encoding="utf-8", errors="replace"), 1):
@@ -422,7 +422,7 @@ def scan_refs(files):
                     ids |= set(re.findall(r"\b(%s\d{2,3})\b" % L, br))
                 for i in ids:
                     refs[kind].setdefault(i, set()).add(os.path.basename(fn))
-                if not ids:                                           # R5-12: reported and counted as an error
+                if not ids:                                           # reported and counted as an error
                     MALFORMED.append(f"{where}  (no [{L}nn] id)")
     return refs
 

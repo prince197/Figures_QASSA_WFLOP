@@ -28,8 +28,8 @@ Open labels: audited records of class (ii)/(iii) whose strict 1e-6 m label the f
      tau* that decides every label feasible.
 3  Worst case for the conclusions: the IEA37 13-method pool (rev3_sites.load_iea / pool_analysis, the paper's
      feasibility-aware rank rule and the best-method seed-paired Wilcoxon / Holm family) recomputed with
-     (W1) every open exact-gradient label infeasible, (W2) W1 plus every open MS-SLSQP (finite-difference) label
-     infeasible, and (A) an adversarial case that keeps every exact-gradient method qualified: in each setting the
+     every open exact-gradient label infeasible (scenario key W1_exactgrad_open_infeasible), additionally every open
+     MS-SLSQP (finite-difference) label infeasible (key W2_plus_msslsqp_open_infeasible), and (A) an adversarial case that keeps every exact-gradient method qualified: in each setting the
      open runs with the highest AEP of each exact-gradient method are made infeasible until 15 of its 30 runs remain
      feasible (the lowest mean it can have while qualified). Benchmark: the 68-case eight-method comparison
      (mpce_results.case_stats / rank_matrix / friedman_block) and the all-run PSO-VNS vs MS-SLSQP outcome with every

@@ -1,4 +1,4 @@
-"""Inference-robustness analyses for the MPCE resubmission (Phase 6, workstream W2; answers R3 items 3-7).
+"""Inference-robustness analyses of the MPCE study (sensitivity of the statistical conclusions to analysis choices).
 
 Usage (from the repository root or analysis/):  python3 analysis/mpce_inference_extra.py [--data-dir D] [--perm 20000]
 
@@ -24,7 +24,7 @@ evaluations, random initialization, 30 seed-paired runs):
      minus that for N < 10; unrestricted and stratified by cluster), Spearman correlation of the case difference
      with N (overall, per data set, and a within-cluster stratified trend test), and a paired Data Set II vs I
      test over identical (r, N) cases.
-  Phase 6 controls: the four component-analysis contrasts with the disc-sampling control RSD-VNS (experiment rsdisc)
+  Additional controls: the four component-analysis contrasts with the disc-sampling control RSD-VNS (experiment rsdisc)
      and the omega = 0.9 budget-split tests (experiment omega90, PSOBV90) enter analyses 1-3 (the split tests, 12 cases
      = 2 per cluster, get their own threshold / cluster / LOCO results: summary keys split_case_level, cluster_split,
      loco_split).
@@ -35,7 +35,7 @@ evaluations, random initialization, 30 seed-paired runs):
      feasible final layouts from mpce_reevaluation.csv (written by mpce_results.py, section 8), and the change of the
      PSO-VNS - PSO case-mean difference between the two wake models (\\NXModelShift... macros, tab:X-modelshift).
 
-Review round 2 (R2 statistics review, lead decision D13; sections 7-11 of this file):
+Further sensitivity analyses (sections 7-11 of this file):
   7. Practical equivalence (margin EQ_MARGIN, read from mpce_summary.json) of the 18 pairs of tab:equivalence at three
      levels of inference: (a) seed level = fixed benchmark (runs resampled within cases, seed-paired), (b) case level
      (bootstrap over cases; reproduces mpce_results.equivalence_block exactly, check X38), (c) cluster level (CR2 variance
@@ -48,8 +48,8 @@ Review round 2 (R2 statistics review, lead decision D13; sections 7-11 of this f
 Tables tab:X-equiv-levels, tab:X-bayes, tab:X-heterogeneity, tab:X-beyond, tab:X-hl, tab:X-mcnemar; checks X38...
 
 The data are loaded and the helpers (Wilcoxon with zero differences dropped, Holm, the ranking rule, the case-
-mean Wilcoxon with imputation) are re-implemented here exactly as in mpce_results.py (that file is owned by
-another workstream and is not imported); check X01 verifies that the baseline threshold reproduces
+mean Wilcoxon with imputation) are re-implemented here exactly as in mpce_results.py (that file is
+not imported); check X01 verifies that the baseline threshold reproduces
 mpce_summary.json.
 
 Outputs (analysis/): mpce_summary_extra.json, mpce_numbers_extra.tex (\\NX... macros), mpce_supp_inference.tex
@@ -78,23 +78,23 @@ LAB = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "SSA": "SSA", "LXS
 MAC = {"PSOBV": "PSOVNS", "PSOC": "PSO", "SSABV": "SSAVNS", "SSA": "SSA", "LXSSA": "LXSSA", "DE": "DE",
        "BVNS": "VNS", "SLSQP": "MSSLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS", "RSDVNS": "RSDVNS"}
 # main-table pairs (PSO-VNS vs each method) and the fifteen component-analysis contrasts (first vs second; the last
-# four, with the disc-sampling control RSD-VNS, were added in Phase 6 -- same family as mpce_results.py)
+# four use the disc-sampling control RSD-VNS -- same family as mpce_results.py)
 MAIN_PAIRS = [(FOCUS, b) for b in MAIN8 if b != FOCUS]
 ABL_CONTR = [("PSOBV", "PSOC"), ("SSABV", "SSA"), ("LXBV", "LXSSA"), ("PSOBV", "BVNS"), ("PSOBV", "RSVNS"),
              ("SSABV", "RSVNS"), ("LXBV", "RSVNS"), ("PSOBV", "SSABV"), ("PSOBV", "LXBV"), ("SSABV", "LXBV"),
              ("LXSSA", "SSA"), ("SSABV", "RSDVNS"), ("LXBV", "RSDVNS"), ("PSOBV", "RSDVNS"), ("RSDVNS", "RSVNS")]
 RSD_CONTR = [("SSABV", "RSDVNS"), ("LXBV", "RSDVNS"), ("PSOBV", "RSDVNS"), ("RSDVNS", "RSVNS")]
-ALL_PAIRS = list(dict.fromkeys(MAIN_PAIRS + ABL_CONTR))          # 19 unique pairs (15 before Phase 6 controls)
-# the conclusions of the paper that the threshold / LOCO analyses re-test (component analysis: D1 of PHASE4.md)
+ALL_PAIRS = list(dict.fromkeys(MAIN_PAIRS + ABL_CONTR))          # 19 unique pairs (15 without the RSD-VNS controls)
+# the conclusions of the paper that the threshold / LOCO analyses re-test (component analysis)
 KEY_CONTR = [("PSOBV", "PSOC"), ("SSABV", "RSVNS"), ("LXBV", "RSVNS"), ("SSABV", "LXBV"), ("PSOBV", "RSVNS")] + RSD_CONTR
 EXPECT = {("PSOBV", "PSOC"): "ns", ("SSABV", "RSVNS"): "A", ("LXBV", "RSVNS"): "ns", ("SSABV", "LXBV"): "A",
           ("PSOBV", "RSVNS"): "A",
-          # Phase 6 controls (lead decision D11): SSA-VNS and LX-SSA-VNS significantly WORSE than RSD-VNS (B),
+          # RSD-VNS controls: SSA-VNS and LX-SSA-VNS significantly WORSE than RSD-VNS (B),
           # PSO-VNS better than RSD-VNS, RSD-VNS better than RS-VNS
           ("SSABV", "RSDVNS"): "B", ("LXBV", "RSDVNS"): "B", ("PSOBV", "RSDVNS"): "A", ("RSDVNS", "RSVNS"): "A"}
 # A = first method significantly better (p < 0.05, lower mean loss); B = second significantly better; ns = p >= 0.05
 # budget split (12 cases, 2 per cluster): the case-mean tests of the split table; omega = 0.9 (PSOBV90, experiment
-# omega90) added in Phase 6. Split tests are unadjusted in the paper; EXPECT_SPLIT = the paper's verdicts (raw p).
+# omega90) included. Split tests are unadjusted in the paper; EXPECT_SPLIT = the paper's verdicts (raw p).
 SPM = ["PSOBV25", "PSOBV", "PSOBV75", "PSOBV90", "PSOC"]
 SPLIT_PAIRS = [("PSOBV", "PSOBV25"), ("PSOBV", "PSOBV75"), ("PSOBV", "PSOC"), ("PSOBV75", "PSOC"),
                ("PSOBV", "PSOBV90"), ("PSOBV90", "PSOBV75")]
@@ -115,7 +115,7 @@ def _eq_margin():
 
 
 EQ_MARGIN, EQ_MARGIN_SRC = _eq_margin()
-# ---- Phase 6 / review round 2 (R2 statistics, lead decision D13): equivalence at three inference levels,
+# ---- further sensitivity analyses: equivalence at three inference levels,
 # heterogeneity, Bayesian posterior means, Hodges-Lehmann estimates, McNemar (functions in section 7)
 # the 18 pairs of tab:equivalence (mpce_results.equivalence_block: component-analysis pairs, then PSO-VNS vs each
 # main method); order as in that table
@@ -128,7 +128,7 @@ BAYES_S, BAYES_Z0, BAYES_N, BAYES_SEED = 0.5, 0.0, 50000, 20260928   # as mpce_r
 WEBB = np.array([-math.sqrt(1.5), -1.0, -math.sqrt(0.5), math.sqrt(0.5), 1.0, math.sqrt(1.5)])  # Webb (2014) 6-point
 SMIN_M = 308.0                       # minimum spacing 4D = 308 m (mpce_results.SMIN_M); density phi = N (SMIN_M / 2r)^2
 CURVE_GRID = np.round(np.arange(0.0, 0.1201, 0.001), 3)               # margins (pp) of the equivalence curve
-TRIVIAL_LOSS_PP = 0.2                # lead request: "trivial" case = case-mean wake loss of PSO-VNS below 0.2 pp
+TRIVIAL_LOSS_PP = 0.2                # "trivial" case = case-mean wake loss of PSO-VNS below 0.2 pp
 
 
 def pk(a, b):
@@ -182,7 +182,7 @@ def load(data_dir):
     for fn, drop in (("fresh_grid.csv", ["VNS", "PSO", "SLSQP"]), ("fresh_vgrid.csv", []), ("fresh_bgrid.csv", [])):
         d = std_cols(pd.read_csv(os.path.join(HERE, fn), usecols=lambda c: c not in ("Coordinates", "Curve")))
         parts.append(d[~d.Algorithm.isin(drop)])           # old PSO dropped; SLSQP replaced by mpce_slsqp (as load())
-    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "omega90", "rsdisc"):   # omega90 / rsdisc: Phase 6 controls
+    for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "omega90", "rsdisc"):   # omega90 / rsdisc: additional controls
         parts.append(read_shards(exp, data_dir))
     A = pd.concat(parts, ignore_index=True).drop_duplicates(KEY, keep="first")
     A = A[(A.Budget == 6030) & (A.Init == "random") & A.Dataset.isin(["1", "2"])].reset_index(drop=True)
@@ -723,7 +723,7 @@ def model_shift_block(S, data_dir):
     return out
 
 
-# ------------------------------------------------------------------ 7. equivalence at three levels (review round 2, D13)
+# ------------------------------------------------------------------ 7. equivalence at three levels
 def boot_summary(bm, est, margin=EQ_MARGIN):
     """TOST summary of bootstrap means bm, exactly as mpce_results.tost: 90 % / 95 % percentile CIs, equivalence iff
     the 90 % CI lies strictly inside (-m, m), bootstrap TOST p = max(share <= -m, share >= +m) with add-one correction
@@ -799,7 +799,7 @@ def seed_level(G, a, b, d, B=BOOT_N, seed=SEED_BOOT_SEED):
     r = boot_summary(bm_s, est / n)
     r.update(n_cases=n, resamples=B, seed=seed, fallback_resamples=fb, all_runs_feasible=all_feas,
              joint=boot_summary(bm_j, est / n))
-    if all_feas:                                                       # reviewer's version: benchmark average per seed, t(29)
+    if all_feas:                                                       # benchmark average per seed, t(29)
         ps = per_seed / n; se = ps.std(ddof=1) / math.sqrt(30); q = t_dist.ppf(0.95, 29)
         r["per_seed_t"] = dict(mean=float(ps.mean()), ci90=[float(ps.mean() - q * se), float(ps.mean() + q * se)],
                                se=float(se), n_seeds=30,
@@ -815,7 +815,7 @@ def cr_parts(d, cid, G):
 def cr2(d, cid, G):
     """(c) cluster-robust inference on the case-weighted mean: CR2 variance (Bell-McCaffrey bias-reduced
     linearization; for the intercept-only model the cluster sums of the residuals are scaled by (1 - n_g/n)^-1/2),
-    t with G - 1 = 5 d.f. (primary, as requested) and the Bell-McCaffrey / Imbens-Kolesar d.f. (homoskedastic working
+    t with G - 1 = 5 d.f. (primary) and the Bell-McCaffrey / Imbens-Kolesar d.f. (homoskedastic working
     model) for reference; CR1 (G/(G-1) scaling) for comparison with tab:X-loco."""
     d = np.asarray(d, float); n, ng, adj = cr_parts(d, cid, G)
     est = d.mean(); U = np.bincount(cid, weights=d - est, minlength=G)
@@ -981,7 +981,7 @@ def heterogeneity_block(S, clusters, B, EL):
     """Per-case heterogeneity of d = L(PSO-VNS) - L(PSO) (pp): cases beyond +-margin, stratified equivalence (N < 10,
     N >= 10), cluster means, and a data set x density interaction.
 
-    Density (stated before this analysis was run, after review round 2): phi = N (l_min / 2r)^2, the nominal share of
+    Density (fixed before this analysis was run): phi = N (l_min / 2r)^2, the nominal share of
     the farm disc covered by the N exclusion discs of diameter l_min = 4D = 308 m (the same ordering as N/r^2).
     Interaction test: the two data sets share the identical 34 (r, N) cases, so e_j = d_II(r,N) - d_I(r,N) is regressed
     on phi_j; the slope is the data set x density interaction (d ~ (r,N) pair + data set + data set:phi). Test:
@@ -1002,7 +1002,7 @@ def heterogeneity_block(S, clusters, B, EL):
                density_def="phi = N (l_min / 2r)^2, l_min = 308 m")
     out["cases_beyond"] = [dict(dataset=str(a), radius=int(b_), N=int(c), phi=float(p), d=float(v))
                            for a, b_, c, p, v in zip(ds, r, n, phi, dv) if abs(v) > m]
-    # stratified by N, and by the size of the wake loss itself (lead request: cases with a trivial wake loss cannot
+    # stratified by N, and by the size of the wake loss itself (cases with a trivial wake loss cannot
     # differ by the margin): case-mean wake loss of PSO-VNS < TRIVIAL_LOSS_PP ("trivial") vs >= ("nontrivial")
     lossA = S[S.Algorithm == FOCUS].set_index(CASE).Loss.loc[d.index].values
     out["trivial_loss_pp"] = TRIVIAL_LOSS_PP
@@ -1328,7 +1328,7 @@ def main(argv=None):
     for k, v in EN.items():
         print(f"energy {k}: dL {v['mean_dloss_pp']:+.4f} pp, gain {v['mean_gain_pct_aep']:+.4f} % AEP, "
               f"{v['mean_gain_mwh_yr']:+.1f} MWh/yr (CI {np.round(v['ci95_gain_mwh_yr'], 1)}), largest N {v['mean_gain_mwh_yr_largest_N']:+.1f}")
-    # --- 7-11. review round 2 (D13): equivalence at three levels, heterogeneity, HL, McNemar, equivalence curve
+    # --- 7-11. further sensitivity analyses: equivalence at three levels, heterogeneity, HL, McNemar, equivalence curve
     EL = equivalence_levels_block(G, S, clusters)
     EL["reproduction"] = reproduce_equivalence(EL)
     print("reproduction of mpce_summary.json['equivalence']:", EL["reproduction"])
@@ -1455,7 +1455,7 @@ def write_macros(s, fn):
                     ("sub:Large", "PSOVNSvsPSOLarge"), ("sub:dsILarge", "PSOVNSvsPSOdsILarge"), ("split:PSOBV-PSOBV75", "SplitFiftyVsSeventyFive"),
                     ("split:PSOBV-PSOBV25", "SplitFiftyVsTwentyFive"), ("split:PSOBV75-PSOC", "SplitSeventyFiveVsHundred"),
                     ("split:PSOBV-PSOC", "SplitFiftyVsHundred"),
-                    # Phase 6 controls: RSD-VNS contrasts and omega = 0.9 split tests
+                    # additional controls: RSD-VNS contrasts and omega = 0.9 split tests
                     ("abl:SSABV-RSDVNS", "SSAVNSvsRSDVNS"), ("abl:LXBV-RSDVNS", "LXSSAVNSvsRSDVNS"),
                     ("abl:PSOBV-RSDVNS", "PSOVNSvsRSDVNS"), ("abl:RSDVNS-RSVNS", "RSDVNSvsRSVNS"),
                     ("split:PSOBV-PSOBV90", "SplitFiftyVsNinety"), ("split:PSOBV90-PSOBV75", "SplitNinetyVsSeventyFive")):
@@ -1517,7 +1517,7 @@ def write_macros(s, fn):
     names = [x[0] for x in M]
     assert len(names) == len(set(names)), f"duplicate macros: {sorted({x for x in names if names.count(x) > 1})}"
     hdr = ["% generated by mpce_inference_extra.py from the per-run data (" + s["generated"] + ") -- do not edit by hand",
-           "% Phase 6, W2 (inference robustness): qualification threshold, cluster-level / leave-one-cluster-out / cluster",
+           "% Inference robustness: qualification threshold, cluster-level / leave-one-cluster-out / cluster",
            "% bootstrap, one Holm (and BH) family over all main-text case-mean tests, the post hoc N >= 10 subgroup, and",
            "% effect sizes in benchmark energy. Supplementary tables: mpce_supp_inference.tex (tab:X-...);",
            "% checks: mpce_check_extra.py (X01...). Signs: pair macros 'AvsB' use first minus second (pp of wake loss,",
@@ -1557,7 +1557,7 @@ def case_list(cases):
 
 
 def write_macros_r2(s, m):
-    """macros of the review-round-2 analyses (sections 7-10): \\NXEq..., \\NXBayMean..., \\NXHet..., \\NXDens...,
+    """macros of the further sensitivity analyses (sections 7-10): \\NXEq..., \\NXBayMean..., \\NXHet..., \\NXDens...,
     \\NXHL..., \\NXHRMcNemar..., \\NXMargin.... Signs: first minus second (pp of wake loss, negative = first better).
     Bayesian 'Left/Rope/Right': theta_A (first better) / theta_rope / theta_B (second better); the \\NX...Bay{Left,Rope,
     Right} probabilities are the posterior probabilities that each region is the MOST PROBABLE one (not the
@@ -1590,7 +1590,7 @@ def write_macros_r2(s, m):
     f = P_["PSOBV-PSOC"]
     if "per_seed_t" in f["seed"]:
         m("NXEqSeedJointPSOVNSvsPSOCI", ci_txt(f["seed"]["per_seed_t"]["ci90"]),
-          "benchmark-average difference per seed (30 seeds), t(29) 90% CI (the reviewer's version)")
+          "benchmark-average difference per seed (30 seeds), t(29) 90% CI (per-seed version)")
     m("NXEqSeedStratJointPSOVNSvsPSOCI", ci_txt(f["seed"]["joint"]["ci90"]), "seed bootstrap with one seed resample for all cases")
     m("NXEqClustCROnePSOVNSvsPSOCI", ci_txt(f["cluster"]["cr1"]["ci90"]), "CR1 t(5) 90% CI")
     m("NXEqClustDfBM", num(f["cluster"]["df_bm"], 1), "Bell-McCaffrey d.f. of the CR2 variance (PSO-VNS - PSO)")
@@ -1682,7 +1682,7 @@ def write_tables(s, fn):
                    "tab:X-threshold", "c" * 12,
                    "Thresh. & Unq. & Best & " + " & ".join(stack(*h) for h in (("Rank", "PSO-VNS"), ("Rank", "PSO"), ("$p_z$", "ns"),
                    ("PSO-VNS/", "PSO"), ("SSA-VNS/", "RS-VNS"), ("LX-SSA-VNS/", "RS-VNS"), ("SSA-VNS/", "LX-SSA-VNS"), ("PSO-VNS/", "RS-VNS"))) + " & Same", lines))
-    # --- threshold table of the Phase 6 controls (RSD-VNS contrasts, budget split incl. omega = 0.9)
+    # --- threshold table of the additional controls (RSD-VNS contrasts, budget split incl. omega = 0.9)
     vm = {"A": "\\,$+$", "B": "\\,$-$", "ns": "\\,$\\cdot$"}
     lines = []
     for t in s["thresholds"]:
@@ -1692,7 +1692,7 @@ def write_tables(s, fn):
                   for a, b in RSD_CONTR]
         cells += [tp(sp[pk(a, b)]["p"]) + vm[verdict(sp[pk(a, b)])] for a, b in SPLIT_PAIRS]
         lines.append(" & ".join(cells) + " \\\\")
-    T.append(table("table*", "Sensitivity of the Phase-6 control comparisons to the qualification threshold (as Table~\\ref{tab:X-threshold}). Left: case-mean Wilcoxon $p$ (68 cases, unadjusted) of the four component-analysis contrasts with the disc-sampling control RSD-VNS; mark: verdict at $\\alpha=0.05$ both unadjusted and Holm-adjusted over the %d component-analysis contrasts ($+$: first method better, $-$: second better, $\\cdot$: not significant). Right: case-mean Wilcoxon $p$ (12 split cases, unadjusted as in Table~\\ref{M-tab:split}) of the budget-split tests of PSO-VNS (share $\\omega$ of the evaluations for PSO; $\\omega=1$: PSO alone); mark: unadjusted verdict. Unq.: split case--setting cells that do not qualify (imputed maximal differences)." % len(ABL_CONTR),
+    T.append(table("table*", "Sensitivity of the additional control comparisons to the qualification threshold (as Table~\\ref{tab:X-threshold}). Left: case-mean Wilcoxon $p$ (68 cases, unadjusted) of the four component-analysis contrasts with the disc-sampling control RSD-VNS; mark: verdict at $\\alpha=0.05$ both unadjusted and Holm-adjusted over the %d component-analysis contrasts ($+$: first method better, $-$: second better, $\\cdot$: not significant). Right: case-mean Wilcoxon $p$ (12 split cases, unadjusted as in Table~\\ref{M-tab:split}) of the budget-split tests of PSO-VNS (share $\\omega$ of the evaluations for PSO; $\\omega=1$: PSO alone); mark: unadjusted verdict. Unq.: split case--setting cells that do not qualify (imputed maximal differences)." % len(ABL_CONTR),
                    "tab:X-threshold-controls", "c" * (2 + len(RSD_CONTR) + len(SPLIT_PAIRS)),
                    "Thresh. & Unq. & " + " & ".join(stack(LAB[a] + "/", LAB[b]) for a, b in RSD_CONTR) + " & "
                    + " & ".join(stack(SPLIT_LAB[a] + "/", SPLIT_LAB[b]) for a, b in SPLIT_PAIRS), lines, resize=True))
@@ -1799,13 +1799,13 @@ def write_tables(s, fn):
                    "tab:X-modelshift", "lccccc", "Layouts & $n$ & mean & median & 10--90\\% & signed", lines, sep="3pt"))
     write_tables_r2(s, T)
     hdr = ("% generated by mpce_inference_extra.py (" + s["generated"] + ") -- do not edit by hand\n"
-           "% Supplementary tables of the inference-robustness analyses (Phase 6, W2); requires booktabs\n\n")
+           "% Supplementary tables of the inference-robustness analyses; requires booktabs\n\n")
     open(fn, "w").write(hdr + "\n".join(T))
     print(f"wrote {fn} ({len(T)} tables)")
 
 
 def write_tables_r2(s, T):
-    """supplementary tables of the review-round-2 analyses: tab:X-equiv-levels, tab:X-bayes, tab:X-heterogeneity,
+    """supplementary tables of the further sensitivity analyses: tab:X-equiv-levels, tab:X-bayes, tab:X-heterogeneity,
     tab:X-beyond, tab:X-hl, tab:X-mcnemar."""
     EL = s["equivalence_levels"]; P_ = EL["pairs"]; mg = EL["margin_pp"]
     f3 = lambda v: f"{v:+.3f}".replace("-", "$-$")
@@ -1871,7 +1871,7 @@ def write_tables_r2(s, T):
               f"slope {f3(it['slope_pp_per_unit_phi'])}, $p={tp(it['p_signflip']).strip('$')}$ (sign flips)}} \\\\",
               f"\\multicolumn{{8}}{{l}}{{Data Set I: slope {f3(s1['slope_pp_per_unit_phi'])} (PSO better at higher density), $p={tp(s1['p_perm']).strip('$')}$; "
               f"Data Set II: slope {f3(s2['slope_pp_per_unit_phi'])} (PSO-VNS better), $p={tp(s2['p_perm']).strip('$')}$ (within-radius permutation)}} \\\\"]
-    T.append(table("table*", "Heterogeneity of PSO-VNS vs.\\ PSO ($\\Delta L$: case-mean wake loss of PSO-VNS minus that of PSO, pp; negative = PSO-VNS better). Beyond: cases with $\\Delta L<-m$ / $\\Delta L>+m$ ($m=%g$~pp); 90\\%% CI, $m_{\\min}$, Eq.\\ as the case level of Table~\\ref{tab:X-equiv-levels}; Bayes: $P_{\\rm A}/P_{\\rm rope}/P_{\\rm B}$ (region most probable; A = PSO-VNS better) of the Bayesian signed-rank test (Table~\\ref{tab:X-bayes}). Subsets: turbine number $N<10$ / $N\\ge10$, and cases in which the case-mean wake loss of PSO-VNS is below / at least %g~pp (a case with a trivial wake loss cannot differ by $m$). Density: $\\phi=N(\\ell_{\\min}/2r)^2$ with $\\ell_{\\min}=%d$~m, the nominal share of the farm disc covered by the $N$ exclusion discs (range %.2f--%.2f); stated after review, before this test was run. Interaction test: slope of the difference between the data sets over the identical $(r,N)$ cases, HC3-studentized, %s random sign flips of the pairs (valid when the data sets also differ in level); per data set: regression on $\\phi$ with radius fixed effects, HC3-studentized, permutation of $\\Delta L$ within radius. The cases beyond $\\pm m$ are listed in Table~\\ref{tab:X-beyond}."
+    T.append(table("table*", "Heterogeneity of PSO-VNS vs.\\ PSO ($\\Delta L$: case-mean wake loss of PSO-VNS minus that of PSO, pp; negative = PSO-VNS better). Beyond: cases with $\\Delta L<-m$ / $\\Delta L>+m$ ($m=%g$~pp); 90\\%% CI, $m_{\\min}$, Eq.\\ as the case level of Table~\\ref{tab:X-equiv-levels}; Bayes: $P_{\\rm A}/P_{\\rm rope}/P_{\\rm B}$ (region most probable; A = PSO-VNS better) of the Bayesian signed-rank test (Table~\\ref{tab:X-bayes}). Subsets: turbine number $N<10$ / $N\\ge10$, and cases in which the case-mean wake loss of PSO-VNS is below / at least %g~pp (a case with a trivial wake loss cannot differ by $m$). Density: $\\phi=N(\\ell_{\\min}/2r)^2$ with $\\ell_{\\min}=%d$~m, the nominal share of the farm disc covered by the $N$ exclusion discs (range %.2f--%.2f); fixed before this test was run. Interaction test: slope of the difference between the data sets over the identical $(r,N)$ cases, HC3-studentized, %s random sign flips of the pairs (valid when the data sets also differ in level); per data set: regression on $\\phi$ with radius fixed effects, HC3-studentized, permutation of $\\Delta L$ within radius. The cases beyond $\\pm m$ are listed in Table~\\ref{tab:X-beyond}."
                    % (mg, H["trivial_loss_pp"], SMIN_M, it["phi_range"][0], it["phi_range"][1], f"{it['perm']:,}".replace(",", "{,}")),
                    "tab:X-heterogeneity", "lccccccc",
                    "Cases & $n$ & Beyond & $\\overline{\\Delta L}$ & 90\\% CI & $m_{\\min}$ & Eq. & Bayes", lines, sep="3pt"))
