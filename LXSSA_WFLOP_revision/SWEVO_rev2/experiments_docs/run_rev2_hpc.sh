@@ -1,5 +1,5 @@
 #!/bin/sh
-# Revision-2 experiments on a many-core machine. Copy the rev2_*.py files into LXSSA_WFLOP_revision/analysis of
+# Additional experiments on a many-core machine. Copy the rev2_*.py files into LXSSA_WFLOP_revision/analysis of
 # branch claude/clever-mendel-hc0j56 (repo prince197/Figures_QASSA_WFLOP) and run:  sh run_rev2_hpc.sh 64
 P=${1:-64}
 cd "$(dirname "$0")"

@@ -47,5 +47,5 @@ NF=$(wc -l < "$STAGE/MANIFEST.sha256")
 echo "package: $B/dist/$NAME.zip"
 echo "  files: $NF (+ MANIFEST.sha256), unpacked $(du -sh "$STAGE" | cut -f1), zip $(du -h "$B/dist/$NAME.zip" | cut -f1)"
 echo "  sha256: $(cut -d' ' -f1 "$B/dist/$NAME.zip.sha256")"
-echo "  revision-3 files included: $(grep -c '^analysis/rev3_' "$B/package_files.txt" || true)"
+echo "  sensitivity-study files (rev3_*) included: $(grep -c '^analysis/rev3_' "$B/package_files.txt" || true)"
 rm -rf "$B/dist/stage"

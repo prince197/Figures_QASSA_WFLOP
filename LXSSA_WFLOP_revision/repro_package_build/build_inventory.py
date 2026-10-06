@@ -88,6 +88,11 @@ RULES = [
     # ---- sensitivity studies, sensitivity analyses, full-precision reruns (included automatically when present) --
     ("analysis/rev3_precision_results/*.jsonl", "rev3-data", "include", "raw full-precision rerun results, one JSON line per record; merged by rev3_precision_rerun.py collect"),
     ("analysis/rev3p_*.log", "rev3-log", "include", "worker logs of the 35 cloud shards of the full-precision reruns"),
+    ("SWEVO_rev2/validation/revision_verification.json", "manuscript-tool", "exclude", "record of an earlier document build (not used by any script)"),
+    ("analysis/rev3_numbers_*", "manuscript-tool", "exclude", "internal number audit of the manuscript text (not part of the analysis)"),
+    ("analysis/rev3_bib_order.py", "manuscript-tool", "exclude", "reference-list ordering tool for the manuscript sources"),
+    ("analysis/rev3_precision_notes.md", "manuscript-tool", "exclude", "internal drafting notes for the manuscript text"),
+    ("analysis/check_final.log", "log", "exclude", "stale log of a check run; the checks are rerun by regenerate_all.sh"),
     ("analysis/rev3_review_report.md", "rev3-editorial", "exclude", "internal editorial notes on the manuscript text"),
     ("analysis/rev3_suggested_text.md", "rev3-editorial", "exclude", "internal drafting notes for the manuscript text"),
     ("analysis/rev3_refs_*", "rev3-editorial", "exclude", "internal reference-list check of the manuscript"),

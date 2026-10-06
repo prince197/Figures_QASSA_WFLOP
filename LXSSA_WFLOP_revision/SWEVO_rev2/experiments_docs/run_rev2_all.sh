@@ -1,5 +1,5 @@
 #!/bin/sh
-# Revision-2 experiments, sequential stages, 2 processes each (this machine: 2 cores)
+# Additional experiments, sequential stages, 2 processes each (this machine: 2 cores)
 cd "$(dirname "$0")"
 date; python3 rev2_laplace.py laplace 0 1 --procs 2 > run_rev2_laplace.log 2>&1
 date; python3 rev2_ga.py ga 0 1 --procs 2 > run_rev2_ga.log 2>&1

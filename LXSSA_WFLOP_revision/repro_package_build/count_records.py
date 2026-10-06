@@ -6,7 +6,7 @@ Original study (36,190): the 11 methods of the benchmark (SSA, LX-SSA, DE, old-s
 fresh_vgrid.csv; SSA-VNS and LX-SSA-VNS from fresh_bgrid.csv; PSO, RS-VNS, MS-SLSQP, PSO-VNS from mpce_*) = 22,440,
 RSD-VNS 2,040, split 1,080, PSO coefficient sweep 3,240, budget 3,600 and feasible initialization 1,620 (both without
 the superseded Horns Rev rows, which hrfix replaces), Horns Rev 1 (hrfix) 970, IEA37 1,200.
-Revision 2 (11,640): the rev2_<family>_s<i>of<k>.csv shards. Revision 3: every analysis/rev3_*.csv that has the
+Additional experiments (11,640): the rev2_<family>_s<i>of<k>.csv shards. Sensitivity studies: every analysis/rev3_*.csv that has the
 run-record columns (Algorithm, Seed, Objective, Feasible) is counted and listed. Exit code 1 if a total differs.
 """
 import argparse, glob, os, re, sys
@@ -51,7 +51,7 @@ r2 = {}
 for f in sorted(glob.glob(os.path.join(D, "rev2_*_s*of*.csv"))):
     fam = re.sub(r"_s\d+of\d+\.csv$", "", os.path.basename(f))
     r2[fam] = r2.get(fam, 0) + len(pd.read_csv(f, usecols=["Algorithm"]))
-print("revision-2 records:", sum(r2.values()), "(expected 11640):", ", ".join(f"{k} {v}" for k, v in r2.items()))
+print("additional-experiment records:", sum(r2.values()), "(expected 11640):", ", ".join(f"{k} {v}" for k, v in r2.items()))
 r3 = {}
 for f in sorted(glob.glob(os.path.join(D, "rev3_*.csv"))):
     try:
@@ -60,7 +60,7 @@ for f in sorted(glob.glob(os.path.join(D, "rev3_*.csv"))):
         continue
     if {"Algorithm", "Seed", "Objective", "Feasible"} <= set(cols):
         r3[os.path.basename(f)] = len(pd.read_csv(f, usecols=["Algorithm"]))
-print("revision-3 files in run-record format (runs or re-evaluations):", sum(r3.values()), "rows" if r3 else "(none present)")
+print("sensitivity-study files in run-record format (runs or re-evaluations):", sum(r3.values()), "rows" if r3 else "(none present)")
 for k, v in r3.items():
     print(f"  {k:62s} {v:6d}")
 sys.exit(0 if orig == 36190 and sum(r2.values()) == 11640 else 1)
