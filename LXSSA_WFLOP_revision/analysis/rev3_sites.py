@@ -697,7 +697,7 @@ def block_time(summ, tex):
     fo = fo[fo.Algorithm.isin(["SLSQP", "PSO"])].assign(ms=lambda d: 1000 * d.Seconds / d.Calls)
     earlier = {}
     for a, g in fo.groupby("Algorithm"):
-        earlier[a] = dict(source="fresh_grid.csv (earlier study / platform)", runs=int(len(g)),
+        earlier[a] = dict(source="fresh_grid.csv (preliminary comparison / platform)", runs=int(len(g)),
                           median_ms_per_eval=float(g.ms.median()), mean_ms_per_eval=float(g.ms.mean()),
                           median_s_by_N={int(k): float(v) for k, v in g.groupby("Turbines").Seconds.median().items()})
     ver["slsqp_rerun_small_vs_large_N"] = dict(
@@ -807,7 +807,7 @@ def block_time(summ, tex):
         d, _ = R2.read_rev2(e, HERE)
         rev[e] = (int(len(d)), secs(d))
     rev_n = sum(v[0] for v in rev.values()); rev_s = sum(v[1] for v in rev.values())
-    # superseded but run (not used in the paper): HR rows of b30k/b120k/feas/psobv, fresh HR, hr16new
+    # run but not used in the paper: HR rows of b30k/b120k/feas/psobv, fresh HR, hr16new
     sw = shard_walltimes()
     wt = {}
     if len(sw):
@@ -975,7 +975,7 @@ def time_table(summ, tex):
             c.append(rc(s_.get("median_s", {}).get(a), s_.get("ratio_to_psovns", {}).get(a)) if a in s_.get("median_s", {}) else "n/r")
         lines.append(f"{LAB[a]} & " + " & ".join(c) + " \\\\")
     if old:
-        lines.append(f"MS-SLSQP, earlier$^{{a}}$ & {old['median_ms_per_eval']:.2f} & {old['mean_ms_per_eval']:.2f} & "
+        lines.append(f"MS-SLSQP, other batch$^{{a}}$ & {old['median_ms_per_eval']:.2f} & {old['mean_ms_per_eval']:.2f} & "
                      f"{rc(old['median_s_by_N'].get(5), None)} & {rc(old['median_s_by_N'].get(10), None)} & "
                      f"{rc(old['median_s_by_N'].get(15), None)} & & & \\\\")
     it = summ.get("init_time")
@@ -983,7 +983,7 @@ def time_table(summ, tex):
         cs = it["cases"]; b6 = it["benchmark_six_largest"]; hr = cs.get("HR-0-16", {})
         lines.append("\\midrule")
         lines.append("\\multicolumn{9}{l}{\\emph{Initialization alone (30 layouts per run, L-BFGS-B packing, not charged), "
-                     "re-run now, seeds 1--30: wall [CPU] time}} \\\\")
+                     "timed separately, seeds 1--30: wall [CPU] time}} \\\\")
         lines.append("\\multicolumn{3}{l}{Six largest cases} & \\multicolumn{6}{l}{median %.2f~s [%.2f~s], maximum %.2f~s [%.2f~s]} \\\\"
                      % (b6["median_s"], b6["median_cpu_s"], b6["max_s"], b6["max_cpu_s"]))
         lines.append("\\multicolumn{3}{l}{Horns Rev~1 block} & \\multicolumn{6}{l}{median %.2f~s [%.2f~s], maximum %.2f~s [%.2f~s]} \\\\"
@@ -1001,10 +1001,10 @@ def time_table(summ, tex):
             "not charged). ms per evaluation: Seconds/Evaluations$\\times10^3$ of each run, median and mean over the 2{,}040 runs "
             "of the method (the mean is the statistic of Table~\\ref{tab:cost}); s per run: median over the runs with the given $N$ "
             "(60 runs); six largest cases: median over 180 runs (6{,}030 feasible init.\\ includes the packing). In parentheses: "
-            "ratio to PSO-VNS. Methods come from different run batches (SSA, LX-SSA, DE, VNS, SSA-VNS, LX-SSA-VNS: files of the "
-            "earlier study), so ratios are indicative. MS-SLSQP (rerun batch mpce\\_slsqp): the time per run jumps from 3.1~s at "
-            "$N=7$ to 16--22~s at $N\\ge8$, independent of $r$; re-timed now with single-threaded BLAS: " + prs + ". "
-            "$^{a}$Same method, runs of the earlier study (fresh\\_grid). n/r: not run. Total serial compute (sum of Seconds): "
+            "ratio to PSO-VNS. Methods come from different run batches (SSA, LX-SSA, DE, VNS, SSA-VNS, LX-SSA-VNS: files of a "
+            "separate run batch), so ratios are indicative. MS-SLSQP (batch mpce\\_slsqp): the time per run jumps from 3.1~s at "
+            "$N=7$ to 16--22~s at $N\\ge8$, independent of $r$; re-timed with single-threaded BLAS: " + prs + ". "
+            "$^{a}$Same method, runs of the preliminary comparison (fresh\\_grid). n/r: not run. Total serial compute (sum of Seconds): "
             "%.1f CPU-hours for the %s original records and %.1f for the %s additional-experiment records; the runs were executed in four "
             "parallel worker processes, so the elapsed time of a study was about a quarter of its total."
             % (cp["original_cpu_h"], f"{cp['original_records']:,}".replace(",", "{,}"), cp["additional_cpu_h"],

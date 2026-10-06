@@ -1,4 +1,4 @@
-"""Horns Rev 1 case with the real turbine, wind climate and farm outline (R1-9).
+"""Horns Rev 1 case with the real turbine, wind climate and farm outline.
 
 Data (DTU PyWake 2.6.20, py_wake/examples/data/hornsrev1.py, MIT licence): installed layout of
 80 Vestas V80 turbines, the V80 power and thrust-coefficient curves, and the 12-sector Weibull

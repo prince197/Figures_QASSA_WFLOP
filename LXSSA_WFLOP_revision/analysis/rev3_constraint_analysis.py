@@ -314,7 +314,7 @@ def latex(R, comp):
              r"($\mu=10^{10}$, $g^{\rm b}$ in m$^2$, $g^{\rm s}$ in m) with box clipping, (ii) Deb's feasibility rules on "
              r"dimensionless violations ($g^{\rm b}/r^2$, $g^{\rm s}/\ell_{\min}$) with box clipping, and (iii) Deb's rules "
              r"with radial projection onto the circle; six cases (data sets I and II; $r=500$~m, $N=10$; $r=750$~m, $N=6$; "
-             r"$r=1000$~m, $N=15$), new seeds 31--60 (identical in all variants), 6,030 evaluations, random starts, $N_p=30$. "
+             r"$r=1000$~m, $N=15$), seeds 31--60, disjoint from the seeds 1--30 of the main study (identical in all variants), 6,030 evaluations, random starts, $N_p=30$. "
              r"Feas.: feasible final layouts (\%, 180 runs). Loss: mean wake loss of the feasible runs (\% of ideal; mean of "
              r"the case means). W/T/L and Score $=(W+T/2)/180$: all-run paired outcome of PSO-VNS against the method "
              r"(feasible beats infeasible; two feasible runs by wake loss; two infeasible runs tie), 95\% two-stage "

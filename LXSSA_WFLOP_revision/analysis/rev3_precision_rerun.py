@@ -30,8 +30,8 @@ rev2_laplace.run_grid_lap, rev2_spacing.run_grid_sp, rev2_site.run_lg). Nothing 
     the rerun MinSpacing bit for bit;
   * the full-precision layout is written with record_io.encode_coordinates (17 significant digits);
   * init_hook.GEN is reset to None before every task (full_grid_experiments.run_grid never sets it);
-  * Horns Rev 1 records produced before the binning fix of 2026-09-28 (every Horns Rev record except mpce_hrfix and
-    rev2_gahr) are rerun with the pre-fix direction bins (centres 0, 5, ..., 355 deg, nearest sector by np.round),
+  * Horns Rev 1 records produced with the alternative direction binning (every Horns Rev record except mpce_hrfix and
+    rev2_gahr) are rerun with those direction bins (centres 0, 5, ..., 355 deg, nearest sector by np.round),
     set in the worker by overwriting the module constants of hornsrev_model (restored afterwards);
   * a rerun is "bit-identical" if Objective, Calls, Feasible, MinSpacing and the rounded Coordinates and Curve strings
     equal the stored ones exactly (float equality of the parsed CSV values, which pandas wrote with repr precision).
@@ -540,7 +540,7 @@ def collect():
 SHORT = {
     "fresh_grid": "Bench., 6 methods$^a$", "fresh_bgrid": "Bench., (LX-)SSA-VNS",
     "fresh_vgrid": "Bench., VNS", "fresh_bsplit": "Split, LX-SSA-VNS", "fresh_hgrid": "Bench., LX-VNS$^s$",
-    "fresh_hsplit": "Split, LX-VNS$^s$", "fresh_hr": "HR1, earlier$^{s,h}$",
+    "fresh_hsplit": "Split, LX-VNS$^s$", "fresh_hr": "HR1, alt.\\ bins$^{s,h}$",
     "mpce_psobv": "Bench., PSO-VNS$^h$", "mpce_psoc": "Bench., PSO", "mpce_slsqp": "Bench., MS-SLSQP",
     "mpce_rsvns": "Bench., RS-VNS", "mpce_rsdisc": "Bench., RSD-VNS", "mpce_psosplit": "Split, PSO-VNS",
     "mpce_omega90": "Split, PSO-VNS, $\\omega=0.9$", "mpce_csweep": "PSO coeff. sweep",
@@ -591,8 +591,8 @@ rerun, or float-noise rerun with slack $>10^{-8}$~m), confirmed or changed. Open
 decide; all belong to SLSQP-based runs (MS-SLSQP, exact-gradient MS-SLSQP and PSO-SLSQP), whose reruns are not
 bit-reproducible across CPU/BLAS builds (near, or a different trajectory). Replay: maximum $|$objective recomputed from
 the rounded coordinates minus stored objective$|$, in percentage points of the ideal (wake-free) value.
-$^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Superseded, not used in the manuscript.
-Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the pre-2026-09-28 direction binning (replayed and rerun with that binning).}
+$^a$LX-SSA, SSA, PSO, DE, modified VNS, MS-SLSQP. $^s$Not used in the results.
+Replay in pp. HR1: Horns Rev~1. $^h$Contains Horns Rev~1 runs with the alternative direction binning of Section~\ref{sec:S-hrmodel} (bins centred at 0$^\circ$, 5$^\circ$, \ldots, 355$^\circ$; replayed and rerun with that binning).}
 \label{tab:S-r3-precision}
 \scriptsize\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{lrrrrrrrrrrrrr}

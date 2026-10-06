@@ -106,7 +106,7 @@ GEOM = {"grid": "circle r = 500/750/1000 m; S_min = 4D = 308 m (D = 77 m)",
         "hr": "Horns Rev 1 parallelogram (hornsrev_model.site); S_min = 4D = 320 m (D = 80 m)"}
 STUDY_LAB = {"mpce_slsqp": "Benchmark, 68 cases", "mpce_feas": "Feasible init., 6{,}030", "mpce_b30k": "30{,}030 eval.",
              "mpce_b120k": "120{,}030 eval.", "mpce_hrfix": "HR1, all budgets", "mpce_iea": "IEA37",
-             "rev2_grad": "IEA37", "fresh_hr": "HR1, earlier binning"}
+             "rev2_grad": "IEA37", "fresh_hr": "HR1, alt.\\ binning"}
 MULTI_KIND = ("mpce_feas", "mpce_b30k", "mpce_b120k")
 ALG_LAB = {"SLSQP": "MS-SLSQP", "SLSQPX": "MS-SLSQP, exact grad.", "PSOSLSQPX": "PSO-SLSQP, exact grad."}
 KIND_LAB = {"grid": "bench.", "iea": "IEA37", "hr": "HR1"}
@@ -376,7 +376,7 @@ def block_bench_worst(o, out):
     for study in ("mpce_feas", "mpce_b30k", "mpce_b120k", "mpce_hrfix"):
         g = open_keys(o, study, "SLSQP").copy()
         if study != "mpce_hrfix":
-            g = g[g.Kind != "hr"]                     # HR rows of feas/b30k/b120k: earlier binning, replaced by mpce_hrfix
+            g = g[g.Kind != "hr"]                     # HR rows of feas/b30k/b120k: alternative binning, not used (mpce_hrfix is)
         if not len(g):
             continue
         g["Dataset"] = g.Ds
@@ -597,7 +597,7 @@ def write_tex(out, path):
             "$r=500$, 750, 1000~m, $S_{\\min}=4D=308$~m; IEA37 Case Study~1 circle $r=1300$~m (16 turbines) and 2000~m (36), "
             "$S_{\\min}=2D=260$~m; Horns Rev~1 (HR1) parallelogram of the installed block, $S_{\\min}=4D=320$~m (relative "
             "boundary bound not defined). HR1 rows of the 30,030 and 120,030-evaluation and feasible-initialization "
-            "studies and the last row use the earlier direction binning and do not enter the Horns Rev~1 results. "
+            "studies and the last row use the alternative direction binning of Section~\\ref{sec:S-hrmodel} and do not enter the Horns Rev~1 results. "
             "Bottom: labels decided feasible / decided infeasible / undecidable at tolerance $\\tau$: decided feasible if both "
             "slacks minus their rounding bounds are at least $-\\tau$, decided infeasible if a slack plus its bound is below "
             "$-\\tau$. R: both constraints from the rounded coordinates; M: spacing from the stored full-precision minimum "

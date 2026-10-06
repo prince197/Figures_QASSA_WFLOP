@@ -9,8 +9,6 @@ SWEVO_rev2/validation/paired_outcomes.csv
 SWEVO_rev2/validation/raw_data_checksums.json
 SWEVO_rev2/validation/reliability.csv
 SWEVO_rev2/validation/reliability_tables.tex
-SWEVO_rev2/validation/revision_verification.json
-analysis/README_reproduce.md
 analysis/analyze_authors_runs.py
 analysis/audit_archive.py
 analysis/authors_experiments.log
@@ -30,7 +28,6 @@ analysis/check_csweep.log
 analysis/check_diag.log
 analysis/check_dir.log
 analysis/check_extra.log
-analysis/check_final.log
 analysis/check_revision.py
 analysis/csweep.log
 analysis/direction.log
@@ -380,7 +377,6 @@ analysis/rev2_spacing_s6of40.csv
 analysis/rev2_spacing_s7of40.csv
 analysis/rev2_spacing_s8of40.csv
 analysis/rev2_spacing_s9of40.csv
-analysis/rev3_bib_order.py
 analysis/rev3_constraint.json
 analysis/rev3_constraint.py
 analysis/rev3_constraint_analysis.log
@@ -537,16 +533,10 @@ analysis/rev3_inference.json
 analysis/rev3_inference.log
 analysis/rev3_inference.py
 analysis/rev3_inference_tables.tex
-analysis/rev3_numbers_audit.json
-analysis/rev3_numbers_audit.py
-analysis/rev3_numbers_checks.log
-analysis/rev3_numbers_report.md
-analysis/rev3_numbers_theory_check.py
 analysis/rev3_precision_audit.json
 analysis/rev3_precision_audit.py
 analysis/rev3_precision_audit_records.csv
 analysis/rev3_precision_manifest.md
-analysis/rev3_precision_notes.md
 analysis/rev3_precision_plan.json
 analysis/rev3_precision_rerun.py
 analysis/rev3_precision_rerun_summary.json

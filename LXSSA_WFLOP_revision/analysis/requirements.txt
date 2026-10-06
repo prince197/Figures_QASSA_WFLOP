@@ -1,4 +1,4 @@
-# Environment of the MPCE runs and analysis (pinned from the container that produced the results:
+# Environment of the runs and analysis (pinned from the container that produced the results:
 # Python 3.11.15, Linux x86_64). Install with:  python3.11 -m pip install -r requirements.txt
 # Note: MS-SLSQP (scipy.optimize SLSQP) results are platform dependent; bitwise reproduction of MS-SLSQP runs
 # needs the same NumPy/SciPy build and BLAS.

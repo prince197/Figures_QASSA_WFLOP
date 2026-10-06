@@ -9345,7 +9345,7 @@
   "mpce_hrfix": "complete"
  },
  "fallbacks": [
-  "Horns Rev 16: all runs from mpce_hrfix (corrected direction binning, 970 runs); 1000 runs of the old model dropped"
+  "Horns Rev 16: all runs from mpce_hrfix (direction binning of hornsrev_model.py, 970 runs); 1000 runs with an alternative direction binning not used for the results"
  ],
  "log": [
   "[1] Benchmark: 22440 runs (21716 feasible), 68 cases",

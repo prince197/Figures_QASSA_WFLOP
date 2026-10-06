@@ -6539,7 +6539,7 @@
     }
    },
    "slsqp_earlier_platform": {
-    "source": "fresh_grid.csv (earlier study / platform)",
+    "source": "fresh_grid.csv (preliminary comparison / platform)",
     "runs": 2040,
     "median_ms_per_eval": 0.47370256857382687,
     "mean_ms_per_eval": 0.4881243073479836,
@@ -6561,7 +6561,7 @@
     }
    },
    "pso_old_setting": {
-    "source": "fresh_grid.csv (earlier study / platform)",
+    "source": "fresh_grid.csv (preliminary comparison / platform)",
     "runs": 2040,
     "median_ms_per_eval": 0.3974705888059613,
     "mean_ms_per_eval": 0.41234657410138925,

@@ -27,8 +27,8 @@ For every record with coordinates (original: fresh_*.csv, mpce_*_s*of*.csv; addi
      only for the boundary; it is reported separately and is NOT used to select reruns;
   5. replays the objective from the rounded coordinates with the evaluator of the record (benchmark: wflop_model;
      IEA37: iea37_model; Lillgrund: rev2_site_model; Horns Rev 1: hornsrev_model for mpce_hrfix and rev2_gahr, and the
-     pre-2026-09-28 direction binning (bins centred at 0, 5, ..., 355 deg, nearest sector by np.round, as the
-     superseded runs used) for all earlier Horns Rev records) and reports replay - stored (objective units and pp of
+     alternative direction binning (bins centred at 0, 5, ..., 355 deg, nearest sector by np.round, as those
+     runs used) for all other Horns Rev records) and reports replay - stored (objective units and pp of
      the ideal value).
 Nothing is relabelled; existing files are only read.
 """
@@ -45,7 +45,7 @@ import rev2_site_model as lg
 TOL = 1e-6
 FLOAT_PAD = 1e-9
 
-# ------------------------------------------------------------------ pre-fix Horns Rev 1 direction binning (replay only)
+# ------------------------------------------------------------------ alternative Horns Rev 1 direction binning (replay only)
 _WD_OLD = np.arange(0.0, 360.0, 5.0)
 _SEC_OLD = (np.round(_WD_OLD / 30.0).astype(int)) % 12
 _F_OLD = hr.SEC_F[_SEC_OLD] / 6.0
@@ -56,7 +56,7 @@ _TOW_OLD = np.deg2rad(270.0 - _WD_OLD)
 
 
 def hr_aep(xy, model="new", with_wake=True):
-    """hornsrev_model.aep_gwh with the current ("new") or the pre-2026-09-28 ("old") direction bins."""
+    """hornsrev_model.aep_gwh with the current ("new") or the alternative ("old") direction bins."""
     if model == "new":
         return hr.aep_gwh(xy, with_wake)
     xy = np.asarray(xy, float)
@@ -84,10 +84,10 @@ STUDIES = [
     ("fresh_bgrid", "fresh_bgrid.csv", "Benchmark 68 cases, LX-SSA-VNS and SSA-VNS", "used"),
     ("fresh_vgrid", "fresh_vgrid.csv", "Benchmark 68 cases, VNS", "used"),
     ("fresh_bsplit", "fresh_bsplit.csv", "Split 25/75, LX-SSA-VNS (12 cases)", "used"),
-    ("fresh_hgrid", "fresh_hgrid.csv", "Benchmark 68 cases, LX-VNS (superseded)", "superseded"),
-    ("fresh_hsplit", "fresh_hsplit.csv", "Split, LX-VNS (superseded)", "superseded"),
-    ("fresh_hr", "fresh_*hr*.csv", "Horns Rev 1, 16/80 turbines, earlier studies (pre-fix binning)", "superseded"),
-    ("mpce_psobv", "mpce_psobv_s*of2.csv", "PSO-VNS, 68 cases (+ HR16 pre-fix)", "used"),
+    ("fresh_hgrid", "fresh_hgrid.csv", "Benchmark 68 cases, LX-VNS (not used in the results)", "superseded"),
+    ("fresh_hsplit", "fresh_hsplit.csv", "Split, LX-VNS (not used in the results)", "superseded"),
+    ("fresh_hr", "fresh_*hr*.csv", "Horns Rev 1, 16/80 turbines, preliminary studies (alternative binning)", "superseded"),
+    ("mpce_psobv", "mpce_psobv_s*of2.csv", "PSO-VNS, 68 cases (+ HR16 alternative binning)", "used"),
     ("mpce_psoc", "mpce_psoc_s*of1.csv", "PSO (constriction), 68 cases", "used"),
     ("mpce_slsqp", "mpce_slsqp_s*of1.csv", "MS-SLSQP, 68 cases", "used"),
     ("mpce_rsvns", "mpce_rsvns_s*of1.csv", "RS-VNS, 68 cases", "used"),
@@ -95,13 +95,13 @@ STUDIES = [
     ("mpce_psosplit", "mpce_psosplit_s*of1.csv", "PSO-VNS split 25/75 (12 cases)", "used"),
     ("mpce_omega90", "mpce_omega90_s*of1.csv", "PSO-VNS split 0.9 (12 cases)", "used"),
     ("mpce_csweep", "mpce_csweep_s*of1.csv", "PSO coefficient sweep (12 cases)", "used"),
-    ("mpce_feas", "mpce_feasx_s*of8.csv", "Feasible initialization, 8 methods (6 cases + HR16 pre-fix)", "used"),
+    ("mpce_feas", "mpce_feasx_s*of8.csv", "Feasible initialization, 8 methods (6 cases + HR16 alternative binning)", "used"),
     ("mpce_feasp", "mpce_feasp_s*of1.csv", "Feasible initialization, PSO-VNS", "used"),
-    ("mpce_b30k", "mpce_b30k_s*of3.csv", "30,030 evaluations, 9 methods (6 cases + HR16 pre-fix)", "used"),
+    ("mpce_b30k", "mpce_b30k_s*of3.csv", "30,030 evaluations, 9 methods (6 cases + HR16 alternative binning)", "used"),
     ("mpce_b30kp", "mpce_b30kp_s*of1.csv", "30,030 evaluations, PSO-VNS", "used"),
-    ("mpce_b120k", "mpce_b120k_s*of8.csv", "120,030 evaluations, 9 methods (6 cases + HR16 pre-fix)", "used"),
+    ("mpce_b120k", "mpce_b120k_s*of8.csv", "120,030 evaluations, 9 methods (6 cases + HR16 alternative binning)", "used"),
     ("mpce_b120kp", "mpce_b120kp_s*of4.csv", "120,030 evaluations, PSO-VNS", "used"),
-    ("mpce_hr16new", "mpce_hr16new_s*of1.csv", "HR16 PSO and RS-VNS (pre-fix)", "superseded"),
+    ("mpce_hr16new", "mpce_hr16new_s*of1.csv", "HR16 PSO and RS-VNS (alternative binning)", "superseded"),
     ("mpce_hrfix", "mpce_hrfix_s*of24.csv", "Horns Rev 1 16 turbines, 10 methods, all budgets", "used"),
     ("mpce_iea", "mpce_iea[13]6*_s*of1.csv", "IEA37 CS1 16/36 turbines, 10 methods", "used"),
     ("rev2_ga", "rev2_ga_s*of10.csv", "GA, 68 cases", "used"),

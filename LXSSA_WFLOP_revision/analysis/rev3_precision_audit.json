@@ -201,7 +201,7 @@
    "by_kind": null
   },
   "fresh_hgrid": {
-   "description": "Benchmark 68 cases, LX-VNS (superseded)",
+   "description": "Benchmark 68 cases, LX-VNS (not used in the results)",
    "records": 2040,
    "labelled_feasible": 2002,
    "labelled_infeasible": 38,
@@ -247,7 +247,7 @@
    "by_kind": null
   },
   "fresh_hsplit": {
-   "description": "Split, LX-VNS (superseded)",
+   "description": "Split, LX-VNS (not used in the results)",
    "records": 720,
    "labelled_feasible": 649,
    "labelled_infeasible": 71,
@@ -293,7 +293,7 @@
    "by_kind": null
   },
   "fresh_hr": {
-   "description": "Horns Rev 1, 16/80 turbines, earlier studies (pre-fix binning)",
+   "description": "Horns Rev 1, 16/80 turbines, preliminary studies (alternative binning)",
    "records": 390,
    "labelled_feasible": 245,
    "labelled_infeasible": 145,
@@ -339,7 +339,7 @@
    "by_kind": null
   },
   "mpce_psobv": {
-   "description": "PSO-VNS, 68 cases (+ HR16 pre-fix)",
+   "description": "PSO-VNS, 68 cases (+ HR16 alternative binning)",
    "records": 2070,
    "labelled_feasible": 2070,
    "labelled_infeasible": 0,
@@ -793,7 +793,7 @@
    "by_kind": null
   },
   "mpce_feas": {
-   "description": "Feasible initialization, 8 methods (6 cases + HR16 pre-fix)",
+   "description": "Feasible initialization, 8 methods (6 cases + HR16 alternative binning)",
    "records": 1680,
    "labelled_feasible": 1680,
    "labelled_infeasible": 0,
@@ -1057,7 +1057,7 @@
    }
   },
   "mpce_b30k": {
-   "description": "30,030 evaluations, 9 methods (6 cases + HR16 pre-fix)",
+   "description": "30,030 evaluations, 9 methods (6 cases + HR16 alternative binning)",
    "records": 1890,
    "labelled_feasible": 1834,
    "labelled_infeasible": 56,
@@ -1321,7 +1321,7 @@
    }
   },
   "mpce_b120k": {
-   "description": "120,030 evaluations, 9 methods (6 cases + HR16 pre-fix)",
+   "description": "120,030 evaluations, 9 methods (6 cases + HR16 alternative binning)",
    "records": 1710,
    "labelled_feasible": 1708,
    "labelled_infeasible": 2,
@@ -1585,7 +1585,7 @@
    }
   },
   "mpce_hr16new": {
-   "description": "HR16 PSO and RS-VNS (pre-fix)",
+   "description": "HR16 PSO and RS-VNS (alternative binning)",
    "records": 60,
    "labelled_feasible": 47,
    "labelled_infeasible": 13,

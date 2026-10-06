@@ -252,7 +252,7 @@ def build(s, allow_partial=False):
         P(f"NSwitchFeas{CODE[a]}", lambda a=a: num(p2[a]["feasible_at_switch_pct"], 1), REQ_ABL)
         P(f"NSwitchLoss{CODE[a]}", lambda a=a: num(p2[a]["mean_loss_at_switch_pct"], 2), REQ_ABL)
 
-    # ---------------- earlier PSO setting
+    # ---------------- old PSO setting
     ps = s.get("pso_setting") or {}
     P("NOldPSORank", lambda: num(ps["old_avg_rank"], 2), REQ_MAIN)
     P("NOldPSOPos", lambda: ORD[ps["old_rank_position"]], REQ_MAIN)

@@ -359,7 +359,7 @@
   }
  },
  "fallbacks": [
-  "Horns Rev 16: all runs from mpce_hrfix (corrected direction binning, 970 runs); 1000 runs of the old model dropped"
+  "Horns Rev 16: all runs from mpce_hrfix (direction binning of hornsrev_model.py, 970 runs); 1000 runs with an alternative direction binning not used for the results"
  ],
  "ranking_rule": "Within each case a method is ranked by the mean objective of its feasible runs only if at least half of its runs (15 of 30; 5 of 10) are feasible; methods with fewer feasible runs receive the worst ranks, below all qualifying methods, ordered by their number of feasible runs (more = better, ties averaged). This removes the survivorship bias of ranking by the mean feasible objective.",
  "labels": {
@@ -3921,7 +3921,7 @@
   "rel_diff_pct": 0.8100816965834534,
   "loss_diff_pp": -0.7200974939075255,
   "ours_matches_pywake_check": true,
-  "note": "installed 80-turbine Horns Rev 1 farm, hornsrev_model.py (current binning) vs PyWake 2.6.20 NOJ(k=0.04) at identical bins (ours_5deg_2.5, pywake_check.csv)"
+  "note": "installed 80-turbine Horns Rev 1 farm, hornsrev_model.py vs PyWake 2.6.20 NOJ(k=0.04) at identical bins (ours_5deg_2.5, pywake_check.csv)"
  },
  "hr16": {
   "installed_aep": 139.82057589954573,
@@ -7967,7 +7967,7 @@
   "  mpce_iea16p          complete                                      shards=   1/1 rows=    60  methods=PSOBV",
   "  mpce_iea36p          complete                                      shards=   1/1 rows=    60  methods=PSOBV",
   "  mpce_hrfix           complete                                      shards= 24/24 rows=   970  methods=BVNS,DE,LXBV,LXSSA,PSOBV,PSOC,RSVNS,SLSQP,SSA,SSABV",
-  "  FALLBACK: Horns Rev 16: all runs from mpce_hrfix (corrected direction binning, 970 runs); 1000 runs of the old model dropped",
+  "  FALLBACK: Horns Rev 16: all runs from mpce_hrfix (direction binning of hornsrev_model.py, 970 runs); 1000 runs with an alternative direction binning not used for the results",
   "  FOCUS (proposed method): PSOBV = PSO-VNS",
   "==============================================================================",
   "\n[1] Main comparison (68 cases)",

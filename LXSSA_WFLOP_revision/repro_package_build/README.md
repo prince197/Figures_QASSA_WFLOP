@@ -32,8 +32,7 @@ supplement from the stored per-run records, and to rerun every optimization stud
 Files of the repository that belong to other papers or to variants not used here (manuscript builders of other
 papers, `superseded_linear_penalty/`, `final_*`, `hybrid_*`, `bvns_*`, `fresh_results.py`, `extra_*`, the
 other `figures_final/` content, ...) are excluded, except the unused run files that the precision audit covers
-(`fresh_{bsplit,hgrid,hsplit,hr80,vhr80,bhr80,hhr16,hhr80}.csv`, category `runs-audited`); `inventory.csv` lists every candidate file with its decision
-(include / exclude / pending) and the reason.
+(`fresh_{bsplit,hgrid,hsplit,hr80,vhr80,bhr80,hhr16,hhr80}.csv`, category `runs-audited`); `inventory.csv` lists every file of the package with its category, size and role.
 
 ## 2. Layout
 
@@ -173,7 +172,7 @@ produced the runs; divide by the number of workers).
 | `mpce_slsqp_s0of1.csv` (MS-SLSQP) | `python3 mpce_experiments.py slsqp` | 2,040 | 6.2 h |
 | `mpce_psosplit_s0of1.csv`, `mpce_omega90_s0of1.csv` (split) | `mpce_experiments.py psosplit`; `omega90 0 1` | 1,080 | 0.8 h |
 | `mpce_csweep_s0of1.csv` (PSO coefficient sweep) | `python3 mpce_experiments.py csweep 0 1 --procs=4` | 3,240 | 2.6 h |
-| `mpce_feasx_s<i>of8.csv` -> `mpce_feas_s0of1.csv`; `mpce_feasp_s0of1.csv` (feasible init.) | `mpce_experiments.py feasx <i> 8` (i = 0..7), then the concatenation command of `analysis/README_reproduce.md`; `feasp` | 1,890 | 5.1 h |
+| `mpce_feasx_s<i>of8.csv` -> `mpce_feas_s0of1.csv`; `mpce_feasp_s0of1.csv` (feasible init.) | `mpce_experiments.py feasx <i> 8` (i = 0..7), then concatenate the 8 shards in shard order: `python3 -c "import glob, pandas as pd; pd.concat([pd.read_csv(f) for f in sorted(glob.glob('mpce_feasx_s*of8.csv'))], ignore_index=True).to_csv('mpce_feas_s0of1.csv', index=False)"` (reproduces the stored file byte for byte); `feasp` | 1,890 | 5.1 h |
 | `mpce_b30k_s<i>of3.csv`, `mpce_b30kp_s0of1.csv` | `mpce_experiments.py b30k <i> 3`; `b30kp` | 2,100 | 17.0 h |
 | `mpce_b120k_s<i>of8.csv`, `mpce_b120kp_s<i>of4.csv` | `mpce_experiments.py b120k <i> 8`; `b120kp <i> 4` | 1,900 | 51.6 h |
 | `mpce_hrfix_s<i>of24.csv` (all Horns Rev 1 runs) | `python3 mpce_experiments.py hrfix <i> 24` (i = 0..23) | 970 | 9.6 h |

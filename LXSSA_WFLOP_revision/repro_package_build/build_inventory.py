@@ -153,7 +153,7 @@ RULES = [
     ("analysis/audit_archive.py", "check", "include", "archive audit of the records of the additional experiments (expects the experiments/ + validation/ layout)"),
     ("analysis/check_revision.py", "check", "include", "focused checks of the records of the additional experiments (float round-trips, raw CSV hashes)"),
     ("analysis/mpce_check_*.py", "check", "include", "check scripts (C/X/D/F/S ids)"),
-    ("analysis/README_reproduce.md", "doc", "include", "repository reproduction notes (MPCE/SWEVO pipeline)"),
+    ("analysis/README_reproduce.md", "legacy-doc", "exclude", "reproduction notes of a companion paper; replaced for this article by the package README"),
     ("analysis/requirements.txt", "doc", "include", "environment of the original runs (not used for the results by the package requirements.txt)"),
     ("analysis/literature_values.*", "input", "include", "hand-collected literature values (Section S-literature)"),
     # ---- run records ------------------------------------------------------------------------------------------
@@ -255,9 +255,13 @@ def main(argv=None):
             rows.append(dict(path=pat, category="rev3-pending", decision="pending", bytes=0,
                              note=f"not present when the inventory was built: {what}"))
     os.makedirs(a.out, exist_ok=True)
-    with open(os.path.join(a.out, "inventory.csv"), "w", newline="") as fh:
+    with open(os.path.join(a.out, "inventory_full.csv"), "w", newline="") as fh:   # all candidates (not packaged)
         w = csv.DictWriter(fh, fieldnames=["path", "category", "decision", "bytes", "note"])
         w.writeheader(); w.writerows(rows)
+    with open(os.path.join(a.out, "inventory.csv"), "w", newline="") as fh:        # packaged files only
+        w = csv.DictWriter(fh, fieldnames=["path", "category", "bytes", "note"])
+        w.writeheader()
+        w.writerows({k: r[k] for k in ("path", "category", "bytes", "note")} for r in rows if r["decision"] == "include")
     inc = [r["path"] for r in rows if r["decision"] == "include"]
     with open(os.path.join(a.out, "package_files.txt"), "w") as fh:
         fh.write("\n".join(inc) + "\n")

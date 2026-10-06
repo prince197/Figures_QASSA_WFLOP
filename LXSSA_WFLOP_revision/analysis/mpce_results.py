@@ -1085,8 +1085,8 @@ def load(data_dir, partial):
         n_old = int((B.Dataset == "HR").sum()) + sum(int((d.Dataset == "HR").sum()) for d in new.values())
         B = B[B.Dataset != "HR"]
         new = {k: v[v.Dataset != "HR"].copy() for k, v in new.items()}
-        fallbacks.append(f"Horns Rev 16: all runs from mpce_hrfix (corrected direction binning, {len(hrfix)} runs); "
-                         f"{n_old} runs of the old model dropped")
+        fallbacks.append(f"Horns Rev 16: all runs from mpce_hrfix (direction binning of hornsrev_model.py, {len(hrfix)} runs); "
+                         f"{n_old} runs with an alternative direction binning not used for the results")
     parts = [B]
     # SLSQP rerun replaces the old-platform SLSQP runs on the 68 cases
     if "slsqp" in new:
@@ -1096,8 +1096,8 @@ def load(data_dir, partial):
         m = (B.Algorithm == "SLSQP") & B.Dataset.isin(["1", "2"])
         B.loc[m, "Source"] = "FALLBACK fresh_grid SLSQP"
     if hrfix is None:
-        fallbacks.append("SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (old model, replaced by mpce_hrfix)")
-        fallbacks.append("Horns Rev 16: mpce_hrfix missing -> old runs (direction binning before commit 7676da9)")
+        fallbacks.append("SLSQP (Horns Rev 16, 6,030 calls): taken from fresh_hr16.csv (alternative direction binning; mpce_hrfix missing)")
+        fallbacks.append("Horns Rev 16: mpce_hrfix missing -> runs with the alternative direction binning (before commit 7676da9)")
     for exp in ("rsvns", "psoc", "psobv", "slsqp", "psosplit", "omega90", "rsdisc", "ssasplit", "hr16new"):
         if exp in new:
             parts.append(new[exp])
@@ -1258,7 +1258,7 @@ def main(argv=None):
                               f"tab:res-{ds}-{r}", "c" * (2 + len(MAINP)),
                               "$N$ & Wake-free & " + " & ".join(LAB[a] for a in MAINP), lines, resize=True, sep="2pt"))
 
-    # --- minimum-spacing re-optimization (earlier runs with the original SSA / LX-SSA code; analyze_authors_runs.py)
+    # --- minimum-spacing re-optimization (runs of the preliminary comparison with the original SSA / LX-SSA code; analyze_authors_runs.py)
     #     and constructible turbine counts (packing_capacity.py), copied into the supplement after the per-case tables
     try:
         at = open(os.path.join(HERE, "authors_tables.tex")).read()
@@ -1441,7 +1441,7 @@ def main(argv=None):
     summary["main"]["spacing_share"] = sp
     log(f"  spacing: {sp}")
 
-    # --- earlier PSO setting (w = 0.7, c1 = c2 = 2; fresh_grid.csv) in place of the constriction PSO
+    # --- old PSO setting (w = 0.7, c1 = c2 = 2; fresh_grid.csv) in place of the constriction PSO
     PO = new.get("pso_old")
     if PO is not None and len(PO) and "PSOC" in MAINP:
         PO = PO[PO.Dataset.isin(["1", "2"]) & (PO.Budget == 6030)]
@@ -1799,7 +1799,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
     equivalence_block(S, SA, G, summary, supp)
 
     # reproduction check against the parent of commit a9779a3 (old rule, five variants, six contrasts);
-    # independent of --focus (SSA-VNS numbers of the earlier pipeline)
+    # independent of --focus (SSA-VNS numbers of the preliminary comparison)
     OLDV = ["SSABV", "LXBV", "BVNS", "LXSSA", "SSA"]
     if all(a in have for a in OLDV):
         Go = GA[GA.Algorithm.isin(OLDV)]
@@ -1876,7 +1876,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
             rel_diff_pct=100 * (a80 / pwr["aep"] - 1) if pwr else None,
             loss_diff_pp=(100 * (1 - a80 / i80) - pwr["loss_pct"]) if pwr else None,
             ours_matches_pywake_check=(abs(pwr["ours_csv_aep"] - a80) < 1e-6) if pwr and pwr["ours_csv_aep"] is not None else None,
-            note=("installed 80-turbine Horns Rev 1 farm, hornsrev_model.py (current binning) vs PyWake %s NOJ(k=0.04) at "
+            note=("installed 80-turbine Horns Rev 1 farm, hornsrev_model.py vs PyWake %s NOJ(k=0.04) at "
                   "identical bins (%s, pywake_check.csv)" % (pwr["version"], pwr["bins"])) if pwr else
                  "pywake_check.csv missing: no PyWake reference (run pywake_check.py with py_wake==2.6.20)")
         if pwr:
@@ -1894,7 +1894,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         ideal_data = float(H.Ideal.iloc[0])
         if abs(ideal_data - LEGACY_HR16["ideal"]) < 1e-6:      # old runs (binning before 7676da9): same-model installed AEP
             inst, hr_model = LEGACY_HR16["installed"], "legacy (direction binning before commit 7676da9; mpce_hrfix missing)"
-            log(f"  Horns Rev runs of the OLD model (wake-free AEP {ideal_data:.4f}); installed AEP of the old model {inst:.3f}")
+            log(f"  Horns Rev runs with the alternative direction binning (wake-free AEP {ideal_data:.4f}); installed AEP of that binning {inst:.3f}")
         elif ideal_model is not None and abs(ideal_data - ideal_model) > 1e-6:
             log(f"  WARNING: Horns Rev wake-free AEP of the runs ({ideal_data:.4f}) differs from hornsrev_model ({ideal_model:.4f})")
     hm = [a for a in HR_ORDER if a in M10]

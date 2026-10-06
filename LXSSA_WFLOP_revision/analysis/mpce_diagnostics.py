@@ -607,7 +607,7 @@ def stored_violation_summary(exact=None):
     of the reproduced run (exact: {(alg, ds, rad, n, seed): pos} from the cached instrumented T1 runs and the T1b
     reruns). "Tangent": an infeasible final with a turbine outside the circle that has a coordinate on the box bound
     (|x| = r or |y| = r; clipped there, the boundary violation grows only with the square of the other coordinate).
-    legacy_1mm: the earlier classification with a 1-mm tolerance on the stored coordinates (282 infeasible)."""
+    legacy_1mm: the alternative classification with a 1-mm tolerance on the stored coordinates (282 infeasible)."""
     exact = exact or {}
     out = {}
     for a, fn in (("PSO", "fresh_grid.csv"), ("PSOC", "mpce_psoc_s0of1.csv")):

@@ -163,7 +163,7 @@ CHECKS = [
                 and e["min_gain_pct_aep"] > 0)(s["energy"]["PSOBV-PSOC_dsIILarge"])),
     ("X29", "The wake-model uncertainty is several times the equivalence margin: the wake loss of the same final layouts "
             "differs between the Jensen and the Gaussian wake model by \\NXModelShiftMean pp on average "
-            "(\\NXModelShiftRatio times the margin; > 5 x 0.05 pp). [Replaces the earlier '> 10 x' version, which the data do not support.]",
+            "(\\NXModelShiftRatio times the margin; > 5 x 0.05 pp).",
      lambda s: s["model_shift"]["mean_abs_shift_pp"] > 5 * EQ_MARGIN),
     ("X30", "The wake loss of the same final layouts differs between the Jensen and Gaussian wake models by \\NXModelShiftMean pp "
             "on average (median \\NXModelShiftMedian pp; \\NXModelShiftRatio times the equivalence margin; above the margin for "

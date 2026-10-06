@@ -1,5 +1,5 @@
 """Authors' optimizer implementations (GA, PSO, DE, SSA, LX-SSA), copied from the code supplied
-by the authors in September 2026. Only the classes needed for the reviewer experiments are kept;
+by the authors in September 2026. Only the classes needed for the experiments of this study are kept;
 the update logic and the order of random-number calls are unchanged. All minimise obj_fun."""
 import numpy as np
 from init_hook import init_pop
