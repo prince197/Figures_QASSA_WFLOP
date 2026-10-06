@@ -1,4 +1,4 @@
-"""Revision 3, topic `sites` (items B2, B6, C3 of the remaining-work report; reviewer items R3, R8, R9).
+"""Sensitivity analyses, topic `sites`: site pools (Horns Rev 1, IEA37), alternate evaluators and computing time.
 
 Usage (from analysis/):  python3 rev3_sites.py [--only hr,iea,eval,lg,time,init] [--recompute-eval] [--recompute-init]
                                                [--out-dir D]
@@ -6,7 +6,7 @@ Outputs (default: this folder): rev3_sites.json, rev3_sites_tables.tex, rev3_sit
 re-evaluations, cached), rev3_sites_inittime.csv (initialization timings, cached), rev3_sites.log (stdout copy).
 
 Blocks
-  hr    B2(a)  Horns Rev 1 16-turbine block, ONE pool = the ten methods of tab:hr-site (mpce_hrfix) + GA (rev2_gahr),
+  hr           Horns Rev 1 16-turbine block, ONE pool = the ten methods of tab:hr-site (mpce_hrfix) + GA (rev2_gahr),
                random starts, 6,030 and 30,030 evaluations, seeds 1-30. Per budget: feasible runs, mean / best AEP and
                AEP loss of the feasible runs, feasibility-aware rank of the mean AEP (mpce_results.rank_rule: a method
                with fewer than 15 feasible runs ranks below the qualified ones, by its feasible runs), run-level
@@ -16,27 +16,27 @@ Blocks
                score). Families (Holm within each, two-sided alpha = 0.05):
                  F_best(b) = the best method (feasibility-aware rank 1) vs each of the other 10 methods at budget b;
                  F_PV(b)   = PSO-VNS vs each of the other 10 methods at budget b (identical to F_best(b) if PSO-VNS is best).
-  iea   B2(b)  IEA37 Case Study 1, 16 and 36 turbines, 6,030 and 30,030 evaluations: ONE pool of 13 methods = the ten
+  iea          IEA37 Case Study 1, 16 and 36 turbines, 6,030 and 30,030 evaluations: ONE pool of 13 methods = the ten
                methods (mpce_iea16/36 + PSO-VNS arms mpce_iea16p/36p) + GA (rev2_gaiea) + MS-SLSQP and PSO-SLSQP with the
                exact analytic gradient (rev2_grad). Same statistics per scenario x budget; families (Holm within each):
                F_best(n, b) = best method vs the other 12; F_PV(n, b) = PSO-VNS vs the other 12 (reported in the JSON);
                F_free(n, b) = best gradient-free method vs the other gradient-free methods (10 comparisons; JSON).
                Feasibility = the stored labels (audited at full precision in rev3_precision_*; supplement S11.11).
-  eval  C3     Horns Rev 1: every stored layout of mpce_hrfix (970) and rev2_gahr (60) re-evaluated (not re-optimized)
+  eval         Horns Rev 1: every stored layout of mpce_hrfix (970) and rev2_gahr (60) re-evaluated (not re-optimized)
                with the paper's 5-deg bins (replay of the stored AEP), 1-deg bins centred at 0.5, 1.5, ... (primary, as
                mpce_direction.py), the phase checks 1 deg at integer centres and 5 deg at 0, 5, ..., and PyWake 2.6.20
                NOJ (k = 0.04, defaults) at the 1-deg bins (as pywake_check.py --layouts). Tests as Table S44 / tab:F-hr /
                tab:F-hrpair: mean differences on jointly feasible seeds with the unadjusted Wilcoxon p, and the paper's
                run-level test (infeasible below feasible) with Holm over the 10 comparisons of GA.
-  lg    C3     Lillgrund 16-turbine block (rev2_lg16 / rev2_lg16b, 540 layouts): replay at 5 deg, 1-deg bins
+  lg           Lillgrund 16-turbine block (rev2_lg16 / rev2_lg16b, 540 layouts): replay at 5 deg, 1-deg bins
                (rev2_site_model.bins(1, 0.5)) and PyWake NOJ at 1 deg; PSO-VNS vs each method (paper's run-level test,
                Holm over the 8 comparisons per budget) and the highest mean AEP under each evaluator.
-  time  B6     Elapsed time from the Seconds column of the original records (benchmark main comparison and controls,
-               budget, feasibility-preserving initialization, Horns Rev 1, IEA37) and of the revision records: median
+  time         Elapsed time from the Seconds column of the original records (benchmark main comparison and controls,
+               budget, feasibility-preserving initialization, Horns Rev 1, IEA37) and of the additional-experiment records: median
                seconds per run by method and N / budget, ratios to PSO-VNS within a study, ms per evaluation (median and
                mean of Seconds / Calls; the latter is the statistic of Table S-cost), total CPU time, shard wall times
                from the run logs.
-  init  B6     Wall time of the feasibility-preserving initialization (feasible_init.make_generator: L-BFGS-B packing,
+  init         Wall time of the feasibility-preserving initialization (feasible_init.make_generator: L-BFGS-B packing,
                30 layouts per run, exactly as drawn by the optimizers after np.random.seed(seed)) for the six largest
                benchmark cases and the Horns Rev 1 block, seeds 1-30, measured now on this machine (one process).
                Check: the regenerated population contains the stored final layout of the feasible-start PSO run of
@@ -147,7 +147,7 @@ def load_iea():
     return IE[IE.Dataset.str.startswith("IEA37")]
 
 
-# ====================================================================== B2(a): Horns Rev 1 pool
+# ====================================================================== hr: Horns Rev 1 pool
 def block_hr(summ, tex):
     HH = load_hr()
     import hornsrev_model as hrm
@@ -216,7 +216,7 @@ def block_hr(summ, tex):
                         "tab:S-r3-hr-pool", "l" + "c" * n6 + "c" + "c" * n30, head, lines, sep="1.7pt", pos="!htb", note=note))
 
 
-# ====================================================================== B2(b): IEA37 pool
+# ====================================================================== iea: IEA37 pool
 def published_iea():
     pub = MR.load_published(HERE)
     pv = {}
@@ -302,7 +302,7 @@ def block_iea(summ, tex):
                         "tab:S-r3-iea-pool", "l" + "ccccc" * 2, head, lines, sep="1.5pt", pos="!htb", note=note))
 
 
-# ====================================================================== C3: Horns Rev 1 alternate evaluators
+# ====================================================================== eval: Horns Rev 1 alternate evaluators
 HR_EV = ["5deg_2.5", "1deg_0.5", "1deg_0", "5deg_0", "PyWakeNOJ_1deg"]
 EV_LAB = {"5deg_2.5": "5$^\\circ$", "1deg_0.5": "1$^\\circ$", "PyWakeNOJ_1deg": "PyWake NOJ 1$^\\circ$",
           "1deg_0": "1$^\\circ$ (int.)", "5deg_0": "5$^\\circ$ at 0$^\\circ$"}
@@ -549,7 +549,7 @@ def block_eval(summ, tex, recompute):
                         head, lines, sep="2pt", pos="!htb", note=note))
 
 
-# ====================================================================== C3: Lillgrund 1-deg
+# ====================================================================== lg: Lillgrund 1-deg
 SP9 = list(R2.SP9)
 
 
@@ -627,7 +627,7 @@ def block_lg(summ, tex, recompute):
                         "tab:S-r3-lg-eval", "lccccccccccc", head, lines, sep="2pt", pos="!htb", note=note))
 
 
-# ====================================================================== B6: elapsed time
+# ====================================================================== time: elapsed time
 def read_orig(exp, cols=("Algorithm", "Dataset", "Radius", "Turbines", "Seed", "Budget", "Init", "Calls", "Seconds", "Feasible", "Objective", "Ideal", "WakeLoss")):
     fs = sorted(glob.glob(os.path.join(HERE, f"mpce_{exp}_s*of*.csv")))
     if not fs:
@@ -751,7 +751,7 @@ def block_time(summ, tex):
                                 ratio_to_psovns={a: float(med[a] / med["PSOBV"]) for a in HR11 if a in med and "PSOBV" in med},
                                 median_ms_per_eval={a: float((1000 * g[g.Algorithm == a].Seconds / g[g.Algorithm == a].Calls).median()) for a in HR11 if a in med},
                                 runs=int(len(g)))
-    out["hr"] = dict(settings=hs, note="mpce_hrfix (one batch, 24 shards) and rev2_gahr (GA, separate revision batch)")
+    out["hr"] = dict(settings=hs, note="mpce_hrfix (one batch, 24 shards) and rev2_gahr (GA, separate batch of the additional experiments)")
     log("[time] HR median s: " + "; ".join(f"{k}: " + ", ".join(f"{a} {v:.1f}" for a, v in s_["median_s"].items()) for k, s_ in hs.items()))
     # ---------------- IEA37
     IE = load_iea()
@@ -764,9 +764,9 @@ def block_time(summ, tex):
                                mean_s={a: float(g[g.Algorithm == a].Seconds.mean()) for a in IEA13 if a in med},
                                median_ms_per_eval={a: float((1000 * g[g.Algorithm == a].Seconds / g[g.Algorithm == a].Calls).median()) for a in IEA13 if a in med})
     out["iea"] = dict(settings=ie, note="mpce_iea16/36 (nine methods), mpce_iea16p/36p (PSO-VNS arm, separate batch), rev2_gaiea, "
-                                        "rev2_grad (revision batches); ratios across batches indicative")
+                                        "rev2_grad (batches of the additional experiments); ratios across batches indicative")
     log("[time] IEA median s: " + "; ".join(f"{k}: " + ", ".join(f"{a} {v:.1f}" for a, v in s_["median_s"].items()) for k, s_ in ie.items()))
-    # ---------------- revision studies of Table S-time (verification)
+    # ---------------- additional-experiment studies of Table S-time (verification)
     rv = {}
     sp, _ = R2.read_rev2("spacing", HERE)
     if sp is not None:
@@ -778,7 +778,7 @@ def block_time(summ, tex):
         med = d.groupby("Algorithm").Seconds.median()
         rv[e] = dict(median_s=med.to_dict(), ratio_to_psovns=(med / med["PSOBV"]).to_dict())
     out["revision_studies"] = rv
-    # ---------------- total compute: the 36,190 original records (composition of 05_setup.tex) + revision records
+    # ---------------- total compute: the 36,190 original records (composition of 05_setup.tex) + additional-experiment records
     def secs(df):
         return float(df.Seconds.sum())
     comp = {}
@@ -831,7 +831,7 @@ def block_time(summ, tex):
                                "elapsed time of a study is much shorter than its total; ratio_cpu_to_shard_wall = sum of the "
                                "run Seconds of a logged shard / its logged wall time (= average number of concurrently busy "
                                "workers).")
-    log(f"[time] original records {tot_n} = {tot_s / 3600:.1f} CPU-h; revision records {rev_n} = {rev_s / 3600:.1f} CPU-h")
+    log(f"[time] original records {tot_n} = {tot_s / 3600:.1f} CPU-h; additional-experiment records {rev_n} = {rev_s / 3600:.1f} CPU-h")
     log("[time] components: " + "; ".join(f"{k} {v[0]} {v[1] / 3600:.1f} h" for k, v in comp.items()))
     if wt:
         log("[time] shard logs: " + "; ".join(f"{k}: {v['shards_with_log']} shards, sum wall {v['sum_shard_wall_h']:.2f} h, "
@@ -1004,7 +1004,7 @@ def time_table(summ, tex):
             "earlier study), so ratios are indicative. MS-SLSQP (rerun batch mpce\\_slsqp): the time per run jumps from 3.1~s at "
             "$N=7$ to 16--22~s at $N\\ge8$, independent of $r$; re-timed now with single-threaded BLAS: " + prs + ". "
             "$^{a}$Same method, runs of the earlier study (fresh\\_grid). n/r: not run. Total serial compute (sum of Seconds): "
-            "%.1f CPU-hours for the %s original records and %.1f for the %s revision records; the runs were executed in four "
+            "%.1f CPU-hours for the %s original records and %.1f for the %s additional-experiment records; the runs were executed in four "
             "parallel worker processes, so the elapsed time of a study was about a quarter of its total."
             % (cp["original_cpu_h"], f"{cp['original_records']:,}".replace(",", "{,}"), cp["revision_cpu_h"],
                f"{cp['revision_records']:,}".replace(",", "{,}")))
@@ -1031,7 +1031,7 @@ def time_table(summ, tex):
             "time per run at Horns Rev~1). Batches: Horns Rev~1 mpce\\_hrfix (ten methods, one batch) and rev2\\_gahr (GA); IEA37 "
             "mpce\\_iea16/36 (nine methods), mpce\\_iea16p/36p (PSO-VNS), rev2\\_gaiea (GA) and rev2\\_grad (exact-gradient "
             "methods). Ratios across batches are indicative. n/r: not run.")
-    tex.append(MR.table("table*", "Elapsed time per run on Horns Rev~1 and IEA37 Case Study~1 in the original and revision "
+    tex.append(MR.table("table*", "Elapsed time per run on Horns Rev~1 and IEA37 Case Study~1 in the original and additional-experiment "
                         "records (median seconds; ratio to PSO-VNS).", "tab:S-r3-time-sites", "lcccccccc", head, lines,
                         sep="2pt", pos="!htb", note=note))
 

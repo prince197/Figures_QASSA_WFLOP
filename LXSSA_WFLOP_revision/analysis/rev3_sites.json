@@ -6946,7 +6946,7 @@
      "runs": 100
     }
    },
-   "note": "mpce_hrfix (one batch, 24 shards) and rev2_gahr (GA, separate revision batch)"
+   "note": "mpce_hrfix (one batch, 24 shards) and rev2_gahr (GA, separate batch of the additional experiments)"
   },
   "iea": {
    "settings": {
@@ -7259,7 +7259,7 @@
      }
     }
    },
-   "note": "mpce_iea16/36 (nine methods), mpce_iea16p/36p (PSO-VNS arm, separate batch), rev2_gaiea, rev2_grad (revision batches); ratios across batches indicative"
+   "note": "mpce_iea16/36 (nine methods), mpce_iea16p/36p (PSO-VNS arm, separate batch), rev2_gaiea, rev2_grad (batches of the additional experiments); ratios across batches indicative"
   },
   "revision_studies": {
    "spacing": {
