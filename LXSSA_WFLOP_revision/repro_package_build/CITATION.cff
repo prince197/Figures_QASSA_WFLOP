@@ -4,8 +4,8 @@ message: >-
   reproducibility package.
 type: software
 title: >-
-  Reproducibility package for "Baseline Configuration and Random-Sampling Controls in Metaheuristic
-  Comparisons for Wind Farm Layout Optimization"
+  Reproducibility package for "PSO-VNS: A Two-Phase Particle Swarm Optimization with Variable
+  Neighborhood Search for Wind Farm Layout Optimization"
 version: 1.0.0
 date-released: "2026-10-04"
 authors:

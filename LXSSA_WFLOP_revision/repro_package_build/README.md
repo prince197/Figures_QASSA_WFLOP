@@ -1,7 +1,7 @@
-# Reproducibility package — SWEVO paper on baseline configuration and random-sampling controls in WFLO
+# Reproducibility package — SWEVO paper on PSO-VNS for wind farm layout optimization
 
 **Version 1.0.0 (2026-10-06).** Package for the article
-*Baseline Configuration and Random-Sampling Controls in Metaheuristic Comparisons for Wind Farm Layout Optimization*
+*PSO-VNS: A Two-Phase Particle Swarm Optimization with Variable Neighborhood Search for Wind Farm Layout Optimization*
 (P. Solanki, P. Dwivedi, V. Garg, V. Shukla; submitted to *Swarm and Evolutionary Computation*).
 
 **Status of the public deposit: pending author action.** No DOI exists yet. The authors create the versioned

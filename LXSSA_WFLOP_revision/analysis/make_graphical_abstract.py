@@ -4,12 +4,11 @@ Usage (from anywhere):  python3 analysis/make_graphical_abstract.py
 Writes figures_final/graphical_abstract.{pdf,png,tif} and copies them to
 SWEVO_rev2/latex_source/figures_final/.
 
+Left: the two phases of PSO-VNS; middle: the evaluation; right: the findings, including where PSO-VNS does not lead.
 Every number shown is read from the analysis JSON files and checked against the value printed in the paper:
-  * PSO setting (Table 4, Section 7.1): mpce_summary.json /baseline/{old,constriction}/avg_rank
-  * Sampling control (Tables 8/9, Section 8.3): mpce_summary.json /ablation/contrasts/SSABV-{RSVNS,RSDVNS}/dloss_pp
-  * Constraint handling (Section 10.4, Table S79): rev3_constraint.json /variants/{pen,deb}/ranks/*/case_rule
-  * Direction bins (Section 10.5, Table S81): rev3_fine.json /arms/{ctrl1,direct}/contrast_psovns_pso/mean_dloss_pp
-    and /arms/{ctrl1,direct}/leader
+  * Average ranks of the main comparison: mpce_summary.json /main/friedman/avg_rank
+  * Direction bins: rev3_fine.json /arms/{ctrl1,direct}/contrast_psovns_pso/mean_dloss_pp and /arms/{ctrl1,direct}/leader
+  * Horns Rev 1 feasibility at 6,030 evaluations: mpce_summary.json /hr16/methods/{PSOBV,PSOC}/feasible
 The canvas is 130 x 52 mm (aspect 2.5 = 1328/531); all text is >= 9 pt at that size.
 """
 import json
@@ -20,7 +19,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch  # noqa: E402
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -34,34 +33,21 @@ def load(name):
 
 
 S = load("mpce_summary.json")
-C = load("rev3_constraint.json")
 F = load("rev3_fine.json")
 
 # ---- numbers (with the value printed in the paper as a check) ----
-old = S["baseline"]["old"]["avg_rank"]
-con = S["baseline"]["constriction"]["avg_rank"]
-pso_old, pso_con = old["PSO"], con["PSO"]            # 5.04 -> 1.53 (Table 4)
-ssa_old, ssa_con = old["SSABV"], con["SSABV"]       # 1.99 -> 2.77 (Table 4)
-pos_old = S["baseline"]["old"]["pso_position"]      # 5
-pos_con = S["baseline"]["constriction"]["pso_position"]  # 1
-ab = S["ablation"]["contrasts"]
-gain_sq = -ab["SSABV-RSVNS"]["dloss_pp"]            # SSA-VNS - RS-VNS = -0.068 -> gain +0.068
-gain_disc = -ab["SSABV-RSDVNS"]["dloss_pp"]         # SSA-VNS - RSD-VNS = +0.024 -> gain -0.024
-rk = {v: C["variants"][v]["ranks"] for v in ("pen", "deb")}
-pv_pen, ga_pen = rk["pen"]["PSOBV"]["case_rule"], rk["pen"]["GA"]["case_rule"]   # 1.67, 2.50
-pv_deb, ga_deb = rk["deb"]["PSOBV"]["case_rule"], rk["deb"]["GA"]["case_rule"]   # 2.17, 1.83
+rank = S["main"]["friedman"]["avg_rank"]
+top = sorted(rank, key=rank.get)[:4]                                   # PSO-VNS, PSO, SSA-VNS, VNS
 adv15 = -F["arms"]["ctrl1"]["contrast_psovns_pso"]["mean_dloss_pp"]   # 0.086 (opt. 15 deg, eval. 1 deg)
 adv1 = -F["arms"]["direct"]["contrast_psovns_pso"]["mean_dloss_pp"]   # 0.194 (opt. 1 deg)
 lead15, lead1 = F["arms"]["ctrl1"]["leader"], F["arms"]["direct"]["leader"]
-N_CASES = S["baseline"]["old"]["n_cases"]           # 68
-MARGIN = 0.05                                        # post hoc equivalence margin (pp), Section 6.2
-
-checks = [(pso_old, 5.04, 2), (pso_con, 1.53, 2), (ssa_old, 1.99, 2), (ssa_con, 2.77, 2),
-          (gain_sq, 0.068, 3), (gain_disc, -0.024, 3), (pv_pen, 1.67, 2), (ga_pen, 2.50, 2),
-          (pv_deb, 2.17, 2), (ga_deb, 1.83, 2), (adv15, 0.086, 3), (adv1, 0.194, 3)]
+hr_pv, hr_pso = S["hr16"]["methods"]["PSOBV"]["feasible"], S["hr16"]["methods"]["PSOC"]["feasible"]   # 30, 19
+checks = [(rank["PSOBV"], 1.82, 2), (rank["PSOC"], 1.97, 2), (rank["SSABV"], 3.45, 2), (rank["BVNS"], 4.40, 2),
+          (adv15, 0.086, 3), (adv1, 0.194, 3)]
 for val, paper, nd in checks:
     assert round(val, nd) == paper, (val, paper)
-assert (pos_old, pos_con, N_CASES) == (5, 1, 68) and lead15 == lead1 == ["PSOBV"]
+assert top == ["PSOBV", "PSOC", "SSABV", "BVNS"] and lead15 == lead1 == ["PSOBV"] and (hr_pv, hr_pso) == (30, 19)
+NAME = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "BVNS": "VNS"}
 
 # ---- style ----
 # method colours as in the paper's figures (mpce_results.COL): PSO-VNS blue, SSA-VNS sky blue, PSO green
@@ -103,130 +89,91 @@ def arrow_mm(x0, x1, y):
 
 
 # ---- layout (mm) ----
-LX, LW = 0.8, 24.2                # test bed
-MX, MW = 27.8, 73.4               # four protocol choices (2 x 2)
-RX, RW = 104.0, 25.2              # take-away
+LX, LW = 0.8, 34.0                # proposed method
+MX, MW = 38.0, 59.6               # evaluation
+RX, RW = 100.4, 28.8              # findings
 TOP = 51.0
 
-# ---- left: test bed ----
+# ---- left: PSO-VNS ----
 box_mm(LX, 1.0, LW, 50.0, LIGHT)
-text_mm(LX + LW / 2, TOP - 1.0, "Test bed", ha="center", va="top", fontsize=10, fontweight="bold")
-ia = ax_mm(LX + 1.0, 21.0, LW - 2.0, 24.5)
-ia.set_xlim(-1.35, 1.15)
-ia.set_ylim(-1.15, 1.15)
-ia.set_aspect("equal")
-ia.axis("off")
-ia.add_patch(Circle((0, 0), 1.0, fc="white", ec=GREY, lw=0.9, ls=(0, (3, 1.5))))
-turbines = [(-0.62, 0.48), (0.05, 0.72), (0.62, 0.42), (-0.70, -0.18), (-0.12, 0.10), (0.55, -0.25),
-            (-0.35, -0.70), (0.25, -0.72), (0.80, 0.05)]
-for (x, y) in turbines:          # top view: rotor bar perpendicular to the wind (from the west)
-    ia.plot([x, x], [y - 0.15, y + 0.15], color=OI["blue"], lw=1.6, solid_capstyle="round")
-    ia.plot([x, x + 0.13], [y, y], color=OI["blue"], lw=1.0)
-for yy in (-0.45, 0.0, 0.45):
-    ia.annotate("", xy=(-1.04, yy), xytext=(-1.38, yy),
-                arrowprops=dict(arrowstyle="-|>,head_length=0.35,head_width=0.2", color=GREY, lw=0.9))
-lines = [("68", "layout cases"), ("30", "paired seeds"), ("equal", "budgets")]
-for i, (big, small) in enumerate(lines):
-    y = 17.0 - i * 5.6
-    text_mm(LX + LW / 2, y, f"$\\bf{{{big}}}$ {small}" if big != "equal" else "equal budgets",
-            ha="center", va="center", fontsize=9)
-
-# ---- middle: four choices ----
-text_mm(MX + MW / 2, TOP - 0.6, "Protocol choices change the conclusions",
-        ha="center", va="top", fontsize=10, fontweight="bold")
-PW, PH = 36.3, 21.8
-pos = [(MX, 23.6), (MX + MW - PW, 23.6), (MX, 1.0), (MX + MW - PW, 1.0)]
+text_mm(LX + LW / 2, TOP - 1.0, "PSO-VNS", ha="center", va="top", fontsize=10, fontweight="bold",
+        color=OI["blue"])
 
 
-def panel(k, title, verdict, vcolor):
-    x, y = pos[k]
-    box_mm(x, y, PW, PH, "white", ec="#BDBDBD", lw=0.6)
-    text_mm(x + 1.4, y + PH - 1.0, title, ha="left", va="top", fontsize=9, fontweight="bold")
-    text_mm(x + PW / 2, y + 1.0, verdict, ha="center", va="bottom", fontsize=9, fontweight="bold",
-            color=vcolor)
-    return x, y
+def phase(y, h, title, l1, l2, l3, fc):
+    box_mm(LX + 1.6, y, LW - 3.2, h, fc, ec="#BDBDBD", lw=0.6)
+    cx = LX + LW / 2
+    text_mm(cx, y + h - 1.4, title, ha="center", va="top", fontsize=9, fontweight="bold")
+    for i, t in enumerate((l1, l2, l3)):
+        text_mm(cx, y + h - 6.2 - i * 3.9, t, ha="center", va="top", fontsize=9,
+                color=GREY if i == 2 else INK)
 
 
-def slope(ax, a0, a1, b0, b1, ca, cb, la, lb, xt, ylim, yticks, right_axis=True):
-    """Two-point slope chart; method labels left of the first point, rank ticks on the right."""
-    for v0, v1, c in ((a0, a1, ca), (b0, b1, cb)):
-        ax.plot([0, 1], [v0, v1], color=c, lw=2.0, marker="o", ms=3.6, solid_capstyle="round", zorder=3)
-    ax.text(-0.13, a0, la, color=ca, va="center", ha="right", fontsize=9, fontweight="bold")
-    ax.text(-0.13, b0, lb, color=cb, va="center", ha="right", fontsize=9, fontweight="bold")
-    ax.set_xlim(-0.08, 1.12)
-    ax.set_ylim(*ylim)
-    ax.set_xticks([0, 1], xt)
-    ax.yaxis.tick_right()
-    ax.set_yticks(yticks if right_axis else [])
-    for sp in ("top", "left") if right_axis else ("top", "left", "right"):
-        ax.spines[sp].set_visible(False)
-    ax.tick_params(axis="x", length=0)
+phase(25.4, 18.6, "Phase 1: PSO", "swarm reaches the", "feasible region", "ωB evaluations", "white")
+phase(2.6, 18.6, "Phase 2: VNS", "compass search and", "shaking refine it", "(1−ω)B evaluations", "white")
+fig.patches.append(FancyArrowPatch(((LX + LW / 2) / W, 25.2 / H), ((LX + LW / 2) / W, 21.4 / H),
+                                   transform=fig.transFigure, arrowstyle="-|>,head_length=2.5,head_width=1.5",
+                                   color=OI["blue"], lw=1.4, zorder=3))
+text_mm(LX + LW / 2 + 2.0, 23.3, "best layout", ha="left", va="center", fontsize=8, color=GREY)
 
+# ---- middle: evaluation ----
+text_mm(MX + MW / 2, TOP - 0.6, "Controlled evaluation", ha="center", va="top", fontsize=10, fontweight="bold")
+text_mm(MX + MW / 2, 44.6, "2 wind data sets × 3 farm sizes", ha="center", va="top", fontsize=9)
+text_mm(MX + MW / 2, 40.6, "Horns Rev 1 · Lillgrund · IEA37", ha="center", va="top", fontsize=9)
+PW, PH = 29.0, 34.0
+for k, (x, title, verdict) in enumerate(((MX, "Average rank", "1st of 8"),
+                                         (MX + MW - PW, "Gain vs PSO (pp)", "≈×2 with 1° bins"))):
+    box_mm(x, 1.0, PW, PH, "white", ec="#BDBDBD", lw=0.6)
+    text_mm(x + PW / 2, 1.0 + PH - 1.2, title, ha="center", va="top", fontsize=9, fontweight="bold")
+    text_mm(x + PW / 2, 2.2, verdict, ha="center", va="bottom", fontsize=9, fontweight="bold", color=OI["blue"])
 
-# A: PSO baseline setting
-x, y = panel(0, "PSO baseline setting", f"PSO rank {pso_old:.1f} → {pso_con:.1f}", OI["green"])
-a = ax_mm(x + 15.0, y + 8.6, 16.0, 7.6)
-slope(a, pso_old, pso_con, ssa_old, ssa_con, OI["green"], OI["sky"], "PSO", "SSA-VNS",
-      ["old", "constr."], (5.6, 0.8), [1, 3, 5])
+a = ax_mm(MX + 12.6, 8.0, 12.0, 20.0)
+vals = [rank[m] for m in top]
+cols = [OI["blue"], OI["green"], OI["sky"], GREY]
+a.barh(range(4), vals, height=0.62, color=cols, zorder=2)
+a.set_yticks(range(4), [NAME[m] for m in top])
+for t, c in zip(a.get_yticklabels(), cols):
+    t.set_color(c)
+    t.set_fontweight("bold")
+a.set_ylim(3.6, -0.6)
+a.set_xlim(0, 6.6)
+a.set_xticks([])
+for v, yy in zip(vals, range(4)):
+    a.text(v + 0.25, yy, f"{v:.2f}", va="center", ha="left", fontsize=8.5)
+for sp in ("top", "right", "bottom"):
+    a.spines[sp].set_visible(False)
+a.tick_params(axis="y", length=0, labelsize=8.5)
 
-# B: random-sampling control
-x, y = panel(1, "Sampling control (4D)", "no gain vs disc", OI["orange"])
-b = ax_mm(x + 11.5, y + 8.0, 21.5, 9.6)
-vals = [gain_disc, gain_sq]
-b.barh([0, 1], vals, height=0.62, color=[GREY, OI["orange"]], zorder=2)
-b.axvline(0, color=INK, lw=0.6, zorder=3)
-b.set_yticks([0, 1], ["disc", "square"])
-b.set_ylim(-0.55, 1.55)
-b.set_xlim(-0.06, 0.13)
-b.set_xticks([])
-for v, yy in zip(vals, (0, 1)):
-    b.text(max(v, 0) + 0.006, yy, f"{v:+.2f}".replace("-", "−"), va="center", ha="left",
-           fontsize=9)
-for s in ("top", "right", "bottom", "left"):
-    b.spines[s].set_visible(False)
-b.tick_params(axis="y", length=0)
-text_mm(x + 11.5 + 21.5 * 0.06 / 0.19, y + 6.4, "SSA-phase gain (pp)", ha="center", va="center",
-        fontsize=9, color=GREY)
-
-# C: constraint handling
-x, y = panel(2, "Constraint handling", "leader changes", OI["verm"])
-c = ax_mm(x + 16.3, y + 8.6, 13.4, 7.6)
-slope(c, pv_pen, pv_deb, ga_pen, ga_deb, OI["blue"], OI["verm"], "PSO-VNS", "GA",
-      ["penalty", "Deb+clip"], (2.75, 1.45), [1.5, 2.5], right_axis=False)
-c.tick_params(axis="x", labelsize=8.5)
-
-# D: wind-direction bins
-x, y = panel(3, "Wind bins (eval. 1°)", "leader stays, gap ≈×2", OI["blue"])
-d = ax_mm(x + 12.5, y + 8.0, 20.5, 9.6)
-vals = [adv1, adv15]
-d.barh([0, 1], vals, height=0.62, color=[OI["blue"], "#7FB3D9"], zorder=2)
+d = ax_mm(MX + MW - PW + 11.0, 11.0, 12.0, 14.0)
+vals = [adv15, adv1]
+d.barh([0, 1], vals, height=0.62, color=["#7FB3D9", OI["blue"]], zorder=2)
 d.axvline(0, color=INK, lw=0.6, zorder=3)
-d.set_yticks([0, 1], ["opt. 1°", "opt. 15°"])
-d.set_ylim(-0.55, 1.55)
-d.set_xlim(0, 0.25)
+d.set_yticks([0, 1], ["opt. 15°", "opt. 1°"])
+d.set_ylim(1.6, -0.6)
+d.set_xlim(0, 0.27)
 d.set_xticks([])
 for v, yy in zip(vals, (0, 1)):
-    d.text(v + 0.008, yy, f"{v:.2f}", va="center", ha="left", fontsize=9)
-for s in ("top", "right", "bottom", "left"):
-    d.spines[s].set_visible(False)
-d.tick_params(axis="y", length=0)
-text_mm(x + PW / 2 + 1.5, y + 6.4, "gain over PSO (pp)", ha="center", va="center", fontsize=9,
-        color=GREY)
+    d.text(v + 0.01, yy, f"{v:.2f}", va="center", ha="left", fontsize=8.5)
+for sp in ("top", "right", "bottom", "left"):
+    d.spines[sp].set_visible(False)
+d.tick_params(axis="y", length=0, labelsize=8.5)
+text_mm(MX + MW - PW / 2, 8.6, "evaluated at 1°", ha="center", va="center", fontsize=8, color=GREY)
 
-# ---- right: take-away ----
+# ---- right: findings ----
 box_mm(RX, 1.0, RW, 50.0, "#E3F0F8")
-text_mm(RX + RW / 2, TOP - 1.0, "Report", ha="center", va="top", fontsize=10, fontweight="bold")
-items = [("baseline", "settings"), ("in-farm", "controls"), ("all-run", "reliability"),
-         ("constraint &", "bin checks")]
-for i, (l1, l2) in enumerate(items):
+text_mm(RX + RW / 2, TOP - 1.0, "Findings", ha="center", va="top", fontsize=10, fontweight="bold")
+items = [("✓", "ranks first", "of 8 methods"), ("✓", "+0.19 pp over", "PSO with 1° bins"),
+         ("✓", f"feasible {hr_pv}/30", f"vs PSO {hr_pso}/30*"), ("–", "GA, SLSQP lead", "in 2 settings")]
+for i, (mark, l1, l2) in enumerate(items):
     yy = 41.5 - i * 10.4
-    text_mm(RX + 1.6, yy, "✓", ha="left", va="center", fontsize=10, fontweight="bold", fontfamily="DejaVu Sans",
-            color=OI["blue"])
-    text_mm(RX + 5.0, yy + 1.9, l1, ha="left", va="center", fontsize=9)
-    text_mm(RX + 5.0, yy - 1.9, l2, ha="left", va="center", fontsize=9)
+    text_mm(RX + 1.4, yy, mark, ha="left", va="center", fontsize=10, fontweight="bold", fontfamily="DejaVu Sans",
+            color=OI["blue"] if mark == "✓" else GREY)
+    text_mm(RX + 4.6, yy + 1.9, l1, ha="left", va="center", fontsize=9)
+    text_mm(RX + 4.6, yy - 1.9, l2, ha="left", va="center", fontsize=9)
+text_mm(RX + RW / 2, 2.0, "*Horns Rev 1", ha="center", va="bottom", fontsize=8, color=GREY)
 
-arrow_mm(LX + LW + 0.4, MX - 0.6, 26.0)
-arrow_mm(MX + MW + 0.4, RX - 0.6, 26.0)
+arrow_mm(LX + LW + 0.3, MX - 0.5, 26.0)
+arrow_mm(MX + MW + 0.3, RX - 0.5, 26.0)
 
 os.makedirs(OUT, exist_ok=True)
 pdf = os.path.join(OUT, "graphical_abstract.pdf")
