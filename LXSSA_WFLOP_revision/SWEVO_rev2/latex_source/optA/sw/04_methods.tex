@@ -152,7 +152,7 @@ The bound (b) is loose; by Monte Carlo, $P_N<10^{-6}$ for the largest cases ($N=
 % CHECK-FINAL [C60]: spacing binding (R3-6): of the \NRSRunsNoFeasSample RS-VNS runs without a feasible sample, disc sampling (RSD-VNS, same runs) rescues \NRsSquareExplains < \NRsSpacingDominates that stay without one ("mainly because of the spacing"); [C61]: controls switch at 3,015, swarms at 3,030; RSD-VNS definition: mpce_experiments.RSDVNS (first 30 = common initial population, then polar-uniform disc samples)
 
 \subsection{PSO-VNS}
-PSO-VNS (Algorithm~\ref{alg:hybrid}) is not a new PSO variant: its Phase~1 is the plain PSO of Algorithm~\ref{alg:pso} and, as the coefficients do not depend on the iteration, reproduces exactly, for a given seed, the first $N_p(T_1+1)$ evaluations of a PSO run (Proposition~\ref{S-prop:S-prefix}); comparing PSO-VNS with PSO thus isolates the effect of Phase~2. This does not hold for SSA-VNS and LX-SSA-VNS, whose $\xi_1$ depends on $t/T_1$.
+PSO-VNS (Algorithm~\ref{alg:hybrid}) is a new sequential variant of the PSO--VNS hybrid, not a modification of PSO itself: its Phase~1 is the plain PSO of Algorithm~\ref{alg:pso} and, as the coefficients do not depend on the iteration, reproduces exactly, for a given seed, the first $N_p(T_1+1)$ evaluations of a PSO run (Proposition~\ref{S-prop:S-prefix}); comparing PSO-VNS with PSO thus isolates the effect of Phase~2. This does not hold for SSA-VNS and LX-SSA-VNS, whose $\xi_1$ depends on $t/T_1$.
 
 \begin{algorithm}[!t]
 \caption{PSO-VNS for a prescribed turbine count $N$.}
