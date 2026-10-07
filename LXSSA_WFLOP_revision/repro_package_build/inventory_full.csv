@@ -162,7 +162,7 @@ analysis/init_hook.py,optimizer,include,602,initial-population hook (random / fe
 analysis/layout_reevaluation.csv,legacy,exclude,151617,earlier analyses (not used here)
 analysis/literature_values.csv,input,include,135032,hand-collected literature values (Section S-literature)
 analysis/literature_values.md,input,include,13933,hand-collected literature values (Section S-literature)
-analysis/make_graphical_abstract.py,analysis,include,11795,graphical abstract (figures_final/graphical_abstract.*)
+analysis/make_graphical_abstract.py,analysis,include,9522,graphical abstract (figures_final/graphical_abstract.*)
 analysis/make_model_figures.py,analysis,include,10624,model schematics (figures_final/)
 analysis/make_robustness_tables.py,legacy,exclude,5127,earlier analyses (not used here)
 analysis/make_theory_figures.py,analysis,include,17469,theory figure and checks T01-T13
@@ -804,9 +804,9 @@ figures_final/fig_wake_model.pdf,figure,include,9694,model schematic (make_model
 figures_final/fig_wake_model.png,legacy,exclude,19524,figures of an earlier paper
 figures_final/fig_wind_farm.pdf,figure,include,16830,model schematic (make_model_figures.py)
 figures_final/fig_wind_farm.png,legacy,exclude,69537,figures of an earlier paper
-figures_final/graphical_abstract.pdf,figure,include,33850,graphical abstract (make_graphical_abstract.py)
-figures_final/graphical_abstract.png,figure,include,450880,graphical abstract (make_graphical_abstract.py)
-figures_final/graphical_abstract.tif,figure,include,226064,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.pdf,figure,include,31834,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.png,figure,include,428804,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.tif,figure,include,214036,graphical abstract (make_graphical_abstract.py)
 figures_final/hr_convergence.pdf,legacy,exclude,20991,figures of an earlier paper
 figures_final/hr_convergence.png,legacy,exclude,82693,figures of an earlier paper
 figures_final/hr_layouts.pdf,legacy,exclude,19850,figures of an earlier paper
