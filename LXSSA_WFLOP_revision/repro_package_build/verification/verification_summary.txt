@@ -1,14 +1,14 @@
-Verification of the SWEVO reproducibility package, release 1.0.0 (2026-10-06)
+Verification of the SWEVO reproducibility package, release 1.0.0 (2026-10-07)
 ==============================================================================
 
 Environment (Section 3 of the README): CPython 3.11.15, NumPy 2.4.6, SciPy 1.17.1, pandas 3.0.6, Matplotlib 3.11.2,
 PyWake 2.6.20, Linux x86_64 (Ubuntu 24.04), shared multi-core machine, one worker process per step.
 
 Procedure. make_package.sh 1.0.0 built the archive; it was unpacked into an empty scratch folder and
-    sha256sum -c MANIFEST.sha256                                    802 of 802 files OK (release_1.0.0/manifest_check.txt)
+    sha256sum -c MANIFEST.sha256                                    775 of 775 files OK (release_1.0.0/manifest_check.txt)
     WITH_SLOW=1 WITH_DETERMINISM=1 WITH_PYWAKE=1 MANUSCRIPT=<SWEVO latex_source> sh regenerate_all.sh <scratch>
-was run in the unpacked package: 33 steps, every step exit 0, total 3,081 s (rev3_inference.py with its null
-calibrations 2,185 s; rev3_dependence.py with the joint-seed calibration 382 s) (release_1.0.0/steps.txt).
+was run in the unpacked package: 33 steps, every step exit 0, total 2,735 s (rev3_inference.py with its null
+calibrations 1,877 s; rev3_dependence.py with the joint-seed calibration 334 s) (release_1.0.0/steps.txt).
 
 1. Run records (count_records.py): 36,190 records of the main study, 11,640 of the additional experiments
    (GA 2,040 + 60 + 120, exact gradients 240, Laplace ablation 2,160, spacing 6,480, Lillgrund 270 + 270) and the
@@ -38,7 +38,6 @@ calibrations 2,185 s; rev3_dependence.py with the joint-seed calibration 382 s) 
    N = 15) rerun with the archived drivers for PSO-VNS and SSA-VNS: 4 of 4 reruns bit-identical to the stored
    records in every field except the wall-clock Seconds.
 
-After this verification the archive was rebuilt only to add these logs; it differs from the verified build in
-README.md, the file descriptions in build_inventory.py and inventory.csv, this folder and one printed label of count_records.py (compared via the
-two MANIFEST.sha256 files); no analysis script, run record or generated output differs. Its checksums were verified
-again from a clean unpack.
+After this verification the archive was rebuilt only to add these logs; it differs from the verified build only in
+this folder (compared via the two MANIFEST.sha256 files); no analysis script, run record, generated output or
+documentation file differs. Its checksums were verified again from a clean unpack.

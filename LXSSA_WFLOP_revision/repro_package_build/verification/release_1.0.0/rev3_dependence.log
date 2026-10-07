@@ -10,10 +10,10 @@ BENCH SSABV-RSVNS    964/315/761 score 0.550 seedCI [0.528 0.57 ] seeds +21/-8 p
 BENCH RSDVNS-RSVNS   1010/318/712 score 0.573 seedCI [0.557 0.588] seeds +27/-3 p_flip 9.69e-08 (Holm 3.87e-07) p_W 5.5e-06 | pooled Holm 2.9e-12 | groups +6/-0 p_grp 0.0312
 BENCH LXBV-RSDVNS    718/321/1001 score 0.431 seedCI [0.41  0.452] seeds +3/-26 p_flip 2.18e-06 (Holm 6.53e-06) p_W 2.02e-05 | pooled Holm 2.8e-11 | groups +0/-5 p_grp 0.0625
 BENCH PSOBV-RSDVNS   1320/322/398 score 0.726 seedCI [0.712 0.74 ] seeds +30/-0 p_flip 1.86e-09 (Holm 9.31e-09) p_W 1.69e-06 | pooled Holm 1.59e-114 | groups +6/-0 p_grp 0.0312
-CALIB PSOBV-PSOC minus: size (equivalence decision) 6.94% [6.25 7.68]; one-sided 6.94%; calibrated p 0.0002 [95.7 s]
-CALIB PSOBV-PSOC plus: size (equivalence decision) 4.30% [3.75 4.9 ]; one-sided 4.30%; calibrated p 0.0002 [95.1 s]
-CALIB SSABV-RSDVNS minus: size (equivalence decision) 5.42% [4.81 6.08]; one-sided 5.42%; calibrated p 0.0002 [94.9 s]
-CALIB SSABV-RSDVNS plus: size (equivalence decision) 5.68% [5.05 6.36]; one-sided 5.68%; calibrated p 0.0584 [92.6 s]
+CALIB PSOBV-PSOC minus: size (equivalence decision) 6.94% [6.25 7.68]; one-sided 6.94%; calibrated p 0.0002 [82.3 s]
+CALIB PSOBV-PSOC plus: size (equivalence decision) 4.30% [3.75 4.9 ]; one-sided 4.30%; calibrated p 0.0002 [82.9 s]
+CALIB SSABV-RSDVNS minus: size (equivalence decision) 5.42% [4.81 6.08]; one-sided 5.42%; calibrated p 0.0002 [82.6 s]
+CALIB SSABV-RSDVNS plus: size (equivalence decision) 5.68% [5.05 6.36]; one-sided 5.68%; calibrated p 0.0584 [82.5 s]
 CONSTR pen  PSOC   122/0/58 score 0.678 seedCI [0.617 0.739] seeds +20/-1 p_flip 1.14e-05 Holm28 0.000229 | paper pooled Holm 3.99e-05 (PSO-VNS better) -> PSO-VNS better
 CONSTR pen  GA     113/0/67 score 0.628 seedCI [0.561 0.7  ] seeds +17/-4 p_flip 0.00214 Holm28 0.03 | paper pooled Holm 0.012 (PSO-VNS better) -> PSO-VNS better
 CONSTR pen  SSABV  124/0/56 score 0.689 seedCI [0.628 0.75 ] seeds +22/-2 p_flip 1.19e-05 Holm28 0.000229 | paper pooled Holm 8.73e-06 (PSO-VNS better) -> PSO-VNS better
@@ -63,4 +63,4 @@ LG 30030 MS-SLSQP 28/0/2 score 0.933 W/(W+L) 0.933 CP95 [0.7793, 0.9918]
 LG 30030 SSA      29/0/1 score 0.967 W/(W+L) 0.967 CP95 [0.8278, 0.9992]
 LG 30030 SSA-VNS  19/0/11 score 0.633 W/(W+L) 0.633 CP95 [0.4386, 0.8007]
 verdict changes (pooled sign test vs seed level, Holm 0.05): []
-done in 381.1 s
+done in 332.6 s
