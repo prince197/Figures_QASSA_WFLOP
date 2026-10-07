@@ -1,5 +1,5 @@
 PSO-VNS: a new two-phase variant of PSO with variable neighborhood search.
 PSO-VNS ranks first of eight methods on a wind farm layout benchmark.
-Optimized with 1-degree direction bins, PSO-VNS beats PSO by 0.19 pp wake loss.
-PSO-VNS reaches feasible layouts more often on Horns Rev 1 and Lillgrund.
+Optimized with 1-degree bins (eight cases), PSO-VNS beats PSO by 0.19 pp.
+PSO-VNS reaches feasible layouts more often than PSO on Horns Rev 1 and Lillgrund.
 Baseline settings and sampling controls change metaheuristic comparisons.
