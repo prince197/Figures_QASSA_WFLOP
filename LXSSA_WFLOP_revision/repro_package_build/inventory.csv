@@ -107,7 +107,7 @@ analysis/iea37_published_results.csv,input,10761,published IEA37 CS1 layouts eva
 analysis/init_hook.py,optimizer,602,initial-population hook (random / feasible)
 analysis/literature_values.csv,input,135032,hand-collected literature values (Section S-literature)
 analysis/literature_values.md,input,13933,hand-collected literature values (Section S-literature)
-analysis/make_graphical_abstract.py,analysis,11795,graphical abstract (figures_final/graphical_abstract.*)
+analysis/make_graphical_abstract.py,analysis,9522,graphical abstract (figures_final/graphical_abstract.*)
 analysis/make_model_figures.py,analysis,10624,model schematics (figures_final/)
 analysis/make_theory_figures.py,analysis,17469,theory figure and checks T01-T13
 analysis/mpce_ablation_tests.csv,output,94135,generated statistics
@@ -704,9 +704,9 @@ analysis/wflop_model.py,model,6162,"Kusiak-Song benchmark evaluator (Jensen wake
 figures_final/fig_half_cone.pdf,figure,13861,model schematic (make_model_figures.py)
 figures_final/fig_wake_model.pdf,figure,9694,model schematic (make_model_figures.py)
 figures_final/fig_wind_farm.pdf,figure,16830,model schematic (make_model_figures.py)
-figures_final/graphical_abstract.pdf,figure,33850,graphical abstract (make_graphical_abstract.py)
-figures_final/graphical_abstract.png,figure,450880,graphical abstract (make_graphical_abstract.py)
-figures_final/graphical_abstract.tif,figure,226064,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.pdf,figure,31834,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.png,figure,428804,graphical abstract (make_graphical_abstract.py)
+figures_final/graphical_abstract.tif,figure,214036,graphical abstract (make_graphical_abstract.py)
 figures_mpce/ablation_convergence.pdf,figure,39552,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
 figures_mpce/ablation_convergence.png,figure,156282,PNG previews of the generated figures
 figures_mpce/avg_ranks.pdf,figure,9732,"generated figures (mpce_results.py, mpce_inference_extra.py, mpce_csweep.py, mpce_diagnostics.py, make_theory_figures.py)"
