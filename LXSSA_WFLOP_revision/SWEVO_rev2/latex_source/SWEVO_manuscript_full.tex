@@ -44,7 +44,7 @@
 \newlabel{S-tab:S-wind}{{S1}{2}{}{}{}}
 \newlabel{S-sec:S-ssa-alg}{{S1.2}{2}{}{}{}}
 \newlabel{S-alg:S-ssa}{{S1}{2}{}{}{}}
-\newlabel{S-sec:S-stats}{{S1.3}{2}{}{}{}}
+\newlabel{S-sec:S-stats}{{S1.3}{3}{}{}{}}
 \newlabel{S-sec:S-iter}{{S1.4}{3}{}{}{}}
 \newlabel{S-sec:S-slsqp}{{S1.5}{3}{}{}{}}
 \newlabel{S-sec:S-feasinit-impl}{{S1.6}{4}{}{}{}}
@@ -357,20 +357,33 @@ Particle swarm optimization \sep variable neighborhood search \sep hybrid metahe
 % Nomenclature (IEEEdescription in the MPCE version): compact two-column table after the front matter
 \section*{Nomenclature}
 \noindent
-\begin{tabular}{@{}>{$}l<{$}@{\quad}l@{}}
-B & Budget (number of evaluations)\\
+\begin{tabular}{@{}>{$}l<{$}@{\quad}>{\raggedright\arraybackslash}p{0.72\textwidth}@{}}
+B & Budget (number of objective evaluations per run)\\
+c^* & Largest $c_1=c_2$ that is order-2 stable (Proposition~\ref{prop:pso-stability})\\
 C_T,\ K & Thrust coefficient; Jensen wake-spreading constant\\
-D,\ R & Rotor diameter and rotor radius ($D=2R$)\\
+D,\ R & Rotor diameter and radius, $D=2R$ (benchmark 77~m; Horns Rev~1 80~m; Lillgrund 93~m)\\
 E_{\rm ideal} & Wake-free benchmark objective of one turbine\\
-F_p & Penalized wake loss (minimized)\\
-\ell_{\min} & Minimum spacing between turbines\\
+F_p & Penalized wake loss (minimized), penalty constant $\mu_{\rm p}$\\
+g^{\rm b}_i,\ g^{\rm s}_{ij} & Boundary and spacing violations\\
+h_0,\ h_{\min} & Initial and final step of the compass search\\
+k_{\max},\ \delta_k & Number and radii of the VNS neighborhoods $\mathcal N_k$\\
+L & Wake loss (objective without penalty)\\
+\ell_{ij},\ \ell_{\min} & Distance between turbines $i$ and $j$; minimum spacing\\
+m & Equivalence margin (pp of wake loss)\\
+n & Number of decision variables, $n=2N$\\
 N,\ N_p & Number of turbines; population size\\
 N_\theta,\ N_s & Numbers of wind-direction and wind-speed bins\\
 r & Farm radius\\
+s;\ \zeta,\ \psi & Wind speed; Weibull shape and scale\\
+T,\ T_1 & Iterations of a population method; iterations of Phase~1\\
+\mathbf V^i,\ \mathbf P^i,\ \mathbf G & Velocity, personal best and global best of PSO\\
 w,\ c_1,\ c_2 & Inertia weight and acceleration coefficients of PSO\\
 \mathbf X & Layout vector $(x_1,y_1,\ldots,x_N,y_N)$\\
+\alpha & Wake half-angle, $\alpha=\arctan K$\\
+\overline{\Delta L} & Mean wake-loss difference between two methods (pp)\\
 \theta & Wind direction (blowing towards, CCW from east)\\
-\omega & Fraction of the budget given to Phase~1
+\xi_1;\ \gamma,\ \phi,\ \chi & SSA step coefficient; Laplace step, its location and scale\\
+\omega & Share of the budget $B$ given to Phase~1
 \end{tabular}
 
 % end optA/swevo_front.tex
@@ -523,12 +536,12 @@ with shape $\zeta(\theta)$ and scale $\psi(\theta)$. The benchmark rose is piece
 Both are synthetic wind roses of the Kusiak--Song benchmark~\cite{Kusiak2010,Bansal2017}, not measurements at a site; the measured wind climates in this study are the 12-sector Weibull roses of the Horns Rev~1 block (Section~\ref{sec:hornsrev-site}) and of a Lillgrund block (Section~\ref{sec:lillgrund}), both optimized in 5$^\circ$ bins, and IEA37 Case Study~1 uses 16 directions at one speed (Section~\ref{sec:setup-beyond}).
 % verified: analysis/wflop_model.py (DS1_W, DS1_PSI, DS2_PSI, DS2_W; k = 2); bins 6+7 of DS I: 0.2+0.6 = 0.8, towards 75-105 deg = from 165-195 deg
 
-\emph{Why the direction discretization matters.} The objective evaluates the wake only at the 24 bin centers $\bar\theta_l=(15l-7.5)^\circ$. A top-hat wake is narrow: by the half-cone geometry (Fig.~\ref{fig:model}c), turbine $j$ wakes a turbine $i$ at the distance $\rho\ge R/K$ only for directions within an interval of width $2[\alpha+\arcsin(R/(\rho\sqrt{1+K^2}))]$ around the direction from $j$ to $i$. With $K=0.075$ and $R=38.5$~m ($\alpha=4.29^\circ$, $R/K=513$~m), this width is below the bin spacing of 15$^\circ$ for $\rho>685$~m and tends to $2\alpha=8.6^\circ$. If no bin center lies in this interval, the wake of the pair does not enter the objective (with bins of 5$^\circ$ or finer, every such interval contains a center). Optimized layouts exploit these gaps (with 1$^\circ$ sub-bins, the mean wake loss of PSO-VNS rises by about 1~pp); Section~\ref{sec:direction} reports which conclusions survive a 1$^\circ$ rose, for re-evaluated and for directly optimized layouts.
+\emph{Why the direction discretization matters.} The objective evaluates the wake only at the 24 bin centers $\bar\theta_l=(15l-7.5)^\circ$. A top-hat wake is narrow: by the half-cone geometry (Fig.~\ref{fig:model}c), turbine $j$ wakes a turbine $i$ at the distance $\ell_{ij}\ge R/K$ only for directions within an interval of width $2[\alpha+\arcsin(R/(\ell_{ij}\sqrt{1+K^2}))]$ around the direction from $j$ to $i$. With $K=0.075$ and $R=38.5$~m ($\alpha=4.29^\circ$, $R/K=513$~m), this width is below the bin spacing of 15$^\circ$ for $\ell_{ij}>685$~m and tends to $2\alpha=8.6^\circ$. If no bin center lies in this interval, the wake of the pair does not enter the objective (with bins of 5$^\circ$ or finer, every such interval contains a center). Optimized layouts exploit these gaps (with 1$^\circ$ sub-bins, the mean wake loss of PSO-VNS rises by about 1~pp); Section~\ref{sec:direction} reports which conclusions survive a 1$^\circ$ rose, for re-evaluated and for directly optimized layouts.
 % verified (numerically with analysis/wflop_model.jensen_deficits on a 0.001-deg grid): waked width of a pair rho apart = 2(alpha + arcsin(R/(rho sqrt(1+K^2)))) exactly for rho >= R/K (rho = 600: 15.915 deg; 1000: 12.979; 2000: 10.779); width = 15 deg at rho = 685.4 m; alpha = arctan 0.075 = 4.289 deg; R/K = 513.3 m; 2 alpha = 8.58 deg > 5 deg. For rho < R/K the non-physical upstream deficit widens the interval further.
 % CHECK-DIR [F03]: loss rise of every method, PSO-VNS 1.322 -> 2.335; [F05]: VNS-based methods and PSO rise most
 
 \subsection{Wake Effect Model}
-In the Jensen model (Fig.~\ref{fig:model}b,c), the wake of turbine $j$ is a half cone with half-angle $\alpha=\arctan K$ (wake-spreading constant $K$), and its virtual vertex lies $R/K$ upstream of the rotor. With $u_{ij}=(x_i - x_j)\cos\theta + (y_i - y_j)\sin\theta + R/K$ and the lateral offset $v_{ij}=-(x_i - x_j)\sin\theta + (y_i - y_j)\cos\theta$, turbine $i$ lies in the wake if $\beta_{ij}=\cos^{-1}\!\bigl(u_{ij}/\sqrt{u_{ij}^2+v_{ij}^2}\bigr)<\alpha$. Its downstream distance is $d_{ij}=\lvert u_{ij}-R/K\rvert$, and with the thrust coefficient $C_T$ the velocity deficit is
+In the Jensen model (Fig.~\ref{fig:model}b,c), the wake of turbine $j$ is a half cone with half-angle $\alpha=\arctan K$ (wake-spreading constant $K$), and its virtual vertex lies $R/K$ upstream of the rotor. With the along-wind distance from the virtual vertex $u_{ij}=(x_i - x_j)\cos\theta + (y_i - y_j)\sin\theta + R/K$ and the lateral offset $v_{ij}=-(x_i - x_j)\sin\theta + (y_i - y_j)\cos\theta$, turbine $i$ lies in the wake if $\beta_{ij}=\cos^{-1}\!\bigl(u_{ij}/\sqrt{u_{ij}^2+v_{ij}^2}\bigr)<\alpha$. Its downstream distance is $d_{ij}=\lvert u_{ij}-R/K\rvert$, and with the thrust coefficient $C_T$ the velocity deficit, with the free-stream speed $s_{\text{up}}$ and the wake speed $s_{\text{down}}$, is
 \begin{equation}
     \Delta_{ij} = 1-\frac{s_{\text{down}}}{s_{\text{up}}}=\frac{1 - \sqrt{1 - C_T}}{\left(1 + K d_{ij}/R\right)^2}.
     \label{eq:deficit}
@@ -554,7 +567,7 @@ f(s)=\begin{cases}
 P_{\text{rated}}, & s>s_{\text{rated}},
 \end{cases}
 \end{equation*}
-with $s_{\text{cut-in}}=3.5$~m/s, $s_{\text{rated}}=14$~m/s, $P_{\text{rated}}=1500$~kW, $\lambda_1=140.86$ and $\lambda_0=-500$. We use it as published: it is slightly negative just above the cut-in speed ($-7.0$~kW at 3.5~m/s, zero at 3.55~m/s), jumps from 1472 to 1500~kW at the rated speed and has no cut-out speed. We keep this linearized curve for comparability with the published Kusiak--Song results; its effect on the energy values is quantified with a cubic curve in Section~\ref{sec:powercurve}, and the Horns Rev~1 block uses the tabulated V80 power curve (Section~\ref{sec:hornsrev-site}). The expected power of turbine $i$,
+with $s_{\text{cut-in}}=3.5$~m/s, $s_{\text{rated}}=14$~m/s, $P_{\text{rated}}=1500$~kW, slope $\lambda_1=140.86$ and intercept $\lambda_0=-500$. We use it as published: it is slightly negative just above the cut-in speed ($-7.0$~kW at 3.5~m/s, zero at 3.55~m/s), jumps from 1472 to 1500~kW at the rated speed and has no cut-out speed. We keep this linearized curve for comparability with the published Kusiak--Song results; its effect on the energy values is quantified with a cubic curve in Section~\ref{sec:powercurve}, and the Horns Rev~1 block uses the tabulated V80 power curve (Section~\ref{sec:hornsrev-site}). The expected power of turbine $i$, whose power output $P_i=f(s_{\rm local})$ depends on its local wind speed,
 \begin{equation}\label{eq8}
 E(P_i) = \int_0^{360} p_\theta(\theta) \int_0^{\infty} f(s)\,
        p_s\bigl(s; \zeta(\theta), \psi_i(\theta)\bigr) \, ds \, d\theta ,
@@ -590,8 +603,8 @@ g^{\rm b}_{i}=x_i^2+y_i^2-r^2,\qquad g^{\rm s}_{ij}=\ell_{\min}-\ell_{ij};
 all optimizers except MS-SLSQP minimize the penalized wake loss
 \begin{equation}
 \begin{split}
-F_p(\mathbf X)={}&\Bigl(N E_{\rm ideal}-\sum_{i=1}^{N}E(P_i)\Bigr)+\sum_{i:\,g^{\rm b}_i>0}\bigl(1+\mu g^{\rm b}_i\bigr)^2\\
-&+\sum_{i<j:\,g^{\rm s}_{ij}>0}\bigl(1+\mu g^{\rm s}_{ij}\bigr)^2,\qquad \mu=10^{10},
+F_p(\mathbf X)={}&\Bigl(N E_{\rm ideal}-\sum_{i=1}^{N}E(P_i)\Bigr)+\sum_{i:\,g^{\rm b}_i>0}\bigl(1+\mu_{\rm p} g^{\rm b}_i\bigr)^2\\
+&+\sum_{i<j:\,g^{\rm s}_{ij}>0}\bigl(1+\mu_{\rm p} g^{\rm s}_{ij}\bigr)^2,\qquad \mu_{\rm p}=10^{10},
 \end{split}
 \label{eq:penalty}
 \end{equation}
@@ -616,7 +629,7 @@ A population method keeps $N_p$ candidate vectors $\mathbf X^i\in\mathbb R^{n}$ 
 
 \subsection{PSO and Its Stability Conditions}
 \label{sec:pso}
-We use the canonical global-best PSO~\cite{Kennedy1995} in the inertia-weight form~\cite{Shi1998} (Algorithm~\ref{alg:pso}). Particle $i$ has a position $\mathbf X^i$, a velocity $\mathbf V^i$ and a personal best $\mathbf P^i$, the swarm keeps the global best $\mathbf G$, and a particle moves by
+We use the canonical global-best PSO~\cite{Kennedy1995} in the inertia-weight form~\cite{Shi1998} (Algorithm~\ref{alg:pso}), run for $T$ iterations $t=1,\ldots,T$. Particle $i$ has a position $\mathbf X^i$, a velocity $\mathbf V^i$ and a personal best $\mathbf P^i$, the swarm keeps the global best $\mathbf G$, and a particle moves by
 \begin{align}
 \mathbf V^i&\leftarrow w\,\mathbf V^i+c_1\boldsymbol\rho_1\circ\bigl(\mathbf P^i-\mathbf X^i\bigr)+c_2\boldsymbol\rho_2\circ\bigl(\mathbf G-\mathbf X^i\bigr),\label{eq:pso-v}\\
 \mathbf X^i&\leftarrow\mathbf X^i+\mathbf V^i,\label{eq:pso-x}
@@ -626,7 +639,7 @@ where $\boldsymbol\rho_1,\boldsymbol\rho_2$ are vectors of independent $U(0,1)$ 
 w=0.7298,\qquad c_1=c_2=\kappa\varphi_1=1.49618 .
 \label{eq:constriction}
 \end{equation}
-PSO denotes~\eqref{eq:pso-v} and~\eqref{eq:pso-x} with these coefficients, fixed a priori from the literature, and the \emph{old setting} the same algorithm with $w=0.7$, $c_1=c_2=2$, i.e., the acceleration coefficients of the original PSO~\cite{Kennedy1995} combined with an inertia weight. Both are run as implemented: velocities start at zero and are not clamped (no $V_{\max}$), a coordinate clipped to the square (Section~\ref{sec:constraints}) keeps its velocity, and $\mathbf P^i$, $\mathbf G$ are updated after each evaluation (asynchronous global best).
+PSO denotes~\eqref{eq:pso-v} and~\eqref{eq:pso-x} with these coefficients, fixed a priori from the literature, and the \emph{old setting} the same algorithm with $w=0.7$, $c_1=c_2=2$, i.e., the acceleration coefficients of the original PSO~\cite{Kennedy1995} combined with an inertia weight. Both are run as implemented: velocities start at zero and are not clamped (no bound $\lvert V^i_m\rvert\le V_{\max}$), a coordinate clipped to the square (Section~\ref{sec:constraints}) keeps its velocity, and $\mathbf P^i$, $\mathbf G$ are updated after each evaluation (asynchronous global best).
 
 \begin{algorithm}[!t]
 \caption{PSO as implemented ($N_p(T+1)$ evaluations).}
@@ -663,10 +676,10 @@ for $c_1\ne c_2$ with the same sum $c_1+c_2$, it is stricter.
 \item[(c)] Under (b), $\operatorname{Var}x_t\to V_\infty=(1+w)\,q/\varrho(1)$ with $q=c_1^2c_2^2(p-g)^2/[6(c_1+c_2)^2]$, for $c_1=c_2=c$, $V_\infty=c(1+w)(p-g)^2/(4[12(1-w^2)-c(7-5w)])$; $V_\infty=0$ if and only if $c_1c_2(p-g)=0$. When $c_1,c_2>0$, this is equivalent to $p=g$.
 \end{enumerate}
 \end{proposition}
-\begin{proof}[Proof sketch]
-(a) $e_t=\mathrm E\,x_t-x^*$ obeys $e_{t+1}=(1+w-\mu)\,e_t-w\,e_{t-1}$; both roots of $\lambda^2-(1+w-\mu)\lambda+w$ lie strictly inside the unit circle if and only if $\lvert w\rvert<1$ and $\lvert 1+w-\mu\rvert<1+w$ (Schur--Cohn), i.e., $0<\mu<2(1+w)$. (b) With $y_t=x_t-x^*$, $z_t=(\mathrm Ey_t^2,\mathrm Ey_ty_{t-1},\mathrm Ey_{t-1}^2)^{\mathsf T}$ obeys $z_{t+1}=Mz_t+b_t$ with a $3\times3$ matrix $M(w,\mu,\sigma^2)$ and $b_t\to(q,0,0)^{\mathsf T}$, so order-2 stability means a spectral radius of $M$ below one; by Jury's criterion for its characteristic polynomial $\varrho$, this holds iff $\lvert w\rvert<1$ and $\varrho(1)>0$. For $c_1=c_2=c$, $\varrho(1)=c\,[12(1-w^2)-c(7-5w)]/6$; for fixed $c_1+c_2$, $\sigma^2$ is smallest at $c_1=c_2$. (c) $V_\infty$ is the first component of the fixed point of $z\mapsto Mz+(q,0,0)^{\mathsf T}$. Since $(1+w)/\varrho(1)>0$, the variance vanishes exactly when $q=0$, including either zero acceleration coefficient. Full proof: Section~\ref{S-sec:S-th-pso}.
+\begin{proof}
+(a) $e_t=\mathrm E\,x_t-x^*$ obeys $e_{t+1}=(1+w-\mu)\,e_t-w\,e_{t-1}$; both roots of $\lambda^2-(1+w-\mu)\lambda+w$ lie strictly inside the unit circle if and only if $\lvert w\rvert<1$ and $\lvert 1+w-\mu\rvert<1+w$ (Schur--Cohn), i.e., $0<\mu<2(1+w)$. (b) With $y_t=x_t-x^*$, $z_t=(\mathrm Ey_t^2,\mathrm Ey_ty_{t-1},\mathrm Ey_{t-1}^2)^{\mathsf T}$ obeys $z_{t+1}=Mz_t+b_t$ with a $3\times3$ matrix $M(w,\mu,\sigma^2)$ and $b_t\to(q,0,0)^{\mathsf T}$, so order-2 stability means a spectral radius of $M$ below one; by Jury's criterion for its characteristic polynomial $\varrho$, this holds iff $\lvert w\rvert<1$ and $\varrho(1)>0$. For $c_1=c_2=c$, $\varrho(1)=c\,[12(1-w^2)-c(7-5w)]/6$; for fixed $c_1+c_2$, $\sigma^2$ is smallest at $c_1=c_2$. (c) $V_\infty$ is the first component of the fixed point of $z\mapsto Mz+(q,0,0)^{\mathsf T}$. Since $(1+w)/\varrho(1)>0$, the variance vanishes exactly when $q=0$, including either zero acceleration coefficient. The entries of $M$ and the detailed computations are given in Section~\ref{S-sec:S-th-pso}.
 \end{proof}
-The order-1 condition involves the \emph{mean} of $\varphi_t$ (with $\varphi=c_1+c_2$, the constant-coefficient condition $\varphi<2(1+w)$ would wrongly call the old setting unstable). For $c_1=c_2$, the region also holds under a weaker, non-stagnant assumption~\cite{Cleghorn2018}. The constriction setting is order-2 stable ($c_1+c_2=2.99<3.35$; spectral radius of $M$ 0.94): in the limit, a coordinate with $P^i_m\ne G_m$ is sampled with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the swarm keeps sampling around $\mathbf G$ unless $\mathbf P^i=\mathbf G$. The old setting is order-1 stable ($4<6.8$) but beyond the order-2 boundary ($4>3.50$; $c_1=c_2>c^*=1.7486$ at $w=0.7$; spectral radius 1.12), so its second moments grow without bound under stagnation (Fig.~\ref{fig:S-th-stability}; Proposition~\ref{S-prop:S-settings}). Neither condition says how good $\mathbf G$ is, and clipping violates (A2): a clipped coordinate stays at the bound while its kept velocity points outward (Lemma~\ref{S-lem:S-clip}).
+The order-1 condition involves the \emph{mean} of $\varphi_t$ (with $\varphi=c_1+c_2$, the constant-coefficient condition $\varphi<2(1+w)$ would wrongly call the old setting unstable). For $c_1=c_2$, the region also holds under a weaker, non-stagnant assumption~\cite{Cleghorn2018}. The constriction setting is order-2 stable ($c_1+c_2=2.99<3.35$; spectral radius of $M$ 0.94): in the limit, a coordinate with $P^i_m\ne G_m$ is sampled with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the swarm keeps sampling around $\mathbf G$ unless $\mathbf P^i=\mathbf G$. The old setting is order-1 stable ($4<6.8$) but beyond the order-2 boundary ($4>3.50$; $c_1=c_2>c^*=1.7486$ at $w=0.7$, where $c^*=12(1-w^2)/(7-5w)$ is the largest $c_1=c_2$ allowed by~\eqref{eq:poli}; spectral radius 1.12), so its second moments grow without bound under stagnation (Fig.~\ref{fig:S-th-stability}; Proposition~\ref{S-prop:S-settings}). Neither condition says how good $\mathbf G$ is, and clipping violates (A2): a clipped coordinate stays at the bound while its kept velocity points outward (Lemma~\ref{S-lem:S-clip}).
 \begin{figure}[!t]
 \begin{minipage}[c]{0.44\textwidth}\centering
 \pipefig{\linewidth}{figures_mpce/theory_stability.pdf}{6cm}
@@ -678,7 +691,7 @@ The order-1 condition involves the \emph{mean} of $\varphi_t$ (with $\varphi=c_1
 \end{figure}
 % CHECK-THEORY [T01]-[T06], [T12]: Proposition prop:pso-stability (full statement of S-prop:S-pso-stability, whose full proof stays in the supplement; order-1 via E[phi]=(c1+c2)/2; Poli's bound exact for c1=c2, analytic region = numerical region, T06); 24(1-0.7^2)/(7-3.5)=3.497; 24(1-0.7298^2)/(7-5*0.7298)=3.348; 4(1+0.7)=6.8; 2*1.49618=2.99; spectral radius of the second-moment matrix 1.124 (old) and 0.944 (constriction) in Table S-th-settings; c* = 3.497/2 = \NSBoundC
 % CHECK-THEORY [T05]: SD factor 1.04 = sqrt(V_inf/(p-g)^2) = sqrt(1.0874) (constriction); constant-coefficient misclassification 2(1+0.7) = 3.4 (S-th-pso note); Lemma S-lem:S-clip (b): clipped coordinate stays at the bound while v' >= 0
-Section~\ref{sec:psosetting} tests this empirically: in a sweep of $c_1=c_2=c$ at $w=0.7$, feasibility starts to fall near $c^*$ and falls progressively beyond it (to 58.9\% at $c=2$), so the boundary marks approximately where this PSO starts to fail, and velocity clamping largely rescues the old setting. DE's $F=0.5$ exceeds Zaharie's critical value (0.14 at $\mathrm{CR}=0.9$)~\cite{Zaharie2002}, so its weak results are not due to premature variance loss.
+Section~\ref{sec:psosetting} tests this empirically: in a sweep of $c_1=c_2=c$ at $w=0.7$, feasibility starts to fall near $c^*$ and falls progressively beyond it (to 58.9\% at $c=2$), so the boundary marks approximately where this PSO starts to fail, and velocity clamping largely rescues the old setting. The scale factor $F=0.5$ of differential evolution (DE; Section~\ref{sec:setup-cases}) exceeds Zaharie's critical value (0.14 at $\mathrm{CR}=0.9$)~\cite{Zaharie2002}, so its weak results are not due to premature variance loss.
 % verified (Zaharie): critical F = sqrt((1-CR/2)/N_p) = sqrt((1-0.45)/30)=0.135 (N_p = 30, CR = 0.9, F = 0.5: Section setup); F above the critical value = no variance collapse; Cleghorn2018 cited for c1 = c2 only
 % CHECK-CSWEEP [S02]-[S05]: feasibility >= 98 % for c <= 1.7, falls progressively beyond c* = \NSBoundC (\NSFeasCOneEight > \NSFeasCOneNine > \NSFeasCTwoZero at c = 1.8, 1.9, 2.0), onset in the step containing c* ("starts to fall near c*", "marks approximately where ... starts to fail"); [S10]/[S11]: vmax = \NSVmaxFrac (ub-lb) >= 90 % feasible but still worse than constriction ("largely rescues"); details in 06_results
 % CHECK-DIAG [D03]/[D06]/[D21]: the diagnostics of the old setting (contraction, spacing-only finals, tangent-point pinning) are stated in 06_results (sec:psosetting), no longer here
@@ -686,11 +699,17 @@ Section~\ref{sec:psosetting} tests this empirically: in a sweep of $c_1=c_2=c$ a
 \subsection{Salp Swarm Algorithm and Its Laplacian Variant}
 \label{sec:ssa}
 \label{sec:S-ssa}
-The SSA~\cite{Mirjalili2017} (Algorithm~\ref{S-alg:S-ssa}) keeps the best solution found so far as the food source $\mathbf H$ and splits the population, sorted by $F_p$, into leaders and followers. A leader $i\le N_p/2$ updates each coordinate by
+The SSA was proposed by Mirjalili et al.~\cite{Mirjalili2017} (pseudocode: Algorithm~\ref{S-alg:S-ssa}). Its population of $N_p$ salps, sorted by $F_p$, consists of two halves:
+\begin{itemize}
+\item \emph{Food source.} The best solution found so far, i.e., the candidate with the best fitness (lowest $F_p$), is the food source $\mathbf H$; after every iteration, the best salp of the sorted population, the first leader, replaces $\mathbf H$ if it is better.
+\item \emph{Leaders.} The better half, $i\le N_p/2$, updates each coordinate around the food source by
 \begin{equation}\label{eq:leader}
 X_m^i = H_m\pm\xi_1\big((ub_m-lb_m)\xi_2+lb_m\big),
 \end{equation}
-with either sign with probability $1/2$, $\xi_2\sim U(0,1)$ and $\xi_1=2\exp[-(4t/T)^2]$ decreasing with the iteration $t$ out of $T$: a leader samples $H_m+U(-\xi_1r,\xi_1r)$ in every coordinate, with $\xi_1\le0.037$ for $t\ge T/2$. A follower $i>N_p/2$ moves to the midpoint of its position and the \emph{new} position of the preceding salp. The leaders thus perturb $\mathbf H$ uniformly with a shrinking radius, and the followers only average~\cite{Castelli2022}. This implementation departs from the description of Mirjalili et~al.~\cite{Mirjalili2017} in three points, shared by SSA and LX-SSA: (a) the paper defines a single leader, the first salp, and followers $i\ge2$, whereas the implementation, like the authors' reference MATLAB code, treats the first $N_p/2$ salps as leaders; (b) the paper takes the $+$ sign in~\eqref{eq:leader} if $\xi_3\ge0$ for $\xi_3\sim U(0,1)$, which always holds, whereas the implementation, like the reference code, compares $\xi_3$ with $0.5$ and so takes either sign with probability $1/2$; (c) the salps are re-sorted by $F_p$ after every iteration (Algorithm~\ref{S-alg:S-ssa}, line~12), so the leaders are the better half of the current population, whereas the paper only selects the best salp as the food source. SSA and LX-SSA thus follow the reference code in (a) and (b) and the code of the published LX-SSA~\cite{Solanki2023} in all three points, so that both are tested as published. LX-SSA~\cite{Solanki2023} gives each follower a second candidate $Y_m^i=X_m^i+\gamma(H_m-X_m^i)$ with one Laplace step~\cite{Deep2007} for all coordinates,
+with either sign with probability $1/2$, $\xi_2\sim U(0,1)$ and $\xi_1=2\exp[-(4t/T)^2]$ decreasing with the iteration $t$ out of $T$: a leader samples $H_m+U(-\xi_1r,\xi_1r)$ in every coordinate, with $\xi_1\le0.037$ for $t\ge T/2$.
+\item \emph{Followers.} A follower $i>N_p/2$ moves to the midpoint of its position and the \emph{new} position of the preceding salp.
+\end{itemize}
+The leaders thus perturb $\mathbf H$ uniformly with a shrinking radius, and the followers only average~\cite{Castelli2022}. The SSA has known drawbacks, such as premature convergence and an imbalance between exploration and exploitation~\cite{Castelli2022,Solanki2023}. Solanki and Deep~\cite{Solanki2023} addressed them by proposing a new variant, the Laplacian SSA (LX-SSA). LX-SSA gives each follower a second candidate $Y_m^i=X_m^i+\gamma(H_m-X_m^i)$ with one Laplace step~\cite{Deep2007} for all coordinates,
 \begin{equation}
 \gamma=\phi-\chi\,\mathrm{sgn}\bigl(z-\tfrac12\bigr)\ln\bigl(1-2\lvert z-\tfrac12\rvert\bigr),\quad z\sim U(0,1),
 \label{eq:laplace}
@@ -723,7 +742,7 @@ with $\phi=0$ and $\chi=1$, and keeps the better candidate. As published, it eva
 
 \subsection{Basic Variable Neighborhood Search}
 \label{sec:vns}
-The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ $\ell_\infty$ shell neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$, of the whole layout: shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}), a coordinate-wise optimality at one step length, not a local minimum.
+The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ $\ell_\infty$ shell neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$ ($\delta_0=0$), of the whole layout: shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}), a coordinate-wise optimality at one step length, not a local minimum.
 % CHECK-THEORY [T12]: compass search final step h0/2^5 = 0.0015625 r (Proposition S-prop:S-ls); verified: analysis/original_vns.py (k_max = 5, rho_k = 0.1 k r, h0 = 0.05 r, h_min = 1e-3 r; move to the best of the 2 dim moves if it improves the current point, else halve h; shaking by rejection in the l_inf shell, then clip)
 
 \begin{algorithm}[!t]
@@ -769,17 +788,47 @@ Three properties of the continuous WFLOP shape the design.
 PSO-VNS (Algorithm~\ref{alg:hybrid}) is a new two-phase variant of the PSO--VNS hybrid. \emph{Phase~1} runs the PSO of Algorithm~\ref{alg:pso} from the seeded initial population for $T_1=\operatorname{round}((\omega B-N_p)/N_p)$ iterations, that is, $N_p(T_1+1)$ evaluations, and passes its global best layout $\mathbf G$ to Phase~2, feasible or not; the penalty then guides the local search towards feasibility. \emph{Phase~2} applies the basic VNS (Algorithm~\ref{alg:vns}) to $\mathbf G$: a compass-search descent, then, until the budget $B$ is used, shaking in the neighborhood $\mathcal N_k$ followed by a descent, accepting an improvement and returning to $k=1$, or else moving to the next, larger neighborhood. The best layout evaluated is returned.
 
 \begin{algorithm}[!t]
-\caption{PSO-VNS for a prescribed turbine count $N$.}
+\caption{PSO-VNS for the WFLOP (complete procedure; every call of $F_p$ counts against the budget $B$).}
 \label{alg:hybrid}
 \small
 \begin{algorithmic}[1]
-\Require budget $B$, split $\omega$, $N_p$, $w$, $c_1$, $c_2$, radius $r$, $k_{\max}$
-\State $\mathbf G\gets$ PSO (Algorithm~\ref{alg:pso}) with $T=T_1=\operatorname{round}((\omega B-N_p)/N_p)$ \Comment{Phase 1}
-\State $\mathbf X\gets\textsc{LocalSearch}(\mathbf G)$; $k\gets1$ \Comment{Phase 2 (Algorithm~\ref{alg:vns})}
+\Require site (farm radius $r$), number of turbines $N$, wind data and wake model, i.e., the penalized wake loss $F_p$~\eqref{eq:penalty}; budget $B$; random seed
+\Statex \textbf{Parameters:} population $N_p=30$; $w=0.7298$, $c_1=c_2=1.49618$~\eqref{eq:constriction}; split $\omega=0.5$; $k_{\max}=5$, $\delta_k=0.1\,k\,r$ ($\delta_0=0$); $h_0=0.05\,r$, $h_{\min}=10^{-3}r$
+\Ensure the best layout $\mathbf X^\star$ evaluated, with its wake loss and feasibility
+\Statex \textbf{Initialization}
+\State $n\gets2N$; $T_1\gets\operatorname{round}((\omega B-N_p)/N_p)$ \Comment{$T_1=100$ for $B=6{,}030$}
+\State Draw (seeded) $N_p$ layouts $\mathbf X^i\in[-r,r]^n$ and evaluate $F_p(\mathbf X^i)$ \Comment{$N_p$ evaluations}
+\State $\mathbf V^i\gets\mathbf 0$, $\mathbf P^i\gets\mathbf X^i$ ($i=1,\ldots,N_p$); $\mathbf G\gets\arg\min_i F_p(\mathbf P^i)$
+\Statex \textbf{Phase 1: PSO} (global search towards the feasible region)
+\For{$t=1,\ldots,T_1$}
+    \For{$i=1,\ldots,N_p$}
+        \State Draw $\boldsymbol\rho_1,\boldsymbol\rho_2\sim U(0,1)^n$; $\mathbf V^i\gets w\,\mathbf V^i+c_1\boldsymbol\rho_1\circ(\mathbf P^i-\mathbf X^i)+c_2\boldsymbol\rho_2\circ(\mathbf G-\mathbf X^i)$
+        \State $\mathbf X^i\gets\operatorname{clip}(\mathbf X^i+\mathbf V^i,-r,r)$ \Comment{box repair; $\mathbf V^i$ is kept}
+        \State Evaluate $F_p(\mathbf X^i)$; if $F_p(\mathbf X^i)<F_p(\mathbf P^i)$, then $\mathbf P^i\gets\mathbf X^i$; if $F_p(\mathbf X^i)<F_p(\mathbf G)$, then $\mathbf G\gets\mathbf X^i$
+    \EndFor
+\EndFor \Comment{$N_p(T_1+1)$ evaluations used}
+\Statex \textbf{Phase 2: basic VNS} (local refinement of $\mathbf G$)
+\State $\mathbf X\gets\textsc{LocalSearch}(\mathbf G)$; $k\gets1$
 \While{fewer than $B$ evaluations have been used}
-    \State $\mathbf X'\gets\textsc{LocalSearch}(\text{uniform point of }\mathcal N_k(\mathbf X))$; \textbf{if} $F_p(\mathbf X')<F_p(\mathbf X)$ \textbf{then} $\mathbf X\gets \mathbf X'$, $k\gets1$ \textbf{else} $k\gets k\bmod k_{\max}+1$
+    \State Draw $\mathbf d\sim U[-\delta_k,\delta_k]^n$ until $\lVert\mathbf d\rVert_\infty>\delta_{k-1}$ \Comment{shaking in $\mathcal N_k(\mathbf X)$}
+    \State $\mathbf X'\gets\operatorname{clip}(\mathbf X+\mathbf d,-r,r)$; evaluate $F_p(\mathbf X')$
+    \State $\mathbf X''\gets\textsc{LocalSearch}(\mathbf X')$
+    \If{$F_p(\mathbf X'')<F_p(\mathbf X)$} $\mathbf X\gets\mathbf X''$, $k\gets1$ \Comment{move}
+    \Else\ $k\gets k\bmod k_{\max}+1$ \Comment{next, larger neighborhood}
+    \EndIf
 \EndWhile
-\State \Return best layout evaluated
+\Statex \textbf{Termination}
+\State Stop as soon as $B$ evaluations have been used (also inside \textsc{LocalSearch}); \Return $\mathbf X^\star$, the best layout evaluated in either phase
+\Statex
+\Function{LocalSearch}{$\mathbf y$} \Comment{compass search, best improvement}
+    \State $h\gets h_0$
+    \While{$h\ge h_{\min}$}
+        \State Evaluate the $2n$ trial layouts $\operatorname{clip}(\mathbf y\pm h\,\mathbf e_m,-r,r)$, $m=1,\ldots,n$ ($\mathbf e_m$: $m$th unit vector)
+        \If{the best trial layout $\mathbf y'$ has $F_p(\mathbf y')<F_p(\mathbf y)$} $\mathbf y\gets\mathbf y'$ \Else\ $h\gets h/2$
+        \EndIf
+    \EndWhile
+    \State \Return $\mathbf y$
+\EndFunction
 \end{algorithmic}
 \end{algorithm}
 
@@ -809,11 +858,11 @@ The other hybrids and the random-sampling controls follow the sequential (relay)
 \end{itemize}
 VNS alone is the limiting case in which Phase~1 is the initial population. Phase~1 runs for
 \begin{equation*}
-T_1=\operatorname{round}((\omega B-N_p)/c)
+T_1=\operatorname{round}((\omega B-N_p)/c_{\rm it})
 \end{equation*}
-iterations of $c$ evaluations ($c=N_p$ for PSO and SSA, $2N_p$ for LX-SSA).
+iterations of $c_{\rm it}$ evaluations ($c_{\rm it}=N_p$ for PSO and SSA, $2N_p$ for LX-SSA).
 
-A swarm phase is useful only if it gives VNS a better start than random sampling with about the same number of evaluations (at $\omega=0.5$, 3,015 for the controls and 3{,}030 for the swarms ($N_p(T_1+1)$; LX-SSA: $N_p(2T_1+1)$)); the component analysis (Section~\ref{sec:ablation}) tests this for each Phase-1 choice against RSD-VNS, with RS-VNS as a weak minimum bar, as the following elementary result, an application of basic geometric probability to the implemented sampling, shows.
+The budget is not shared between methods: each run of each hybrid and control has its own $B$ evaluations, and within the run it is split between the two phases in the same way ($\omega=0.5$). The hybrids and controls therefore differ only in how Phase~1 spends its half of the budget, which makes their comparison fair. A swarm phase is useful only if it gives VNS a better start than random sampling with about the same number of evaluations (at $\omega=0.5$, 3,015 for the controls and 3{,}030 for the swarms ($N_p(T_1+1)$; LX-SSA: $N_p(2T_1+1)$)); the component analysis (Section~\ref{sec:ablation}) tests this for each Phase-1 choice against RSD-VNS, with RS-VNS as a weak minimum bar, as the following elementary result, an application of basic geometric probability to the implemented sampling, shows.
 
 \begin{proposition}\label{prop:S-box}
 Let the $2N$ coordinates be independent and uniform in $[-r,r]$, and let $P_N$ be the probability that the layout is feasible (all turbines in the disc $\mathcal D$ of radius $r$ and all pairwise distances $\ge s$). Then (a) all $N$ turbines lie in $\mathcal D$ with probability $(\pi/4)^N$; (b) $P_N\le(\pi/4)^N\prod_{k=1}^{N-1}\max\bigl\{0,\ 1-\max\{A(s),\,k\,A(s/2)\}/(\pi r^2)\bigr\}$, where $A(\rho)$ is the area of the part of $\mathcal D$ covered by a disc of radius $\rho$ centered on the boundary of $\mathcal D$ (closed form: \eqref{S-eq:S-th-lens}); (c) among $M$ such layouts, the expected number of feasible ones is $MP_N$.
@@ -829,21 +878,22 @@ The bound (b) is loose; by Monte Carlo, $P_N<10^{-6}$ for the largest cases ($N=
 Table~\ref{tab:params} lists the settings of all methods, the published defaults~\cite{Clerc2002,Mirjalili2017,Solanki2023,Storn1997,Mladenovic2008}; MS-SLSQP (SciPy's SLSQP~\cite{Kraft1988}) minimizes $L$ under the scaled constraints of~\eqref{eq:wflop} (Section~\ref{S-sec:S-slsqp}). At 30,030 and 120,030 evaluations (Section~\ref{sec:budget}), $T$ and $T_1$ follow the same rules.
 \begin{table}[!t]
 \centering
-\caption{Settings of all methods at the benchmark budget $B=6{,}030$ evaluations (including the initial population and, for MS-SLSQP, the finite-difference calls); $N_p=30$; box repair by clipping to $[-r,r]$. A population method uses $N_p(T+1)$ evaluations, LX-SSA $N_p(2T+1)$.}
+\caption{Settings and evaluation budgets of all methods at the benchmark budget $B=6{,}030$ evaluations of $F_p$ (including the initial population and, for MS-SLSQP, the finite-difference calls); $N_p=30$; box repair by clipping to $[-r,r]$. Every run of every method uses exactly $B$ evaluations; the numbers of iterations differ because one iteration costs $N_p=30$ evaluations ($2N_p=60$ for LX-SSA), and a hybrid gives each of its two phases about half of $B$. A population method uses $N_p(T+1)$ evaluations, LX-SSA $N_p(2T+1)$.}
 \label{tab:params}
 \scriptsize\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.14\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}>{\raggedright\arraybackslash}p{0.68\textwidth}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.135\textwidth}>{\raggedright\arraybackslash}p{0.10\textwidth}>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.505\textwidth}@{}}
 \toprule
-Method & Iterations & Coefficients and operators \\
+Method & Iterations & Evaluations ($=6{,}030$) & Coefficients and operators \\
 \midrule
-PSO & $T=200$ & Algorithm~\ref{alg:pso}; $w=0.7298$, $c_1=c_2=1.49618$ (old setting: $w=0.7$, $c_1=c_2=2$); $\mathbf V^i_0=\mathbf 0$, no $V_{\max}$; clipped coordinate keeps its velocity; asynchronous $\mathbf P^i$, $\mathbf G$ \\
-SSA & $T=200$ & Algorithm~\ref{S-alg:S-ssa}; 15 leaders, 15 followers; $\xi_1=2\exp[-(4t/T)^2]$ \\
-LX-SSA & $T=100$ & as SSA, plus a Laplace candidate per follower, $\phi=0$, $\chi=1$~\eqref{eq:laplace}; both candidates evaluated \\
-DE/rand/1/bin & $T=200$ & $F=0.5$, $\mathrm{CR}=0.9$; mutant clipped before crossover; asynchronous one-to-one replacement \\
-VNS & 30 initial, then 6,000 & Algorithm~\ref{alg:vns} from the best initial layout; $k_{\max}=5$, $\delta_k=0.1kr$, $h_0=0.05r$, $h_{\min}=10^{-3}r$ \\
-MS-SLSQP & $\le200$ per start & SLSQP, $\mathrm{ftol}=10^{-9}$, forward differences (step 1~m); starts: initial layouts by increasing $F_p$, then random layouts \\
-PSO-VNS, SSA-VNS, LX-SSA-VNS & $T_1=100$ / 100 / 50 (3,030), then 3,000 & $\omega=0.5$; Phase~1 PSO / SSA / LX-SSA as above ($\xi_1$ over $T_1$), Phase~2 VNS (Algorithm~\ref{alg:vns}) \\
-RS-VNS, RSD-VNS & 3,015 samples, then 3,015 & $\omega=0.5$; initial population, then uniform layouts in the square / disc; Phase~2 VNS \\
+PSO & $T=200$ & $30+200\times30$ & Algorithm~\ref{alg:pso}; $w=0.7298$, $c_1=c_2=1.49618$ (old setting: $w=0.7$, $c_1=c_2=2$); $\mathbf V^i_0=\mathbf 0$, no $V_{\max}$; clipped coordinate keeps its velocity; asynchronous $\mathbf P^i$, $\mathbf G$ \\
+SSA & $T=200$ & $30+200\times30$ & Algorithm~\ref{S-alg:S-ssa}; 15 leaders, 15 followers; $\xi_1=2\exp[-(4t/T)^2]$ \\
+LX-SSA & $T=100$ & $30+100\times60$ & as SSA, plus a Laplace candidate per follower, $\phi=0$, $\chi=1$~\eqref{eq:laplace}; both candidates evaluated \\
+DE/rand/1/bin & $T=200$ & $30+200\times30$ & $F=0.5$, $\mathrm{CR}=0.9$; mutant clipped before crossover; asynchronous one-to-one replacement \\
+VNS & -- & $30+6{,}000$ & Algorithm~\ref{alg:vns} from the best initial layout; $k_{\max}=5$, $\delta_k=0.1kr$, $h_0=0.05r$, $h_{\min}=10^{-3}r$ \\
+MS-SLSQP & $\le200$ per start & starts until $B$ is used & SLSQP, $\mathrm{ftol}=10^{-9}$, forward differences (step 1~m); starts: initial layouts by increasing $F_p$, then random layouts \\
+PSO-VNS, SSA-VNS & $T_1=100$ & $(30+100\times30)+3{,}000$ & $\omega=0.5$; Phase~1 PSO / SSA as above ($\xi_1$ over $T_1$), Phase~2 VNS (Algorithm~\ref{alg:vns}) \\
+LX-SSA-VNS & $T_1=50$ & $(30+50\times60)+3{,}000$ & $\omega=0.5$; Phase~1 LX-SSA as above ($\xi_1$ over $T_1$), Phase~2 VNS \\
+RS-VNS, RSD-VNS & -- & $3{,}015+3{,}015$ & $\omega=0.5$; initial population, then uniform layouts in the square / disc; Phase~2 VNS \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -866,7 +916,7 @@ The \emph{main comparison} includes eight methods ($N_p=30$ where applicable):
 \item SSA-VNS;
 \item SSA;
 \item LX-SSA;
-\item DE/rand/1/bin~\cite{Storn1997} (scale factor 0.5, crossover rate 0.9);
+\item DE/rand/1/bin, i.e., differential evolution~\cite{Storn1997} (scale factor $F=0.5$, crossover rate $\mathrm{CR}=0.9$);
 \item VNS; and
 \item MS-SLSQP, a multistart sequential least-squares programming method (SciPy's SLSQP~\cite{Kraft1988}, forward-difference gradients) that minimizes the wake loss under explicit constraints, restarting from the initial, then random layouts (Section~\ref{S-sec:S-protocol});
 \end{itemize}
@@ -878,7 +928,7 @@ The \emph{component analysis} (Section~\ref{sec:ablation}) adds LX-SSA-VNS and t
 \begin{itemize}
 \item $N_p=30$;
 \item binary tournament;
-\item SBX~\cite{Deb1995} with $\eta_c=15$ and $p_c=0.9$;
+\item SBX~\cite{Deb1995} with distribution index $\eta_c=15$ and crossover probability $p_c=0.9$;
 \item polynomial mutation~\cite{DebGoyal1996} with $\eta_m=20$ and $p_m=1/n$ for $n=2N$ variables;
 \item clipping to the box and elitism.
 \end{itemize}
@@ -899,7 +949,7 @@ Main comparison & 68 benchmark & PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, VNS, MS
 Component analysis & 68 & LX-SSA-VNS, RS-VNS, RSD-VNS (2{,}040 each); six reused & 6,030 (r) & 1--30 & 6{,}120 & \ref{sec:ablation} \\
 Old PSO setting & 68 & PSO, $w=0.7$, $c_1=c_2=2$ & 6,030 (r) & 1--30 & 2{,}040 & \ref{sec:psosetting} \\
 Budget split & 12 split cases & PSO-VNS, $\omega=0.25$, 0.75, 0.9 (360 each); $\omega=0.5$, 1 reused & 6,030 (r) & 1--30 & 1{,}080 & \ref{sec:split} \\
-Coefficient sweep & 12 split cases & PSO, $w=0.7$, $c_1=c_2=c=1.2$, 1.4, 1.6--2.0 (step 0.1); $c=2$ with $v\gets0$ or $\lvert v\rvert\le0.2\,(u-l)$ (360 each) & 6,030 (r) & 1--30 & 3{,}240 & \ref{sec:psosetting} \\
+Coefficient sweep & 12 split cases & PSO, $w=0.7$, $c_1=c_2=c=1.2$, 1.4, 1.6--2.0 (step 0.1); $c=2$ with $v\gets0$ or $\lvert v\rvert\le0.2\,(ub_m-lb_m)$ (360 each) & 6,030 (r) & 1--30 & 3{,}240 & \ref{sec:psosetting} \\
 Budget scaling & six largest & ten methods (6,030 reused) & 30,030; 120,030 (r) & 1--30 & 3{,}600 & \ref{sec:budget} \\
 Feasible starts & six largest & ten methods except RS-VNS & 6,030 (f) & 1--30 & 1{,}620 & \ref{sec:feasinit} \\
 Horns Rev~1 & 16 turbines & ten methods (f: except RS-VNS) & 6,030 (r, f); 30,030, 120,030 (r) & 1--30; 1--10 at 120,030 & 970 & \ref{sec:hornsrev-site} \\
@@ -949,7 +999,7 @@ z=(\bar R_a-\bar R_{\text{PSO-VNS}})/\sqrt{k(k+1)/(6n)}
 \end{equation*}
 for $k$ methods and $n$ cases~\cite{Demsar2006,Derrac2011,LaTorre2021}.
 \item[2)] \emph{Case means} (the primary test for differences, as mean-rank post hoc tests depend on the pool~\cite{Benavoli2016}): for methods $A$ and $B$, the case-mean difference is $d_c=\bar L_{A,c}-\bar L_{B,c}$ (percentage points, pp; negative: $A$ better), and the Wilcoxon signed-rank test is applied to the $d_c$ of each compared pair (in the main comparison, PSO-VNS against each method); a case in which only one of the two methods is qualified counts as a maximal difference in its favor (larger than every observed difference; cases: 2 for SSA, 2 for LX-SSA and 18 for DE), and one in which neither is qualified is dropped (0 cases). With such cases, the signed-rank test concerns this constructed combined score, which mixes wake-loss differences with qualification outcomes, rather than wake loss alone; $\overline{\Delta L}$ excludes them. The mean $\overline{\Delta L}$ of the $d_c$ over the cases in which both are qualified carries a 95\% percentile bootstrap CI (10{,}000 resamples of the cases, fixed seed). For key pairs we also give the Hodges--Lehmann estimate that belongs to the Wilcoxon test (median of the Walsh averages $(d_c+d_{c'})/2$, $c\le c'$; 95\% CI by exact test inversion; Table~\ref{S-tab:X-hl}), which can differ from $\overline{\Delta L}$ when a few large differences dominate the mean.
-\item[3)] \emph{Runs}: per case, Wilcoxon signed-rank tests on the 30 seed-paired runs, scored feasibility first (infeasible runs below every feasible run and ordered by minimum spacing; differences $\lvert d\rvert\le10^{-9}$ dropped), with the rank-biserial correlation $r_{\rm rb}$ and the counts of cases with a significant win, no significant difference and a significant loss (W/T/L, descriptive tallies).
+\item[3)] \emph{Runs}: per case, Wilcoxon signed-rank tests on the 30 seed-paired runs, scored feasibility first (infeasible runs below every feasible run and ordered by minimum spacing; paired run differences $\lvert d\rvert\le10^{-9}$ dropped), with the rank-biserial correlation $r_{\rm rb}$ and the counts of cases with a significant win, no significant difference and a significant loss (W/T/L, descriptive tallies).
 \end{enumerate}
 
 \emph{Holm families.} A family is the set of comparisons of one table: for the rank post hoc tests, the $k-1$ comparisons with PSO-VNS of one Friedman analysis; for the case means, the comparisons of PSO-VNS with the other seven methods of the main comparison, or the fifteen contrasts of the component analysis (Section~\ref{sec:ablation}); for the run-level tests, the comparisons of one table within one case. The main-comparison and the component-analysis tables are different families, so a pair can have slightly different W/T/L tallies in the two; one family over all 28 case-mean tests is examined below.
@@ -959,7 +1009,7 @@ for $k$ methods and $n$ cases~\cite{Demsar2006,Derrac2011,LaTorre2021}.
 
 \begin{definition}[Practical equivalence at three levels of inference]
 \label{def:S-equiv}
-Let $A$ and $B$ be two methods, $d_c$ their case-mean difference over the $n$ cases in which both are qualified, $\overline{\Delta L}=\frac1n\sum_c d_c$, and $m>0$ a margin. $A$ and $B$ are \emph{practically equivalent at margin $m$} at a given level if both one-sided hypotheses $H_0^-\colon\Delta\le-m$ and $H_0^+\colon\Delta\ge m$ about the estimand $\Delta$ of that level are rejected at $\alpha=0.05$, i.e., if the 90\% interval for $\Delta$ lies inside $(-m,m)$. The three levels are:
+Let $A$ and $B$ be two methods, $d_c$ their case-mean difference over the $n$ cases in which both are qualified, $\overline{\Delta L}=\frac1n\sum_c d_c$, and $m>0$ a margin (not to be confused with the coordinate index $m$ of Section~\ref{sec:prelim}). $A$ and $B$ are \emph{practically equivalent at margin $m$} at a given level if both one-sided hypotheses $H_0^-\colon\Delta\le-m$ and $H_0^+\colon\Delta\ge m$ about the estimand $\Delta$ of that level are rejected at $\alpha=0.05$, i.e., if the 90\% interval for $\Delta$ lies inside $(-m,m)$. The three levels are:
 \begin{enumerate}
 \item[(a)] \emph{Seed level} (the fixed benchmark). Estimand: the benchmark average of the expected case-mean differences; only the run-to-run variability is random. Interval: percentile bootstrap that resamples the 30 seed-paired runs within every case (the same seeds for both methods; case means over the feasible resampled runs).
 \item[(b)] \emph{Case level} (exchangeability sensitivity). Estimand: the mean case difference under a hypothetical exchangeable distribution represented by the 68 designed cases. Interval: percentile bootstrap over cases, treating them as independent; a sensitivity analysis, as the cases are a designed benchmark, not a random sample of farms.
@@ -975,7 +1025,7 @@ $\overline{\Delta L}$ is the same at all levels; its intervals widen here (not a
 
 ``$A$ gives no gain larger than $m$ over $B$'' (non-superiority) needs only one of the two tests: the lower end of the 90\% interval must lie above $-m$. A result that is neither equivalent nor significantly different is inconclusive and supports no statement of the kind ``as good as''. The margin $m=0.05$~pp (4.1 and 2.1~MWh/yr per turbine in Data Sets I and II) is a post hoc convention; the minimal margins $m_{\min}$ let readers apply their own, and a confirmatory practical-equivalence claim would need a margin fixed before a new study.
 
-\emph{Bayesian signed-rank test.} The Bayesian signed-rank test~\cite{Benavoli2017} places a Dirichlet-process prior (strength 0.5, pseudo-observation at 0) on the distribution of the $d_c$ and, for every posterior sample, computes the shares $\theta_A$, $\theta_{\rm rope}$ and $\theta_B$ of the Walsh averages $(d_c+d_{c'})/2$ below $-m$, inside the region of practical equivalence (ROPE) $[-m,m]$ and above $m$. We report the posterior probability that equivalence is the most probable of the three outcomes, the share of the 50{,}000 posterior samples in which $\theta_{\rm rope}$ is the largest (Section~\ref{sec:abl-swarm} and Table~\ref{S-tab:X-bayes}). It is not the probability that $\Delta$ lies within $\pm m$; it concerns the typical pairwise-averaged case difference, so it can disagree with TOST, and it treats the cases as exchangeable.
+\emph{Bayesian signed-rank test.} The Bayesian signed-rank test~\cite{Benavoli2017} places a Dirichlet-process prior (strength 0.5, pseudo-observation at 0) on the distribution of the $d_c$ and, for every posterior sample, computes the shares $\pi_A$, $\pi_{\rm rope}$ and $\pi_B$ of the Walsh averages $(d_c+d_{c'})/2$ below $-m$, inside the region of practical equivalence (ROPE) $[-m,m]$ and above $m$. We report the posterior probability that equivalence is the most probable of the three outcomes, $P_{\rm rope}$, the share of the 50{,}000 posterior samples in which $\pi_{\rm rope}$ is the largest ($P_{\rm A}$ and $P_{\rm B}$: the shares in which $\pi_A$ or $\pi_B$ is the largest) (Section~\ref{sec:abl-swarm} and Table~\ref{S-tab:X-bayes}). It is not the probability that $\Delta$ lies within $\pm m$; it concerns the typical pairwise-averaged case difference, so it can disagree with TOST, and it treats the cases as exchangeable.
 % CHECK-FINAL [C49]-[C52]: margin_pp == EQ_MARGIN; TOST: 90 % bootstrap CI inside (-m, m); Bayes signed-rank, rope (-m, m); min_margin_pp in tab:equivalence
 % CHECK-EXTRA [X38]-[X42]: seed / case / cluster (CR2 t(5), wild-cluster Webb) levels and minimal margins (tab:X-equiv-levels); [X56]: margin = \NXMarginMWhTurbDsI / \NXMarginMWhTurbDsII MWh/yr per turbine; [X48]: Bayes = P(rope most probable); [X49]-[X51]: Hodges-Lehmann (tab:X-hl). Model-shift margin justification (X29/X30) deliberately dropped (D13).
 % CHECK (manual, 2026-09-29): analysis/mpce_inference_extra.py: seed level resamples the 30 seed indices within every case (paired), cr2() uses t with G - 1 = 5 d.f., webb_all() enumerates 6^6 = 46,656 Webb draws, cluster-level equivalence = CR2 CI inside +-m and wild p_TOST <= 0.05; mpce_results.py: tost() add-one corrected tail shares, BAYES_S = 0.5, BAYES_Z0 = 0, BAYES_N = 50000. Definition adapted from optA/supp_theory.tex (def:S-equiv moved to the main text, see optA/sw/moved.md)
@@ -1102,7 +1152,7 @@ The \emph{final} layouts, in contrast, mostly violate only the spacing (224 of 2
 \begin{figure*}[!t]
 \centering
 \includegraphics[width=\textwidth]{figures_mpce/csweep.pdf}
-\caption{Stand-alone PSO with $w=0.7$ and $c_1=c_2=c$ on the 12 split cases $\times$ 30 seeds (6{,}030 evaluations, random starts; line with circles), the old setting ($c=2$) with two other bound-handling rules (clipped velocity components set to zero, squares; velocity clamping $|v|\le v_{\max}=0.2\,(u-l)$, diamonds; drawn slightly to the right of $c=2$), and the constriction setting (triangles; $w=0.7298$, $c=1.49618$; stored runs of the main comparison, spread not logged). The dashed vertical line is the order-2 stability boundary $c^\ast=12(1-w^2)/(7-5w)=1.7486$ of Proposition~\ref{prop:S-pso-stability} (stagnation, no bounds). Left: feasible final layouts (\% of 360 runs). Middle: mean wake loss of the feasible runs, averaged over the 6 cases in which every setting has at least 15 feasible runs. Right: median final swarm spread (mean over particles of the RMS turbine distance to the global best), relative to the farm radius (log scale). All settings start from the same seeded initial swarm. Values: Table~\ref{tab:S-csweep}.}
+\caption{Stand-alone PSO with $w=0.7$ and $c_1=c_2=c$ on the 12 split cases $\times$ 30 seeds (6{,}030 evaluations, random starts; line with circles), the old setting ($c=2$) with two other bound-handling rules (clipped velocity components set to zero, squares; velocity clamping $|v|\le V_{\max}=0.2\,(ub_m-lb_m)$, diamonds; drawn slightly to the right of $c=2$), and the constriction setting (triangles; $w=0.7298$, $c=1.49618$; stored runs of the main comparison, spread not logged). The dashed vertical line is the order-2 stability boundary $c^\ast=12(1-w^2)/(7-5w)=1.7486$ of Proposition~\ref{prop:S-pso-stability} (stagnation, no bounds). Left: feasible final layouts (\% of 360 runs). Middle: mean wake loss of the feasible runs, averaged over the 6 cases in which every setting has at least 15 feasible runs. Right: median final swarm spread (mean over particles of the RMS turbine distance to the global best), relative to the farm radius (log scale). All settings start from the same seeded initial swarm. Values: Table~\ref{tab:S-csweep}.}
 \label{fig:S-csweep}
 \end{figure*}
 \endgroup
@@ -1504,10 +1554,10 @@ With feasibility-preserving initialization, the share of feasible runs rises for
 What follows from the algorithms can be separated from what is only observed. Let $L(\mathbf X)$ be the wake loss, the first term of~\eqref{eq:penalty}, so that $F_p=L+\mathrm{Pen}$ with $\mathrm{Pen}\ge0$.
 \begin{lemma}[Improvement needs a feasible, better trial]
 \label{lem:feas-improve}
-If the global best $\mathbf G$ is feasible, a trial $\mathbf X$ replaces it only if $L(\mathbf X)<L(\mathbf G)$ and every constraint violation $g$ of $\mathbf X$ satisfies $(1+\mu g)^2<L(\mathbf G)$; in the benchmark cases, $g<4.6\times10^{-8}$ (m or m$^2$), far below the reporting tolerance of $10^{-6}$~m.
+If the global best $\mathbf G$ is feasible, a trial $\mathbf X$ replaces it only if $L(\mathbf X)<L(\mathbf G)$ and every constraint violation $g$ of $\mathbf X$ satisfies $(1+\mu_{\rm p} g)^2<L(\mathbf G)$; in the benchmark cases, $g<4.6\times10^{-8}$ (m or m$^2$), far below the reporting tolerance of $10^{-6}$~m.
 \end{lemma}
 \begin{proof}
-Replacement needs $F_p(\mathbf X)<F_p(\mathbf G)=L(\mathbf G)$, and $F_p(\mathbf X)$ is the sum of $L(\mathbf X)\ge0$ and the violation terms $(1+\mu g)^2>0$. In the benchmark cases, $L(\mathbf G)\le NE_{\rm ideal}+\varepsilon$ with $N\le15$, $E_{\rm ideal}\le14{,}045.74$ ($\varepsilon$: the small negative part of the power curve above cut-in), so $\sqrt{L(\mathbf G)}<459.1$ and $g<(\sqrt{L(\mathbf G)}-1)/\mu<4.6\times10^{-8}$ for $\mu=10^{10}$.
+Replacement needs $F_p(\mathbf X)<F_p(\mathbf G)=L(\mathbf G)$, and $F_p(\mathbf X)$ is the sum of $L(\mathbf X)\ge0$ and the violation terms $(1+\mu_{\rm p} g)^2>0$. In the benchmark cases, $L(\mathbf G)\le NE_{\rm ideal}+\varepsilon$ with $N\le15$, $E_{\rm ideal}\le14{,}045.74$ ($\varepsilon$: the small negative part of the power curve above cut-in), so $\sqrt{L(\mathbf G)}<459.1$ and $g<(\sqrt{L(\mathbf G)}-1)/\mu_{\rm p}<4.6\times10^{-8}$ for $\mu_{\rm p}=10^{10}$.
 \end{proof}
 % verified: (sqrt(15 x 14045.74) - 1)/1e10 = 4.58e-8 (as optA/supp_theory.tex, Lemma S-feas-improve; the small negative part of the power curve above cut-in, epsilon, does not change the bound)
 \begin{proposition}[PSO from feasible starts]
@@ -1519,7 +1569,7 @@ Let all initial layouts be feasible, let the velocities start at zero with $\mat
 \begin{proof}
 (a)~By induction: with $\mathbf V^{i^*}=\mathbf 0$ and $\mathbf P^{i^*}=\mathbf X^{i^*}=\mathbf G$, all three terms of~\eqref{eq:pso-v} vanish, the particle stays at $\mathbf G$, and $F_p(\mathbf G)$ is no strict improvement, so neither $\mathbf P^{i^*}$ nor $\mathbf G$ changes. (b)~At the first move, $\mathbf V^i=\mathbf 0$ and $\mathbf P^i=\mathbf X^i$, so only the last term of~\eqref{eq:pso-v} remains.
 \end{proof}
-A DE trial takes coordinate $j$ from the mutant $\mathbf x_{r_1}+F(\mathbf x_{r_2}-\mathbf x_{r_3})$ if $j=j_{\rm rand}$ or $U_j<\mathrm{CR}$, i.e., $1+\mathrm{Bin}(n-1,\mathrm{CR})$ coordinates, on average 27.1 of $n=30$ for $N=15$, again regardless of the turbine numbering. By Lemma~\ref{lem:feas-improve}, $\mathbf G$ moves only if such a combined layout is feasible and better; that this never happened in our runs is an observation, not a consequence of the proposition.
+A DE trial for population member $i$ takes coordinate $j$ from the mutant $\mathbf X^{r_1}+F(\mathbf X^{r_2}-\mathbf X^{r_3})$, with distinct random members $r_1,r_2,r_3\ne i$, if $j=j_{\rm rand}$ (a random coordinate) or $U_j<\mathrm{CR}$ ($U_j\sim U(0,1)$), i.e., $1+\mathrm{Bin}(n-1,\mathrm{CR})$ coordinates, on average 27.1 of $n=30$ for $N=15$, again regardless of the turbine numbering. By Lemma~\ref{lem:feas-improve}, $\mathbf G$ moves only if such a combined layout is feasible and better; that this never happened in our runs is an observation, not a consequence of the proposition.
 % CHECK-THEORY [T11]: DE takes most coordinates from the mutant (mean 1+CR(n-1) = 27.1 of 30 for N = 15, CR = 0.9; PSO moves all). Lemma lem:feas-improve = Lemma S-lem:S-feas-improve and Proposition prop:feasible-start = Proposition S-prop:S-frozen (a), (b) (optA/supp_theory.tex, S-th-feas); the stall is observed (D13/D14), not implied.
 % Page budget: kept in the supplementary material: \SuppTable{tab:D-feasstart}
 
@@ -1698,7 +1748,7 @@ The qualification rule can favor a method with a better mean among fewer success
 \item among feasible runs the better objective wins (ties within $10^{-9}$);
 \item two infeasible runs tie.
 \end{itemize}
-Over $n$ seed pairs with $W$ wins and $T$ ties, the score is $(W+T/2)/n$ (0.5: no difference), with bootstrap intervals and an exact sign test over the discordant pairs, Holm-corrected over the comparisons of PSO-VNS; unlike the signed-rank test, it does not order infeasible runs by their spacing.
+Over $n_s$ seed pairs with $n_W$ wins and $n_T$ ties, the score is $(n_W+n_T/2)/n_s$ (0.5: no difference), with bootstrap intervals and an exact sign test over the discordant pairs, Holm-corrected over the comparisons of PSO-VNS; unlike the signed-rank test, it does not order infeasible runs by their spacing.
 
 On the 68 benchmark cases (2,040 seed pairs; 95\% case-bootstrap intervals; Table~\ref{S-tab:S-sa-allrun}), PSO-VNS wins 950, ties 348 and loses 742 against PSO (score 0.551, [0.516, 0.587]; pooled sign test, which treats the 2,040 case--seed pairs as independent, $p_{\rm Holm}=4.7\times10^{-7}$): it is better more often than not. This frequency is a separate endpoint and does not measure the size of the differences; the benchmark-average conditional mean difference lies within the margin (seed-level interval in Table~\ref{tab:equiv-main}). As the seeds are synchronized across cases, the pooled sign tests are not exact for this design; inference on complete seed vectors is given in Section~\ref{S-sec:S-sa-dep}.
 With the 30 synchronized seeds as the unit of replication (seed score: mean outcome over the 68 cases; joint resampling of the seed vectors; exact sign-flip test; Table~\ref{S-tab:S-sa-dep-bench}), PSO-VNS scores 0.551 against PSO ([0.531, 0.572]; 25 of 29 non-tied seeds in its favour; $p_{\rm Holm}=1.2\times10^{-5}$), and all 12 all-run comparisons significant in the pooled tests stay significant; with the six designed groups as units, no comparison can be significant after Holm (exact $p\ge1/32$).
@@ -1776,7 +1826,7 @@ All methods clip the coordinates to the bounding square and leave the circle to 
 % CHECK-FINAL [C41]: boundary_rule n_higher == n_cases == 6 and max_p < 0.01
 PSO-VNS, PSO, GA, SSA-VNS and DE were therefore run on six cases (seeds 31--60, 6,030 evaluations; Table~\ref{S-tab:S-sa-constraint}) under Deb's feasibility rules on the dimensionless violations $g^{\rm b}_i/r^2$ and $g^{\rm s}_{ij}/\ell_{\min}$, with box clipping or radial projection; reference runs under the penalty reproduce the stored runs bit for bit.
 
-With projection, the conditional wake loss of every method fell by 0.46--0.80~pp and the feasibility of DE rose from 33.3\% to 80.0\%; the run-level rank order PSO-VNS, PSO, GA, SSA-VNS, DE and the leading case-level method (PSO-VNS) persisted, but the case-level order of SSA-VNS and DE reversed (average case ranks 3.83 and 5.00 under the penalty, 4.67 and 3.83 under projection); PSO-VNS kept its all-run advantage over GA, SSA-VNS and DE (0.683, 0.850, 0.844), but not over PSO (0.561; conditional $\Delta L=-0.095$~pp [$-0.162$, $-0.037$]).
+With projection, the conditional wake loss of every method fell by 0.46--0.80~pp and the feasibility of DE rose from 33.3\% to 80.0\%; the run-level rank order PSO-VNS, PSO, GA, SSA-VNS, DE and the leading case-level method (PSO-VNS) persisted, but the case-level order of SSA-VNS and DE reversed (average case ranks 3.83 and 5.00 under the penalty, 4.67 and 3.83 under projection); PSO-VNS kept its all-run advantage over GA, SSA-VNS and DE (0.683, 0.850, 0.844), but not over PSO (0.561; conditional $\overline{\Delta L}=-0.095$~pp [$-0.162$, $-0.037$]).
 
 With box clipping, a turbine clipped to the square near a tangent point is cheap under normalized violations: the feasibility of PSO fell from 98.9\% to 73.3\%, the conditional loss of PSO-VNS rose by 0.23~pp, its all-run advantage over GA (0.517) and SSA-VNS (0.583) was no longer significant, and GA had the best case-level rank (1.83 vs.\ 2.17; run level: PSO-VNS 2.19, GA 2.28). The all-run tests of this study pool the 180 seed pairs of the six cases as independent (seed-level analysis: Section~\ref{S-sec:S-sa-dep}).
 With the 30 seeds as the unit of replication (the seed-level test replacing the pooled test in each Holm family; Table~\ref{S-tab:S-sa-dep-studies}), every all-run verdict of this study is unchanged (e.g., projection: PSO-VNS vs.\ PSO 0.561 [0.483, 0.639], $p_{\rm Holm}=1.000$; penalty: PSO-VNS vs.\ GA 0.628 [0.561, 0.700], $p_{\rm Holm}=0.030$).
