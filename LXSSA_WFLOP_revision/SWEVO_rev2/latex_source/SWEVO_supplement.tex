@@ -130,7 +130,13 @@ followed by
 
 Unless stated otherwise, all results are based on 30 seed-paired runs of 6,030 evaluations (objective calls, including the initial population and, for MS-SLSQP, the finite-difference gradient calls) with random initialization; the method names are those of the main text, and PSO denotes the constriction setting~\eqref{M-eq:constriction} unless the old setting is named. All Horns Rev~1 results use the 5$^\circ$ direction binning of Section~\ref{sec:S-hrmodel}. The results hold for the discretized wind roses of the benchmark (24 bins of 15$^\circ$) and of Horns Rev~1 (5$^\circ$ bins); Section~\ref{sec:S-direction} re-evaluates the final layouts with 1$^\circ$ bins, and Section~\ref{sec:S-sa-fine} optimizes with them directly.
 
-All tables of Sections~\ref{sec:S-tables}--\ref{sec:S-robust} are generated from the published run data by \texttt{analysis/mpce\_results.py}, except those of Section~\ref{sec:S-inference} (\texttt{analysis/mpce\_inference\_extra.py}), of Section~\ref{sec:S-csweep} (\texttt{analysis/mpce\_csweep.py}) and of Section~\ref{sec:S-direction} (\texttt{analysis/mpce\_direction.py}); the diagnostics of Section~\ref{sec:S-diag} come from instrumented reruns (\texttt{analysis/mpce\_diagnostics.py}), and every number of Section~\ref{sec:S-theory} is recomputed by \texttt{analysis/make\_theory\_figures.py}.
+All tables of Sections~\ref{sec:S-tables}--\ref{sec:S-robust} are generated from the published run data by \texttt{analysis/mpce\_results.py}, except those
+\begin{itemize}
+\item of Section~\ref{sec:S-inference} (\texttt{analysis/mpce\_inference\_extra.py}),
+\item of Section~\ref{sec:S-csweep} (\texttt{analysis/mpce\_csweep.py}) and
+\item of Section~\ref{sec:S-direction} (\texttt{analysis/mpce\_direction.py});
+\end{itemize}
+the diagnostics of Section~\ref{sec:S-diag} come from instrumented reruns (\texttt{analysis/mpce\_diagnostics.py}), and every number of Section~\ref{sec:S-theory} is recomputed by \texttt{analysis/make\_theory\_figures.py}.
 
 \section{Evaluation Protocol and Implementation Details}
 \label{sec:S-protocol}
@@ -604,13 +610,7 @@ Table~\ref{tab:D-rsreplay} replays the random stream of Phase~1 of RS-VNS. The r
 
 \section{Published Kusiak--Song Results}
 \label{sec:S-literature}
-The Kusiak--Song benchmark has been solved with an evolution strategy~\cite{Kusiak2010}, ant colony optimization~\cite{Eroglu2012}, particle filtering~\cite{Eroglu2013} and biogeography-based optimization~\cite{Bansal2017}. We do not compare our results numerically with these studies:
-\begin{itemize}
-\item the published values available to us are transcriptions whose source tables could not be checked against the original papers,
-\item several of them are internally inconsistent (e.g., objective and wake loss that do not add up to the wake-free value), and
-\item the budgets, the numbers of runs and the handling of infeasible layouts of these studies differ from ours or are not reported.
-\end{itemize}
-The transcribed values and the status of each are listed in \texttt{analysis/literature\_values.csv} and \texttt{analysis/literature\_values.md}.
+The Kusiak--Song benchmark has been solved with an evolution strategy~\cite{Kusiak2010}, ant colony optimization~\cite{Eroglu2012}, particle filtering~\cite{Eroglu2013} and biogeography-based optimization~\cite{Bansal2017}. We do not compare our results numerically with these studies. The published values available to us are transcriptions whose source tables could not be checked against the original papers, several of them are internally inconsistent (e.g., objective and wake loss that do not add up to the wake-free value), and the budgets, the numbers of runs and the handling of infeasible layouts of these studies differ from ours or are not reported. The transcribed values and the status of each are listed in \texttt{analysis/literature\_values.csv} and \texttt{analysis/literature\_values.md}.
 % AUTHOR: if the published values are verified against the original papers, a comparison table can be added here.
 
 \section{Reproducibility Map}
