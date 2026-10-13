@@ -198,6 +198,14 @@ Algorithm~\ref{alg:S-ssa} gives the pseudocode of SSA~\cite{Mirjalili2017} and L
 \end{algorithmic}
 \end{algorithm}
 
+\emph{Implementation details.} SSA and LX-SSA are run as in the code of the published LX-SSA study~\cite{Solanki2023}, which departs from the description of Mirjalili et~al.~\cite{Mirjalili2017} in three points:
+\begin{itemize}
+\item[(a)] the paper defines a single leader, the first salp, and followers $i\ge2$, whereas the implementation treats the first $N_p/2$ salps as leaders;
+\item[(b)] the paper takes the $+$ sign in~\eqref{M-eq:leader} if $\xi_3\ge0$ for $\xi_3\sim U(0,1)$, which always holds, whereas the implementation compares $\xi_3$ with $0.5$ and so takes either sign with probability $1/2$;
+\item[(c)] the salps are re-sorted by $F_p$ after every iteration (Algorithm~\ref{alg:S-ssa}, line~12), so the leaders are the better half of the current population, whereas the paper only selects the best salp as the food source.
+\end{itemize}
+Both methods are therefore tested as published in~\cite{Solanki2023}.
+
 \subsection{Ranking and Test Details}
 \label{sec:S-stats}
 For the paired run-level tests, a run is scored by a prioritized composite endpoint, feasibility first and then the benchmark objective:

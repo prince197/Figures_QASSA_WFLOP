@@ -35,7 +35,7 @@ where $x=X^i_m$, $v=V^i_m$, $p=P^i_m$, $g=G_m$, and $\rho_1,\rho_2$ are independ
 x_{t+1}=(1+w-\varphi_t)\,x_t-w\,x_{t-1}+\varphi_{1,t}\,p+\varphi_{2,t}\,g .
 \label{eq:S-th-rec}
 \end{equation}
-The coefficient $\varphi_t$ is random, with mean $\mu=(c_1+c_2)/2$ and variance $\sigma^2=(c_1^2+c_2^2)/12$. We call the update \emph{order-1 stable} if, for all initial values $(x_0,x_1)$, $\mathrm E\,x_t$ converges to a limit that does not depend on them, and \emph{order-2 stable} if, in addition, $\mathrm E\,x_t^2$ does~\cite{Poli2009}. Proposition~\ref{prop:S-pso-stability} restates Proposition~\ref{M-prop:pso-stability} of the main text, which gives only a proof sketch; the full proof follows.
+The coefficient $\varphi_t$ is random, with mean $\mu=(c_1+c_2)/2$ and variance $\sigma^2=(c_1^2+c_2^2)/12$. We call the update \emph{order-1 stable} if, for all initial values $(x_0,x_1)$, $\mathrm E\,x_t$ converges to a limit that does not depend on them, and \emph{order-2 stable} if, in addition, $\mathrm E\,x_t^2$ does~\cite{Poli2009}. Proposition~\ref{prop:S-pso-stability} restates Proposition~\ref{M-prop:pso-stability} of the main text, whose proof there gives the main steps; the detailed proof follows.
 
 \begin{thS}[Stability of the implemented update]
 \label{prop:S-pso-stability}
