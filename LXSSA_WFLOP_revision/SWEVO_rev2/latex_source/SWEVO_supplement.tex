@@ -319,35 +319,14 @@ The Horns Rev~1 block (Section~\ref{M-sec:hornsrev-site}) uses the V80 power and
 \label{sec:S-tol}
 The penalty $F_p$ treats any positive violation as infeasible, whereas every reported feasibility (final layouts, convergence curves, ranking rule) uses the tolerance of $10^{-6}$~m on both the spacing and the boundary, in all studies. Because the penalty term is $(1+\mu_{\rm p} g)^2$ with $\mu_{\rm p}=10^{10}$, the comparison of $F_p$ values is a feasibility-first rule only for violations above $(\sqrt{L}-1)/\mu_{\rm p}$, where $L$ is the wake loss of the feasible layout compared with; for the benchmark cases this is at most $4.6\times10^{-8}$ (m for the spacing, m$^2$ for the boundary; Lemma~\ref{lem:S-feas-improve}). A smaller violation adds little to $F_p$ and can beat a feasible layout. Conversely, violations between about $5\cdot10^{-8}$ and $10^{-6}$~m are heavily penalized in $F_p$ but counted as feasible in the reporting; the penalty's effective tolerance is thus much stricter than the reporting tolerance. % CHECK (manual): (sqrt(15 x 14045.74) - 1)/1e10 = 4.58e-8
 
-\section{Baseline Setting and Main Comparison: Details}
+\section{Type~I Farms (Kusiak--Song Benchmark): Details}
 \label{sec:S-tables}
-This section documents the runs behind the effect of the baseline setting (Section~\ref{M-sec:psosetting}) and gives the per-case results, the full case-level statistics, the coordinates of the best layouts and further figures of the main comparison of the eight methods (Section~\ref{M-sec:overall}).
-
-\subsection{Old and Constriction PSO Settings}
-\label{sec:S-psosetting}
-Table~\ref{M-tab:baseline} ranks the eight-method pool of a preliminary, unpublished comparison of ours (LX-SSA-VNS, SSA-VNS, LX-SSA, SSA, PSO, DE, VNS and MS-SLSQP) twice: once with PSO in the \emph{old setting} $w=0.7$, $c_1=c_2=2$, and once with the constriction setting~\eqref{M-eq:constriction} used for PSO everywhere else in this paper. The old setting satisfies the order-1 (mean) stability condition but violates the order-2 (variance) condition~\eqref{M-eq:poli} of~\cite{Poli2009} ($c_1+c_2=4$ against the bound 3.50 for $w=0.7$), so that, under stagnation and without bounds, the second moments of the particle positions are unbounded (Proposition~\ref{prop:S-settings}). Both conditions are derived under stagnation and for an unbounded search space, and in our code the velocities are kept when a position is clipped to the box (Lemma~\ref{lem:S-clip}); the old setting is run without velocity clamping. The instrumented runs of Section~\ref{sec:S-diag-pso} show what happens in practice: the swarm of the old setting contracts much less and moves faster, clips more coordinates and has far fewer feasible particle evaluations late in the run (\NDFeasPartOld\% against \NDFeasPartNew\% in iterations 101--200), and it is feasible in only \NOldPSOFeas\% of its runs (Section~\ref{M-sec:psosetting}); its infeasible final layouts mostly violate only the spacing constraint (Table~\ref{tab:D-psodyn}). Section~\ref{sec:S-csweep} varies the coefficients across the order-2 boundary and the bound handling. % CHECK-DIAG [D03]-[D06]
- The old-setting runs come from the PSO code of that preliminary comparison (\texttt{analysis/authors\_optimizers.py}, run by \texttt{analysis/full\_grid\_experiments.py}); the constriction-setting runs use the same code, in which only the three coefficients are changed. Both settings thus share the population of 30, the 200 iterations, the zero initial velocities, the box repair and the immediate update of the personal and global bests, and both are run on the same 68 cases with the same penalized objective~\eqref{M-eq:penalty}, the same budget of 6,030 evaluations and the same seeds 1--30. Because every optimizer draws its initial population first after seeding, a run with the old setting starts from the same initial population as the run with the constriction setting and as the runs of all other methods with the same seed, so the comparison of the two settings is seed-paired.
-
-The two columns of Table~\ref{M-tab:baseline} share the runs of all methods except PSO and use the same feasibility-aware ranking rule (Table~\ref{M-tab:friedman68}); every change in the ranking therefore comes from the PSO setting alone. The old setting was run only on the 68 benchmark cases at 6,030 evaluations (and in the coefficient sweep of Section~\ref{sec:S-csweep}), so the change in the ranking is shown at this budget only. At larger budgets the ranking changes: at 120,030 evaluations SSA-VNS has a better average rank on the six largest cases than PSO (\NBudRankSSAVNSOneTwentyK{} vs.\ \NBudRankPSOOneTwentyK; Section~\ref{M-sec:budget}). All other results of the paper use the constriction setting.\IfSuppTable{tab:baseline-cases}{ Table~\ref{tab:baseline-cases} gives the per-case comparison of the two settings.}{}
-\SuppTableOpt{tab:baseline-cases}
-
-\FloatBarrier
-\subsection{Coefficient Sweep and Bound Handling}
-\label{sec:S-csweep}
-The comparison of two settings cannot show whether the order-2 boundary marks where this PSO fails, nor separate the step size from the bound handling. Stand-alone PSO was therefore run with $w=0.7$ and $c_1=c_2=c$ from 1.2 to 2.0 on the \NSCases{} cases of the split study $\times$ \NSSeeds{} seeds (\NSRuns{} runs per setting, 6,030 evaluations, random starts; Fig.~\ref{M-fig:S-csweep} of the main text and Table~\ref{tab:S-csweep}); the point $c=2.0$ reproduces the stored runs of the old setting bit for bit. % CHECK-CSWEEP [S01]
-On the order-2 stable side, $c\le\NSCBelow$, at least \NSFeasBelow\% of the final layouts are feasible and all \NSCases{} cases are qualified; beyond the boundary $c^\ast=\NSBoundC$, feasibility falls to \NSFeasCOneEight\% at $c=1.8$, \NSFeasCOneNine\% at 1.9 and \NSFeasCTwoZero\% at 2.0. % CHECK-CSWEEP [S02], [S03]
-The degradation begins in the step from 1.7 to 1.8, which contains $c^\ast$, and accelerates beyond it; it is an onset, not a jump at $c^\ast$. The final swarm spread grows smoothly with $c$, and the mean wake loss already rises from $c=1.6$ to 1.7, on the stable side. % CHECK-CSWEEP [S04]-[S07]
-The old setting thus lies beyond the order-2 boundary, consistent with its loss of feasibility, and the boundary marks approximately where this PSO starts to fail; the sweep does not show that crossing it causes the failure.
-
-The old setting is run without velocity clamping, and a clipped coordinate keeps its velocity (Lemma~\ref{lem:S-clip}). Setting the velocity components of clipped coordinates to zero does not rescue it (\NSFeasVZero\% feasible). Velocity clamping, $\lvert v\rvert\le\NSVmaxFrac\,(u-l)$, raises feasibility to \NSFeasVMax\%, about the level of $c=1.8$ without clamping, but the clamped old setting remains worse than the constriction setting (lower feasibility, and a higher mean wake loss in all \NSCases{} cases). The deficit of the old setting therefore comes mainly from its large steps, not from the bound handling. % CHECK-CSWEEP [S09]-[S12]
-% the figure fig:S-csweep of this generated file is placed in the main text; only its table is placed here
-\begingroup\RenewEnviron{figure*}[1][]{}\RenewEnviron{figure}[1][]{}\CaptureSuppTables{analysis/mpce_supp_csweep.tex}\endgroup
-\SuppTable{tab:S-csweep}
+This section gives the per-case results, the full case-level statistics, the coordinates of the best layouts and further figures of the Type~I comparison (Section~\ref{M-sec:results}). These generated tables and figures cover the eight methods other than GA; the nine-method analysis with GA, which the main text reports in Table~\ref{M-tab:farm-I-stats}, is given in Section~\ref{sec:S-xp-ga} (Table~\ref{tab:S-xp-ga}).
 
 \FloatBarrier
 \subsection{Per-Case Results}
 \label{sec:S-percase}
-Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard deviation of the benchmark objective of every method in every case of the main comparison.
+Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard deviation of the benchmark objective of every method in every case (the eight methods other than GA).
 \SuppTable{tab:res-1-500}
 \SuppTable{tab:res-1-750}
 \SuppTable{tab:res-1-1000}
@@ -358,25 +337,25 @@ Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard devi
 \FloatBarrier
 \subsection{Case-Level Statistics and Best Layouts}
 \label{sec:S-caselevel}
-Table~\ref{tab:friedman68-full} extends Table~\ref{M-tab:friedman68} by the full case-level statistics, and Table~\ref{tab:coords} lists the coordinates of the best layouts for the largest $N$ of each farm (shown in Fig.~\ref{fig:S-layouts}); when PSO-VNS is itself the best method of a farm, Table~\ref{tab:coords} has a single entry for it.
+Table~\ref{tab:friedman68-full} gives the full case-level statistics of the eight methods other than GA (with GA: Table~\ref{tab:S-xp-ga}), and Table~\ref{tab:coords} lists the coordinates of the best layouts for the largest $N$ of each farm (shown in Fig.~\ref{fig:S-layouts}); when PSO-VNS is itself the best method of a farm, Table~\ref{tab:coords} has a single entry for it.
 \SuppTable{tab:friedman68-full}
 \SuppTable{tab:coords}
 
 \FloatBarrier
 \subsection{Additional Figures}
 \label{sec:S-figs}
-Fig.~\ref{fig:S-ranks} shows the average ranks of Table~\ref{M-tab:friedman68}; the mean wake loss versus the number of turbines is shown in Fig.~\ref{M-fig:wakeloss} of the main text.
+Fig.~\ref{fig:S-ranks} shows the average ranks of Table~\ref{tab:friedman68-full}; the mean wake loss versus the number of turbines is shown in Fig.~\ref{M-fig:wakeloss} of the main text.
 \begin{figure}[!htb]
 \centering
 \pipefig{0.55\textwidth}{figures_mpce/avg_ranks.pdf}{5cm}
-\caption{Average rank of the eight methods of the main comparison over the 68 benchmark cases (feasibility-aware ranking of Table~\ref{M-tab:friedman68}; 1 = best).}
+\caption{Average rank of the eight methods other than GA over the 68 benchmark cases (feasibility-aware ranking of Table~\ref{tab:friedman68-full}; 1 = best).}
 \label{fig:S-ranks}
 \end{figure}
-Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} show the convergence, the distribution of the final wake loss, the feasibility and the best layouts of the eight methods of the main comparison.
+Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} show the convergence, the distribution of the final wake loss, the feasibility and the best layouts of the eight methods other than GA.
 \begin{figure}[!htb]
 \centering
 \pipefig{\textwidth}{figures_mpce/convergence_max.pdf}{8cm}
-\caption{Convergence of the eight methods of the main comparison for the largest $N$ of each farm: median (line) and interquartile range (band) of the best feasible wake loss over 30 runs versus the number of evaluations (objective-function calls), logarithmic vertical axis. The median is drawn once at least 15 of the 30 runs have found a feasible layout and the upper quartile once at least 23 have, so curves start late where early layouts are infeasible; a method that never reaches this share (DE in the largest cases) has no curve in the panel.}
+\caption{Convergence of the eight methods other than GA for the largest $N$ of each farm: median (line) and interquartile range (band) of the best feasible wake loss over 30 runs versus the number of evaluations (objective-function calls), logarithmic vertical axis. The median is drawn once at least 15 of the 30 runs have found a feasible layout and the upper quartile once at least 23 have, so curves start late where early layouts are infeasible; a method that never reaches this share (DE in the largest cases) has no curve in the panel.}
 \label{fig:S-conv-max}
 \end{figure}
 \begin{figure}[!htb]
@@ -400,7 +379,7 @@ Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} show the convergence, the distri
 \begin{figure}[!htb]
 \centering
 \pipefig{\textwidth}{figures_mpce/feasibility_vs_n.pdf}{8cm}
-\caption{Percentage of feasible final layouts of the eight methods of the main comparison (30 seed-paired runs of 6,030 evaluations with random initialization per case) versus the number of turbines $N$, for each farm and wind data set.}
+\caption{Percentage of feasible final layouts of the eight methods other than GA (30 seed-paired runs of 6,030 evaluations with random initialization per case) versus the number of turbines $N$, for each farm and wind data set.}
 \label{fig:S-feas}
 \end{figure}
 \begin{figure}[!htb]
