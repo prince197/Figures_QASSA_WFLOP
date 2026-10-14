@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-14 10:19:06",
+ "generated": "2026-10-14 10:23:52",
  "script": "rev4_farm_tables.py",
  "pool": [
   "PSOBV",
@@ -3976,5 +3976,5 @@
    }
   ]
  },
- "runtime_s": 9.311057090759277
+ "runtime_s": 8.149043321609497
 }

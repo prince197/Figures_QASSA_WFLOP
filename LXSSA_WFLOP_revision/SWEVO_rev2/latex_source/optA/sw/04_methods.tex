@@ -260,7 +260,7 @@ Table~\ref{tab:params} lists the settings of all methods, the published defaults
 \toprule
 Method & Iterations & Evaluations ($=6{,}030$) & Coefficients and operators \\
 \midrule
-PSO & $T=200$ & $30+200\times30$ & Algorithm~\ref{alg:pso}; $w=0.7298$, $c_1=c_2=1.49618$ (old setting: $w=0.7$, $c_1=c_2=2$); $\mathbf V^i_0=\mathbf 0$, no $V_{\max}$; clipped coordinate keeps its velocity; asynchronous $\mathbf P^i$, $\mathbf G$ \\
+PSO & $T=200$ & $30+200\times30$ & Algorithm~\ref{alg:pso}; $w=0.7298$, $c_1=c_2=1.49618$; $\mathbf V^i_0=\mathbf 0$, no $V_{\max}$; clipped coordinate keeps its velocity; asynchronous $\mathbf P^i$, $\mathbf G$ \\
 SSA & $T=200$ & $30+200\times30$ & Algorithm~\ref{S-alg:S-ssa}; 15 leaders, 15 followers; $\xi_1=2\exp[-(4t/T)^2]$ \\
 LX-SSA & $T=100$ & $30+100\times60$ & as SSA, plus a Laplace candidate per follower, $\phi=0$, $\chi=1$~\eqref{eq:laplace}; both candidates evaluated \\
 DE/rand/1/bin & $T=200$ & $30+200\times30$ & $F=0.5$, $\mathrm{CR}=0.9$; mutant clipped before crossover; asynchronous one-to-one replacement \\

@@ -247,8 +247,8 @@ def benchmark(out, tex):
              "cases of the cluster in which the method has at least 15 of 30 feasible runs (superscript: number of such cases when "
              "fewer than all; such means are over easier case subsets and are not comparable). Bold: lowest mean among the methods "
              "qualified in every case of the column; highest share of feasible runs; best average rank. Avg.\\ rank: "
-             "feasibility-aware rank of the mean feasible objective within the nine-method pool (rule of "
-             "Table~\\ref{tab:friedman68}), averaged over the %d cases." % (n_cases, n_cases)))
+             "feasibility-aware rank of the mean feasible objective within the nine-method pool (ranking rule of "
+             "Section~\\ref{sec:setup-stats}), averaged over the %d cases." % (n_cases, n_cases)))
 
     # ---- T-I-b
     stats = dict(friedman=dict(chi2=FR["chi2"], df=len(POOL) - 1, p=FR["p"], iman_davenport=FR["iman_davenport"],
@@ -368,7 +368,7 @@ SITE_HEAD = ("& \\multicolumn{5}{c}{6{,}030 evaluations} & \\multicolumn{5}{c}{3
 SITE_NOTE = ("Random initialization, 30 seed-paired runs (seeds 1--30) per method and budget; stored feasibility labels. Feas.: "
              "feasible runs; Mean\\,$\\pm$\\,SD: mean AEP (%s) and its standard deviation over the feasible runs (mean AEP losses "
              "relative to the wake-free AEP: rev4\\_farm\\_tables.json); Best: best feasible run; --: no feasible run. Rank: feasibility-aware "
-             "rank of the mean AEP within the methods of the pool (rule of Table~\\ref{tab:friedman68}: a method with fewer than "
+             "rank of the mean AEP within the methods of the pool (ranking rule of Section~\\ref{sec:setup-stats}: a method with fewer than "
              "15 feasible runs ranks below the qualified methods, by its number of feasible runs). Bold: rank-1 method (mean, "
              "rank), highest best run. $p_{\\rm Holm}$: two-sided seed-paired Wilcoxon signed-rank test "
              "of PSO-VNS against the method (feasibility first: every infeasible run below every feasible run, infeasible runs "

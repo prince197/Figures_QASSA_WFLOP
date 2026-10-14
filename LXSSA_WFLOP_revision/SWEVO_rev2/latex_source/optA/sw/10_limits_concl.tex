@@ -42,7 +42,7 @@ Table~\ref{tab:recommendations} condenses the protocol into a checklist~\cite{Ba
 & Item & Rationale in this study & What we did (where) \\
 \midrule
 1 & Equal model-query budgets (incl.\ initial population, gradients), elapsed time reported separately; seed-paired runs & Iterations differ in cost (LX-SSA: $2N_p$) & $B=6{,}030$; seeds 1--30 (Section~\ref{sec:setup}) \\
-2 & Report feasibility rates, conditional quality and an all-run paired outcome separately & Conditional means can favor less reliable methods & Qualification threshold (Table~\ref{tab:friedman68}); all-run endpoint on all 68 cases and Lillgrund (Section~\ref{sec:archive-reliability}) \\
+2 & Report feasibility rates, conditional quality and an all-run paired outcome separately & Conditional means can favor less reliable methods & Qualification threshold (Section~\ref{sec:setup-stats}); all-run endpoint on all 68 cases and Lillgrund (Section~\ref{sec:archive-reliability}) \\
 3 & Paired, multiplicity-corrected tests; robustness to thresholds and clusters & Rank post hoc tests depend on the pool; cases share farms & Holm, six thresholds, six clusters (Section~\ref{sec:setup}) \\
 4 & Equivalence at a stated level, margin and evaluator; name the primary questions; report minimal margins & Verdicts change with the level & TOST at three levels (Section~\ref{sec:psovns-pso}) \\
 5 & Ablate hybrids against the local method alone and an equal-cost in-site random control & A square control flatters salp-swarm phases & VNS, RS-VNS, RSD-VNS (Table~\ref{tab:ablation}) \\
@@ -67,12 +67,12 @@ Each threat below names the claims it limits; unless a check is cited, the threa
 \end{itemize}
 % CHECK (manual, see 05_setup): 2 of 24 Mann-Whitney tests reject; CHECK-DIAG [D01]/[D02]: instrumented runs reproduce the stored runs; CHECK-FINAL [C61]: controls switch at 3,015, swarms at 3,030; generated \NFeasDE ("depends on the repair": DE feasibility 33.3 % -> 80.0 % with Deb + projection, rev3_constraint.json); CHECK-FINAL [C17]: LX-SSA as published; CHECK (manual, 2026-10-04): package re-execution, repro_package_build/verification/verification_summary.txt (see 05_setup sec:validation)
 
-\emph{Construct validity.} At 6,030 evaluations the ``VNS'' phase is essentially one truncated compass-search descent, so the component analysis concerns this local search, not VNS in general. The objective, the gross energy of a discretized rose under a hub-center top-hat Jensen wake, is a benchmark value, not farm quality; final quality at a fixed budget is the only measure tested; and the qualification-then-conditional-quality ranking limits, but does not remove, survivorship bias.
+\emph{Construct validity.} At 6,030 evaluations the ``VNS'' phase is essentially one truncated compass-search descent, so the ablation concerns this local search, not VNS in general. The objective is a benchmark value, not farm quality; final quality at a fixed budget is the only measure tested; and the qualification-then-conditional-quality ranking limits, but does not remove, survivorship bias.
 % CHECK-DIAG [D08]-[D10]: truncated compass search; CHECK-FINAL [C21]: cubic curve lowers the power, ranking intact
 
 \emph{External validity.} Except in the direct 1$^\circ$ study on eight cases, the search used coarse roses (15$^\circ$ benchmark bins, 5$^\circ$ on the sites), which optimized layouts exploit. Further limits:
 \begin{itemize}
-\item a top-hat Jensen wake with the non-physical upstream deficit of the benchmark implementation (Section~\ref{sec:model}) and the linear benchmark power curve (Section~\ref{sec:powermodel});
+\item the top-hat Jensen wake of the benchmark implementation, with its non-physical upstream deficit (Section~\ref{sec:model}), and its linear power curve (Section~\ref{sec:powermodel});
 \item circular farms, a $4D$ spacing and a prescribed $N$, with random starts and 6,030 evaluations unless stated: rankings of a small budget;
 \item measured wind climates enter only through two 16-turbine blocks, Horns Rev~1 and Lillgrund (seven months of measurements, minimum spacing $3D$), on which the feasibility advantage of PSO-VNS rests and whose AEP rankings partly depend on the evaluator (Sections~\ref{sec:hornsrev-site} and~\ref{sec:lillgrund}); the 64-turbine IEA37 scenario was not run;
 \item the pool lacks CMA-ES~\cite{HansenOstermeier2001}, L-SHADE~\cite{Tanabe2014}, adaptive GAs, ACO~\cite{Eroglu2012} and BBO~\cite{Bansal2017}; DE and a real-coded GA are its only evolutionary methods, so ``first'' means first among the nine methods compared;
@@ -86,8 +86,8 @@ Each threat below names the claims it limits; unless a check is cited, the threa
 \begin{itemize}
 \item The margin, the $N\ge10$ split, the Data Set~II subgroup and the density pattern were stated after the primary analysis; the margin is a convention, and the minimal margins let readers apply their own.
 \item The 68 cases form only six clusters with nested $N$: an exact sign test over clusters cannot fall below $p=0.031$, cluster-robust intervals have 5 degrees of freedom, and the p-values describe this benchmark, not a population of farms.
-\item Seeds are synchronized across cases; resampling them jointly leaves the PSO-VNS vs.\ PSO verdicts unchanged, but not the seed-level equivalence of SSA-VNS and RSD-VNS (Table~\ref{tab:equiv-main}); the shifted-null checks of the equivalence decisions are local diagnostics for this dataset, not a guarantee of nominal level (Section~\ref{sec:setup-stats}).
-\item The pooled all-run sign tests treat case--seed pairs as independent; with the 30 seeds as the unit of replication, every all-run verdict of the benchmark, constraint-handling and direct 1$^\circ$ studies is unchanged (Section~\ref{S-sec:S-sa-dep}).
+\item Seeds are synchronized across cases; resampling them jointly leaves the PSO-VNS vs.\ PSO verdicts unchanged, but not the seed-level equivalence of SSA-VNS and RSD-VNS (Table~\ref{tab:equiv-main}).
+\item The all-run sign tests treat case--seed pairs as independent; with seeds as the unit of replication, no all-run verdict changes (Section~\ref{S-sec:S-sa-dep}).
 \item The budget and feasible-start rankings (six cases) are not tested, and the feasibility result rests on two sites with 30 seeds each.
 \item The Lillgrund, spacing, GA, exact-gradient, constraint-handling and direct 1$^\circ$ studies were conducted after the primary analysis, the last two on six and eight cases; equivalence statements other than the two primary questions (Section~\ref{sec:setup-stats}) are exploratory, and their error rates are not controlled jointly.
 \end{itemize}

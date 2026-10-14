@@ -58,7 +58,7 @@ SSA-VNS vs.\ LX-SSA-VNS & LX-SSA as published (hybrid) & 2/66/0 & $2.7\times10^{
 LX-SSA vs.\ SSA & LX-SSA as published (alone) & 0/64/4 & $1.3\times10^{-6}$ & $+0.153$ \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Top: average rank among the nine variants (Friedman $\chi^2_F=374.3$, 8 d.f., $p=5.96\times10^{-76}$) and feasible runs. Bottom: planned contrasts. W/T/L: cases in which the first variant is significantly better / not different / worse (run-level Wilcoxon, $\alpha=0.05$, Holm-adjusted over the fifteen contrasts of each case, a different family from Table~\ref{tab:wtl}); $p_W$: Wilcoxon test on the 68 per-case mean wake losses, Holm-adjusted over the fifteen contrasts; $\overline{\Delta L}$: mean difference of the case-mean wake losses (pp; negative = first variant better) over the cases in which both variants have at least 15 feasible runs (66--68 of 68 per contrast).}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Top: average rank among the nine variants (Friedman $\chi^2_F=374.3$, 8 d.f., $p=5.96\times10^{-76}$) and feasible runs. Bottom: planned contrasts. W/T/L: cases in which the first variant is significantly better / not different / worse (run-level Wilcoxon, $\alpha=0.05$, Holm-adjusted over the fifteen contrasts of each case, a different family from Table~\ref{tab:farm-I-stats}); $p_W$: Wilcoxon test on the 68 per-case mean wake losses, Holm-adjusted over the fifteen contrasts; $\overline{\Delta L}$: mean difference of the case-mean wake losses (pp; negative = first variant better) over the cases in which both variants have at least 15 feasible runs (66--68 of 68 per contrast).}
 \end{table}
 % <<<<< end analysis/mpce_tab_ablation.tex
 
@@ -73,6 +73,14 @@ PSO-VNS has two components, a PSO phase (Phase~1) and a VNS phase (Phase~2), and
 All variants use 6,030 evaluations from random starts and the same seeds (convergence: Fig.~\ref{fig:ablation}); their average ranks differ (Friedman $p=\ensuremath {6.0\times 10^{-76}}$). W/T/L, $p$ (Holm-adjusted Wilcoxon test on the 68 case means) and $\overline{\Delta L}$ (mean difference of the case means, pp) are those of Table~\ref{tab:ablation}; a 90\% bootstrap interval of $\overline{\Delta L}$ (in brackets) inside $\pm0.05$~pp means practical equivalence at the case level.
 % CHECK-FINAL [C36]: Friedman rejects equal average ranks (\NAblP); pipeline-generated counts \NAblNContrasts (Holm family of each case), \NAblDf d.f., \NAblNVar variants in the caption. All DL in this section are \NCm...DL = tab:ablation values (R1-7, R5-F1)
 
+
+\begin{figure*}[!t]
+\centering
+\pipefig{0.7\textwidth}{figures_mpce/ablation_convergence.pdf}{6.6cm}
+\caption{Convergence of the nine ablation variants (Table~\ref{tab:ablation}) for the largest turbine count of each farm: median best feasible wake loss over 30 runs versus evaluations. PSO-VNS and PSO coincide up to 3,030 evaluations (dotted line), where PSO-VNS switches to VNS. Curves of the main comparison: Fig.~\ref{S-fig:S-conv-max} of the supplementary material.}
+\label{fig:ablation}
+\end{figure*}
+% CHECK (pipeline count): \NAblNVar = variants of tab:ablation = curves of ablation_convergence.pdf; [C58] ranks
 
 \subsection{The VNS Phase}
 \label{sec:abl-vns}
