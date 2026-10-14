@@ -20,7 +20,7 @@
 
 \section{Theoretical Details}
 \label{sec:S-theory}
-This section states and proves the theoretical facts used in the main text: the stability conditions of the implemented PSO update and where the two PSO settings lie (Section~\ref{sec:S-th-pso}), the budget accounting of the two-phase hybrids and the strength of the random-sampling control (Section~\ref{sec:S-th-budget}), what can and cannot be proven about PSO and DE from feasible starts (Section~\ref{sec:S-th-feas}), the practical-equivalence statements (Section~\ref{sec:S-th-equiv}) and the property of the VNS local search (Section~\ref{sec:S-th-vns}). All statements refer to the code in \texttt{analysis/}; all numbers of this section are recomputed and checked by \texttt{analysis/make\_theory\_figures.py}.
+This section states and proves the theoretical facts used in the main text: the stability conditions of the implemented PSO update and the stability of its constriction setting (Section~\ref{sec:S-th-pso}), the budget accounting of the two-phase hybrids and the strength of the random-sampling control (Section~\ref{sec:S-th-budget}), what can and cannot be proven about PSO and DE from feasible starts (Section~\ref{sec:S-th-feas}), the practical-equivalence statements (Section~\ref{sec:S-th-equiv}) and the property of the VNS local search (Section~\ref{sec:S-th-vns}). All statements refer to the code in \texttt{analysis/}; all numbers of this section are recomputed and checked by \texttt{analysis/make\_theory\_figures.py}.
 
 % ------------------------------------------------------------------------------------------------------------
 \subsection{Stability of the Implemented PSO Update}
@@ -75,33 +75,32 @@ $\varrho(-1)=-(1-w)(1-w^2+\sigma^2)-(1+w)m^2<0$ for $\lvert w\rvert<1$; (iii) is
 (c) In the limit $\mathrm Ey_t\to0$, so $b_t\to(q,0,0)^{\mathsf T}$ and $z_t\to z_\infty$ with $z_\infty=Mz_\infty+(q,0,0)^{\mathsf T}$. The second row gives $\mathrm Ey_ty_{t-1}\to m V_\infty/(1+w)$, and the first row then gives $V_\infty\,\varrho(1)/(1+w)=q$. With $p-x^*=c_2(p-g)/(c_1+c_2)$ and $g-x^*=-c_1(p-g)/(c_1+c_2)$, $q=[c_2^2\operatorname{Var}\varphi_1+c_1^2\operatorname{Var}\varphi_2](p-g)^2/(c_1+c_2)^2=c_1^2c_2^2(p-g)^2/[6(c_1+c_2)^2]$, which is $c^2(p-g)^2/24$ for $c_1=c_2=c$ and gives~\eqref{eq:S-th-vinf}.
 \end{thSproof}
 
-\emph{Which $\varphi$ enters the order-1 condition.} For constant coefficients, the classical condition is $0<\varphi<2(1+w)$ with $\varphi=c_1+c_2$. In the implemented update the coefficients are $c_k\rho_k$ with $\rho_k\sim U(0,1)$, and the order-1 condition involves their mean, $\mathrm E\varphi_t=(c_1+c_2)/2$; hence $c_1+c_2<4(1+w)$. Inserting $c_1+c_2$ into the constant-coefficient condition would give $c_1+c_2<3.4$ at $w=0.7$ and wrongly classify the old setting as order-1 unstable. The analytic order-2 region of Proposition~\ref{prop:S-pso-stability}(b) agrees with the numerically computed spectral radius of $M$ at 200{,}000 random points $(w,c_1,c_2)\in(-1,1)\times[0,6]^2$ and on a $601\times601$ grid for $c_1=c_2$ (points within $10^{-3}$ of the boundary excluded; no disagreement).
+\emph{Which $\varphi$ enters the order-1 condition.} For constant coefficients, the classical condition is $0<\varphi<2(1+w)$ with $\varphi=c_1+c_2$. In the implemented update the coefficients are $c_k\rho_k$ with $\rho_k\sim U(0,1)$, and the order-1 condition involves their mean, $\mathrm E\varphi_t=(c_1+c_2)/2$; hence $c_1+c_2<4(1+w)$. The analytic order-2 region of Proposition~\ref{prop:S-pso-stability}(b) agrees with the numerically computed spectral radius of $M$ at 200{,}000 random points $(w,c_1,c_2)\in(-1,1)\times[0,6]^2$ and on a $601\times601$ grid for $c_1=c_2$ (points within $10^{-3}$ of the boundary excluded; no disagreement).
 
 \begin{table}[!htbp]
 \centering
-\caption{Stability of the two PSO settings under stagnation and without active bounds (Proposition~\ref{prop:S-pso-stability}). $\rho_1$: spectral radius of the mean recursion; $\rho_2$: spectral radius of the second-moment matrix $M$ (order-2 stable iff $\rho_2<1$); $V_\infty/(p-g)^2$: limit variance factor~\eqref{eq:S-th-vinf}.}
+\caption{Stability of the constriction setting of PSO under stagnation and without active bounds (Proposition~\ref{prop:S-pso-stability}). $\rho_1$: spectral radius of the mean recursion; $\rho_2$: spectral radius of the second-moment matrix $M$ (order-2 stable iff $\rho_2<1$); $V_\infty/(p-g)^2$: limit variance factor~\eqref{eq:S-th-vinf}.}
 \label{tab:S-th-settings}
 \begin{tabular}{lcccccccc}
 \toprule
 Setting & $w$ & $c_1+c_2$ & $4(1+w)$ & $\frac{24(1-w^2)}{7-5w}$ & margin & $\rho_1$ & $\rho_2$ & $V_\infty/(p-g)^2$\\
 \midrule
-Old & 0.7 & 4 & 6.8 & 3.50 & $-0.50$ & 0.84 & 1.12 & unbounded\\
 Constriction & 0.7298 & 2.99 & 6.92 & 3.35 & $+0.36$ & 0.85 & 0.94 & 1.09\\
 \bottomrule
 \end{tabular}
-\\[2pt]{\footnotesize Margin: order-2 bound minus $c_1+c_2$. Constriction: $c_1+c_2=2.99236$ is 10.6\% below the bound 3.3475; old: $c_1+c_2=4$ is 14.4\% above the bound 3.4971.}
+\\[2pt]{\footnotesize Margin: order-2 bound minus $c_1+c_2$. Constriction: $c_1+c_2=2.99236$ is 10.6\% below the bound 3.3475.}
 \end{table}
-% verified by make_theory_figures.py (T01-T05): old 6.8/3.4971/rho1 0.8367/rho2 1.1237; constriction 6.9192/3.3475/0.8543/0.9442, V 1.0874 (SD 1.0428)
+% verified by make_theory_figures.py (T02-T05): constriction 6.9192/3.3475/0.8543/0.9442, V 1.0874 (SD 1.0428)
 
-\begin{thS}[The two settings]
-\label{prop:S-settings}
-Under (A1)--(A2), both settings are order-1 stable. The constriction setting is order-2 stable ($c_1+c_2=2.99<3.35$, $\rho_2=0.94$); each coordinate of a particle with $p\ne g$ has, in the limit, mean $(p+g)/2$ and standard deviation $1.04\,\lvert p-g\rvert$ ($V_\infty=1.09\,(p-g)^2$). The old setting is not order-2 stable ($4>3.50$): $\mathrm E\,x_t^2$ is unbounded for every initial value if $p\ne g$, and for every initial value with $(x_0,x_1)\ne(x^*,x^*)$ if $p=g$; a positive weighted sum of the second moments grows at least by the factor $\rho_2=1.12$ per iteration.
+\begin{thS}[The constriction setting]
+\label{prop:S-constriction}
+Under (A1)--(A2), the constriction setting is order-1 stable and order-2 stable ($c_1+c_2=2.99<3.35$, $\rho_2=0.94$); each coordinate of a particle with $p\ne g$ has, in the limit, mean $(p+g)/2$ and standard deviation $1.04\,\lvert p-g\rvert$ ($V_\infty=1.09\,(p-g)^2$).
 \end{thS}
 \begin{thSproof}
-The numbers follow from Proposition~\ref{prop:S-pso-stability} (Table~\ref{tab:S-th-settings}). For the old setting, the dominant eigenvalue $\rho_2=1.12$ of $M$ is real and has a left eigenvector $u$ with positive components ($u\approx(0.90,0.21,0.39)$). Since $c_1=c_2$, $\operatorname{Cov}(\varphi_t,\eta_t)=0$ and $b_t=(q,0,0)^{\mathsf T}$, so $u^{\mathsf T}z_{t+1}=\rho_2\,u^{\mathsf T}z_t+u_1q\ge\rho_2\,u^{\mathsf T}z_t$. For a nonzero $z_0=(\alpha,\beta,\gamma)$ with $\alpha,\gamma\ge0$, $\lvert\beta\rvert\le\sqrt{\alpha\gamma}\le(\alpha+\gamma)/2$ gives $u^{\mathsf T}z_0>0$; if $z_0=0$ and $p\ne g$, then $u^{\mathsf T}z_1=u_1q>0$. Hence $u^{\mathsf T}z_{t+1}\ge\rho_2^{\,t}\,u^{\mathsf T}z_1\to\infty$ (with $u^{\mathsf T}z_1>0$ in both cases). Since $\lvert\mathrm Ey_ty_{t-1}\rvert\le(\mathrm Ey_t^2+\mathrm Ey_{t-1}^2)/2$, $u^{\mathsf T}z_t\le(u_1+u_2/2)\,\mathrm Ey_t^2+(u_3+u_2/2)\,\mathrm Ey_{t-1}^2$, so the sequence $\mathrm Ey_t^2$ is unbounded, and so is $\mathrm Ex_t^2=\mathrm Ey_t^2+2x^*\mathrm Ey_t+x^{*2}$, because $\mathrm Ey_t\to0$ (order-1 stability). We show unboundedness only; that the second moments themselves grow asymptotically by the factor $\rho_2$ per iteration is not needed here.
+The numbers follow from Proposition~\ref{prop:S-pso-stability} (Table~\ref{tab:S-th-settings}); the limit mean is $x^*=(p+g)/2$ because $c_1=c_2$.
 \end{thSproof}
 
-\emph{What the conditions do not cover.} (i) \emph{Stagnation.} In a run, $\mathbf P^i$ and $\mathbf G$ change. For $c_1=c_2$, Cleghorn and Engelbrecht~\cite{Cleghorn2018} obtain the same region under the weaker non-stagnate distribution assumption; we do not claim that their region extends to $c_1\ne c_2$, where the condition under stagnation is stricter (Proposition~\ref{prop:S-pso-stability}(b)). No stability result says how good $\mathbf G$ is: order-2 stability means that each particle samples a distribution of bounded variance around $(c_1\mathbf P^i+c_2\mathbf G)/(c_1+c_2)$, whose variance vanishes only if $\mathbf P^i=\mathbf G$ (Proposition~\ref{prop:S-pso-stability}(c)); it implies neither convergence to a point nor local optimality. (ii) \emph{Bounds.} The code clips the position to $[-r,r]$ and keeps the velocity, so after a clip $v_t\ne x_t-x_{t-1}$, and~\eqref{eq:S-th-rec} and both results no longer describe the trajectory. (iii) \emph{Causality.} That the old setting violates the order-2 condition does not imply that this causes its poor results; the coefficient sweep of Section~\ref{sec:S-csweep} shows that the loss of feasibility begins near the boundary and grows progressively beyond it, and that velocity clamping restores much of it. What the code implies at a bound is the following.
+\emph{What the conditions do not cover.} (i) \emph{Stagnation.} In a run, $\mathbf P^i$ and $\mathbf G$ change. For $c_1=c_2$, Cleghorn and Engelbrecht~\cite{Cleghorn2018} obtain the same region under the weaker non-stagnate distribution assumption; we do not claim that their region extends to $c_1\ne c_2$, where the condition under stagnation is stricter (Proposition~\ref{prop:S-pso-stability}(b)). No stability result says how good $\mathbf G$ is: order-2 stability means that each particle samples a distribution of bounded variance around $(c_1\mathbf P^i+c_2\mathbf G)/(c_1+c_2)$, whose variance vanishes only if $\mathbf P^i=\mathbf G$ (Proposition~\ref{prop:S-pso-stability}(c)); it implies neither convergence to a point nor local optimality. (ii) \emph{Bounds.} The code clips the position to $[-r,r]$ and keeps the velocity, so after a clip $v_t\ne x_t-x_{t-1}$, and~\eqref{eq:S-th-rec} and both results no longer describe the trajectory. What the code implies at a bound is the following.
 
 \begin{lemS}[Boundary handling of the PSO code]
 \label{lem:S-clip}
@@ -110,7 +109,7 @@ The numbers follow from Proposition~\ref{prop:S-pso-stability} (Table~\ref{tab:S
 \begin{thSproof}
 (a) $x_k^2+y_k^2=r^2+y_k^2$ if $x_k=\pm r$ (and likewise for $y_k$). (b) $p$ and $g$ are evaluated, hence clipped, positions, so $p-r\le0$ and $g-r\le0$; the position update gives $\min(r+v',r)=r$ for $v'\ge0$.
 \end{thSproof}
-Thus, in the implementation, the unbounded second moments of the old setting cannot materialize as growing positions; a coordinate that reaches the bound stays there while its velocity points outward, and by (a) every such evaluation is infeasible (almost surely). Lemma~\ref{lem:S-clip} does not say how often clipping occurs; that is an empirical question, answered by the diagnostics of Section~\ref{sec:S-diag-pso} (Fig.~\ref{fig:D-psodyn} and Table~\ref{tab:D-psodyn}).
+Thus, in the implementation, a coordinate that reaches the bound stays there while its velocity points outward, and by (a) every such evaluation is infeasible (almost surely). Lemma~\ref{lem:S-clip} does not say how often clipping occurs; that is an empirical question, answered by the diagnostics of Section~\ref{sec:S-diag-pso} (Fig.~\ref{fig:D-psodyn} and Table~\ref{tab:D-psodyn}).
 
 % ------------------------------------------------------------------------------------------------------------
 \subsection{Budget Accounting and the Random-Sampling Control}
@@ -173,7 +172,7 @@ Let all initial layouts be feasible and let $i^*$ be the particle with the best 
 \begin{enumerate}
 \item[(a)] As long as $\mathbf G$ does not change, particle $i^*$ keeps $\mathbf V^{i^*}=\mathbf 0$ and $\mathbf X^{i^*}=\mathbf G$: it re-evaluates $\mathbf G$ once per iteration (200 of the 6{,}030 evaluations if $\mathbf G$ never changes) and evaluates no other point.
 \item[(b)] The first move of every other particle is $\mathbf X^i\leftarrow\mathbf X^i+c_2\boldsymbol\rho_2\circ(\mathbf G-\mathbf X^i)$, clipped to the box: every coordinate moves a random fraction in $[0,c_2]=[0,1.50]$ of the way to the same coordinate of $\mathbf G$, i.e., turbine $k$ of layout $i$ is moved toward turbine $k$ of $\mathbf G$, although the numbering of the turbines in two independently packed layouts is arbitrary.
-\item[(c)] If no evaluation improves any $\mathbf P^i$, the swarm is in exact stagnation, and, as long as no coordinate is clipped, Propositions~\ref{prop:S-pso-stability}(c) and~\ref{prop:S-settings} apply: every coordinate of particle $i\ne i^*$ is sampled, in the limit, with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the samples do not concentrate at $\mathbf G$.
+\item[(c)] If no evaluation improves any $\mathbf P^i$, the swarm is in exact stagnation, and, as long as no coordinate is clipped, Propositions~\ref{prop:S-pso-stability}(c) and~\ref{prop:S-constriction} apply: every coordinate of particle $i\ne i^*$ is sampled, in the limit, with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the samples do not concentrate at $\mathbf G$.
 \end{enumerate}
 \end{thS}
 \begin{thSproof}

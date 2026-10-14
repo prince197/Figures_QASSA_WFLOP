@@ -5,7 +5,9 @@ Usage (from analysis/):
     python make_theory_figures.py --check    additionally verify that every number typed in optA/supp_theory.tex
                                              and optA/drafts/theory_main.tex equals the value computed here
                                              (checks T01...; exit code 1 on any FAIL)
-    python make_theory_figures.py --check --swevo   the same checks against the SWEVO methods section (optA/sw/04_methods.tex)
+    python make_theory_figures.py --check --swevo   the same checks against the SWEVO methods section (optA/sw/04_methods.tex);
+                                             the SWEVO texts use only the constriction setting, so the checks of
+                                             the old setting (w = 0.7, c1 = c2 = 2) are skipped
     python make_theory_figures.py --fast     smaller Monte Carlo (for a quick look; --check needs the full run)
 
 Everything here is mathematics or geometry (no objective evaluations, no run data):
@@ -28,14 +30,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 FIG = os.path.join(ROOT, "figures_mpce")
 TEX = [os.path.join(ROOT, "optA", "supp_theory.tex"), os.path.join(ROOT, "optA", "04_methods.tex")]
-if "--swevo" in sys.argv:  # SWEVO version: its methods section is optA/sw/04_methods.tex
+SWEVO = "--swevo" in sys.argv
+if SWEVO:  # SWEVO version: its methods section is optA/sw/04_methods.tex
     TEX[1] = os.path.join(ROOT, "optA", "sw", "04_methods.tex")
 FAST = "--fast" in sys.argv
 SEED = 20260928
 
 INK, MUTED, GRID = "#0b0b0b", "#52514e", "#e4e3df"
-# Okabe-Ito colours as in all figures of the paper: old PSO setting vermillion, constriction setting (= PSO of the
-# main comparison) bluish green, stability regions in shades of blue
+# Okabe-Ito colours as in all figures of the paper: constriction setting (= PSO of the paper) bluish green,
+# stability regions in shades of blue (the figure marks only the constriction setting)
 BLUE, BLUE_XL = "#0072b2", "#dfecf6"
 ORANGE, GREEN = "#d55e00", "#009e73"
 # figure style shared by all figures of the paper (= mpce_results.FIG_STYLE): STIX text and math, 8 pt, drawn at the
@@ -45,6 +48,7 @@ plt.rcParams.update({"font.family": "STIXGeneral", "mathtext.fontset": "stix", "
                      "text.color": INK, "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED,
                      "xtick.major.pad": 2, "ytick.major.pad": 2, "axes.labelpad": 2.5, "pdf.fonttype": 42})
 
+# "old" (w = 0.7, c1 = c2 = 2) is kept only for the checks of the MPCE texts (without --swevo); it is not plotted
 SETTINGS = {"old": (0.7, 2.0, 2.0), "constriction": (0.7298, 1.49618, 1.49618)}
 
 
@@ -228,12 +232,10 @@ def figure(st):
     ax.text(0.0, 1.2, "order-1 and order-2\n" r"$c_1+c_2<24(1-w^2)/(7-5w)$", ha="center", va="center",
             fontsize=7.5, color=INK, linespacing=1.2)
     ax.text(-0.95, 7.3, "not order-1 stable", ha="left", va="center", fontsize=7.5, color=MUTED)
-    o, c = st["old"], st["constriction"]
-    ho = ax.scatter([o["w"]], [o["sum"]], s=34, marker="s", color=ORANGE, edgecolor="white", lw=0.8, zorder=6,
-                    label=f"old setting: $w=0.7$, $c_1+c_2=4$ (order-2 bound {o['b2']:.2f})")
+    c = st["constriction"]
     hc = ax.scatter([c["w"]], [c["sum"]], s=40, marker="o", color=GREEN, edgecolor="white", lw=0.8, zorder=6,
                     label=f"constriction: $w=0.7298$, $c_1+c_2=2.99$ (order-2 bound {c['b2']:.2f})")
-    ax.legend(handles=[ho, hc], loc="upper left", bbox_to_anchor=(-0.17, -0.2), frameon=False, fontsize=7.5,
+    ax.legend(handles=[hc], loc="upper left", bbox_to_anchor=(-0.17, -0.2), frameon=False, fontsize=7.5,
               handletextpad=0.2, borderaxespad=0.0, labelspacing=0.3)
     ax.set_xlim(-1, 1); ax.set_ylim(0, 8)
     ax.set_xlabel(r"inertia weight $w$"); ax.set_ylabel(r"$c_1+c_2$")
@@ -286,22 +288,26 @@ def main():
     txt_main = open(TEX[1], encoding="utf-8").read() if os.path.exists(TEX[1]) else ""
     checks = []
 
-    def has(cid, desc, s, where=txt):
+    def has(cid, desc, s, where=txt, old=False):
+        # old=True: a number of the old setting (w = 0.7, c1 = c2 = 2), typed only in the MPCE texts; the SWEVO
+        # texts (--swevo) use only the constriction setting, so these checks are skipped there
+        if old and SWEVO:
+            return
         checks.append((cid, desc + f"  [{s}]", s in where))
-    has("T01", "old: order-1 bound 6.8 and order-2 bound 3.50", f"{o['b2']:.2f}")
-    has("T01", "old: order-1 bound", f"{o['b1']:.1f}")
+    has("T01", "old: order-1 bound 6.8 and order-2 bound 3.50", f"{o['b2']:.2f}", old=True)
+    has("T01", "old: order-1 bound", f"{o['b1']:.1f}", old=True)
     has("T02", "constriction: c1+c2 and order-2 bound", f"{c['sum']:.2f}<{c['b2']:.2f}".replace("<", "<"))
     has("T02", "constriction: order-1 bound", f"{c['b1']:.2f}")
-    has("T03", "spectral radii rho2 (old, constriction)", f"{o['rho2']:.2f}")
+    has("T03", "spectral radius rho2 old", f"{o['rho2']:.2f}", old=True)
     has("T03", "spectral radius rho2 constriction", f"{c['rho2']:.2f}")
-    has("T03", "order-1 radii sqrt(w)", f"{o['rho1']:.2f}")
+    has("T03", "order-1 radius old sqrt(w)", f"{o['rho1']:.2f}", old=True)
     has("T03", "order-1 radius constriction", f"{c['rho1']:.2f}")
     has("T04", "margins", f"{c['margin2']:.2f}")
-    has("T04", "old excess", f"{-o['margin2']:.2f}")
+    has("T04", "old excess", f"{-o['margin2']:.2f}", old=True)
     has("T04", "constriction bound 4 digits", f"{c['b2']:.4f}")
-    has("T04", "old bound 4 digits", f"{o['b2']:.4f}")
+    has("T04", "old bound 4 digits", f"{o['b2']:.4f}", old=True)
     has("T04", "constriction relative margin", f"{100 * (1 - c['rel2']):.1f}\\% below")
-    has("T04", "old relative excess", f"{100 * (o['rel2'] - 1):.1f}\\% above")
+    has("T04", "old relative excess", f"{100 * (o['rel2'] - 1):.1f}\\% above", old=True)
     has("T05", "stationary variance factor and SD (constriction)", f"{c['var']:.2f}")
     has("T05", "stationary SD factor", f"{np.sqrt(c['var']):.2f}")
     checks.append(("T06", "analytic order-2 region equals numerical region (no mismatch)",
@@ -319,7 +325,7 @@ def main():
     has("T11", "DE mutant coordinates n=30", f"{de[30]:.1f}")
     has("T11", "SSA xi_1(T/2)", f"{xi_half:.3f}")
     has("T12", "compass search final step", f"{hbar}")
-    has("T12", "main text: order-2 bound old", f"{o['b2']:.2f}", txt_main)
+    has("T12", "main text: order-2 bound old", f"{o['b2']:.2f}", txt_main, old=True)
     has("T12", "main text: order-2 bound constriction", f"{c['b2']:.2f}", txt_main)
     fails = 0
     for cid, desc, ok in checks:
