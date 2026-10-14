@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-14 10:11:31",
+ "generated": "2026-10-14 10:19:06",
  "script": "rev4_farm_tables.py",
  "pool": [
   "PSOBV",
@@ -151,8 +151,14 @@
    ]
   },
   "rev4_galgb": {
-   "status": "missing",
-   "rows": 0
+   "status": "complete shard set",
+   "rows": 30,
+   "files": [
+    "rev4_galgb_s0of1.csv"
+   ],
+   "methods": [
+    "GA"
+   ]
   },
   "rev2_gaiea": {
    "status": "complete",
@@ -1831,18 +1837,19 @@
       "SSA",
       "LXSSA",
       "DE",
+      "GA",
       "BVNS",
       "SLSQP"
      ],
-     "ga_status": "pending",
+     "ga_status": "used",
      "n_seeds": 30,
      "dropped_unpaired_runs": 0,
      "friedman_run_level": {
-      "chi2": 101.04444444444448,
-      "df": 7,
-      "p": 6.564422802095928e-19,
-      "iman_davenport": 26.894350397715705,
-      "iman_davenport_p": 6.39531833329277e-26,
+      "chi2": 96.28444444444449,
+      "df": 8,
+      "p": 2.4482634384954672e-17,
+      "iman_davenport": 19.428995546759044,
+      "iman_davenport_p": 2.6924866149632447e-22,
       "blocks": "seeds (run level)",
       "score": "mpce_results.goodness (infeasible below feasible)"
      },
@@ -1857,7 +1864,7 @@
        "loss_pct": 17.797277174359326,
        "rank": 1.0,
        "qualified": true,
-       "seed_rank": 2.1333333333333333
+       "seed_rank": 2.433333333333333
       },
       "PSOC": {
        "runs": 30,
@@ -1866,19 +1873,19 @@
        "sd": 0.9270264812498744,
        "best": 115.54080147795196,
        "loss_pct": 18.49818062365818,
-       "rank": 5.0,
+       "rank": 6.0,
        "qualified": true,
-       "seed_rank": 5.333333333333333,
+       "seed_rank": 5.9,
        "psovns_vs": {
         "p": 9.313225746154785e-09,
-        "p_holm": 4.6566128730773926e-08,
+        "p_holm": 5.587935447692871e-08,
         "rb": 0.9870967741935484,
         "outcome": "W",
         "n_pairs": 30,
         "seed_wins": 28,
         "seed_losses": 2,
         "seed_ties": 0,
-        "family_size": 7,
+        "family_size": 8,
         "all_run_endpoint": {
          "wins": 28,
          "ties": 0,
@@ -1886,7 +1893,7 @@
          "n": 30,
          "score": 0.9333333333333333,
          "p_sign": 8.67992639541626e-07,
-         "p_sign_holm": 4.33996319770813e-06
+         "p_sign_holm": 5.207955837249756e-06
         }
        }
       },
@@ -1897,9 +1904,9 @@
        "sd": 1.0338477850889332,
        "best": 115.55344773490832,
        "loss_pct": 18.21848792196431,
-       "rank": 4.0,
+       "rank": 5.0,
        "qualified": true,
-       "seed_rank": 3.5,
+       "seed_rank": 3.9,
        "psovns_vs": {
         "p": 0.008142979815602303,
         "p_holm": 0.016285959631204605,
@@ -1909,7 +1916,7 @@
         "seed_wins": 19,
         "seed_losses": 11,
         "seed_ties": 0,
-        "family_size": 7,
+        "family_size": 8,
         "all_run_endpoint": {
          "wins": 19,
          "ties": 0,
@@ -1928,19 +1935,19 @@
        "sd": 1.1365126349069274,
        "best": 114.00522450721353,
        "loss_pct": 19.557434476915972,
-       "rank": 7.0,
+       "rank": 8.0,
        "qualified": true,
-       "seed_rank": 5.833333333333333,
+       "seed_rank": 6.5,
        "psovns_vs": {
         "p": 5.587935447692871e-09,
-        "p_holm": 3.3527612686157227e-08,
+        "p_holm": 3.91155481338501e-08,
         "rb": 0.9913978494623656,
         "outcome": "W",
         "n_pairs": 30,
         "seed_wins": 29,
         "seed_losses": 1,
         "seed_ties": 0,
-        "family_size": 7,
+        "family_size": 8,
         "all_run_endpoint": {
          "wins": 29,
          "ties": 0,
@@ -1948,7 +1955,7 @@
          "n": 30,
          "score": 0.9666666666666667,
          "p_sign": 5.774199962615967e-08,
-         "p_sign_holm": 3.46451997756958e-07
+         "p_sign_holm": 4.041939973831177e-07
         }
        }
       },
@@ -1959,19 +1966,19 @@
        "sd": 0.8528531029047268,
        "best": 112.10812620550138,
        "loss_pct": 20.585001972680363,
-       "rank": 8.0,
+       "rank": 9.0,
        "qualified": true,
-       "seed_rank": 7.4,
+       "seed_rank": 8.133333333333333,
        "psovns_vs": {
         "p": 1.862645149230957e-09,
-        "p_holm": 1.30385160446167e-08,
+        "p_holm": 1.4901161193847656e-08,
         "rb": 1.0,
         "outcome": "W",
         "n_pairs": 30,
         "seed_wins": 30,
         "seed_losses": 0,
         "seed_ties": 0,
-        "family_size": 7,
+        "family_size": 8,
         "all_run_endpoint": {
          "wins": 30,
          "ties": 0,
@@ -1979,7 +1986,7 @@
          "n": 30,
          "score": 1.0,
          "p_sign": 1.862645149230957e-09,
-         "p_sign_holm": 1.30385160446167e-08
+         "p_sign_holm": 1.4901161193847656e-08
         }
        }
       },
@@ -1990,19 +1997,19 @@
        "sd": 1.146331207235748,
        "best": 115.95716853551508,
        "loss_pct": 18.216812290191847,
-       "rank": 3.0,
+       "rank": 4.0,
        "qualified": true,
-       "seed_rank": 4.733333333333333,
+       "seed_rank": 5.2,
        "psovns_vs": {
         "p": 0.0002562887966632843,
-        "p_holm": 0.0007688663899898529,
+        "p_holm": 0.0010251551866531372,
         "rb": 0.7247311827956989,
         "outcome": "W",
         "n_pairs": 30,
         "seed_wins": 22,
         "seed_losses": 8,
         "seed_ties": 0,
-        "family_size": 7,
+        "family_size": 8,
         "all_run_endpoint": {
          "wins": 22,
          "ties": 0,
@@ -2010,12 +2017,40 @@
          "n": 30,
          "score": 0.7333333333333333,
          "p_sign": 0.016124801710247997,
-         "p_sign_holm": 0.048374405130743994
+         "p_sign_holm": 0.06449920684099199
         }
        }
       },
       "GA": {
-       "status": "pending"
+       "runs": 30,
+       "feasible": 21,
+       "mean": 114.12457727886266,
+       "sd": 0.8505787043927233,
+       "best": 115.44395841423209,
+       "loss_pct": 18.132732092737292,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 5.066666666666666,
+       "psovns_vs": {
+        "p": 0.0007978975772857666,
+        "p_holm": 0.0023936927318573,
+        "rb": 0.6731182795698925,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 21,
+        "seed_losses": 9,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 21,
+         "ties": 0,
+         "losses": 9,
+         "n": 30,
+         "score": 0.7,
+         "p_sign": 0.042773945257067694,
+         "p_sign_holm": 0.1283218357712031
+        }
+       }
       },
       "BVNS": {
        "runs": 30,
@@ -2026,7 +2061,7 @@
        "loss_pct": 18.082781034369116,
        "rank": 2.0,
        "qualified": true,
-       "seed_rank": 2.9,
+       "seed_rank": 3.2,
        "psovns_vs": {
         "p": 0.05768792890012264,
         "p_holm": 0.05768792890012264,
@@ -2036,7 +2071,7 @@
         "seed_wins": 20,
         "seed_losses": 10,
         "seed_ties": 0,
-        "family_size": 7,
+        "family_size": 8,
         "all_run_endpoint": {
          "wins": 20,
          "ties": 0,
@@ -2055,19 +2090,19 @@
        "sd": 0.4687519822754424,
        "best": 114.47602851681104,
        "loss_pct": 18.615060960203188,
-       "rank": 6.0,
+       "rank": 7.0,
        "qualified": true,
-       "seed_rank": 4.166666666666667,
+       "seed_rank": 4.666666666666667,
        "psovns_vs": {
         "p": 1.6838312149047852e-06,
-        "p_holm": 6.735324859619141e-06,
+        "p_holm": 8.419156074523926e-06,
         "rb": 0.8924731182795699,
         "outcome": "W",
         "n_pairs": 30,
         "seed_wins": 28,
         "seed_losses": 2,
         "seed_ties": 0,
-        "family_size": 7,
+        "family_size": 8,
         "all_run_endpoint": {
          "wins": 28,
          "ties": 0,
@@ -2075,7 +2110,7 @@
          "n": 30,
          "score": 0.9333333333333333,
          "p_sign": 8.67992639541626e-07,
-         "p_sign_holm": 4.33996319770813e-06
+         "p_sign_holm": 5.207955837249756e-06
         }
        }
       }
@@ -2083,6 +2118,7 @@
      "ranking_order": [
       "PSOBV",
       "BVNS",
+      "GA",
       "DE",
       "SSABV",
       "PSOC",
@@ -2107,6 +2143,7 @@
     "30030": [
      "PSOBV",
      "BVNS",
+     "GA",
      "DE",
      "SSABV",
      "PSOC",
@@ -2117,7 +2154,7 @@
    },
    "ga_status": {
     "6030": "used",
-    "30030": "pending"
+    "30030": "used"
    }
   },
   "tab:farm-IV": {
@@ -3939,5 +3976,5 @@
    }
   ]
  },
- "runtime_s": 9.9734787940979
+ "runtime_s": 9.311057090759277
 }
