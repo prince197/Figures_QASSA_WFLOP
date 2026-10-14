@@ -109,7 +109,7 @@ The numbers follow from Proposition~\ref{prop:S-pso-stability} (Table~\ref{tab:S
 \begin{thSproof}
 (a) $x_k^2+y_k^2=r^2+y_k^2$ if $x_k=\pm r$ (and likewise for $y_k$). (b) $p$ and $g$ are evaluated, hence clipped, positions, so $p-r\le0$ and $g-r\le0$; the position update gives $\min(r+v',r)=r$ for $v'\ge0$.
 \end{thSproof}
-Thus, in the implementation, a coordinate that reaches the bound stays there while its velocity points outward, and by (a) every such evaluation is infeasible (almost surely). Lemma~\ref{lem:S-clip} does not say how often clipping occurs; that is an empirical question, answered by the diagnostics of Section~\ref{sec:S-diag-pso} (Fig.~\ref{fig:D-psodyn} and Table~\ref{tab:D-psodyn}).
+Thus, in the implementation, a coordinate that reaches the bound stays there while its velocity points outward, and by (a) every such evaluation is infeasible (almost surely). Lemma~\ref{lem:S-clip} does not say how often clipping occurs; that is an empirical question, answered by the diagnostics of Section~\ref{sec:S-diag-pso}.
 
 % ------------------------------------------------------------------------------------------------------------
 \subsection{Budget Accounting and the Random-Sampling Control}
