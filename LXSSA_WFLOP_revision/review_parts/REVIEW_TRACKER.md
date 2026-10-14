@@ -16,3 +16,10 @@ DONE when the authors approve it. After all parts are DONE, the full paper and s
 | 8 | Abstract | Abstract, highlights, graphical abstract | pending |
 
 Review files are in this folder (Part<N>_<name>_main.pdf and Part<N>_<name>_supplement.pdf).
+
+## Log
+- Part 1, revision 1 (shortened, about 9 pages instead of 12; manuscript pp. 10-20). Moved to the supplement:
+  proof of the PSO stability proposition and the proposition itself (now a short "Stability" paragraph, S6.1);
+  stability figure (S6.1); random-sampling proposition with proof (S6.2); discretized energy formula,
+  power-curve details, direction discretization and "Why Jensen" (S1.2 Model Details); SSA implementation
+  details and Laplace-step remarks (S1.3). Supplement extract: S1 (pp. 2-6) and S6 (pp. 36-41).

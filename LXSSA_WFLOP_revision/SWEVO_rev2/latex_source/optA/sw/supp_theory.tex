@@ -35,7 +35,7 @@ where $x=X^i_m$, $v=V^i_m$, $p=P^i_m$, $g=G_m$, and $\rho_1,\rho_2$ are independ
 x_{t+1}=(1+w-\varphi_t)\,x_t-w\,x_{t-1}+\varphi_{1,t}\,p+\varphi_{2,t}\,g .
 \label{eq:S-th-rec}
 \end{equation}
-The coefficient $\varphi_t$ is random, with mean $\mu=(c_1+c_2)/2$ and variance $\sigma^2=(c_1^2+c_2^2)/12$. We call the update \emph{order-1 stable} if, for all initial values $(x_0,x_1)$, $\mathrm E\,x_t$ converges to a limit that does not depend on them, and \emph{order-2 stable} if, in addition, $\mathrm E\,x_t^2$ does~\cite{Poli2009}. Proposition~\ref{prop:S-pso-stability} restates Proposition~\ref{M-prop:pso-stability} of the main text, whose proof there gives the main steps; the detailed proof follows.
+The coefficient $\varphi_t$ is random, with mean $\mu=(c_1+c_2)/2$ and variance $\sigma^2=(c_1^2+c_2^2)/12$. We call the update \emph{order-1 stable} if, for all initial values $(x_0,x_1)$, $\mathrm E\,x_t$ converges to a limit that does not depend on them, and \emph{order-2 stable} if, in addition, $\mathrm E\,x_t^2$ does~\cite{Poli2009}. Proposition~\ref{prop:S-pso-stability} applies these known stagnation results~\cite{Poli2009} to the implemented update (summarized in Section~\ref{M-sec:pso} of the main text); it is not claimed as new theory, and its proof follows.
 
 \begin{thS}[Stability of the implemented update]
 \label{prop:S-pso-stability}
@@ -51,7 +51,7 @@ Let $c_1,c_2\ge0$, $c_1+c_2>0$, and assume (A1)--(A2).
 \varrho(1):=2\mu(1-w^2)-(1-w)\mu^2-(1+w)\sigma^2>0 .
 \label{eq:S-th-o2}
 \end{equation}
-For $c_1=c_2$, \eqref{eq:S-th-o2} is Poli's condition~\eqref{M-eq:poli}, $c_1+c_2<24(1-w^2)/(7-5w)$~\cite{Poli2009}; for $c_1\ne c_2$ it is stricter than~\eqref{M-eq:poli}, since $\sigma^2$ grows when $c_1+c_2$ is kept and $c_1\ne c_2$.
+For $c_1=c_2$, \eqref{eq:S-th-o2} is Poli's condition $c_1+c_2<24(1-w^2)/(7-5w)$~\cite{Poli2009}; for $c_1\ne c_2$ it is stricter, since $\sigma^2$ grows when $c_1+c_2$ is kept and $c_1\ne c_2$.
 \item[(c)] Under (b), $\operatorname{Var}x_t\to V_\infty=(1+w)\,q/\varrho(1)$ with $q=c_1^2c_2^2(p-g)^2/[6(c_1+c_2)^2]$; for $c_1=c_2=c$,
 \begin{equation}
 V_\infty=\frac{c\,(1+w)}{4\,[12(1-w^2)-c\,(7-5w)]}\,(p-g)^2 ,
@@ -112,6 +112,16 @@ The numbers follow from Proposition~\ref{prop:S-pso-stability} (Table~\ref{tab:S
 Thus, in the implementation, a coordinate that reaches the bound stays there while its velocity points outward, and by (a) every such evaluation is infeasible (almost surely). Lemma~\ref{lem:S-clip} does not say how often clipping occurs; that is an empirical question, answered by the diagnostics of Section~\ref{sec:S-diag-pso}.
 
 % ------------------------------------------------------------------------------------------------------------
+\begin{figure}[!htbp]
+\begin{minipage}[c]{0.44\textwidth}\centering
+\pipefig{\linewidth}{figures_mpce/theory_stability.pdf}{6cm}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.53\textwidth}
+\caption{Stability regions of the implemented PSO update under stagnation and without active bounds ($c_1=c_2$; Proposition~\ref{prop:S-pso-stability}). Light: order-1 stable only, $c_1+c_2<4(1+w)$; dark: order-1 and order-2 stable, $c_1+c_2<24(1-w^2)/(7-5w)$. The constriction setting~\eqref{M-eq:constriction} (dot) is order-2 stable.}
+\label{fig:S-th-stability}
+\end{minipage}
+\end{figure}
+
 \subsection{Budget Accounting and the Random-Sampling Control}
 \label{sec:S-th-budget}
 An \emph{evaluation} is one call of the objective, counted by a wrapper that stops the run at the budget $B$ (for MS-SLSQP also the finite-difference calls). A population method with $N_p$ members uses $N_p$ evaluations for the initial population and $c$ per iteration, $c=N_p$ for PSO, SSA and DE and $c=2N_p$ for LX-SSA, so $T$ iterations cost $N_p+cT$ evaluations; stand-alone, $T=\lfloor(B-N_p)/c\rfloor$ (Section~\ref{sec:S-iter}). A two-phase hybrid with split $\omega$ uses $B_1=N_p+cT_1$ evaluations in Phase~1, $T_1=\operatorname{round}((\omega B-N_p)/c)$ with Python's rounding half to even (for PSO and SSA at $\omega=0.5$, $99.5$ is rounded to $T_1=100$), and $B_2=B-B_1$ in Phase~2; RS-VNS and RSD-VNS use $B_1=\operatorname{round}(\omega B)$, including the seeded initial population. At $B=6{,}030$ and $\omega=0.5$, $B_1=3{,}030$ for the swarms and $3{,}015$ for the two random-sampling controls, a difference of 15 evaluations (0.25\% of $B$).
@@ -124,7 +134,7 @@ For every seed: (a) Phase~1 of PSO-VNS evaluates exactly the first $B_1$ layouts
 (a) Both runs seed the global generator once and then draw, in the same order, the initial population and the vectors $\boldsymbol\rho_1,\boldsymbol\rho_2$ of every move; the PSO update does not depend on the number of iterations, so the first $T_1$ iterations coincide. (b) Phase~2 starts with $\mathbf G$ as its best evaluated point, replaces it only by strictly better evaluated points and returns the best one. (c) The SSA coefficient $\xi_1=2\exp[-(4t/T)^2]$ depends on $t/T$, and the hybrid uses $T=T_1$ instead of the stand-alone iteration count.
 \end{thSproof}
 
-\emph{Why equal budgets matter.} Let $L_A(b)$ be the best $F_p$ found by method $A$ within $b$ evaluations. For a fixed seed, $L_A(b)$ is nonincreasing in $b$, so any comparison at unequal budgets mixes the effect of the method with that of the budget: counting only Phase-2 evaluations, or counting an LX-SSA iteration as $N_p$ instead of $2N_p$ evaluations, would give one method more evaluations and an advantage by monotonicity alone. At the same $B$, Proposition~\ref{prop:S-prefix} makes PSO-VNS versus PSO a clean contrast: both continue from the identical state after $B_1$ evaluations, PSO with its whole swarm and VNS from $\mathbf G$ alone, for the same $B_2$ evaluations. It guarantees $L_{\text{PSO-VNS}}(B)\le L_{\text{PSO}}(B_1)$ but not $L_{\text{PSO-VNS}}(B)\le L_{\text{PSO}}(B)$; which of the two continuations is better is an empirical question. Likewise, the contrast between a hybrid and RS-VNS isolates Phase~1 (a search method versus uniform sampling with about the same number of evaluations, followed by the same Phase~2). How weak this control is follows from Proposition~\ref{M-prop:S-box} of the main text, which bounds the probability $P_N$ that a layout drawn uniformly in the bounding square is feasible. Its bound (b) uses the area $A(\rho)$ of the part of the farm disc $D$ (radius $r$) covered by a disc of radius $\rho$ centred on the boundary of $D$; for $0<\rho\le2r$,
+\emph{Why equal budgets matter.} Let $L_A(b)$ be the best $F_p$ found by method $A$ within $b$ evaluations. For a fixed seed, $L_A(b)$ is nonincreasing in $b$, so any comparison at unequal budgets mixes the effect of the method with that of the budget: counting only Phase-2 evaluations, or counting an LX-SSA iteration as $N_p$ instead of $2N_p$ evaluations, would give one method more evaluations and an advantage by monotonicity alone. At the same $B$, Proposition~\ref{prop:S-prefix} makes PSO-VNS versus PSO a clean contrast: both continue from the identical state after $B_1$ evaluations, PSO with its whole swarm and VNS from $\mathbf G$ alone, for the same $B_2$ evaluations. It guarantees $L_{\text{PSO-VNS}}(B)\le L_{\text{PSO}}(B_1)$ but not $L_{\text{PSO-VNS}}(B)\le L_{\text{PSO}}(B)$; which of the two continuations is better is an empirical question. Likewise, the contrast between a hybrid and RS-VNS isolates Phase~1 (a search method versus uniform sampling with about the same number of evaluations, followed by the same Phase~2). How weak this control is follows from Proposition~\ref{prop:S-box}, which bounds the probability $P_N$ that a layout drawn uniformly in the bounding square is feasible. Its bound (b) uses the area $A(\rho)$ of the part of the farm disc $D$ (radius $r$) covered by a disc of radius $\rho$ centred on the boundary of $D$; for $0<\rho\le2r$,
 \begin{equation}
 A(\rho)=r^2\arccos\Bigl(1-\frac{\rho^2}{2r^2}\Bigr)+\rho^2\arccos\frac{\rho}{2r}-\frac{\rho}{2}\sqrt{4r^2-\rho^2} .
 \label{eq:S-th-lens}
@@ -132,7 +142,7 @@ A(\rho)=r^2\arccos\Bigl(1-\frac{\rho^2}{2r^2}\Bigr)+\rho^2\arccos\frac{\rho}{2r}
 
 \begin{table}[!htbp]
 \centering
-\caption{Probability $P_N$ that a layout drawn uniformly in the bounding square $[-r,r]^{2N}$ is feasible (Proposition~\ref{M-prop:S-box} of the main text): all turbines in the farm, $(\pi/4)^N$; rigorous upper bound (b); Monte Carlo estimate from $10^7$ layouts per row (fixed seed; turbines drawn uniformly in the disc, multiplied by $(\pi/4)^N$; 95\% Clopper--Pearson interval); expected number of feasible layouts among the 3{,}015 uniform layouts of the Phase~1 of RS-VNS at $B=6{,}030$ (including the initial population). Rows $N=10$, 12, 15: largest benchmark cases ($s=8R=308$~m); $N=16$, 36: IEA37 Case Study~1 ($s=2D=260$~m); $N=20$: hypothetical.}
+\caption{Probability $P_N$ that a layout drawn uniformly in the bounding square $[-r,r]^{2N}$ is feasible (Proposition~\ref{prop:S-box}): all turbines in the farm, $(\pi/4)^N$; rigorous upper bound (b); Monte Carlo estimate from $10^7$ layouts per row (fixed seed; turbines drawn uniformly in the disc, multiplied by $(\pi/4)^N$; 95\% Clopper--Pearson interval); expected number of feasible layouts among the 3{,}015 uniform layouts of the Phase~1 of RS-VNS at $B=6{,}030$ (including the initial population). Rows $N=10$, 12, 15: largest benchmark cases ($s=8R=308$~m); $N=16$, 36: IEA37 Case Study~1 ($s=2D=260$~m); $N=20$: hypothetical.}
 \label{tab:S-th-box}
 \small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{rrrcccc}
@@ -150,6 +160,17 @@ $N$ & $r$ (m) & $s$ (m) & $(\pi/4)^N$ & bound on $P_N$ & $P_N$ (Monte Carlo) [95
 \end{tabular}
 \\[2pt]{\footnotesize For $N=2$ the exact value, from the distance distribution of two uniform points in a disc, is $P_2=0.443$. ``$<$'': upper end of the 95\% interval (no feasible layout among the $10^7$).}
 \end{table}
+
+\begin{thS}[Random sampling of layouts]
+\label{prop:S-box}
+\sloppy
+Let the $2N$ coordinates be independent and uniform in $[-r,r]$, and let $P_N$ be the probability that the layout is feasible (all turbines in the disc $\mathcal D$ of radius $r$ and all pairwise distances $\ge s$). Then (a) all $N$ turbines lie in $\mathcal D$ with probability $(\pi/4)^N$; (b) $P_N\le(\pi/4)^N\prod_{k=1}^{N-1}\max\bigl\{0,\ 1-\max\{A(s),\,k\,A(s/2)\}/(\pi r^2)\bigr\}$, where $A(\rho)$ is the area of the part of $\mathcal D$ covered by a disc of radius $\rho$ centered on the boundary of $\mathcal D$ (closed form: \eqref{eq:S-th-lens}); (c) among $M$ such layouts, the expected number of feasible ones is $MP_N$.
+\end{thS}
+\begin{thSproof}
+(a) The turbines are independent and uniform in the square, each in $\mathcal D$ with probability $\pi r^2/(2r)^2$. (b) Given (a), the positions $\mathbf p_1,\ldots,\mathbf p_N$ are independent and uniform in $\mathcal D$. If $\mathbf p_1,\ldots,\mathbf p_k$ are pairwise at least $s$ apart, $\mathbf p_{k+1}$ must avoid $U_k=\mathcal D\cap\bigcup_{j\le k}B(\mathbf p_j,s)$. The area of $B(\mathbf c,\rho)\cap \mathcal D$, $\mathbf c\in \mathcal D$, is nonincreasing in $\lVert\mathbf c\rVert$ (its derivative is minus the length of the common chord), hence $\ge A(\rho)$; so $\lvert U_k\rvert\ge A(s)$, and, as the discs $B(\mathbf p_j,s/2)\subset B(\mathbf p_j,s)$ are disjoint, $\lvert U_k\rvert\ge kA(s/2)$. The chain rule over $k$ gives (b). (c) Linearity of expectation.
+\end{thSproof}
+% CHECK-THEORY [T07]-[T10]: Proposition prop:S-box (= S-prop:S-box, restored in the main text with its proof; R1-6 had moved it to the supplement): (pi/4)^N, rigorous spacing bound (lens area nonincreasing, T10), Monte Carlo P_N < 1e-6 for N = 12, 15 (N = 10: 0 of 1e7), expected feasible of 3,015 <= 1.0e-3 (Table S-tab:S-th-box)
+
 
 The bound (b) is rigorous but loose; the Monte Carlo estimates show that for the largest benchmark cases a uniform layout in the square is feasible with probability below $10^{-6}$, so the expected number of feasible layouts in the Phase~1 of RS-VNS is about $10^{-3}$ or less (Table~\ref{tab:S-th-box}). Since any violation above $4.6\times10^{-8}$ makes $F_p$ exceed every wake loss (Section~\ref{sec:S-tol} and Lemma~\ref{lem:S-feas-improve}), and $F_p=L+\mathrm{Pen}$ with $0\le L\le NE_{\rm ideal}+\varepsilon$ ($\varepsilon$: the small contribution of the negative part of the power curve just above cut-in), the Phase-1 result of RS-VNS in these cases is almost surely the sampled layout with the smallest $F_p$, which is decided by the penalty: $F_p(\mathbf X)<F_p(\mathbf Y)$ whenever $\mathrm{Pen}(\mathbf Y)-\mathrm{Pen}(\mathbf X)>NE_{\rm ideal}$. RS-VNS thus hands VNS the least-violating of its samples, not a layout selected for low wake loss, and ``better than RS-VNS'' is a minimum bar. The factor $(\pi/4)^N$ explains only a small part of this weakness: the Monte Carlo column of Table~\ref{tab:S-th-box} lies orders of magnitude below $(\pi/4)^N$, so the spacing constraint dominates, and in the runs, disc sampling gives a feasible sample to only a minority of the RS-VNS runs without one (Section~\ref{sec:S-ablation}).
 

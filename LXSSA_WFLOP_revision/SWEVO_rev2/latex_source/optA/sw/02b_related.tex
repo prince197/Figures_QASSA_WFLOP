@@ -50,7 +50,7 @@ S\"orensen~\cite{Sorensen2015} argued that many ``novel'' metaheuristics hide kn
 
 \subsection{PSO Parameterization}
 \label{sec:related-pso}
-The inertia weight~\cite{Shi1998} and the constriction factor of Clerc and Kennedy~\cite{Clerc2002} were introduced to control the divergence of the original PSO~\cite{Kennedy1995}; the constriction setting is equivalent to an inertia-weight PSO with $w\approx0.73$ and $c_1=c_2\approx1.50$. Stability analyses of the particle dynamics~\cite{Poli2009,Cleghorn2018,Bonyadi2017} place this setting inside the region in which the mean and the variance of a particle's position converge (Proposition~\ref{prop:pso-stability}); we therefore use the standard constriction coefficients, without tuning, for PSO and for the first phase of PSO-VNS.
+The inertia weight~\cite{Shi1998} and the constriction factor of Clerc and Kennedy~\cite{Clerc2002} were introduced to control the divergence of the original PSO~\cite{Kennedy1995}; the constriction setting is equivalent to an inertia-weight PSO with $w\approx0.73$ and $c_1=c_2\approx1.50$. Stability analyses of the particle dynamics~\cite{Poli2009,Cleghorn2018,Bonyadi2017} place this setting inside the region in which the mean and the variance of a particle's position converge (Section~\ref{sec:pso}); we therefore use the standard constriction coefficients, without tuning, for PSO and for the first phase of PSO-VNS.
 
 \subsection{Hybrid Swarm--Local-Search Designs}
 \label{sec:related-hybrid}
