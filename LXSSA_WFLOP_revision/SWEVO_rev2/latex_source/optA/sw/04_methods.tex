@@ -1,4 +1,4 @@
-\section{Preliminaries: Phase-1 Methods and Basic VNS}
+\section{Preliminaries: PSO, SSA and Basic VNS}
 \label{sec:prelim}
 % Proposition environment (neither IEEEtran nor elsarticle defines one); guarded, so a main file may define it in its preamble instead.
 \makeatletter\@ifundefined{proposition}{\newtheorem{proposition}{Proposition}}{}\makeatother
@@ -19,17 +19,26 @@ w=0.7298,\qquad c_1=c_2=\kappa\varphi_1=1.49618 .
 PSO denotes~\eqref{eq:pso-v} and~\eqref{eq:pso-x} with these coefficients, fixed a priori from the literature. It is run as implemented: velocities start at zero and are not clamped (no bound $\lvert V^i_m\rvert\le V_{\max}$), a coordinate clipped to the square (Section~\ref{sec:constraints}) keeps its velocity, and $\mathbf P^i$, $\mathbf G$ are updated after each evaluation (asynchronous global best).
 
 \begin{algorithm}[!t]
-\caption{PSO as implemented ($N_p(T+1)$ evaluations).}
+\caption{PSO for the WFLOP as implemented (complete procedure; $N_p(T+1)$ evaluations of $F_p$).}
 \label{alg:pso}
 \small
 \begin{algorithmic}[1]
-\State Draw (seeded) and evaluate $N_p$ layouts $\mathbf X^i$; $\mathbf V^i\gets\mathbf 0$, $\mathbf P^i\gets\mathbf X^i$, $\mathbf G\gets\arg\min_i F_p(\mathbf P^i)$
-\For{$t=1,\ldots,T$ and $i=1,\ldots,N_p$}
-    \State Draw $\boldsymbol\rho_1,\boldsymbol\rho_2\sim U(0,1)^n$; update $\mathbf V^i$ by~\eqref{eq:pso-v} \Comment{no velocity clamping}
-    \State $\mathbf X^i\gets\operatorname{clip}(\mathbf X^i+\mathbf V^i,-r,r)$ \Comment{box repair; $\mathbf V^i$ is kept}
-    \State Evaluate $F_p(\mathbf X^i)$; replace $\mathbf P^i$ and $\mathbf G$ if it is strictly lower than theirs
+\Require site (farm radius $r$), number of turbines $N$, wind data and wake model, i.e., the penalized wake loss $F_p$~\eqref{eq:penalty}; number of iterations $T$; random seed
+\Statex \textbf{Parameters:} swarm size $N_p=30$; $w=0.7298$, $c_1=c_2=1.49618$~\eqref{eq:constriction}
+\Ensure the global best layout $\mathbf G$ and its value $F_p(\mathbf G)$
+\Statex \textbf{Initialization}
+\State $n\gets2N$; draw (seeded) $N_p$ layouts $\mathbf X^i\in[-r,r]^n$ and evaluate $F_p(\mathbf X^i)$ \Comment{$N_p$ evaluations}
+\State $\mathbf V^i\gets\mathbf 0$, $\mathbf P^i\gets\mathbf X^i$ ($i=1,\ldots,N_p$); $\mathbf G\gets\arg\min_i F_p(\mathbf P^i)$
+\Statex \textbf{Main loop}
+\For{$t=1,\ldots,T$}
+    \For{$i=1,\ldots,N_p$}
+        \State Draw $\boldsymbol\rho_1,\boldsymbol\rho_2\sim U(0,1)^n$; $\mathbf V^i\gets w\,\mathbf V^i+c_1\boldsymbol\rho_1\circ(\mathbf P^i-\mathbf X^i)+c_2\boldsymbol\rho_2\circ(\mathbf G-\mathbf X^i)$ \Comment{\eqref{eq:pso-v}}
+        \State $\mathbf X^i\gets\operatorname{clip}(\mathbf X^i+\mathbf V^i,-r,r)$ \Comment{\eqref{eq:pso-x} with box repair; $\mathbf V^i$ is kept}
+        \State Evaluate $F_p(\mathbf X^i)$; if $F_p(\mathbf X^i)<F_p(\mathbf P^i)$, then $\mathbf P^i\gets\mathbf X^i$; if $F_p(\mathbf X^i)<F_p(\mathbf G)$, then $\mathbf G\gets\mathbf X^i$ \Comment{asynchronous update}
+    \EndFor
 \EndFor
-\State \Return $\mathbf G$
+\Statex \textbf{Termination}
+\State Stop after $T$ iterations, i.e., $N_p(T+1)$ evaluations; \Return $\mathbf G$
 \end{algorithmic}
 \end{algorithm}
 
@@ -120,18 +129,36 @@ with $\phi=0$ and $\chi=1$, and keeps the better candidate. As published, it eva
 The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ $\ell_\infty$ shell neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$ ($\delta_0=0$), of the whole layout: shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}), a coordinate-wise optimality at one step length, not a local minimum.
 % CHECK-THEORY [T12]: compass search final step h0/2^5 = 0.0015625 r (Proposition S-prop:S-ls); verified: analysis/original_vns.py (k_max = 5, rho_k = 0.1 k r, h0 = 0.05 r, h_min = 1e-3 r; move to the best of the 2 dim moves if it improves the current point, else halve h; shaking by rejection in the l_inf shell, then clip)
 
-\begin{algorithm}[!t]
-\caption{Basic VNS from an incumbent $\mathbf X$ (until the budget is used; returns the best layout evaluated).}
+\begin{algorithm}[!htb]
+\caption{Basic VNS for the WFLOP as implemented (complete procedure; every call of $F_p$ counts against the budget $B$).}
 \label{alg:vns}
 \small
 \begin{algorithmic}[1]
+\Require site (farm radius $r$), number of turbines $N$, wind data and wake model, i.e., the penalized wake loss $F_p$~\eqref{eq:penalty}; budget $B$; random seed; an incumbent layout $\mathbf X$ (VNS alone: none; Phase~2 of a hybrid: the layout passed by Phase~1)
+\Statex \textbf{Parameters:} $k_{\max}=5$, $\delta_k=0.1\,k\,r$ ($\delta_0=0$); $h_0=0.05\,r$, $h_{\min}=10^{-3}r$
+\Ensure the best layout $\mathbf X^\star$ evaluated
+\Statex \textbf{Initialization}
+\State $n\gets2N$; \textbf{if} no incumbent is given \textbf{then} draw (seeded) $N_p=30$ layouts in $[-r,r]^n$, evaluate them and let $\mathbf X$ be the best \Comment{VNS alone}
 \State $\mathbf X\gets\textsc{LocalSearch}(\mathbf X)$; $k\gets1$
-\Loop
-    \State Draw $\mathbf d\sim U[-\delta_k,\delta_k]^n$ until $\lVert\mathbf d\rVert_\infty>\delta_{k-1}$; evaluate $\mathbf X'=\operatorname{clip}(\mathbf X+\mathbf d)$ \Comment{shaking}
-    \State $\mathbf X'\gets\textsc{LocalSearch}(\mathbf X')$; \textbf{if} $F_p(\mathbf X')<F_p(\mathbf X)$ \textbf{then} $\mathbf X\gets\mathbf X'$, $k\gets1$ \textbf{else} $k\gets k\bmod k_{\max}+1$
-\EndLoop
+\Statex \textbf{Main loop}
+\While{fewer than $B$ evaluations have been used}
+    \State Draw $\mathbf d\sim U[-\delta_k,\delta_k]^n$ until $\lVert\mathbf d\rVert_\infty>\delta_{k-1}$ \Comment{shaking in $\mathcal N_k(\mathbf X)$}
+    \State $\mathbf X'\gets\operatorname{clip}(\mathbf X+\mathbf d,-r,r)$; evaluate $F_p(\mathbf X')$
+    \State $\mathbf X''\gets\textsc{LocalSearch}(\mathbf X')$
+    \If{$F_p(\mathbf X'')<F_p(\mathbf X)$} $\mathbf X\gets\mathbf X''$, $k\gets1$ \Comment{move}
+    \Else\ $k\gets k\bmod k_{\max}+1$ \Comment{next, larger neighborhood}
+    \EndIf
+\EndWhile
+\Statex \textbf{Termination}
+\State Stop as soon as $B$ evaluations have been used (also inside \textsc{LocalSearch}); \Return $\mathbf X^\star$, the best layout evaluated
+\Statex
 \Function{LocalSearch}{$\mathbf y$} \Comment{compass search, best improvement}
-    \State $h\gets h_0$; \textbf{while} $h\ge h_{\min}$: evaluate the $2n$ points $\operatorname{clip}(\mathbf y\pm h\,\mathbf e_m)$; if the best, $\mathbf y'$, has $F_p(\mathbf y')<F_p(\mathbf y)$, then $\mathbf y\gets\mathbf y'$, else $h\gets h/2$
+    \State $h\gets h_0$
+    \While{$h\ge h_{\min}$}
+        \State Evaluate the $2n$ trial layouts $\operatorname{clip}(\mathbf y\pm h\,\mathbf e_m,-r,r)$, $m=1,\ldots,n$ ($\mathbf e_m$: $m$th unit vector)
+        \If{the best trial layout $\mathbf y'$ has $F_p(\mathbf y')<F_p(\mathbf y)$} $\mathbf y\gets\mathbf y'$ \Else\ $h\gets h/2$
+        \EndIf
+    \EndWhile
     \State \Return $\mathbf y$
 \EndFunction
 \end{algorithmic}
