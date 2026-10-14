@@ -1,0 +1,3943 @@
+{
+ "generated": "2026-10-14 10:11:31",
+ "script": "rev4_farm_tables.py",
+ "pool": [
+  "PSOBV",
+  "PSOC",
+  "SSABV",
+  "SSA",
+  "LXSSA",
+  "DE",
+  "GA",
+  "BVNS",
+  "SLSQP"
+ ],
+ "labels": {
+  "PSOBV": "PSO-VNS",
+  "PSOC": "PSO",
+  "SSABV": "SSA-VNS",
+  "SSA": "SSA",
+  "LXSSA": "LX-SSA",
+  "DE": "DE",
+  "GA": "GA",
+  "BVNS": "VNS",
+  "SLSQP": "MS-SLSQP"
+ },
+ "focus": "PSOBV",
+ "protocol": {
+  "ranking": "Within each case a method is ranked by the mean objective of its feasible runs only if at least half of its runs (15 of 30; 5 of 10) are feasible; methods with fewer feasible runs receive the worst ranks, below all qualifying methods, ordered by their number of feasible runs (more = better, ties averaged). This removes the survivorship bias of ranking by the mean feasible objective.",
+  "run_level_score": "mpce_results.goodness (objective if feasible; every infeasible run below every feasible run, infeasible runs ordered by minimum spacing)",
+  "paired_test": "mpce_results.paired_vs (two-sided Wilcoxon signed-rank on seed-paired score differences, |d| <= 1e-9 dropped), Holm within the family of PSO-VNS comparisons",
+  "all_run_endpoint": "feasible beats infeasible; both feasible: larger objective wins (tie if |d| <= 1e-9); both infeasible: tie; score (W + T/2)/n; exact sign test on W vs L",
+  "seeds": "1-30, stored runs only; no optimization rerun",
+  "initialization": "random"
+ },
+ "data_status": {
+  "benchmark_8": {
+   "source": "rev2_analysis.main_runs (mpce_inference_extra.load)",
+   "rows": 16320
+  },
+  "rev2_ga": {
+   "status": "complete",
+   "rows": 2040,
+   "files": [
+    "rev2_ga_s0of10.csv",
+    "rev2_ga_s1of10.csv",
+    "rev2_ga_s2of10.csv",
+    "rev2_ga_s3of10.csv",
+    "rev2_ga_s4of10.csv",
+    "rev2_ga_s5of10.csv",
+    "rev2_ga_s6of10.csv",
+    "rev2_ga_s7of10.csv",
+    "rev2_ga_s8of10.csv",
+    "rev2_ga_s9of10.csv"
+   ],
+   "methods": [
+    "GA"
+   ]
+  },
+  "mpce_hrfix+rev2_gahr": {
+   "rows": 1030,
+   "methods": [
+    "BVNS",
+    "DE",
+    "GA",
+    "LXBV",
+    "LXSSA",
+    "PSOBV",
+    "PSOC",
+    "RSVNS",
+    "SLSQP",
+    "SSA",
+    "SSABV"
+   ]
+  },
+  "rev2_lg16": {
+   "status": "complete",
+   "rows": 270,
+   "files": [
+    "rev2_lg16_s0of4.csv",
+    "rev2_lg16_s1of4.csv",
+    "rev2_lg16_s2of4.csv",
+    "rev2_lg16_s3of4.csv"
+   ],
+   "methods": [
+    "BVNS",
+    "DE",
+    "LXSSA",
+    "PSOBV",
+    "PSOC",
+    "RSDVNS",
+    "SLSQP",
+    "SSA",
+    "SSABV"
+   ]
+  },
+  "rev2_lg16b": {
+   "status": "complete",
+   "rows": 270,
+   "files": [
+    "rev2_lg16b_s0of30.csv",
+    "rev2_lg16b_s10of30.csv",
+    "rev2_lg16b_s11of30.csv",
+    "rev2_lg16b_s12of30.csv",
+    "rev2_lg16b_s13of30.csv",
+    "rev2_lg16b_s14of30.csv",
+    "rev2_lg16b_s15of30.csv",
+    "rev2_lg16b_s16of30.csv",
+    "rev2_lg16b_s17of30.csv",
+    "rev2_lg16b_s18of30.csv",
+    "rev2_lg16b_s19of30.csv",
+    "rev2_lg16b_s1of30.csv",
+    "rev2_lg16b_s20of30.csv",
+    "rev2_lg16b_s21of30.csv",
+    "rev2_lg16b_s22of30.csv",
+    "rev2_lg16b_s23of30.csv",
+    "rev2_lg16b_s24of30.csv",
+    "rev2_lg16b_s25of30.csv",
+    "rev2_lg16b_s26of30.csv",
+    "rev2_lg16b_s27of30.csv",
+    "rev2_lg16b_s28of30.csv",
+    "rev2_lg16b_s29of30.csv",
+    "rev2_lg16b_s2of30.csv",
+    "rev2_lg16b_s3of30.csv",
+    "rev2_lg16b_s4of30.csv",
+    "rev2_lg16b_s5of30.csv",
+    "rev2_lg16b_s6of30.csv",
+    "rev2_lg16b_s7of30.csv",
+    "rev2_lg16b_s8of30.csv",
+    "rev2_lg16b_s9of30.csv"
+   ],
+   "methods": [
+    "BVNS",
+    "DE",
+    "LXSSA",
+    "PSOBV",
+    "PSOC",
+    "RSDVNS",
+    "SLSQP",
+    "SSA",
+    "SSABV"
+   ]
+  },
+  "rev4_galg": {
+   "status": "complete shard set",
+   "rows": 30,
+   "files": [
+    "rev4_galg_s0of1.csv"
+   ],
+   "methods": [
+    "GA"
+   ]
+  },
+  "rev4_galgb": {
+   "status": "missing",
+   "rows": 0
+  },
+  "rev2_gaiea": {
+   "status": "complete",
+   "rows": 120,
+   "files": [
+    "rev2_gaiea_s0of2.csv",
+    "rev2_gaiea_s1of2.csv"
+   ],
+   "methods": [
+    "GA"
+   ]
+  },
+  "mpce_iea16/36(+p)": {
+   "rows": 1080,
+   "methods": [
+    "BVNS",
+    "DE",
+    "GA",
+    "LXSSA",
+    "PSOBV",
+    "PSOC",
+    "SLSQP",
+    "SSA",
+    "SSABV"
+   ]
+  }
+ },
+ "tables": {
+  "tab:farm-I-res": {
+   "n_cases": 68,
+   "n_runs": 18360,
+   "dropped_unpaired_runs": 0,
+   "completeness": {
+    "complete": true,
+    "n_groups_with_fewer_runs": 0,
+    "groups_with_fewer_runs_examples": {},
+    "methods_missing": [],
+    "runs_per_group_min": 30
+   },
+   "methods": {
+    "PSOBV": {
+     "feasible_pct": 100.0,
+     "avg_rank": 2.176470588235294,
+     "sole_best_cases": 21,
+     "n_qualified": 68,
+     "mean_loss_pct_qualified": 1.3224625271346837,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 1.0352838608171802,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.5
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.5220287996212893,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.3181818181818183
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.46287012124595694,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.0
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 2.9229341412229406,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.0555555555555554
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 1.8564712371758985,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.409090909090909
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 1.5471291231846382,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 1.9285714285714286
+      }
+     }
+    },
+    "PSOC": {
+     "feasible_pct": 100.0,
+     "avg_rank": 2.3970588235294117,
+     "sole_best_cases": 17,
+     "n_qualified": 68,
+     "mean_loss_pct_qualified": 1.340505882001175,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 0.9708781002577792,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.1666666666666665
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.47898116394540563,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.1363636363636362
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.47076948882286945,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.5714285714285716
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 2.986081286395131,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.2777777777777777
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 1.8873886128832376,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.6818181818181817
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 1.6372089362548903,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.4285714285714284
+      }
+     }
+    },
+    "SSABV": {
+     "feasible_pct": 99.55882352941177,
+     "avg_rank": 4.3161764705882355,
+     "sole_best_cases": 0,
+     "n_qualified": 68,
+     "mean_loss_pct_qualified": 1.652845726510679,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 1.5031400282903735,
+       "feasible_pct": 98.51851851851852,
+       "avg_rank_9pool": 5.388888888888889
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.7712962685965721,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 4.318181818181818
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.6185675422728627,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 3.9285714285714284
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 3.3635056772694907,
+       "feasible_pct": 98.14814814814815,
+       "avg_rank_9pool": 4.388888888888889
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 2.235475956793381,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 4.181818181818182
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 1.9185184272555595,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 4.071428571428571
+      }
+     }
+    },
+    "SSA": {
+     "feasible_pct": 97.6470588235294,
+     "avg_rank": 6.338235294117647,
+     "sole_best_cases": 0,
+     "n_qualified": 66,
+     "mean_loss_pct_qualified": 1.8052204904083626,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 8,
+       "mean_loss_pct_qualified": 1.3631010141677935,
+       "feasible_pct": 91.48148148148148,
+       "avg_rank_9pool": 6.5
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.9911723596659954,
+       "feasible_pct": 99.69696969696969,
+       "avg_rank_9pool": 6.045454545454546
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.8334617680096047,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 6.178571428571429
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 8,
+       "mean_loss_pct_qualified": 3.100634454723836,
+       "feasible_pct": 91.48148148148148,
+       "avg_rank_9pool": 6.722222222222222
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 2.574631109358577,
+       "feasible_pct": 99.69696969696969,
+       "avg_rank_9pool": 6.409090909090909
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 2.324454693172439,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 6.321428571428571
+      }
+     }
+    },
+    "LXSSA": {
+     "feasible_pct": 96.86274509803921,
+     "avg_rank": 7.014705882352941,
+     "sole_best_cases": 0,
+     "n_qualified": 66,
+     "mean_loss_pct_qualified": 1.9585605960391184,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 8,
+       "mean_loss_pct_qualified": 1.6067437720205462,
+       "feasible_pct": 89.62962962962962,
+       "avg_rank_9pool": 7.055555555555555
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 1.1156297117459437,
+       "feasible_pct": 99.0909090909091,
+       "avg_rank_9pool": 7.045454545454546
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.9411813021804196,
+       "feasible_pct": 99.76190476190476,
+       "avg_rank_9pool": 6.678571428571429
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 8,
+       "mean_loss_pct_qualified": 3.3297800421123194,
+       "feasible_pct": 89.62962962962962,
+       "avg_rank_9pool": 7.277777777777778
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 2.746194899448601,
+       "feasible_pct": 99.0909090909091,
+       "avg_rank_9pool": 7.136363636363637
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 2.4368714194180723,
+       "feasible_pct": 99.76190476190476,
+       "avg_rank_9pool": 7.035714285714286
+      }
+     }
+    },
+    "DE": {
+     "feasible_pct": 71.37254901960785,
+     "avg_rank": 7.955882352941177,
+     "sole_best_cases": 0,
+     "n_qualified": 50,
+     "mean_loss_pct_qualified": 1.4926725259887579,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 6,
+       "mean_loss_pct_qualified": 0.6900745301387329,
+       "feasible_pct": 62.22222222222222,
+       "avg_rank_9pool": 7.166666666666667
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 8,
+       "mean_loss_pct_qualified": 0.8545254235893114,
+       "feasible_pct": 72.72727272727273,
+       "avg_rank_9pool": 8.227272727272727
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.9772183048709541,
+       "feasible_pct": 76.19047619047619,
+       "avg_rank_9pool": 8.071428571428571
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 6,
+       "mean_loss_pct_qualified": 2.114987557186735,
+       "feasible_pct": 62.22222222222222,
+       "avg_rank_9pool": 7.833333333333333
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 8,
+       "mean_loss_pct_qualified": 1.9811638560160132,
+       "feasible_pct": 72.72727272727273,
+       "avg_rank_9pool": 7.954545454545454
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 2.2153034713692716,
+       "feasible_pct": 76.19047619047619,
+       "avg_rank_9pool": 8.214285714285714
+      }
+     }
+    },
+    "GA": {
+     "feasible_pct": 98.62745098039215,
+     "avg_rank": 2.735294117647059,
+     "sole_best_cases": 16,
+     "n_qualified": 68,
+     "mean_loss_pct_qualified": 1.3481659844243261,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 1.0621236603762794,
+       "feasible_pct": 94.81481481481482,
+       "avg_rank_9pool": 3.388888888888889
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.47573152379638733,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.5
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.4409481476639683,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.357142857142857
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 3.0709908355399156,
+       "feasible_pct": 94.81481481481482,
+       "avg_rank_9pool": 3.388888888888889
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 1.863626323711854,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.5
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 1.6122175776944438,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 2.642857142857143
+      }
+     }
+    },
+    "BVNS": {
+     "feasible_pct": 100.0,
+     "avg_rank": 5.213235294117647,
+     "sole_best_cases": 3,
+     "n_qualified": 68,
+     "mean_loss_pct_qualified": 1.787654058672649,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 1.5478586269864048,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 5.166666666666667
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.902140331689154,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 5.318181818181818
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.7148520079511501,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 5.428571428571429
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 3.449655557465954,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 4.944444444444445
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 2.424338345117764,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 5.090909090909091
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 2.1416896266769077,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 5.214285714285714
+      }
+     }
+    },
+    "SLSQP": {
+     "feasible_pct": 99.95098039215686,
+     "avg_rank": 6.852941176470588,
+     "sole_best_cases": 1,
+     "n_qualified": 68,
+     "mean_loss_pct_qualified": 1.7578660938001243,
+     "clusters": {
+      "DSI_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 1.179523305549914,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 5.666666666666667
+      },
+      "DSI_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 0.8866380144585762,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 7.090909090909091
+      },
+      "DSI_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 0.8535494878728214,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 7.785714285714286
+      },
+      "DSII_r500": {
+       "n_cases": 9,
+       "n_qualified": 9,
+       "mean_loss_pct_qualified": 3.35485989858087,
+       "feasible_pct": 99.62962962962963,
+       "avg_rank_9pool": 6.111111111111111
+      },
+      "DSII_r750": {
+       "n_cases": 11,
+       "n_qualified": 11,
+       "mean_loss_pct_qualified": 2.359708764172989,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 6.636363636363637
+      },
+      "DSII_r1000": {
+       "n_cases": 14,
+       "n_qualified": 14,
+       "mean_loss_pct_qualified": 2.218995581861763,
+       "feasible_pct": 100.0,
+       "avg_rank_9pool": 7.142857142857143
+      }
+     }
+    }
+   },
+   "ranking_order": [
+    "PSOBV",
+    "PSOC",
+    "GA",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ]
+  },
+  "tab:farm-I-stats": {
+   "friedman": {
+    "chi2": 374.84975596886954,
+    "df": 8,
+    "p": 4.4638544240654904e-76,
+    "iman_davenport": 148.4770760679015,
+    "iman_davenport_df": [
+     8,
+     536
+    ],
+    "iman_davenport_p": 1.1734263566526265e-130,
+    "n_cases": 68,
+    "best_ranked": "PSOBV"
+   },
+   "avg_rank": {
+    "PSOBV": 2.176470588235294,
+    "PSOC": 2.3970588235294117,
+    "SSABV": 4.3161764705882355,
+    "SSA": 6.338235294117647,
+    "LXSSA": 7.014705882352941,
+    "DE": 7.955882352941177,
+    "GA": 2.735294117647059,
+    "BVNS": 5.213235294117647,
+    "SLSQP": 6.852941176470588
+   },
+   "vs_psovns": {
+    "PSOC": {
+     "p_z_holm": 0.6385920776850196,
+     "z": 0.46966821831386235,
+     "case_mean_better": 34,
+     "case_mean_equal_or_neither": 8,
+     "case_mean_worse": 26,
+     "p_wilcoxon": 0.2958623332952982,
+     "p_wilcoxon_holm": 0.2958623332952982,
+     "rb": 0.1551912568306011,
+     "mean_dloss_pp": -0.018043354866491453,
+     "ci95_mean_dloss_pp": [
+      -0.044557155232241775,
+      0.007836351844264924
+     ],
+     "n_both_qualified": 68,
+     "imputed": 0,
+     "run_level_wtl": {
+      "W": 13,
+      "T": 52,
+      "L": 3
+     },
+     "median_rb_run_level": 0.07741935483870968
+    },
+    "SSABV": {
+     "p_z_holm": 1.565733411619832e-05,
+     "z": 4.5557817176444635,
+     "case_mean_better": 59,
+     "case_mean_equal_or_neither": 8,
+     "case_mean_worse": 1,
+     "p_wilcoxon": 1.8964365613380834e-11,
+     "p_wilcoxon_holm": 7.585746245352333e-11,
+     "rb": 0.9967213114754099,
+     "mean_dloss_pp": -0.33038319937599553,
+     "ci95_mean_dloss_pp": [
+      -0.40921041880830655,
+      -0.25501077770319525
+     ],
+     "n_both_qualified": 68,
+     "imputed": 0,
+     "run_level_wtl": {
+      "W": 49,
+      "T": 19,
+      "L": 0
+     },
+     "median_rb_run_level": 0.7225806451612904
+    },
+    "SSA": {
+     "p_z_holm": 3.962372016388222e-18,
+     "z": 8.861073718854866,
+     "case_mean_better": 62,
+     "case_mean_equal_or_neither": 6,
+     "case_mean_worse": 0,
+     "p_wilcoxon": 7.576651760171568e-12,
+     "p_wilcoxon_holm": 5.3036562321200976e-11,
+     "rb": 1.0,
+     "mean_dloss_pp": -0.6112577561750174,
+     "ci95_mean_dloss_pp": [
+      -0.7621328774677965,
+      -0.47130747446941157
+     ],
+     "n_both_qualified": 66,
+     "imputed": 2,
+     "run_level_wtl": {
+      "W": 59,
+      "T": 9,
+      "L": 0
+     },
+     "median_rb_run_level": 0.9763440860215054
+    },
+    "LXSSA": {
+     "p_z_holm": 4.861550457412669e-24,
+     "z": 10.301389588350709,
+     "case_mean_better": 62,
+     "case_mean_equal_or_neither": 6,
+     "case_mean_worse": 0,
+     "p_wilcoxon": 7.576651760171568e-12,
+     "p_wilcoxon_holm": 5.3036562321200976e-11,
+     "rb": 1.0,
+     "mean_dloss_pp": -0.7645978618057732,
+     "ci95_mean_dloss_pp": [
+      -0.9637343464000522,
+      -0.5796123134859866
+     ],
+     "n_both_qualified": 66,
+     "imputed": 2,
+     "run_level_wtl": {
+      "W": 60,
+      "T": 8,
+      "L": 0
+     },
+     "median_rb_run_level": 0.9741935483870967
+    },
+    "DE": {
+     "p_z_holm": 6.785039362399105e-34,
+     "z": 12.305307319823187,
+     "case_mean_better": 60,
+     "case_mean_equal_or_neither": 8,
+     "case_mean_worse": 0,
+     "p_wilcoxon": 1.3982864665308031e-11,
+     "p_wilcoxon_holm": 6.991432332654016e-11,
+     "rb": 1.0,
+     "mean_dloss_pp": -0.8865753016721861,
+     "ci95_mean_dloss_pp": [
+      -1.1907629352222187,
+      -0.6044665694355134
+     ],
+     "n_both_qualified": 50,
+     "imputed": 18,
+     "run_level_wtl": {
+      "W": 56,
+      "T": 12,
+      "L": 0
+     },
+     "median_rb_run_level": 1.0
+    },
+    "GA": {
+     "p_z_holm": 0.4682294561765683,
+     "z": 1.1898261530617844,
+     "case_mean_better": 39,
+     "case_mean_equal_or_neither": 9,
+     "case_mean_worse": 20,
+     "p_wilcoxon": 0.05059183149572561,
+     "p_wilcoxon_holm": 0.10118366299145122,
+     "rb": 0.29265536723163843,
+     "mean_dloss_pp": -0.02570345728964251,
+     "ci95_mean_dloss_pp": [
+      -0.0706814746621819,
+      0.011773249343724633
+     ],
+     "n_both_qualified": 68,
+     "imputed": 0,
+     "run_level_wtl": {
+      "W": 9,
+      "T": 58,
+      "L": 1
+     },
+     "median_rb_run_level": 0.1032258064516129
+    },
+    "BVNS": {
+     "p_z_holm": 4.0314827913411037e-10,
+     "z": 6.4657658054541685,
+     "case_mean_better": 55,
+     "case_mean_equal_or_neither": 9,
+     "case_mean_worse": 4,
+     "p_wilcoxon": 6.295527868771217e-11,
+     "p_wilcoxon_holm": 1.8886583606313651e-10,
+     "rb": 0.9785310734463277,
+     "mean_dloss_pp": -0.4651915315379654,
+     "ci95_mean_dloss_pp": [
+      -0.5588084171062448,
+      -0.3710324258786756
+     ],
+     "n_both_qualified": 68,
+     "imputed": 0,
+     "run_level_wtl": {
+      "W": 51,
+      "T": 16,
+      "L": 1
+     },
+     "median_rb_run_level": 0.8365591397849462
+    },
+    "SLSQP": {
+     "p_z_holm": 1.4107696428500763e-22,
+     "z": 9.956966228253876,
+     "case_mean_better": 66,
+     "case_mean_equal_or_neither": 0,
+     "case_mean_worse": 2,
+     "p_wilcoxon": 5.974424383134514e-12,
+     "p_wilcoxon_holm": 4.779539506507611e-11,
+     "rb": 0.9599317988064792,
+     "mean_dloss_pp": -0.4354035666654407,
+     "ci95_mean_dloss_pp": [
+      -0.5190172939173614,
+      -0.35339651874398986
+     ],
+     "n_both_qualified": 68,
+     "imputed": 0,
+     "run_level_wtl": {
+      "W": 58,
+      "T": 10,
+      "L": 0
+     },
+     "median_rb_run_level": 0.9870967741935484
+    }
+   },
+   "ranking_order": [
+    "PSOBV",
+    "PSOC",
+    "GA",
+    "SSABV",
+    "BVNS",
+    "SSA",
+    "SLSQP",
+    "LXSSA",
+    "DE"
+   ],
+   "notes": "p_z: Holm z test of average ranks vs PSO-VNS (8 comparisons); case-mean Wilcoxon: MR.case_mean_wilcoxon (Holm over 8); W/T/L: run-level, R2.wtl_block (Holm over the 8 comparisons of PSO-VNS per case); mean_dloss_pp = PSO-VNS minus method over the cases where both qualify (negative = PSO-VNS better)"
+  },
+  "tab:farm-II": {
+   "site": "Horns Rev 1, 16-turbine block (5-deg bins)",
+   "unit": "GWh/yr",
+   "installed_aep": 139.82057589954573,
+   "ideal_aep": 148.8071781197679,
+   "installed_loss_pct": 6.039091886407045,
+   "budgets": {
+    "6030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "GA",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "used",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 158.2488888888888,
+      "df": 8,
+      "p": 3.715684421634981e-30,
+      "iman_davenport": 56.13645754050226,
+      "iman_davenport_p": 4.419546656584455e-50,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "PSOBV",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 138.28774401113697,
+       "sd": 0.7525792206915699,
+       "best": 139.7769300528905,
+       "loss_pct": 7.069171152593415,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 2.0
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 19,
+       "mean": 137.79162238840016,
+       "sd": 0.8846889372355573,
+       "best": 139.08054236411252,
+       "loss_pct": 7.402570138452498,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 4.933333333333334,
+       "psovns_vs": {
+        "p": 9.220093488693237e-06,
+        "p_holm": 3.688037395477295e-05,
+        "rb": 0.8451612903225807,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 24,
+        "seed_losses": 6,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 24,
+         "ties": 0,
+         "losses": 6,
+         "n": 30,
+         "score": 0.8,
+         "p_sign": 0.0014309063553810122,
+         "p_sign_holm": 0.0028618127107620244
+        }
+       }
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 137.591637337408,
+       "sd": 0.7164921203731142,
+       "best": 139.5558947685746,
+       "loss_pct": 7.5369622111461885,
+       "rank": 4.0,
+       "qualified": true,
+       "seed_rank": 3.7,
+       "psovns_vs": {
+        "p": 0.0002562887966632843,
+        "p_holm": 0.0005125775933265686,
+        "rb": 0.7247311827956989,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 25,
+        "seed_losses": 5,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 25,
+         "ties": 0,
+         "losses": 5,
+         "n": 30,
+         "score": 0.8333333333333334,
+         "p_sign": 0.0003249142318964005,
+         "p_sign_holm": 0.0009747426956892016
+        }
+       }
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 136.24881664375508,
+       "sd": 1.0052003196755441,
+       "best": 138.17046973546,
+       "loss_pct": 8.43935194168201,
+       "rank": 7.0,
+       "qualified": true,
+       "seed_rank": 6.133333333333334,
+       "psovns_vs": {
+        "p": 3.5390257835388184e-08,
+        "p_holm": 1.7695128917694092e-07,
+        "rb": 0.9698924731182795,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 29,
+         "ties": 0,
+         "losses": 1,
+         "n": 30,
+         "score": 0.9666666666666667,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 3.46451997756958e-07
+        }
+       }
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 28,
+       "mean": 135.99643387470275,
+       "sd": 0.8326580479126954,
+       "best": 137.49889158061396,
+       "loss_pct": 8.608955835957326,
+       "rank": 8.0,
+       "qualified": true,
+       "seed_rank": 6.633333333333334,
+       "psovns_vs": {
+        "p": 9.313225746154785e-09,
+        "p_holm": 5.587935447692871e-08,
+        "rb": 0.9870967741935484,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 29,
+         "ties": 0,
+         "losses": 1,
+         "n": 30,
+         "score": 0.9666666666666667,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 3.46451997756958e-07
+        }
+       }
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 0,
+       "mean": null,
+       "sd": null,
+       "best": null,
+       "loss_pct": null,
+       "rank": 9.0,
+       "qualified": false,
+       "seed_rank": 9.0,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       }
+      },
+      "GA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 138.12223629774735,
+       "sd": 0.6966769327588822,
+       "best": 139.2347961208371,
+       "loss_pct": 7.180394089202314,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 2.4,
+       "psovns_vs": {
+        "p": 0.5291051845997572,
+        "p_holm": 0.5291051845997572,
+        "rb": 0.13548387096774195,
+        "outcome": "T",
+        "n_pairs": 30,
+        "seed_wins": 17,
+        "seed_losses": 13,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 17,
+         "ties": 0,
+         "losses": 13,
+         "n": 30,
+         "score": 0.5666666666666667,
+         "p_sign": 0.5846647117286922,
+         "p_sign_holm": 0.5846647117286922
+        }
+       }
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 137.34693714652497,
+       "sd": 1.038524775613848,
+       "best": 138.71689202197828,
+       "loss_pct": 7.701403331510739,
+       "rank": 5.0,
+       "qualified": true,
+       "seed_rank": 4.066666666666666,
+       "psovns_vs": {
+        "p": 2.6885420083999634e-05,
+        "p_holm": 8.06562602519989e-05,
+        "rb": 0.810752688172043,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 26,
+        "seed_losses": 4,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 26,
+         "ties": 0,
+         "losses": 4,
+         "n": 30,
+         "score": 0.8666666666666667,
+         "p_sign": 5.9476122260093696e-05,
+         "p_sign_holm": 0.00023790448904037478
+        }
+       }
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 136.30809720681074,
+       "sd": 0.8265104630185933,
+       "best": 137.6963813821861,
+       "loss_pct": 8.399514775353932,
+       "rank": 6.0,
+       "qualified": true,
+       "seed_rank": 6.133333333333334,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       }
+      }
+     },
+     "ranking_order": [
+      "PSOBV",
+      "GA",
+      "PSOC",
+      "SSABV",
+      "BVNS",
+      "SLSQP",
+      "SSA",
+      "LXSSA",
+      "DE"
+     ]
+    },
+    "30030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "GA",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "used",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 185.191111111111,
+      "df": 8,
+      "p": 8.35651822855948e-36,
+      "iman_davenport": 97.9867012650014,
+      "iman_davenport_p": 5.0722624618525596e-70,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "GA",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 139.10811309618293,
+       "sd": 0.5629413794899241,
+       "best": 140.09847921052275,
+       "loss_pct": 6.517874437333017,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 2.2666666666666666
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 28,
+       "mean": 138.71945639033066,
+       "sd": 0.7135011583274259,
+       "best": 139.940832606275,
+       "loss_pct": 6.779055860677723,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 3.933333333333333,
+       "psovns_vs": {
+        "p": 3.855675458908081e-07,
+        "p_holm": 1.5422701835632324e-06,
+        "rb": 0.9268817204301075,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 28,
+        "seed_losses": 2,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 28,
+         "ties": 0,
+         "losses": 2,
+         "n": 30,
+         "score": 0.9333333333333333,
+         "p_sign": 8.67992639541626e-07,
+         "p_sign_holm": 3.471970558166504e-06
+        }
+       }
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 138.11483816926926,
+       "sd": 0.6855904856851228,
+       "best": 139.2257477135157,
+       "loss_pct": 7.185365709907404,
+       "rank": 5.0,
+       "qualified": true,
+       "seed_rank": 4.566666666666666,
+       "psovns_vs": {
+        "p": 4.7124922275543213e-07,
+        "p_holm": 1.5422701835632324e-06,
+        "rb": 0.9225806451612903,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 26,
+        "seed_losses": 4,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 26,
+         "ties": 0,
+         "losses": 4,
+         "n": 30,
+         "score": 0.8666666666666667,
+         "p_sign": 5.9476122260093696e-05,
+         "p_sign_holm": 0.0001784283667802811
+        }
+       }
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 136.6541483485914,
+       "sd": 0.9732541247695978,
+       "best": 138.47461401593935,
+       "loss_pct": 8.166964742382978,
+       "rank": 7.0,
+       "qualified": true,
+       "seed_rank": 7.166666666666667,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       }
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 136.15693200092917,
+       "sd": 0.8613231108910462,
+       "best": 137.3188487376246,
+       "loss_pct": 8.501099394988287,
+       "rank": 8.0,
+       "qualified": true,
+       "seed_rank": 7.533333333333333,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       }
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 8,
+       "mean": 137.78879771017125,
+       "sd": 0.7753344342789814,
+       "best": 138.68958455134344,
+       "loss_pct": 7.4044683521439305,
+       "rank": 9.0,
+       "qualified": false,
+       "seed_rank": 8.066666666666666,
+       "psovns_vs": {
+        "p": 3.725290298461914e-09,
+        "p_holm": 1.862645149230957e-08,
+        "rb": 0.9956989247311828,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 29,
+         "ties": 0,
+         "losses": 1,
+         "n": 30,
+         "score": 0.9666666666666667,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 2.8870999813079834e-07
+        }
+       }
+      },
+      "GA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 139.63939580963765,
+       "sd": 0.3017597027157074,
+       "best": 140.45611057355288,
+       "loss_pct": 6.160846826052672,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 1.4666666666666666,
+       "psovns_vs": {
+        "p": 0.00011058151721954346,
+        "p_holm": 0.00022116303443908691,
+        "rb": -0.7591397849462366,
+        "outcome": "L",
+        "n_pairs": 30,
+        "seed_wins": 8,
+        "seed_losses": 22,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 8,
+         "ties": 0,
+         "losses": 22,
+         "n": 30,
+         "score": 0.26666666666666666,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.032249603420495994
+        }
+       }
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 138.6146023319129,
+       "sd": 0.6262026852279715,
+       "best": 139.74259704009367,
+       "loss_pct": 6.849518898645795,
+       "rank": 4.0,
+       "qualified": true,
+       "seed_rank": 3.5,
+       "psovns_vs": {
+        "p": 0.008705463260412216,
+        "p_holm": 0.008705463260412216,
+        "rb": 0.5397849462365591,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 21,
+        "seed_losses": 9,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 21,
+         "ties": 0,
+         "losses": 9,
+         "n": 30,
+         "score": 0.7,
+         "p_sign": 0.042773945257067694,
+         "p_sign_holm": 0.042773945257067694
+        }
+       }
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 137.17735413767065,
+       "sd": 0.43864359288512145,
+       "best": 137.98560656472063,
+       "loss_pct": 7.815364909841208,
+       "rank": 6.0,
+       "qualified": true,
+       "seed_rank": 6.5,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       }
+      }
+     },
+     "ranking_order": [
+      "GA",
+      "PSOBV",
+      "PSOC",
+      "BVNS",
+      "SSABV",
+      "SLSQP",
+      "SSA",
+      "LXSSA",
+      "DE"
+     ]
+    }
+   },
+   "ranking_order": {
+    "6030": [
+     "PSOBV",
+     "GA",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SLSQP",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ],
+    "30030": [
+     "GA",
+     "PSOBV",
+     "PSOC",
+     "BVNS",
+     "SSABV",
+     "SLSQP",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ]
+   }
+  },
+  "tab:farm-III": {
+   "site": "Lillgrund, 4x4 block (5-deg bins, minimum spacing 3D)",
+   "unit": "GWh/yr",
+   "installed_aep": 116.09634485929662,
+   "ideal_aep": 139.40196148739233,
+   "installed_loss_pct": 16.718284577511845,
+   "budgets": {
+    "6030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "GA",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "used",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 174.05333333333328,
+      "df": 8,
+      "p": 1.8224674918903612e-33,
+      "iman_davenport": 76.53983016579046,
+      "iman_davenport_p": 8.809860861783452e-61,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "PSOBV",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 17,
+       "mean": 113.07400490677824,
+       "sd": 1.3216990558640096,
+       "best": 115.40246224485712,
+       "loss_pct": 18.88636020591088,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 2.8666666666666667
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 0,
+       "mean": null,
+       "sd": null,
+       "best": null,
+       "loss_pct": null,
+       "rank": 7.5,
+       "qualified": false,
+       "seed_rank": 3.9,
+       "psovns_vs": {
+        "p": 0.00016989745199680328,
+        "p_holm": 0.0008494872599840164,
+        "rb": 0.7419354838709677,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 20,
+        "seed_losses": 10,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 17,
+         "ties": 13,
+         "losses": 0,
+         "n": 30,
+         "score": 0.7833333333333333,
+         "p_sign": 1.52587890625e-05,
+         "p_sign_holm": 0.0001220703125
+        }
+       }
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 13,
+       "mean": 112.57086030029593,
+       "sd": 0.9361095416173885,
+       "best": 114.24149179603748,
+       "loss_pct": 19.247290999935483,
+       "rank": 3.0,
+       "qualified": false,
+       "seed_rank": 3.7,
+       "psovns_vs": {
+        "p": 0.12935307621955872,
+        "p_holm": 0.12935307621955872,
+        "rb": 0.3204301075268817,
+        "outcome": "T",
+        "n_pairs": 30,
+        "seed_wins": 20,
+        "seed_losses": 10,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 15,
+         "ties": 8,
+         "losses": 7,
+         "n": 30,
+         "score": 0.6333333333333333,
+         "p_sign": 0.13380050659179688,
+         "p_sign_holm": 0.1974742934107781
+        }
+       }
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 3,
+       "mean": 111.47893219214102,
+       "sd": 1.534862316087931,
+       "best": 113.19728388838396,
+       "loss_pct": 20.03058565124761,
+       "rank": 5.0,
+       "qualified": false,
+       "seed_rank": 5.366666666666666,
+       "psovns_vs": {
+        "p": 0.00016989745199680328,
+        "p_holm": 0.0008494872599840164,
+        "rb": 0.7419354838709677,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 23,
+        "seed_losses": 7,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 17,
+         "ties": 11,
+         "losses": 2,
+         "n": 30,
+         "score": 0.75,
+         "p_sign": 0.000728607177734375,
+         "p_sign_holm": 0.0029144287109375
+        }
+       }
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 0,
+       "mean": null,
+       "sd": null,
+       "best": null,
+       "loss_pct": null,
+       "rank": 7.5,
+       "qualified": false,
+       "seed_rank": 7.433333333333334,
+       "psovns_vs": {
+        "p": 5.587935447692871e-09,
+        "p_holm": 3.91155481338501e-08,
+        "rb": 0.9913978494623656,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 17,
+         "ties": 13,
+         "losses": 0,
+         "n": 30,
+         "score": 0.7833333333333333,
+         "p_sign": 1.52587890625e-05,
+         "p_sign_holm": 0.0001220703125
+        }
+       }
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 0,
+       "mean": null,
+       "sd": null,
+       "best": null,
+       "loss_pct": null,
+       "rank": 7.5,
+       "qualified": false,
+       "seed_rank": 9.0,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 17,
+         "ties": 13,
+         "losses": 0,
+         "n": 30,
+         "score": 0.7833333333333333,
+         "p_sign": 1.52587890625e-05,
+         "p_sign_holm": 0.0001220703125
+        }
+       }
+      },
+      "GA": {
+       "runs": 30,
+       "feasible": 0,
+       "mean": null,
+       "sd": null,
+       "best": null,
+       "loss_pct": null,
+       "rank": 7.5,
+       "qualified": false,
+       "seed_rank": 6.566666666666666,
+       "psovns_vs": {
+        "p": 1.862645149230957e-08,
+        "p_holm": 1.1175870895385742e-07,
+        "rb": 0.978494623655914,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 28,
+        "seed_losses": 2,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 17,
+         "ties": 13,
+         "losses": 0,
+         "n": 30,
+         "score": 0.7833333333333333,
+         "p_sign": 1.52587890625e-05,
+         "p_sign_holm": 0.0001220703125
+        }
+       }
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 8,
+       "mean": 112.88258259074284,
+       "sd": 0.8109541967399588,
+       "best": 113.75682060597028,
+       "loss_pct": 19.023677008338172,
+       "rank": 4.0,
+       "qualified": false,
+       "seed_rank": 4.533333333333333,
+       "psovns_vs": {
+        "p": 0.002560090273618698,
+        "p_holm": 0.007680270820856094,
+        "rb": 0.6129032258064516,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 24,
+        "seed_losses": 6,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 16,
+         "ties": 10,
+         "losses": 4,
+         "n": 30,
+         "score": 0.7,
+         "p_sign": 0.01181793212890625,
+         "p_sign_holm": 0.03545379638671875
+        }
+       }
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 112.86525487953061,
+       "sd": 0.7036185620239239,
+       "best": 113.90766988098866,
+       "loss_pct": 19.036107042340095,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 1.6333333333333333,
+       "psovns_vs": {
+        "p": 0.002560090273618698,
+        "p_holm": 0.007680270820856094,
+        "rb": -0.6129032258064516,
+        "outcome": "L",
+        "n_pairs": 30,
+        "seed_wins": 10,
+        "seed_losses": 20,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 10,
+         "ties": 0,
+         "losses": 20,
+         "n": 30,
+         "score": 0.3333333333333333,
+         "p_sign": 0.09873714670538905,
+         "p_sign_holm": 0.1974742934107781
+        }
+       }
+      }
+     },
+     "ranking_order": [
+      "PSOBV",
+      "SLSQP",
+      "SSABV",
+      "BVNS",
+      "SSA",
+      "PSOC",
+      "LXSSA",
+      "DE",
+      "GA"
+     ]
+    },
+    "30030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "pending",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 101.04444444444448,
+      "df": 7,
+      "p": 6.564422802095928e-19,
+      "iman_davenport": 26.894350397715705,
+      "iman_davenport_p": 6.39531833329277e-26,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "PSOBV",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 114.59220801498746,
+       "sd": 0.768357854565976,
+       "best": 116.15527703571205,
+       "loss_pct": 17.797277174359326,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 2.1333333333333333
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 19,
+       "mean": 113.61513485853209,
+       "sd": 0.9270264812498744,
+       "best": 115.54080147795196,
+       "loss_pct": 18.49818062365818,
+       "rank": 5.0,
+       "qualified": true,
+       "seed_rank": 5.333333333333333,
+       "psovns_vs": {
+        "p": 9.313225746154785e-09,
+        "p_holm": 4.6566128730773926e-08,
+        "rb": 0.9870967741935484,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 28,
+        "seed_losses": 2,
+        "seed_ties": 0,
+        "family_size": 7,
+        "all_run_endpoint": {
+         "wins": 28,
+         "ties": 0,
+         "losses": 2,
+         "n": 30,
+         "score": 0.9333333333333333,
+         "p_sign": 8.67992639541626e-07,
+         "p_sign_holm": 4.33996319770813e-06
+        }
+       }
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 29,
+       "mean": 114.00503197083042,
+       "sd": 1.0338477850889332,
+       "best": 115.55344773490832,
+       "loss_pct": 18.21848792196431,
+       "rank": 4.0,
+       "qualified": true,
+       "seed_rank": 3.5,
+       "psovns_vs": {
+        "p": 0.008142979815602303,
+        "p_holm": 0.016285959631204605,
+        "rb": 0.5440860215053763,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 19,
+        "seed_losses": 11,
+        "seed_ties": 0,
+        "family_size": 7,
+        "all_run_endpoint": {
+         "wins": 19,
+         "ties": 0,
+         "losses": 11,
+         "n": 30,
+         "score": 0.6333333333333333,
+         "p_sign": 0.20048842206597334,
+         "p_sign_holm": 0.20048842206597334
+        }
+       }
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 28,
+       "mean": 112.13851420995994,
+       "sd": 1.1365126349069274,
+       "best": 114.00522450721353,
+       "loss_pct": 19.557434476915972,
+       "rank": 7.0,
+       "qualified": true,
+       "seed_rank": 5.833333333333333,
+       "psovns_vs": {
+        "p": 5.587935447692871e-09,
+        "p_holm": 3.3527612686157227e-08,
+        "rb": 0.9913978494623656,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 7,
+        "all_run_endpoint": {
+         "wins": 29,
+         "ties": 0,
+         "losses": 1,
+         "n": 30,
+         "score": 0.9666666666666667,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 3.46451997756958e-07
+        }
+       }
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 18,
+       "mean": 110.7060649652575,
+       "sd": 0.8528531029047268,
+       "best": 112.10812620550138,
+       "loss_pct": 20.585001972680363,
+       "rank": 8.0,
+       "qualified": true,
+       "seed_rank": 7.4,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.30385160446167e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 7,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.30385160446167e-08
+        }
+       }
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 21,
+       "mean": 114.00736783438853,
+       "sd": 1.146331207235748,
+       "best": 115.95716853551508,
+       "loss_pct": 18.216812290191847,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 4.733333333333333,
+       "psovns_vs": {
+        "p": 0.0002562887966632843,
+        "p_holm": 0.0007688663899898529,
+        "rb": 0.7247311827956989,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 22,
+        "seed_losses": 8,
+        "seed_ties": 0,
+        "family_size": 7,
+        "all_run_endpoint": {
+         "wins": 22,
+         "ties": 0,
+         "losses": 8,
+         "n": 30,
+         "score": 0.7333333333333333,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.048374405130743994
+        }
+       }
+      },
+      "GA": {
+       "status": "pending"
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 114.1942100340116,
+       "sd": 0.6641928025693803,
+       "best": 115.543781755617,
+       "loss_pct": 18.082781034369116,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 2.9,
+       "psovns_vs": {
+        "p": 0.05768792890012264,
+        "p_holm": 0.05768792890012264,
+        "rb": 0.3978494623655914,
+        "outcome": "T",
+        "n_pairs": 30,
+        "seed_wins": 20,
+        "seed_losses": 10,
+        "seed_ties": 0,
+        "family_size": 7,
+        "all_run_endpoint": {
+         "wins": 20,
+         "ties": 0,
+         "losses": 10,
+         "n": 30,
+         "score": 0.6666666666666666,
+         "p_sign": 0.09873714670538905,
+         "p_sign_holm": 0.1974742934107781
+        }
+       }
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 113.45220137679527,
+       "sd": 0.4687519822754424,
+       "best": 114.47602851681104,
+       "loss_pct": 18.615060960203188,
+       "rank": 6.0,
+       "qualified": true,
+       "seed_rank": 4.166666666666667,
+       "psovns_vs": {
+        "p": 1.6838312149047852e-06,
+        "p_holm": 6.735324859619141e-06,
+        "rb": 0.8924731182795699,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 28,
+        "seed_losses": 2,
+        "seed_ties": 0,
+        "family_size": 7,
+        "all_run_endpoint": {
+         "wins": 28,
+         "ties": 0,
+         "losses": 2,
+         "n": 30,
+         "score": 0.9333333333333333,
+         "p_sign": 8.67992639541626e-07,
+         "p_sign_holm": 4.33996319770813e-06
+        }
+       }
+      }
+     },
+     "ranking_order": [
+      "PSOBV",
+      "BVNS",
+      "DE",
+      "SSABV",
+      "PSOC",
+      "SLSQP",
+      "SSA",
+      "LXSSA"
+     ]
+    }
+   },
+   "ranking_order": {
+    "6030": [
+     "PSOBV",
+     "SLSQP",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "PSOC",
+     "LXSSA",
+     "DE",
+     "GA"
+    ],
+    "30030": [
+     "PSOBV",
+     "BVNS",
+     "DE",
+     "SSABV",
+     "PSOC",
+     "SLSQP",
+     "SSA",
+     "LXSSA"
+    ]
+   },
+   "ga_status": {
+    "6030": "used",
+    "30030": "pending"
+   }
+  },
+  "tab:farm-IV": {
+   "site": "IEA37 Case Study 1",
+   "unit": "MWh",
+   "published": {
+    "16": {
+     "example": 366941.57116,
+     "strict": 418924.40636,
+     "projected": 421451.0722591635
+    },
+    "36": {
+     "example": 737883.09851,
+     "strict": 863676.29932,
+     "projected": 882382.7751851722
+    }
+   },
+   "settings": {
+    "16T_6030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "GA",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "used",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 126.79999999999995,
+      "df": 8,
+      "p": 1.3018276241141985e-23,
+      "iman_davenport": 32.484098939929304,
+      "iman_davenport_p": 5.725936632329047e-34,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "PSOBV",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 395031.81240277033,
+       "sd": 4587.250071317257,
+       "best": 402782.4291323834,
+       "loss_pct": 15.867619862423684,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 2.033333333333333,
+       "best_vs_published_strict_pct": -3.8531957037005737
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 390540.193001406,
+       "sd": 7192.299216642424,
+       "best": 403753.1204405673,
+       "loss_pct": 16.824227960921863,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 3.6333333333333333,
+       "psovns_vs": {
+        "p": 1.1920928955078125e-06,
+        "p_holm": 5.9604644775390625e-06,
+        "rb": 0.9010752688172043,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 26,
+        "seed_losses": 4,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 26,
+         "ties": 0,
+         "losses": 4,
+         "n": 30,
+         "score": 0.8666666666666667,
+         "p_sign": 5.9476122260093696e-05,
+         "p_sign_holm": 0.0002973806113004685
+        }
+       },
+       "best_vs_published_strict_pct": -3.62148532983666
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 388562.88495532266,
+       "sd": 8564.171876990527,
+       "best": 403251.2806650896,
+       "loss_pct": 17.24534754410255,
+       "rank": 4.0,
+       "qualified": true,
+       "seed_rank": 4.0,
+       "psovns_vs": {
+        "p": 0.0003800932317972183,
+        "p_holm": 0.0007601864635944366,
+        "rb": 0.7075268817204301,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 25,
+        "seed_losses": 5,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 25,
+         "ties": 0,
+         "losses": 5,
+         "n": 30,
+         "score": 0.8333333333333334,
+         "p_sign": 0.0003249142318964005,
+         "p_sign_holm": 0.001299656927585602
+        }
+       },
+       "best_vs_published_strict_pct": -3.741277771589613
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 378073.07473884634,
+       "sd": 9076.080421279261,
+       "best": 395150.1783001281,
+       "loss_pct": 19.479427618149334,
+       "rank": 7.0,
+       "qualified": true,
+       "seed_rank": 6.033333333333333,
+       "psovns_vs": {
+        "p": 9.313225746154785e-09,
+        "p_holm": 5.587935447692871e-08,
+        "rb": 0.9870967741935484,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 28,
+        "seed_losses": 2,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 28,
+         "ties": 0,
+         "losses": 2,
+         "n": 30,
+         "score": 0.9333333333333333,
+         "p_sign": 8.67992639541626e-07,
+         "p_sign_holm": 5.207955837249756e-06
+        }
+       },
+       "best_vs_published_strict_pct": -5.67506397310299
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 373977.4234698049,
+       "sd": 7867.277930000419,
+       "best": 393284.6189082105,
+       "loss_pct": 20.351703922637473,
+       "rank": 8.0,
+       "qualified": true,
+       "seed_rank": 6.566666666666666,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       },
+       "best_vs_published_strict_pct": -6.120385220467717
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 27,
+       "mean": 338610.64550017193,
+       "sd": 8836.846680376344,
+       "best": 357391.29720728577,
+       "loss_pct": 27.883986424859454,
+       "rank": 9.0,
+       "qualified": true,
+       "seed_rank": 8.6,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       },
+       "best_vs_published_strict_pct": -14.688356232899014
+      },
+      "GA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 391037.62883470417,
+       "sd": 5424.6585542197945,
+       "best": 399691.318699221,
+       "loss_pct": 16.718285960032,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 3.566666666666667,
+       "psovns_vs": {
+        "p": 0.0050126127898693085,
+        "p_holm": 0.0050126127898693085,
+        "rb": 0.5741935483870968,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 23,
+        "seed_losses": 7,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 23,
+         "ties": 0,
+         "losses": 7,
+         "n": 30,
+         "score": 0.7666666666666667,
+         "p_sign": 0.005222879350185395,
+         "p_sign_holm": 0.01044575870037079
+        }
+       },
+       "best_vs_published_strict_pct": -4.591064012692348
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 387637.3168288761,
+       "sd": 5590.803212024007,
+       "best": 400169.3478769021,
+       "loss_pct": 17.44247154022778,
+       "rank": 5.0,
+       "qualified": true,
+       "seed_rank": 4.466666666666667,
+       "psovns_vs": {
+        "p": 1.218356192111969e-05,
+        "p_holm": 4.873424768447876e-05,
+        "rb": 0.8365591397849462,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 25,
+        "seed_losses": 5,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 25,
+         "ties": 0,
+         "losses": 5,
+         "n": 30,
+         "score": 0.8333333333333334,
+         "p_sign": 0.0003249142318964005,
+         "p_sign_holm": 0.001299656927585602
+        }
+       },
+       "best_vs_published_strict_pct": -4.476955316606901
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 18,
+       "mean": 382605.21674562735,
+       "sd": 20279.285219853133,
+       "best": 405433.7619152996,
+       "loss_pct": 18.514189168535026,
+       "rank": 6.0,
+       "qualified": true,
+       "seed_rank": 6.1,
+       "psovns_vs": {
+        "p": 3.453157842159271e-05,
+        "p_holm": 0.00010359473526477814,
+        "rb": 0.8021505376344086,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 22,
+        "seed_losses": 8,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 22,
+         "ties": 0,
+         "losses": 8,
+         "n": 30,
+         "score": 0.7333333333333333,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.016124801710247997
+        }
+       },
+       "best_vs_published_strict_pct": -3.220305200625473
+      }
+     },
+     "ranking_order": [
+      "PSOBV",
+      "GA",
+      "PSOC",
+      "SSABV",
+      "BVNS",
+      "SLSQP",
+      "SSA",
+      "LXSSA",
+      "DE"
+     ]
+    },
+    "16T_30030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "GA",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "used",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 132.5422222222221,
+      "df": 8,
+      "p": 8.403251227996695e-25,
+      "iman_davenport": 35.76962527917935,
+      "iman_davenport_p": 1.5561010098913102e-36,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "PSOBV",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 402583.0584310474,
+       "sd": 4678.248946862789,
+       "best": 413331.92694131937,
+       "loss_pct": 14.259384066174384,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 2.566666666666667,
+       "best_vs_published_strict_pct": -1.3349614712767077
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 401347.03769496345,
+       "sd": 4764.466905664231,
+       "best": 412702.3623602993,
+       "loss_pct": 14.522627083980051,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 3.2666666666666666,
+       "psovns_vs": {
+        "p": 0.0018640067428350449,
+        "p_holm": 0.005592020228505135,
+        "rb": 0.6301075268817204,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 22,
+        "seed_losses": 8,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 22,
+         "ties": 0,
+         "losses": 8,
+         "n": 30,
+         "score": 0.7333333333333333,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.06449920684099199
+        }
+       },
+       "best_vs_published_strict_pct": -1.485242660785413
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 396920.50731957733,
+       "sd": 6266.506357818087,
+       "best": 406924.6156586627,
+       "loss_pct": 15.465372768099284,
+       "rank": 4.0,
+       "qualified": true,
+       "seed_rank": 4.5,
+       "psovns_vs": {
+        "p": 0.00011058151721954346,
+        "p_holm": 0.00044232606887817383,
+        "rb": 0.7591397849462366,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 22,
+        "seed_losses": 8,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 22,
+         "ties": 0,
+         "losses": 8,
+         "n": 30,
+         "score": 0.7333333333333333,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.06449920684099199
+        }
+       },
+       "best_vs_published_strict_pct": -2.864428646113637
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 392875.5815886986,
+       "sd": 4393.96822961854,
+       "best": 401459.3061250835,
+       "loss_pct": 16.326845739475008,
+       "rank": 7.0,
+       "qualified": true,
+       "seed_rank": 6.366666666666666,
+       "psovns_vs": {
+        "p": 6.146728992462158e-08,
+        "p_holm": 3.688037395477295e-07,
+        "rb": 0.9612903225806452,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 27,
+        "seed_losses": 3,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 27,
+         "ties": 0,
+         "losses": 3,
+         "n": 30,
+         "score": 0.9,
+         "p_sign": 8.430331945419312e-06,
+         "p_sign_holm": 5.058199167251587e-05
+        }
+       },
+       "best_vs_published_strict_pct": -4.169033832778901
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 390267.4290817604,
+       "sd": 5051.825115713649,
+       "best": 398770.03924694005,
+       "loss_pct": 16.882320188066437,
+       "rank": 8.0,
+       "qualified": true,
+       "seed_rank": 6.933333333333334,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       },
+       "best_vs_published_strict_pct": -4.81097945287543
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 359952.2773781028,
+       "sd": 12352.11290331087,
+       "best": 397402.6884564366,
+       "loss_pct": 23.338726449494214,
+       "rank": 9.0,
+       "qualified": true,
+       "seed_rank": 8.766666666666667,
+       "psovns_vs": {
+        "p": 3.725290298461914e-09,
+        "p_holm": 2.60770320892334e-08,
+        "rb": 0.9956989247311828,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 29,
+         "ties": 0,
+         "losses": 1,
+         "n": 30,
+         "score": 0.9666666666666667,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 4.041939973831177e-07
+        }
+       },
+       "best_vs_published_strict_pct": -5.137375043522496
+      },
+      "GA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 401766.123579992,
+       "sd": 3287.5987915564656,
+       "best": 409194.212633961,
+       "loss_pct": 14.433371758503716,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 3.066666666666667,
+       "psovns_vs": {
+        "p": 0.2621222734451294,
+        "p_holm": 0.2621222734451294,
+        "rb": 0.23870967741935484,
+        "outcome": "T",
+        "n_pairs": 30,
+        "seed_wins": 19,
+        "seed_losses": 11,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 19,
+         "ties": 0,
+         "losses": 11,
+         "n": 30,
+         "score": 0.6333333333333333,
+         "p_sign": 0.20048842206597334,
+         "p_sign_holm": 0.20048842206597334
+        }
+       },
+       "best_vs_published_strict_pct": -2.3226609809115395
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 396192.02182935644,
+       "sd": 4928.044178210979,
+       "best": 404075.96857530274,
+       "loss_pct": 15.620522850355147,
+       "rank": 5.0,
+       "qualified": true,
+       "seed_rank": 5.166666666666667,
+       "psovns_vs": {
+        "p": 1.597777009010315e-05,
+        "p_holm": 7.988885045051575e-05,
+        "rb": 0.8279569892473119,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 24,
+        "seed_losses": 6,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 24,
+         "ties": 0,
+         "losses": 6,
+         "n": 30,
+         "score": 0.8,
+         "p_sign": 0.0014309063553810122,
+         "p_sign_holm": 0.007154531776905061
+        }
+       },
+       "best_vs_published_strict_pct": -3.5444193652296674
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 29,
+       "mean": 394566.9974249723,
+       "sd": 15316.386624405928,
+       "best": 410349.5318614801,
+       "loss_pct": 15.966614396985051,
+       "rank": 6.0,
+       "qualified": true,
+       "seed_rank": 4.366666666666666,
+       "psovns_vs": {
+        "p": 0.0050126127898693085,
+        "p_holm": 0.010025225579738617,
+        "rb": 0.5741935483870968,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 20,
+        "seed_losses": 10,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 20,
+         "ties": 0,
+         "losses": 10,
+         "n": 30,
+         "score": 0.6666666666666666,
+         "p_sign": 0.09873714670538905,
+         "p_sign_holm": 0.1974742934107781
+        }
+       },
+       "best_vs_published_strict_pct": -2.0468787132805977
+      }
+     },
+     "ranking_order": [
+      "PSOBV",
+      "GA",
+      "PSOC",
+      "SSABV",
+      "BVNS",
+      "SLSQP",
+      "SSA",
+      "LXSSA",
+      "DE"
+     ]
+    },
+    "36T_6030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "GA",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "used",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 169.96444444444455,
+      "df": 8,
+      "p": 1.3120250838442168e-32,
+      "iman_davenport": 70.37809366670913,
+      "iman_davenport_p": 8.809503948946991e-58,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "GA",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 736832.364516246,
+       "sd": 19267.689883981355,
+       "best": 787708.9489546629,
+       "loss_pct": 30.254325356072933,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 3.6,
+       "best_vs_published_strict_pct": -8.795812786011226
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 27,
+       "mean": 729188.510003859,
+       "sd": 21149.515436676622,
+       "best": 787988.7163865846,
+       "loss_pct": 30.977862778586243,
+       "rank": 4.0,
+       "qualified": true,
+       "seed_rank": 4.8,
+       "psovns_vs": {
+        "p": 0.00016989745199680328,
+        "p_holm": 0.0006795898079872131,
+        "rb": 0.7419354838709677,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 22,
+        "seed_losses": 8,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 22,
+         "ties": 0,
+         "losses": 8,
+         "n": 30,
+         "score": 0.7333333333333333,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.06449920684099199
+        }
+       },
+       "best_vs_published_strict_pct": -8.763420160192737
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 728870.2783577497,
+       "sd": 22858.58745895246,
+       "best": 766803.3486954567,
+       "loss_pct": 31.00798534366318,
+       "rank": 5.0,
+       "qualified": true,
+       "seed_rank": 4.266666666666667,
+       "psovns_vs": {
+        "p": 0.12413446232676506,
+        "p_holm": 0.24826892465353012,
+        "rb": 0.3247311827956989,
+        "outcome": "T",
+        "n_pairs": 30,
+        "seed_wins": 19,
+        "seed_losses": 11,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 19,
+         "ties": 0,
+         "losses": 11,
+         "n": 30,
+         "score": 0.6333333333333333,
+         "p_sign": 0.20048842206597334,
+         "p_sign_holm": 0.4009768441319467
+        }
+       },
+       "best_vs_published_strict_pct": -11.216349308278396
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 717258.4918506356,
+       "sd": 19299.980891925396,
+       "best": 750707.4195473929,
+       "loss_pct": 32.10711171590339,
+       "rank": 6.0,
+       "qualified": true,
+       "seed_rank": 5.266666666666667,
+       "psovns_vs": {
+        "p": 0.0002562887966632843,
+        "p_holm": 0.0007688663899898529,
+        "rb": 0.7247311827956989,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 22,
+        "seed_losses": 8,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 22,
+         "ties": 0,
+         "losses": 8,
+         "n": 30,
+         "score": 0.7333333333333333,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.06449920684099199
+        }
+       },
+       "best_vs_published_strict_pct": -13.080002295020844
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 709660.5231250295,
+       "sd": 19844.692225998686,
+       "best": 746301.3170305056,
+       "loss_pct": 32.82630576900227,
+       "rank": 7.0,
+       "qualified": true,
+       "seed_rank": 5.866666666666666,
+       "psovns_vs": {
+        "p": 7.910653948783875e-05,
+        "p_holm": 0.0003955326974391937,
+        "rb": 0.7720430107526882,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 26,
+        "seed_losses": 4,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 26,
+         "ties": 0,
+         "losses": 4,
+         "n": 30,
+         "score": 0.8666666666666667,
+         "p_sign": 5.9476122260093696e-05,
+         "p_sign_holm": 0.0002973806113004685
+        }
+       },
+       "best_vs_published_strict_pct": -13.590158996131708
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 0,
+       "mean": null,
+       "sd": null,
+       "best": null,
+       "loss_pct": null,
+       "rank": 9.0,
+       "qualified": false,
+       "seed_rank": 8.133333333333333,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       }
+      },
+      "GA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 774971.9130773497,
+       "sd": 8082.672402137132,
+       "best": 795530.0743740624,
+       "loss_pct": 26.64418460614074,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 1.0666666666666667,
+       "psovns_vs": {
+        "p": 5.587935447692871e-09,
+        "p_holm": 3.91155481338501e-08,
+        "rb": -0.9913978494623656,
+        "outcome": "L",
+        "n_pairs": 30,
+        "seed_wins": 1,
+        "seed_losses": 29,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 1,
+         "ties": 0,
+         "losses": 29,
+         "n": 30,
+         "score": 0.03333333333333333,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 4.041939973831177e-07
+        }
+       },
+       "best_vs_published_strict_pct": -7.890250664466691
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 741565.5748306591,
+       "sd": 24099.52978518516,
+       "best": 785791.3193049263,
+       "loss_pct": 29.806298148653696,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 3.566666666666667,
+       "psovns_vs": {
+        "p": 0.40449450351297855,
+        "p_holm": 0.40449450351297855,
+        "rb": -0.17849462365591398,
+        "outcome": "T",
+        "n_pairs": 30,
+        "seed_wins": 14,
+        "seed_losses": 16,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 14,
+         "ties": 0,
+         "losses": 16,
+         "n": 30,
+         "score": 0.4666666666666667,
+         "p_sign": 0.8555355519056321,
+         "p_sign_holm": 0.8555355519056321
+        }
+       },
+       "best_vs_published_strict_pct": -9.01784384686659
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 4,
+       "mean": 733342.0106963257,
+       "sd": 13797.841851520674,
+       "best": 748571.1083792468,
+       "loss_pct": 30.5847086204891,
+       "rank": 8.0,
+       "qualified": false,
+       "seed_rank": 8.433333333333334,
+       "psovns_vs": {
+        "p": 1.862645149230957e-08,
+        "p_holm": 1.1175870895385742e-07,
+        "rb": 0.978494623655914,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 28,
+        "seed_losses": 2,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 28,
+         "ties": 0,
+         "losses": 2,
+         "n": 30,
+         "score": 0.9333333333333333,
+         "p_sign": 8.67992639541626e-07,
+         "p_sign_holm": 5.207955837249756e-06
+        }
+       },
+       "best_vs_published_strict_pct": -13.327353202974212
+      }
+     },
+     "ranking_order": [
+      "GA",
+      "BVNS",
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "SLSQP",
+      "DE"
+     ]
+    },
+    "36T_30030": {
+     "pool": [
+      "PSOBV",
+      "PSOC",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "DE",
+      "GA",
+      "BVNS",
+      "SLSQP"
+     ],
+     "ga_status": "used",
+     "n_seeds": 30,
+     "dropped_unpaired_runs": 0,
+     "friedman_run_level": {
+      "chi2": 158.67555555555555,
+      "df": 8,
+      "p": 3.0258862136997488e-30,
+      "iman_davenport": 56.583123838670886,
+      "iman_davenport_p": 2.4278584578014966e-50,
+      "blocks": "seeds (run level)",
+      "score": "mpce_results.goodness (infeasible below feasible)"
+     },
+     "best": "GA",
+     "methods": {
+      "PSOBV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 807445.9524939018,
+       "sd": 11696.504851952699,
+       "best": 827384.9842852866,
+       "loss_pct": 23.570318830703613,
+       "rank": 2.0,
+       "qualified": true,
+       "seed_rank": 2.933333333333333,
+       "best_vs_published_strict_pct": -4.2019579631033865
+      },
+      "PSOC": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 802252.3061241572,
+       "sd": 13259.960830725862,
+       "best": 830256.3957545691,
+       "loss_pct": 24.06192911733596,
+       "rank": 3.0,
+       "qualified": true,
+       "seed_rank": 3.8666666666666667,
+       "psovns_vs": {
+        "p": 1.218356192111969e-05,
+        "p_holm": 4.873424768447876e-05,
+        "rb": 0.8365591397849462,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 25,
+        "seed_losses": 5,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 25,
+         "ties": 0,
+         "losses": 5,
+         "n": 30,
+         "score": 0.8333333333333334,
+         "p_sign": 0.0003249142318964005,
+         "p_sign_holm": 0.001299656927585602
+        }
+       },
+       "best_vs_published_strict_pct": -3.8694941139108985
+      },
+      "SSABV": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 791404.3693369811,
+       "sd": 14355.74855914672,
+       "best": 819930.5255537059,
+       "loss_pct": 25.088752457557995,
+       "rank": 5.0,
+       "qualified": true,
+       "seed_rank": 4.866666666666666,
+       "psovns_vs": {
+        "p": 0.00020912662148475647,
+        "p_holm": 0.00041825324296951294,
+        "rb": 0.7333333333333333,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 25,
+        "seed_losses": 5,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 25,
+         "ties": 0,
+         "losses": 5,
+         "n": 30,
+         "score": 0.8333333333333334,
+         "p_sign": 0.0003249142318964005,
+         "p_sign_holm": 0.001299656927585602
+        }
+       },
+       "best_vs_published_strict_pct": -5.065065904985067
+      },
+      "SSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 771297.9714753184,
+       "sd": 14756.107305755899,
+       "best": 802538.196810158,
+       "loss_pct": 26.99194557318824,
+       "rank": 6.0,
+       "qualified": true,
+       "seed_rank": 6.333333333333333,
+       "psovns_vs": {
+        "p": 3.725290298461914e-09,
+        "p_holm": 2.60770320892334e-08,
+        "rb": 0.9956989247311828,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 29,
+         "ties": 0,
+         "losses": 1,
+         "n": 30,
+         "score": 0.9666666666666667,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 4.041939973831177e-07
+        }
+       },
+       "best_vs_published_strict_pct": -7.078821377636279
+      },
+      "LXSSA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 752030.2808691754,
+       "sd": 18838.109125166768,
+       "best": 789311.2544118783,
+       "loss_pct": 28.81574993476534,
+       "rank": 7.0,
+       "qualified": true,
+       "seed_rank": 6.933333333333334,
+       "psovns_vs": {
+        "p": 3.725290298461914e-09,
+        "p_holm": 2.60770320892334e-08,
+        "rb": 0.9956989247311828,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 29,
+        "seed_losses": 1,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 29,
+         "ties": 0,
+         "losses": 1,
+         "n": 30,
+         "score": 0.9666666666666667,
+         "p_sign": 5.774199962615967e-08,
+         "p_sign_holm": 4.041939973831177e-07
+        }
+       },
+       "best_vs_published_strict_pct": -8.61029125919881
+      },
+      "DE": {
+       "runs": 30,
+       "feasible": 0,
+       "mean": null,
+       "sd": null,
+       "best": null,
+       "loss_pct": null,
+       "rank": 9.0,
+       "qualified": false,
+       "seed_rank": 8.466666666666667,
+       "psovns_vs": {
+        "p": 1.862645149230957e-09,
+        "p_holm": 1.4901161193847656e-08,
+        "rb": 1.0,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 30,
+        "seed_losses": 0,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 30,
+         "ties": 0,
+         "losses": 0,
+         "n": 30,
+         "score": 1.0,
+         "p_sign": 1.862645149230957e-09,
+         "p_sign_holm": 1.4901161193847656e-08
+        }
+       }
+      },
+      "GA": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 823061.4834919833,
+       "sd": 6994.226546389688,
+       "best": 836526.3617860655,
+       "loss_pct": 22.0922136376732,
+       "rank": 1.0,
+       "qualified": true,
+       "seed_rank": 1.4333333333333333,
+       "psovns_vs": {
+        "p": 3.855675458908081e-07,
+        "p_holm": 1.9278377294540405e-06,
+        "rb": -0.9268817204301075,
+        "outcome": "L",
+        "n_pairs": 30,
+        "seed_wins": 3,
+        "seed_losses": 27,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 3,
+         "ties": 0,
+         "losses": 27,
+         "n": 30,
+         "score": 0.1,
+         "p_sign": 8.430331945419312e-06,
+         "p_sign_holm": 4.215165972709656e-05
+        }
+       },
+       "best_vs_published_strict_pct": -3.1435316165686733
+      },
+      "BVNS": {
+       "runs": 30,
+       "feasible": 30,
+       "mean": 801797.385491931,
+       "sd": 11875.551963882179,
+       "best": 824230.1875047459,
+       "loss_pct": 24.104990128133032,
+       "rank": 4.0,
+       "qualified": true,
+       "seed_rank": 3.7,
+       "psovns_vs": {
+        "p": 0.11907656863331795,
+        "p_holm": 0.11907656863331795,
+        "rb": 0.32903225806451614,
+        "outcome": "T",
+        "n_pairs": 30,
+        "seed_wins": 19,
+        "seed_losses": 11,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 19,
+         "ties": 0,
+         "losses": 11,
+         "n": 30,
+         "score": 0.6333333333333333,
+         "p_sign": 0.20048842206597334,
+         "p_sign_holm": 0.20048842206597334
+        }
+       },
+       "best_vs_published_strict_pct": -4.567233331088428
+      },
+      "SLSQP": {
+       "runs": 30,
+       "feasible": 14,
+       "mean": 798912.9676158857,
+       "sd": 41511.0023434495,
+       "best": 833364.9984286419,
+       "loss_pct": 24.378017861994657,
+       "rank": 8.0,
+       "qualified": false,
+       "seed_rank": 6.466666666666667,
+       "psovns_vs": {
+        "p": 7.910653948783875e-05,
+        "p_holm": 0.00023731961846351624,
+        "rb": 0.7720430107526882,
+        "outcome": "W",
+        "n_pairs": 30,
+        "seed_wins": 22,
+        "seed_losses": 8,
+        "seed_ties": 0,
+        "family_size": 8,
+        "all_run_endpoint": {
+         "wins": 22,
+         "ties": 0,
+         "losses": 8,
+         "n": 30,
+         "score": 0.7333333333333333,
+         "p_sign": 0.016124801710247997,
+         "p_sign_holm": 0.032249603420495994
+        }
+       },
+       "best_vs_published_strict_pct": -3.509567289877369
+      }
+     },
+     "ranking_order": [
+      "GA",
+      "PSOBV",
+      "PSOC",
+      "BVNS",
+      "SSABV",
+      "SSA",
+      "LXSSA",
+      "SLSQP",
+      "DE"
+     ]
+    }
+   },
+   "ranking_order": {
+    "16T_6030": [
+     "PSOBV",
+     "GA",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SLSQP",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ],
+    "16T_30030": [
+     "PSOBV",
+     "GA",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SLSQP",
+     "SSA",
+     "LXSSA",
+     "DE"
+    ],
+    "36T_6030": [
+     "GA",
+     "BVNS",
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "SSA",
+     "LXSSA",
+     "SLSQP",
+     "DE"
+    ],
+    "36T_30030": [
+     "GA",
+     "PSOBV",
+     "PSOC",
+     "BVNS",
+     "SSABV",
+     "SSA",
+     "LXSSA",
+     "SLSQP",
+     "DE"
+    ]
+   }
+  }
+ },
+ "eight_method_pool_benchmark": {
+  "avg_rank": {
+   "PSOBV": 1.8161764705882353,
+   "PSOC": 1.9705882352941178,
+   "SSABV": 3.448529411764706,
+   "SSA": 5.382352941176471,
+   "LXSSA": 6.0588235294117645,
+   "DE": 7.044117647058823,
+   "BVNS": 4.397058823529412,
+   "SLSQP": 5.882352941176471
+  },
+  "chi2": 319.2979002624672,
+  "p": 4.555038515279214e-65,
+  "iman_davenport": 136.519927642433,
+  "p_wilcoxon_holm": {
+   "PSOC": 0.2958623332952982,
+   "SSABV": 5.68930968401425e-11,
+   "SSA": 4.5459910561029406e-11,
+   "LXSSA": 4.5459910561029406e-11,
+   "DE": 5.5931458661232125e-11,
+   "BVNS": 1.2591055737542433e-10,
+   "SLSQP": 4.18209706819416e-11
+  },
+  "mean_dloss_pp": {
+   "PSOC": -0.018043354866491453,
+   "SSABV": -0.33038319937599553,
+   "SSA": -0.6112577561750174,
+   "LXSSA": -0.7645978618057732,
+   "DE": -0.8865753016721861,
+   "BVNS": -0.4651915315379654,
+   "SLSQP": -0.4354035666654407
+  },
+  "wtl": {
+   "PSOC": {
+    "W": 14,
+    "T": 50,
+    "L": 4
+   },
+   "SSABV": {
+    "W": 49,
+    "T": 19,
+    "L": 0
+   },
+   "SSA": {
+    "W": 59,
+    "T": 9,
+    "L": 0
+   },
+   "LXSSA": {
+    "W": 60,
+    "T": 8,
+    "L": 0
+   },
+   "DE": {
+    "W": 56,
+    "T": 12,
+    "L": 0
+   },
+   "BVNS": {
+    "W": 51,
+    "T": 16,
+    "L": 1
+   },
+   "SLSQP": {
+    "W": 59,
+    "T": 9,
+    "L": 0
+   }
+  },
+  "mean_loss_pct_qualified": {
+   "PSOBV": 1.3224625271346837,
+   "PSOC": 1.340505882001175,
+   "SSABV": 1.652845726510679,
+   "SSA": 1.8052204904083626,
+   "LXSSA": 1.9585605960391184,
+   "DE": 1.4926725259887579,
+   "BVNS": 1.787654058672649,
+   "SLSQP": 1.7578660938001243
+  }
+ },
+ "cross_checks": {
+  "all_ok": true,
+  "n_checks": 63,
+  "n_failed": 0,
+  "checks": [
+   {
+    "check": "8-method avg ranks = mpce_summary.json main.friedman.avg_rank",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "8-method Friedman chi2 / Iman-Davenport = mpce_summary.json",
+    "n": 2,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "8-method case-mean Wilcoxon p_holm = mpce_summary.json",
+    "n": 7,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "8-method mean dL (pp) = mpce_summary.json",
+    "n": 7,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "8-method run-level W/T/L = mpce_summary.json main.wtl (tab:wtl)",
+    "n": 21,
+    "tolerance": 0,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "8-method mean loss (qualified cases) = mpce_summary.json",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:friedman68 avg ranks (2 d.p.)",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "9-method avg ranks = rev2_summary.json ga68.friedman.avg_rank",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "9-method Friedman chi2 = rev2_summary.json",
+    "n": 1,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "9-method feasible % = rev2_summary.json",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "9-method mean loss (qualified) = rev2_summary.json",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:ga-main avg ranks (2 d.p.)",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:ga-main feasible % (1 d.p.)",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 6030 mean = rev3_sites.json hr_pool",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 6030 sd = rev3_sites.json hr_pool",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 6030 best = rev3_sites.json hr_pool",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 6030 loss_pct = rev3_sites.json hr_pool",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 6030 feasible = rev3_sites.json hr_pool",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 6030 raw paired p (PSO-VNS vs) = rev3_sites.json hr_pool psovns_vs_all",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 30030 mean = rev3_sites.json hr_pool",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 30030 sd = rev3_sites.json hr_pool",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 30030 best = rev3_sites.json hr_pool",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 30030 loss_pct = rev3_sites.json hr_pool",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 30030 feasible = rev3_sites.json hr_pool",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "HR 30030 raw paired p (PSO-VNS vs) = rev3_sites.json hr_pool psovns_vs_all",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:hr-site AEP 6k (2 d.p.)",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:hr-site loss 6k (2 d.p.)",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:hr-site loss 30k (2 d.p.)",
+    "n": 9,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_6030 mean = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_6030 best = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_6030 feasible = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_6030 raw paired p = rev3_sites.json iea_pool psovns_vs_all",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:iea-means 16T_6030 (1 d.p.)",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_30030 mean = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_30030 best = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_30030 feasible = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 16T_30030 raw paired p = rev3_sites.json iea_pool psovns_vs_all",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:iea-means 16T_30030 (1 d.p.)",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_6030 mean = rev3_sites.json iea_pool",
+    "n": 8,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_6030 best = rev3_sites.json iea_pool",
+    "n": 8,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_6030 feasible = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_6030 raw paired p = rev3_sites.json iea_pool psovns_vs_all",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:iea-means 36T_6030 (1 d.p.)",
+    "n": 8,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_30030 mean = rev3_sites.json iea_pool",
+    "n": 8,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_30030 best = rev3_sites.json iea_pool",
+    "n": 8,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_30030 feasible = rev3_sites.json iea_pool",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "IEA 36T_30030 raw paired p = rev3_sites.json iea_pool psovns_vs_all",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:iea-means 36T_30030 (1 d.p.)",
+    "n": 8,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed tab:iea37 best 16T_6030 (1 d.p.)",
+    "n": 9,
+    "tolerance": 1e-06,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 6030 mean = rev2_summary.json lillgrund",
+    "n": 5,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 6030 sd = rev2_summary.json lillgrund",
+    "n": 5,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 6030 best = rev2_summary.json lillgrund",
+    "n": 5,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 6030 loss_pct = rev2_summary.json lillgrund",
+    "n": 5,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 6030 feasible = rev2_summary.json lillgrund",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 6030 p_holm with the rev2 family (8 comparisons incl. RSD-VNS) = rev2_summary.json",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 30030 mean = rev2_summary.json lillgrund",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 30030 sd = rev2_summary.json lillgrund",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 30030 best = rev2_summary.json lillgrund",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 30030 loss_pct = rev2_summary.json lillgrund",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 30030 feasible = rev2_summary.json lillgrund",
+    "n": 8,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "LG 30030 p_holm with the rev2 family (8 comparisons incl. RSD-VNS) = rev2_summary.json",
+    "n": 8,
+    "tolerance": 1e-12,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed Sec. lillgrund numbers",
+    "n": 6,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   },
+   {
+    "check": "printed Sec. archive-reliability Lillgrund all-run scores (3 d.p.)",
+    "n": 4,
+    "tolerance": 1e-09,
+    "ok": true,
+    "mismatches": {}
+   }
+  ]
+ },
+ "runtime_s": 9.9734787940979
+}
