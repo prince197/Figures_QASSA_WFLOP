@@ -6,7 +6,7 @@ SWEVO_rev2/latex_source/figures_final/.
 
 Left: the two phases of PSO-VNS; middle: the evaluation; right: the findings, including where PSO-VNS does not lead.
 Every number shown is read from the analysis JSON files and checked against the value printed in the paper:
-  * Average ranks of the main comparison: mpce_summary.json /main/friedman/avg_rank
+  * Average ranks of the nine-method benchmark comparison: rev4_farm_tables.json /tables/tab:farm-I-stats/avg_rank
   * Direction bins: rev3_fine.json /arms/{ctrl1,direct}/contrast_psovns_pso/mean_dloss_pp and /arms/{ctrl1,direct}/leader
   * Horns Rev 1 feasibility at 6,030 evaluations: mpce_summary.json /hr16/methods/{PSOBV,PSOC}/feasible
 The canvas is 130 x 52 mm (aspect 2.5 = 1328/531); all text is >= 9 pt at that size.
@@ -36,18 +36,19 @@ S = load("mpce_summary.json")
 F = load("rev3_fine.json")
 
 # ---- numbers (with the value printed in the paper as a check) ----
-rank = S["main"]["friedman"]["avg_rank"]
-top = sorted(rank, key=rank.get)[:4]                                   # PSO-VNS, PSO, SSA-VNS, VNS
+R4 = load("rev4_farm_tables.json")
+rank = R4["tables"]["tab:farm-I-stats"]["avg_rank"]
+top = sorted(rank, key=rank.get)[:4]                                   # PSO-VNS, PSO, GA, SSA-VNS
 adv15 = -F["arms"]["ctrl1"]["contrast_psovns_pso"]["mean_dloss_pp"]   # 0.086 (opt. 15 deg, eval. 1 deg)
 adv1 = -F["arms"]["direct"]["contrast_psovns_pso"]["mean_dloss_pp"]   # 0.194 (opt. 1 deg)
 lead15, lead1 = F["arms"]["ctrl1"]["leader"], F["arms"]["direct"]["leader"]
 hr_pv, hr_pso = S["hr16"]["methods"]["PSOBV"]["feasible"], S["hr16"]["methods"]["PSOC"]["feasible"]   # 30, 19
-checks = [(rank["PSOBV"], 1.82, 2), (rank["PSOC"], 1.97, 2), (rank["SSABV"], 3.45, 2), (rank["BVNS"], 4.40, 2),
+checks = [(rank["PSOBV"], 2.18, 2), (rank["PSOC"], 2.40, 2), (rank["GA"], 2.74, 2), (rank["SSABV"], 4.32, 2),
           (adv15, 0.086, 3), (adv1, 0.194, 3)]
 for val, paper, nd in checks:
     assert round(val, nd) == paper, (val, paper)
-assert top == ["PSOBV", "PSOC", "SSABV", "BVNS"] and lead15 == lead1 == ["PSOBV"] and (hr_pv, hr_pso) == (30, 19)
-NAME = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "BVNS": "VNS"}
+assert top == ["PSOBV", "PSOC", "GA", "SSABV"] and lead15 == lead1 == ["PSOBV"] and (hr_pv, hr_pso) == (30, 19)
+NAME = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "GA": "GA"}
 
 # ---- style ----
 # method colours as in the paper's figures (mpce_results.COL): PSO-VNS blue, SSA-VNS sky blue, PSO green
@@ -118,10 +119,10 @@ text_mm(LX + LW / 2 + 2.0, 23.3, "best layout", ha="left", va="center", fontsize
 
 # ---- middle: evaluation ----
 text_mm(MX + MW / 2, TOP - 0.6, "Controlled evaluation", ha="center", va="top", fontsize=10, fontweight="bold")
-text_mm(MX + MW / 2, 44.6, "2 wind data sets × 3 farm sizes", ha="center", va="top", fontsize=9)
-text_mm(MX + MW / 2, 40.6, "Horns Rev 1 · Lillgrund · IEA37", ha="center", va="top", fontsize=9)
+text_mm(MX + MW / 2, 44.6, "4 wind farm types, 9 methods", ha="center", va="top", fontsize=9)
+text_mm(MX + MW / 2, 40.6, "benchmark · Horns Rev 1 · Lillgrund · IEA37", ha="center", va="top", fontsize=8.5)
 PW, PH = 29.0, 34.0
-for k, (x, title, verdict) in enumerate(((MX, "Average rank", "1st of 8"),
+for k, (x, title, verdict) in enumerate(((MX, "Average rank", "1st of 9"),
                                          (MX + MW - PW, "Gain vs PSO (pp)", "≈×2 with 1° bins"))):
     box_mm(x, 1.0, PW, PH, "white", ec="#BDBDBD", lw=0.6)
     text_mm(x + PW / 2, 1.0 + PH - 1.2, title, ha="center", va="top", fontsize=9, fontweight="bold")
@@ -129,7 +130,7 @@ for k, (x, title, verdict) in enumerate(((MX, "Average rank", "1st of 8"),
 
 a = ax_mm(MX + 12.6, 8.0, 12.0, 20.0)
 vals = [rank[m] for m in top]
-cols = [OI["blue"], OI["green"], OI["sky"], GREY]
+cols = [OI["blue"], OI["green"], OI["verm"], OI["sky"]]
 a.barh(range(4), vals, height=0.62, color=cols, zorder=2)
 a.set_yticks(range(4), [NAME[m] for m in top])
 for t, c in zip(a.get_yticklabels(), cols):
@@ -162,8 +163,8 @@ text_mm(MX + MW - PW / 2, 8.6, "evaluated at 1°", ha="center", va="center", fon
 # ---- right: findings ----
 box_mm(RX, 1.0, RW, 50.0, "#E3F0F8")
 text_mm(RX + RW / 2, TOP - 1.0, "Findings", ha="center", va="top", fontsize=10, fontweight="bold")
-items = [("✓", "ranks first", "of 8 methods"), ("✓", "+0.19 pp over", "PSO with 1° bins"),
-         ("✓", f"feasible {hr_pv}/30", f"vs PSO {hr_pso}/30*"), ("–", "GA, SLSQP lead", "in 2 settings")]
+items = [("✓", "ranks first", "of 9 methods"), ("✓", "+0.19 pp over", "PSO with 1° bins"),
+         ("✓", f"feasible {hr_pv}/30", f"vs PSO {hr_pso}/30*"), ("–", "GA leads in", "2 settings")]
 for i, (mark, l1, l2) in enumerate(items):
     yy = 41.5 - i * 10.4
     text_mm(RX + 1.4, yy, mark, ha="left", va="center", fontsize=10, fontweight="bold", fontfamily="DejaVu Sans",
