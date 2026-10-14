@@ -40,7 +40,6 @@
 \input{analysis/mpce_numbers_extra.tex}
 \input{analysis/mpce_numbers_diag.tex}
 \input{analysis/mpce_numbers_dir.tex}
-\input{analysis/mpce_numbers_csweep.tex}
 \input{optA/phase4_macros_stub.tex}
 \input{optA/phase6_macros_stub.tex}
 % a missing or empty (0-byte) figure file gives a TBD box instead of a fatal pdfTeX error
@@ -85,6 +84,9 @@
 % \SuppMainAlias{<label>}: a generated caption refers to <label>, which is placed in the main text (optA/sw/moved.md) and
 % not in this document; \ref{<label>} then prints the main-text number (as \ref{M-<label>}; no label is defined here)
 \newcommand{\SuppMainAlias}[1]{\expandafter\let\csname r@#1\expandafter\endcsname\csname r@M-#1\endcsname}
+% \SuppRedirect{<label>}{<target>}: \ref{<label>} prints the number of <target>; used after \begin{document} (labels read)
+% for main-text tables that generated captions still cite but the main text no longer has
+\newcommand{\SuppRedirect}[2]{\expandafter\let\csname r@#1\expandafter\endcsname\csname r@#2\endcsname}
 \makeatother
 
 \renewcommand{\thetable}{S\arabic{table}}
@@ -108,14 +110,25 @@
 % quantities they are left out. The per-case tables (tab:feasinit-cases, tab:budget-cases) are kept.
 \SuppOmit{tab:feasinit}
 \SuppOmit{tab:budget}
+% the per-case table of a PSO setting that the paper no longer uses
+\SuppOmit{tab:baseline-cases}
+% generated captions still cite two tables of an earlier main text; their \ref gives the supplement table with that content
+\SuppRedirect{M-tab:friedman68}{tab:friedman68-full}
+\SuppRedirect{M-tab:hr-site}{tab:hr-site-full}
 
-\noindent Tables, figures, sections, algorithms and equations of this document are numbered S1, S2, \ldots; references without the prefix S (e.g., Table~\ref{M-tab:friedman68} or \eqref{M-eq:penalty}) point to the main text. The sections follow the order of the main text:
+\noindent Tables, figures, sections, algorithms and equations of this document are numbered S1, S2, \ldots; references without the prefix S (e.g., Table~\ref{M-tab:farm-I-stats} or \eqref{M-eq:penalty}) point to the main text. The main text compares nine methods (PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, GA, VNS and MS-SLSQP) on four types of wind farm: Type~I, the Kusiak--Song benchmark; Type~II, the Horns Rev~1 block; Type~III, the Lillgrund block; and Type~IV, IEA37 Case Study~1. The sections of this document follow the order of the main text:
 \begin{itemize}
 \item details of the evaluation protocol and of the implementation (Section~\ref{sec:S-protocol}),
-\item details of the effect of the baseline setting and the main comparison (Section~\ref{sec:S-tables}),
-\item details of the component analysis, the practical equivalence and the robustness of the statistical conclusions (Section~\ref{sec:S-ablation}),
-\item details of the tests beyond the benchmark (Section~\ref{sec:S-beyond}) and
-\item details of the sensitivity to the modeling assumptions, including the direction resolution of the wind roses (Section~\ref{sec:S-robust}),
+\item details of the results by wind farm type:
+\begin{itemize}
+\item Type~I: per-case results, case-level statistics and figures (Section~\ref{sec:S-tables}) and the nine-method analysis with GA (Section~\ref{sec:S-xp-ga}),
+\item Type~II: the Horns Rev~1 block (Section~\ref{sec:S-hr16}),
+\item Type~III: the Lillgrund block (Section~\ref{sec:S-xp-site}),
+\item Type~IV: IEA37 Case Study~1 (Section~\ref{sec:S-iea37}), including the exact-gradient SLSQP variants, which exist only for this smooth model (Section~\ref{sec:S-xp-grad}),
+\end{itemize}
+\item details of the ablation study (component analysis), the practical equivalence and the robustness of the statistical conclusions (Section~\ref{sec:S-ablation}),
+\item details of the further analyses: feasibility-preserving initialization, budget scaling and computational cost (Section~\ref{sec:S-beyond}), and
+\item details of the robustness to the modeling assumptions, including the direction resolution of the wind roses (Section~\ref{sec:S-robust}),
 \end{itemize}
 followed by
 \begin{itemize}
@@ -128,12 +141,11 @@ followed by
 \item the audit of the archive (Section~\ref{sec:S-archive}).
 \end{itemize}
 
-Unless stated otherwise, all results are based on 30 seed-paired runs of 6,030 evaluations (objective calls, including the initial population and, for MS-SLSQP, the finite-difference gradient calls) with random initialization; the method names are those of the main text, and PSO denotes the constriction setting~\eqref{M-eq:constriction} unless the old setting is named. All Horns Rev~1 results use the 5$^\circ$ direction binning of Section~\ref{sec:S-hrmodel}. The results hold for the discretized wind roses of the benchmark (24 bins of 15$^\circ$) and of Horns Rev~1 (5$^\circ$ bins); Section~\ref{sec:S-direction} re-evaluates the final layouts with 1$^\circ$ bins, and Section~\ref{sec:S-sa-fine} optimizes with them directly.
+Unless stated otherwise, all results are based on 30 seed-paired runs of 6,030 evaluations (objective calls, including the initial population and, for MS-SLSQP, the finite-difference gradient calls) with random initialization; the method names are those of the main text, and PSO denotes the standard PSO with the constriction coefficients~\eqref{M-eq:constriction}. All Horns Rev~1 results use the 5$^\circ$ direction binning of Section~\ref{sec:S-hrmodel}. The results hold for the discretized wind roses of the benchmark (24 bins of 15$^\circ$) and of Horns Rev~1 (5$^\circ$ bins); Section~\ref{sec:S-direction} re-evaluates the final layouts with 1$^\circ$ bins, and Section~\ref{sec:S-sa-fine} optimizes with them directly.
 
 All tables of Sections~\ref{sec:S-tables}--\ref{sec:S-robust} are generated from the published run data by \texttt{analysis/mpce\_results.py}, except those
 \begin{itemize}
-\item of Section~\ref{sec:S-inference} (\texttt{analysis/mpce\_inference\_extra.py}),
-\item of Section~\ref{sec:S-csweep} (\texttt{analysis/mpce\_csweep.py}) and
+\item of Section~\ref{sec:S-inference} (\texttt{analysis/mpce\_inference\_extra.py}) and
 \item of Section~\ref{sec:S-direction} (\texttt{analysis/mpce\_direction.py});
 \end{itemize}
 the diagnostics of Section~\ref{sec:S-diag} come from instrumented reruns (\texttt{analysis/mpce\_diagnostics.py}), and every number of Section~\ref{sec:S-theory} is recomputed by \texttt{analysis/make\_theory\_figures.py}.
@@ -218,7 +230,7 @@ The ranking and the tests further use the following rules.
 \begin{itemize}
 \item Paired differences with $\lvert d\rvert\le10^{-9}$ are treated as zero and dropped, both in the Wilcoxon signed-rank test and in the rank-biserial correlation $r_{\rm rb}$.
 \item Case means are rounded to $10^{-6}$ objective units before ranking, so that exact ties (e.g., all methods at the wake-free optimum for $N=2$) are not broken by floating-point noise.
-\item Holm's correction for the run-level tests is applied within each case over the comparisons of one table; the main-comparison table (Table~\ref{M-tab:wtl}) and the ablation table (Table~\ref{M-tab:ablation}) are different families, so the same pair of methods (e.g., PSO-VNS vs.\ PSO) can have slightly different W/T/L tallies in the two tables. The W/T/L counts are descriptive tallies.
+\item Holm's correction for the run-level tests is applied within each case over the comparisons of one table; the Type~I comparison table (Table~\ref{M-tab:farm-I-stats}) and the ablation table (Table~\ref{M-tab:ablation}) are different families, so the same pair of methods (e.g., PSO-VNS vs.\ PSO) can have slightly different W/T/L tallies in the two tables. The W/T/L counts are descriptive tallies.
 \item In the case-mean Wilcoxon test, a case in which only one of the two methods has at least 15 feasible runs enters as a difference in its favor that is larger than every observed difference, and a case in which neither has is dropped (Section~\ref{M-sec:setup}).
 \end{itemize}
 The 68 cases are not independent (nested $N$ within six farm and wind combinations), so all $p$ values describe this benchmark, not a population of farms.
