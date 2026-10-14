@@ -10,7 +10,17 @@ The problem has the following elements (Fig.~\ref{fig:model}).
 \end{itemize}
 The spacing $4D$ is the convention of the Kusiak--Song benchmark and is kept for comparability; it lies at the dense end of practice (the installed Horns Rev~1 layout is a regular grid of about $7D$; Section~\ref{sec:hornsrev-site}), so our results concern a packing-constrained regime (larger spacings: Section~\ref{sec:spacing}).
 
-The model is the unchanged Kusiak--Song benchmark model, and no modeling novelty is claimed; the contributions are the PSO-VNS algorithm and its controlled evaluation. The terrain is flat, and the electrical collector-system layout and multi-objective formulations (e.g., AEP against cost or the levelized cost of energy) are not considered. The protocol (equal budgets, seed pairing, equal-cost controls, feasibility-aware ranking, equivalence tests) does not depend on the model and applies to such formulations as well.
+The model is the unchanged Kusiak--Song benchmark model, and no modeling novelty is claimed; the contributions are the PSO-VNS algorithm and its controlled evaluation. It rests on the following assumptions, each stated in detail in the subsections below:
+\begin{enumerate}
+\item[A1.] All $N$ turbines are identical, and their number is prescribed.
+\item[A2.] The terrain is flat, and the farm boundary is a circle of radius $r$ (blocks of the Horns Rev~1 and Lillgrund farms: their own boundaries).
+\item[A3.] Turbines must be at least $\ell_{\min}=4D$ apart.
+\item[A4.] In each direction bin, the wind speed follows a Weibull distribution; the wind rose is discretized into $N_\theta$ direction bins.
+\item[A5.] Wakes follow the Jensen top-hat model with a constant thrust coefficient $C_T$; a turbine is waked if its hub center lies in the wake cone, and the deficits of several wakes are combined by the root-sum-square rule.
+\item[A6.] The power curve is that of the Kusiak--Song benchmark: linear between cut-in and rated speed, constant above.
+\item[A7.] Only the wake loss is optimized; the electrical collector-system layout and multi-objective formulations (e.g., AEP against cost or the levelized cost of energy) are not considered.
+\end{enumerate}
+The protocol (equal budgets, seed pairing, equal-cost controls, feasibility-aware ranking, equivalence tests) does not depend on the model and applies to such formulations as well.
 
 \begin{figure}[!t]
 \centering
