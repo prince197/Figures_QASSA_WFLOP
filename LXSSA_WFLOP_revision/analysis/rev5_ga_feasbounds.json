@@ -1,0 +1,958 @@
+{
+ "generated": "2026-10-28 04:06:05",
+ "script": "rev5_ga_feasbounds.py",
+ "worst_case": {
+  "pool9": [
+   "PSOBV",
+   "PSOC",
+   "SSABV",
+   "SSA",
+   "LXSSA",
+   "DE",
+   "GA",
+   "BVNS",
+   "SLSQP"
+  ],
+  "ga_open_labels": 0,
+  "main8": {
+   "stored": {
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.382352941176471,
+     "LXSSA": 6.0588235294117645,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 8.322717950001036e-17,
+     "LXSSA": 3.3307905761444154e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "chi2": 319.2979002624672,
+    "p": 4.555038515279214e-65,
+    "best_cases": null,
+    "msslsqp_feasible_pct": 99.95098039215686,
+    "msslsqp_cases_unqualified": 0,
+    "msslsqp_mean_loss_qualified": 1.7578660938001243,
+    "allrun_psovns_vs_msslsqp": {
+     "n": 2040,
+     "W": 1649,
+     "T": 218,
+     "L": 173,
+     "score": 0.861764705882353,
+     "p_sign": 5.200928980537675e-302
+    }
+   },
+   "msslsqp_open_infeasible": {
+    "avg_rank": {
+     "PSOBV": 1.8235294117647058,
+     "PSOC": 1.9779411764705883,
+     "SSABV": 3.4558823529411766,
+     "SSA": 5.404411764705882,
+     "LXSSA": 6.0661764705882355,
+     "DE": 7.051470588235294,
+     "BVNS": 4.404411764705882,
+     "SLSQP": 5.8161764705882355
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 6.154515988436521e-17,
+     "LXSSA": 3.3307905761443684e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.0060123732051567e-20
+    },
+    "chi2": 318.88258575197887,
+    "p": 5.588203187964982e-65,
+    "best_cases": null,
+    "msslsqp_feasible_pct": 77.99019607843137,
+    "msslsqp_cases_unqualified": 1,
+    "msslsqp_mean_loss_qualified": 1.7691093473824255,
+    "allrun_psovns_vs_msslsqp": {
+     "n": 2040,
+     "W": 1716,
+     "T": 185,
+     "L": 139,
+     "score": 0.8865196078431372,
+     "p_sign": 0.0
+    }
+   },
+   "flipped": 448,
+   "cases_with_open_msslsqp": 67,
+   "max_open_per_case": 16,
+   "cases_rank_changed": 5,
+   "order_unchanged": true,
+   "avg_rank_change": {
+    "PSOBV": 0.007352941176470562,
+    "PSOC": 0.007352941176470562,
+    "SSABV": 0.007352941176470562,
+    "SSA": 0.022058823529411242,
+    "LXSSA": 0.007352941176471006,
+    "DE": 0.007352941176471006,
+    "BVNS": 0.007352941176470118,
+    "SLSQP": -0.0661764705882355
+   }
+  },
+  "main9": {
+   "stored": {
+    "avg_rank": {
+     "PSOBV": 2.176470588235294,
+     "PSOC": 2.3970588235294117,
+     "SSABV": 4.3161764705882355,
+     "SSA": 6.338235294117647,
+     "LXSSA": 7.014705882352941,
+     "DE": 7.955882352941177,
+     "GA": 2.735294117647059,
+     "BVNS": 5.213235294117647,
+     "SLSQP": 6.852941176470588
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "GA",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.6385920776850196,
+     "SSABV": 1.565733411619832e-05,
+     "SSA": 3.962372016388222e-18,
+     "LXSSA": 4.861550457412669e-24,
+     "DE": 6.785039362399105e-34,
+     "GA": 0.4682294561765683,
+     "BVNS": 4.0314827913411037e-10,
+     "SLSQP": 1.4107696428500763e-22
+    },
+    "chi2": 374.84975596886954,
+    "p": 4.4638544240654904e-76,
+    "best_cases": null,
+    "msslsqp_feasible_pct": 99.95098039215686,
+    "msslsqp_cases_unqualified": 0,
+    "msslsqp_mean_loss_qualified": 1.7578660938001243,
+    "allrun_psovns_vs_msslsqp": {
+     "n": 2040,
+     "W": 1649,
+     "T": 218,
+     "L": 173,
+     "score": 0.861764705882353,
+     "p_sign": 5.200928980537675e-302
+    },
+    "allrun_psovns_vs_ga": {
+     "n": 2040,
+     "W": 969,
+     "T": 318,
+     "L": 753,
+     "score": 0.5529411764705883,
+     "p_sign": 2.13003763052433e-07
+    },
+    "ga_feasible_pct": 98.62745098039215
+   },
+   "msslsqp_open_infeasible": {
+    "avg_rank": {
+     "PSOBV": 2.1838235294117645,
+     "PSOC": 2.4044117647058822,
+     "SSABV": 4.323529411764706,
+     "SSA": 6.360294117647059,
+     "LXSSA": 7.022058823529412,
+     "DE": 7.963235294117647,
+     "GA": 2.7573529411764706,
+     "BVNS": 5.220588235294118,
+     "SLSQP": 6.764705882352941
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "GA",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.6385920776850196,
+     "SSABV": 1.565733411619838e-05,
+     "SSA": 2.990553986114949e-18,
+     "LXSSA": 4.861550457412565e-24,
+     "DE": 6.785039362399105e-34,
+     "GA": 0.44406802697436354,
+     "BVNS": 4.0314827913410743e-10,
+     "SLSQP": 1.0698914505565856e-21
+    },
+    "chi2": 372.98661365142465,
+    "p": 1.1164240471388112e-75,
+    "best_cases": null,
+    "msslsqp_feasible_pct": 77.99019607843137,
+    "msslsqp_cases_unqualified": 1,
+    "msslsqp_mean_loss_qualified": 1.7691093473824255,
+    "allrun_psovns_vs_msslsqp": {
+     "n": 2040,
+     "W": 1716,
+     "T": 185,
+     "L": 139,
+     "score": 0.8865196078431372,
+     "p_sign": 0.0
+    },
+    "allrun_psovns_vs_ga": {
+     "n": 2040,
+     "W": 969,
+     "T": 318,
+     "L": 753,
+     "score": 0.5529411764705883,
+     "p_sign": 2.13003763052433e-07
+    },
+    "ga_feasible_pct": 98.62745098039215
+   },
+   "flipped": 448,
+   "cases_with_open_msslsqp": 67,
+   "max_open_per_case": 16,
+   "cases_rank_changed": 6,
+   "order_unchanged": true,
+   "avg_rank_change": {
+    "PSOBV": 0.007352941176470562,
+    "PSOC": 0.007352941176470562,
+    "SSABV": 0.007352941176470118,
+    "SSA": 0.02205882352941213,
+    "LXSSA": 0.007352941176471006,
+    "DE": 0.007352941176470118,
+    "GA": 0.022058823529411686,
+    "BVNS": 0.007352941176471006,
+    "SLSQP": -0.08823529411764675
+   }
+  }
+ },
+ "tables_changed_lines": [
+  {
+   "line": 1,
+   "old": "%% generated by rev3_feasbounds.py -- do not edit by hand",
+   "new": "%% generated by rev5_ga_feasbounds.py (rev3_feasbounds.write_tex; benchmark worst case with GA, nine methods; all other blocks from rev3_feasbounds.json) -- do not edit by hand"
+  },
+  {
+   "line": 77,
+   "old": "\\par\\vspace{2pt}\\parbox{\\textwidth}{\\scriptsize IEA37 Case Study~1, 13-method pool (scenario: turbines, evaluations; random starts, 30 seed-paired runs). Feas./Rank: feasible runs and feasibility-aware rank of the mean AEP (fewer than 15 feasible runs = ranked below the qualified methods). Best: rank-1 method and its mean AEP (MWh) over its feasible runs; n.s.: methods not significantly different from the best method (seed-paired Wilcoxon signed-rank, infeasible runs below every feasible run, Holm over its 12 comparisons, $\\alpha=0.05$). Scenarios: stored labels; $^a$in each scenario the open runs with the highest AEP of each exact-gradient method are taken as infeasible until only 15 of its 30 runs remain feasible (the lowest mean it can have while ranked by its mean); open exact infeas.: every open exact-gradient label taken as infeasible; + open MS-SLSQP: in addition every open label of MS-SLSQP with finite-difference gradients (fin.\\ diff.) taken as infeasible; ex.: exact gradient. Benchmark (68 cases, eight methods): with all 448 open MS-SLSQP labels infeasible (67 cases, at most 16 per case), MS-SLSQP has 78.0\\% feasible runs and fewer than 15 feasible runs in 1 case; average ranks PSO-VNS 1.82$\\to$1.82, PSO 1.97$\\to$1.98, SSA-VNS 3.45$\\to$3.46, VNS 4.40$\\to$4.40, SSA 5.38$\\to$5.40, MS-SLSQP 5.88$\\to$5.82, LX-SSA 6.06$\\to$6.07, DE 7.04$\\to$7.05 (order unchanged); all-run outcome PSO-VNS vs.\\ MS-SLSQP 1649/218/173$\\to$1716/185/139 (wins/ties/losses). Horns Rev~1 pool (11 methods), open MS-SLSQP labels infeasible: 6{,}030 evaluations: 20 labels, MS-SLSQP 30$\\to$10 feasible runs, rank 8$\\to$10, best method PSO-VNS; 30{,}030 evaluations: 20 labels, MS-SLSQP 30$\\to$10 feasible runs, rank 8$\\to$10, best method GA. Budget and initialization studies: 22 case groups contain open MS-SLSQP labels; MS-SLSQP keeps at least half of its runs feasible in 18 of them and loses that qualification in 4 (Horns Rev~1).}",
+   "new": "\\par\\vspace{2pt}\\parbox{\\textwidth}{\\scriptsize IEA37 Case Study~1, 13-method pool (scenario: turbines, evaluations; random starts, 30 seed-paired runs). Feas./Rank: feasible runs and feasibility-aware rank of the mean AEP (fewer than 15 feasible runs = ranked below the qualified methods). Best: rank-1 method and its mean AEP (MWh) over its feasible runs; n.s.: methods not significantly different from the best method (seed-paired Wilcoxon signed-rank, infeasible runs below every feasible run, Holm over its 12 comparisons, $\\alpha=0.05$). Scenarios: stored labels; $^a$in each scenario the open runs with the highest AEP of each exact-gradient method are taken as infeasible until only 15 of its 30 runs remain feasible (the lowest mean it can have while ranked by its mean); open exact infeas.: every open exact-gradient label taken as infeasible; + open MS-SLSQP: in addition every open label of MS-SLSQP with finite-difference gradients (fin.\\ diff.) taken as infeasible; ex.: exact gradient. Benchmark (68 cases, nine methods incl.\\ GA): with all 448 open MS-SLSQP labels infeasible (67 cases, at most 16 per case), MS-SLSQP has 78.0\\% feasible runs and fewer than 15 feasible runs in 1 case; average ranks PSO-VNS 2.18$\\to$2.18, PSO 2.40$\\to$2.40, GA 2.74$\\to$2.76, SSA-VNS 4.32$\\to$4.32, VNS 5.21$\\to$5.22, SSA 6.34$\\to$6.36, MS-SLSQP 6.85$\\to$6.76, LX-SSA 7.01$\\to$7.02, DE 7.96$\\to$7.96 (order unchanged); all-run outcome PSO-VNS vs.\\ MS-SLSQP 1649/218/173$\\to$1716/185/139 (wins/ties/losses). Horns Rev~1 pool (11 methods), open MS-SLSQP labels infeasible: 6{,}030 evaluations: 20 labels, MS-SLSQP 30$\\to$10 feasible runs, rank 8$\\to$10, best method PSO-VNS; 30{,}030 evaluations: 20 labels, MS-SLSQP 30$\\to$10 feasible runs, rank 8$\\to$10, best method GA. Budget and initialization studies: 22 case groups contain open MS-SLSQP labels; MS-SLSQP keeps at least half of its runs feasible in 18 of them and loses that qualification in 4 (Horns Rev~1).}"
+  }
+ ],
+ "replay": {
+  "main8": {
+   "rec": {
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.382352941176471,
+     "LXSSA": 6.0588235294117645,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 8.322717950001036e-17,
+     "LXSSA": 3.3307905761444154e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "psovns_minus_pso_pp": -0.018043354866491453,
+    "psovns_minus_pso_cases": 68
+   },
+   "J1": {
+    "avg_rank": {
+     "PSOBV": 1.8014705882352942,
+     "PSOC": 1.9558823529411764,
+     "SSABV": 3.485294117647059,
+     "SSA": 5.720588235294118,
+     "LXSSA": 6.014705882352941,
+     "DE": 6.9411764705882355,
+     "BVNS": 4.330882352941177,
+     "SLSQP": 5.75
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160721,
+     "SSABV": 0.00012231389932122855,
+     "SSA": 4.260240467667804e-20,
+     "LXSSA": 6.784849214264647e-23,
+     "DE": 1.4156535915878706e-33,
+     "BVNS": 5.193720164439557e-09,
+     "SLSQP": 2.7442745972395606e-20
+    },
+    "psovns_minus_pso_pp": -0.01794795478934924,
+    "psovns_minus_pso_cases": 68
+   },
+   "order_unchanged": true
+  },
+  "main9": {
+   "rec": {
+    "avg_rank": {
+     "PSOBV": 2.176470588235294,
+     "PSOC": 2.3970588235294117,
+     "SSABV": 4.3161764705882355,
+     "SSA": 6.338235294117647,
+     "LXSSA": 7.014705882352941,
+     "DE": 7.955882352941177,
+     "GA": 2.735294117647059,
+     "BVNS": 5.213235294117647,
+     "SLSQP": 6.852941176470588
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "GA",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.6385920776850196,
+     "SSABV": 1.565733411619832e-05,
+     "SSA": 3.962372016388222e-18,
+     "LXSSA": 4.861550457412669e-24,
+     "DE": 6.785039362399105e-34,
+     "GA": 0.4682294561765683,
+     "BVNS": 4.0314827913411037e-10,
+     "SLSQP": 1.4107696428500763e-22
+    },
+    "psovns_minus_pso_pp": -0.018043354866491453,
+    "psovns_minus_pso_cases": 68
+   },
+   "J1": {
+    "avg_rank": {
+     "PSOBV": 2.161764705882353,
+     "PSOC": 2.3823529411764706,
+     "SSABV": 4.352941176470588,
+     "SSA": 6.676470588235294,
+     "LXSSA": 6.970588235294118,
+     "DE": 7.852941176470588,
+     "GA": 2.735294117647059,
+     "BVNS": 5.147058823529412,
+     "SLSQP": 6.720588235294118
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "GA",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.6385920776850196,
+     "SSABV": 9.24182272971782e-06,
+     "SSA": 3.538951178131092e-21,
+     "LXSSA": 9.304347373059141e-24,
+     "DE": 6.83077268931693e-33,
+     "GA": 0.44406802697436354,
+     "BVNS": 8.273491437766315e-10,
+     "SLSQP": 1.6976968832063214e-21
+    },
+    "psovns_minus_pso_pp": -0.01794795478934924,
+    "psovns_minus_pso_cases": 68
+   },
+   "order_unchanged": true
+  },
+  "main9_ga_full_precision_j1": {
+   "rec": {
+    "avg_rank": {
+     "PSOBV": 2.176470588235294,
+     "PSOC": 2.3970588235294117,
+     "SSABV": 4.3161764705882355,
+     "SSA": 6.338235294117647,
+     "LXSSA": 7.014705882352941,
+     "DE": 7.955882352941177,
+     "GA": 2.735294117647059,
+     "BVNS": 5.213235294117647,
+     "SLSQP": 6.852941176470588
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "GA",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.6385920776850196,
+     "SSABV": 1.565733411619832e-05,
+     "SSA": 3.962372016388222e-18,
+     "LXSSA": 4.861550457412669e-24,
+     "DE": 6.785039362399105e-34,
+     "GA": 0.4682294561765683,
+     "BVNS": 4.0314827913411037e-10,
+     "SLSQP": 1.4107696428500763e-22
+    },
+    "psovns_minus_pso_pp": -0.018043354866491453,
+    "psovns_minus_pso_cases": 68
+   },
+   "J1": {
+    "avg_rank": {
+     "PSOBV": 2.161764705882353,
+     "PSOC": 2.3823529411764706,
+     "SSABV": 4.352941176470588,
+     "SSA": 6.676470588235294,
+     "LXSSA": 6.970588235294118,
+     "DE": 7.852941176470588,
+     "GA": 2.735294117647059,
+     "BVNS": 5.147058823529412,
+     "SLSQP": 6.720588235294118
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "GA",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.6385920776850196,
+     "SSABV": 9.24182272971782e-06,
+     "SSA": 3.538951178131092e-21,
+     "LXSSA": 9.304347373059141e-24,
+     "DE": 6.83077268931693e-33,
+     "GA": 0.44406802697436354,
+     "BVNS": 8.273491437766315e-10,
+     "SLSQP": 1.6976968832063214e-21
+    },
+    "psovns_minus_pso_pp": -0.017947945884328437,
+    "psovns_minus_pso_cases": 68
+   },
+   "order_unchanged": true
+  },
+  "main9_fullprec_max_avg_rank_diff": 0.0,
+  "main8_full_precision_j1": {
+   "rec": {
+    "avg_rank": {
+     "PSOBV": 1.8161764705882353,
+     "PSOC": 1.9705882352941178,
+     "SSABV": 3.448529411764706,
+     "SSA": 5.382352941176471,
+     "LXSSA": 6.0588235294117645,
+     "DE": 7.044117647058823,
+     "BVNS": 4.397058823529412,
+     "SLSQP": 5.882352941176471
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160718,
+     "SSABV": 0.000204006023816942,
+     "SSA": 8.322717950001036e-17,
+     "LXSSA": 3.3307905761444154e-23,
+     "DE": 1.0423310013526964e-34,
+     "BVNS": 2.418191635497493e-09,
+     "SLSQP": 1.8437212849431202e-21
+    },
+    "psovns_minus_pso_pp": -0.018043354866491453,
+    "psovns_minus_pso_cases": 68
+   },
+   "J1": {
+    "avg_rank": {
+     "PSOBV": 1.8014705882352942,
+     "PSOC": 1.9558823529411764,
+     "SSABV": 3.485294117647059,
+     "SSA": 5.720588235294118,
+     "LXSSA": 6.014705882352941,
+     "DE": 6.9411764705882355,
+     "BVNS": 4.330882352941177,
+     "SLSQP": 5.75
+    },
+    "order": [
+     "PSOBV",
+     "PSOC",
+     "SSABV",
+     "BVNS",
+     "SSA",
+     "SLSQP",
+     "LXSSA",
+     "DE"
+    ],
+    "p_holm_vs_focus": {
+     "PSOC": 0.7131912610160721,
+     "SSABV": 0.00012231389932122855,
+     "SSA": 4.260240467667804e-20,
+     "LXSSA": 6.784849214264647e-23,
+     "DE": 1.4156535915878706e-33,
+     "BVNS": 5.193720164439557e-09,
+     "SLSQP": 2.7442745972395606e-20
+    },
+    "psovns_minus_pso_pp": -0.017947945884328437,
+    "psovns_minus_pso_cases": 68
+   },
+   "order_unchanged": true
+  },
+  "main8_fullprec_max_avg_rank_diff_vs_summary": 0.0,
+  "layout_files_rounding": "J1 / I1 / Objective stored with 2 decimals in the *_direction_layouts.csv.gz files",
+  "ga_j1_recomputed_max_abs_diff": 0.004997151932911947,
+  "ga_i1_recomputed_max_abs_diff": 0.004193447239231318,
+  "layouts_gt_005pp": {
+   "eight_plus_components": {
+    "n": 233,
+    "of": 21716
+   },
+   "with_ga": {
+    "n": 233,
+    "of": 23728
+   },
+   "ga": {
+    "n": 0,
+    "of": 2012,
+    "max_pp": 8.899497084757307e-06
+   }
+  }
+ },
+ "site_means": {
+  "HR_6030_feasible": {
+   "n_feasible": {
+    "BVNS": 30,
+    "DE": 30,
+    "LXBV": 30,
+    "LXSSA": 30,
+    "PSOBV": 30,
+    "PSOC": 30,
+    "SLSQP": 30,
+    "SSA": 30,
+    "SSABV": 30
+   },
+   "mean_stored": {
+    "BVNS": 138.52623492,
+    "DE": 136.38701961666666,
+    "LXBV": 138.35880999666668,
+    "LXSSA": 137.06808540000003,
+    "PSOBV": 138.4295749833333,
+    "PSOC": 136.38701961666666,
+    "SLSQP": 136.90493563666666,
+    "SSA": 137.15798515666665,
+    "SSABV": 138.42439144
+   },
+   "mean_replay": {
+    "BVNS": 138.5249403557473,
+    "DE": 136.38701802120798,
+    "LXBV": 138.3575105157853,
+    "LXSSA": 137.04127338799324,
+    "PSOBV": 138.4302862601139,
+    "PSOC": 136.38701802120798,
+    "SLSQP": 136.9049326349906,
+    "SSA": 137.1538632111914,
+    "SSABV": 138.4224113801608
+   },
+   "order_stored": [
+    "BVNS",
+    "PSOBV",
+    "SSABV",
+    "LXBV",
+    "SSA",
+    "LXSSA",
+    "SLSQP",
+    "DE",
+    "PSOC"
+   ],
+   "order_replay": [
+    "BVNS",
+    "PSOBV",
+    "SSABV",
+    "LXBV",
+    "SSA",
+    "LXSSA",
+    "SLSQP",
+    "DE",
+    "PSOC"
+   ],
+   "order_unchanged": true,
+   "ga_present": false,
+   "order_unchanged_without_ga": true,
+   "min_gap_stored": 0.0
+  },
+  "HR_6030_random": {
+   "n_feasible": {
+    "BVNS": 30,
+    "GA": 30,
+    "LXBV": 30,
+    "LXSSA": 28,
+    "PSOBV": 30,
+    "PSOC": 19,
+    "RSVNS": 28,
+    "SLSQP": 30,
+    "SSA": 30,
+    "SSABV": 30
+   },
+   "mean_stored": {
+    "BVNS": 137.34693714,
+    "GA": 138.1222363,
+    "LXBV": 137.41113704,
+    "LXSSA": 135.99643386785715,
+    "PSOBV": 138.28774401666666,
+    "PSOC": 137.79162238421054,
+    "RSVNS": 137.584207425,
+    "SLSQP": 136.3080972,
+    "SSA": 136.24881664666665,
+    "SSABV": 137.59163732333334
+   },
+   "mean_replay": {
+    "BVNS": 137.3455553508785,
+    "GA": 138.1222368195484,
+    "LXBV": 137.40614164855648,
+    "LXSSA": 135.98147838616063,
+    "PSOBV": 138.2877439019752,
+    "PSOC": 137.7916215371558,
+    "RSVNS": 137.58240390074585,
+    "SLSQP": 136.3078715552803,
+    "SSA": 136.24813134637623,
+    "SSABV": 137.59163592729004
+   },
+   "order_stored": [
+    "PSOBV",
+    "GA",
+    "PSOC",
+    "SSABV",
+    "RSVNS",
+    "LXBV",
+    "BVNS",
+    "SLSQP",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_replay": [
+    "PSOBV",
+    "GA",
+    "PSOC",
+    "SSABV",
+    "RSVNS",
+    "LXBV",
+    "BVNS",
+    "SLSQP",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_unchanged": true,
+   "ga_present": true,
+   "order_unchanged_without_ga": true,
+   "min_gap_stored": 0.007429898333356277
+  },
+  "HR_30030_random": {
+   "n_feasible": {
+    "BVNS": 30,
+    "DE": 8,
+    "GA": 30,
+    "LXBV": 30,
+    "LXSSA": 30,
+    "PSOBV": 30,
+    "PSOC": 28,
+    "RSVNS": 30,
+    "SLSQP": 30,
+    "SSA": 30,
+    "SSABV": 30
+   },
+   "mean_stored": {
+    "BVNS": 138.61460232333332,
+    "DE": 137.788797725,
+    "GA": 139.63939581666668,
+    "LXBV": 138.28261653666667,
+    "LXSSA": 136.15693200333334,
+    "PSOBV": 139.10811309666667,
+    "PSOC": 138.71945639285715,
+    "RSVNS": 138.33535519333333,
+    "SLSQP": 137.17735413,
+    "SSA": 136.65414834333333,
+    "SSABV": 138.11483816
+   },
+   "mean_replay": {
+    "BVNS": 138.61368604007632,
+    "DE": 137.78880239749145,
+    "GA": 139.63939436964657,
+    "LXBV": 138.2826155489144,
+    "LXSSA": 136.12654391678336,
+    "PSOBV": 139.1081107088217,
+    "PSOC": 138.71794141025296,
+    "RSVNS": 138.33095755679057,
+    "SLSQP": 137.17717037254388,
+    "SSA": 136.63811777479603,
+    "SSABV": 138.1091028896554
+   },
+   "order_stored": [
+    "GA",
+    "PSOBV",
+    "PSOC",
+    "BVNS",
+    "RSVNS",
+    "LXBV",
+    "SSABV",
+    "DE",
+    "SLSQP",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_replay": [
+    "GA",
+    "PSOBV",
+    "PSOC",
+    "BVNS",
+    "RSVNS",
+    "LXBV",
+    "SSABV",
+    "DE",
+    "SLSQP",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_unchanged": true,
+   "ga_present": true,
+   "order_unchanged_without_ga": true,
+   "min_gap_stored": 0.05273865666666211
+  },
+  "HR_120030_random": {
+   "n_feasible": {
+    "BVNS": 10,
+    "DE": 10,
+    "LXBV": 10,
+    "LXSSA": 10,
+    "PSOBV": 10,
+    "PSOC": 10,
+    "RSVNS": 10,
+    "SLSQP": 10,
+    "SSA": 10,
+    "SSABV": 10
+   },
+   "mean_stored": {
+    "BVNS": 139.53751015999998,
+    "DE": 139.69689499999998,
+    "LXBV": 139.22428118,
+    "LXSSA": 136.48288018,
+    "PSOBV": 139.28918667,
+    "PSOC": 138.93535821999998,
+    "RSVNS": 139.51175395,
+    "SLSQP": 137.93057819,
+    "SSA": 137.46671292000002,
+    "SSABV": 139.17277652
+   },
+   "mean_replay": {
+    "BVNS": 139.5375111609313,
+    "DE": 139.59491529867142,
+    "LXBV": 139.2242815682138,
+    "LXSSA": 136.3987767780026,
+    "PSOBV": 139.24116396333736,
+    "PSOC": 138.59897464515,
+    "RSVNS": 139.51175440180253,
+    "SLSQP": 137.93057500300802,
+    "SSA": 137.318017805966,
+    "SSABV": 139.17277311378894
+   },
+   "order_stored": [
+    "DE",
+    "BVNS",
+    "RSVNS",
+    "PSOBV",
+    "LXBV",
+    "SSABV",
+    "PSOC",
+    "SLSQP",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_replay": [
+    "DE",
+    "BVNS",
+    "RSVNS",
+    "PSOBV",
+    "LXBV",
+    "SSABV",
+    "PSOC",
+    "SLSQP",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_unchanged": true,
+   "ga_present": false,
+   "order_unchanged_without_ga": true,
+   "min_gap_stored": 0.02575620999996886
+  },
+  "LG_6030_random": {
+   "n_feasible": {
+    "BVNS": 8,
+    "PSOBV": 17,
+    "RSDVNS": 6,
+    "SLSQP": 30,
+    "SSA": 3,
+    "SSABV": 13
+   },
+   "mean_stored": {
+    "BVNS": 112.8825826,
+    "PSOBV": 113.07400490588236,
+    "RSDVNS": 112.58185585,
+    "SLSQP": 112.86525487333333,
+    "SSA": 111.47893219999999,
+    "SSABV": 112.57086030769231
+   },
+   "mean_replay": {
+    "BVNS": 112.88258533875165,
+    "PSOBV": 113.07400554973472,
+    "RSDVNS": 112.58184200068011,
+    "SLSQP": 112.8652588041345,
+    "SSA": 111.47892427103348,
+    "SSABV": 112.57086453340493
+   },
+   "order_stored": [
+    "PSOBV",
+    "BVNS",
+    "SLSQP",
+    "RSDVNS",
+    "SSABV",
+    "SSA"
+   ],
+   "order_replay": [
+    "PSOBV",
+    "BVNS",
+    "SLSQP",
+    "RSDVNS",
+    "SSABV",
+    "SSA"
+   ],
+   "order_unchanged": true,
+   "ga_present": false,
+   "order_unchanged_without_ga": true,
+   "min_gap_stored": 0.010995542307682626
+  },
+  "LG_30030_random": {
+   "n_feasible": {
+    "BVNS": 30,
+    "DE": 21,
+    "GA": 21,
+    "LXSSA": 18,
+    "PSOBV": 30,
+    "PSOC": 19,
+    "RSDVNS": 27,
+    "SLSQP": 30,
+    "SSA": 28,
+    "SSABV": 29
+   },
+   "mean_stored": {
+    "BVNS": 114.19421004333334,
+    "DE": 114.00736784285714,
+    "GA": 114.12457727886266,
+    "LXSSA": 110.70606496111111,
+    "PSOBV": 114.59220801666667,
+    "PSOC": 113.61513485263157,
+    "RSDVNS": 113.21664548148148,
+    "SLSQP": 113.45220138333333,
+    "SSA": 112.1385142142857,
+    "SSABV": 114.00503196896551
+   },
+   "mean_replay": {
+    "BVNS": 114.19420650826011,
+    "DE": 114.00736797030224,
+    "GA": 114.12457727886266,
+    "LXSSA": 110.6955993863806,
+    "PSOBV": 114.58250403425471,
+    "PSOC": 113.60107188880826,
+    "RSDVNS": 113.21663855257732,
+    "SLSQP": 113.45141302925464,
+    "SSA": 112.12323696826978,
+    "SSABV": 113.99953851199056
+   },
+   "order_stored": [
+    "PSOBV",
+    "BVNS",
+    "GA",
+    "DE",
+    "SSABV",
+    "PSOC",
+    "SLSQP",
+    "RSDVNS",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_replay": [
+    "PSOBV",
+    "BVNS",
+    "GA",
+    "DE",
+    "SSABV",
+    "PSOC",
+    "SLSQP",
+    "RSDVNS",
+    "SSA",
+    "LXSSA"
+   ],
+   "order_unchanged": true,
+   "ga_present": true,
+   "order_unchanged_without_ga": true,
+   "min_gap_stored": 0.0023358738916243738
+  }
+ },
+ "seconds": 9.6
+}
