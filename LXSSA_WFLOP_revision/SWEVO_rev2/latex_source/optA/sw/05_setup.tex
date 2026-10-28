@@ -4,7 +4,13 @@
 \subsection{Wind Farm Types}
 \label{sec:setup-cases}
 \label{sec:setup-beyond}
-The methods are compared on four wind farm types (Table~\ref{tab:farm-types}). Type~I is the Kusiak--Song benchmark~\cite{Kusiak2010,Bansal2017} with two synthetic wind roses (Section~\ref{sec:wind}; Table~\ref{S-tab:S-wind}); Types~II and III are 16-turbine blocks of two offshore farms with measured wind climates; Type~IV, IEA37 Case Study~1~\cite{Baker2019,IEA37repo}, tests optimizers rather than represents a site.
+The methods are compared on four wind farm types (Table~\ref{tab:farm-types}):
+\begin{enumerate}
+\item \emph{Type~I}, the Kusiak--Song benchmark~\cite{Kusiak2010,Bansal2017}: 68 cases of circular farms with radii of 500, 750 and 1000~m and 2--15 turbines, under two synthetic wind roses, Data Sets~I and~II (Section~\ref{sec:wind}; Table~\ref{S-tab:S-wind});
+\item \emph{Type~II}, a 16-turbine block of the offshore farm Horns Rev~1 with its measured 12-sector Weibull wind climate;
+\item \emph{Type~III}, a 16-turbine ($4\times4$) block of the offshore farm Lillgrund with its measured 12-sector Weibull wind climate;
+\item \emph{Type~IV}, IEA37 Case Study~1~\cite{Baker2019,IEA37repo}: circular farms with 16 and 36 turbines and a 16-direction wind rose with one wind speed; it tests optimizers rather than represents a site.
+\end{enumerate}
 
 \begin{table}[!t]
 \centering
@@ -32,30 +38,30 @@ Cases & 68 (2 data sets $\times$ 3 radii) & 1 & 1 & 2 \\
 \end{table}
 % CHECK (manual, resolved 2026-09-29): description matches analysis/hornsrev_model.py (V80, 12 sectors, K = 0.04, hub-centre top-hat, C_T at free-stream speed, 5-deg bins after the hrfix) and supplement sec:S-hrmodel; all HR runs are the hrfix reruns
 
-Further studies on the six largest Type~I cases and the Type~II block (Table~\ref{tab:design}) use 30,030 and 120,030 evaluations (10 seeds for Type~II at 120,030) and a feasibility-preserving initialization, which draws seeded layouts inside the site and separates the turbines with L-BFGS-B on a packing penalty, without objective evaluations (Section~\ref{S-sec:S-protocol}).
+Further studies on the six largest Type~I cases and on the Type~II block (Table~\ref{tab:design}) also use 30,030 and 120,030 evaluations (10 seeds for Type~II at 120,030) and a feasibility-preserving initialization, which draws seeded layouts inside the site and separates the turbines with L-BFGS-B on a packing penalty, without objective evaluations (Section~\ref{S-sec:S-feasinit-impl}).
 
 \subsection{Compared Methods}
 \label{sec:setup-methods}
-The main comparison includes the same nine methods on every farm type (settings: Table~\ref{tab:params}; $N_p=30$ where applicable):
-\begin{itemize}
+The main comparison runs the same nine methods on every wind farm type; Table~\ref{tab:params} (Section~\ref{sec:hybrid}) lists their settings and budgets ($N_p=30$ for the population methods):
+\begin{enumerate}
 \item \emph{PSO-VNS}, the proposed two-phase method (Algorithm~\ref{alg:hybrid}, $\omega=0.5$);
-\item \emph{PSO}, the standard PSO with the constriction coefficients $w=0.7298$, $c_1=c_2=1.49618$~\cite{Clerc2002};
+\item \emph{PSO}, the standard PSO of Kennedy and Eberhart~\cite{Kennedy1995} with the constriction coefficients of Clerc and Kennedy~\cite{Clerc2002};
 \item \emph{SSA-VNS}, the two-phase template of PSO-VNS with SSA in Phase~1 (Section~\ref{sec:template});
 \item \emph{SSA}, the salp swarm algorithm~\cite{Mirjalili2017};
 \item \emph{LX-SSA}, the Laplacian SSA~\cite{Solanki2023};
-\item \emph{DE}, DE/rand/1/bin~\cite{Storn1997} (scale factor $F=0.5$, crossover rate $\mathrm{CR}=0.9$);
+\item \emph{DE}, DE/rand/1/bin~\cite{Storn1997};
 \item \emph{GA}, a standard real-coded genetic algorithm with binary tournament, SBX~\cite{Deb1995} ($\eta_c=15$, $p_c=0.9$), polynomial mutation~\cite{DebGoyal1996} ($\eta_m=20$, $p_m=1/n$ for $n=2N$ variables), clipping to the box and elitism, all untuned;
 \item \emph{VNS}, the basic VNS alone (Algorithm~\ref{alg:vns});
-\item \emph{MS-SLSQP}, a multistart sequential least-squares programming method (SciPy's SLSQP~\cite{Kraft1988}, forward-difference gradients) that minimizes the wake loss under explicit constraints, restarting from the initial, then random layouts (Section~\ref{S-sec:S-protocol}).
-\end{itemize}
-All methods except MS-SLSQP minimize $F_p$~\eqref{eq:penalty} (Type~I: over $[-r,r]^{2N}$). DE represents the real-coded evolutionary family. The GA runs were added after the comparison of the other eight methods (Table~\ref{tab:design}; Section~\ref{S-sec:S-xp-ga}); GA was run on all four types, on Type~III with 60 new runs (30 seeds at 6,030 and at 30,030 evaluations). The GAs of~\cite{Mosetti1994,Grady2005} optimize the occupation of grid cells, a discrete formulation that cannot be compared directly on continuous coordinates. ACO~\cite{Eroglu2012}, BBO~\cite{Bansal2017} and adaptive GAs were not re-implemented, to bound the number of runs; their published results use other budgets and constraint handling (Section~\ref{sec:literature}). The pool is thus a controlled set of baselines, not a survey of WFLOP optimizers (Section~\ref{sec:limits}).
+\item \emph{MS-SLSQP}, multistart sequential least-squares programming (SciPy's SLSQP~\cite{Kraft1988}, forward-difference gradients), which minimizes the wake loss under explicit constraints and restarts from the initial, then from random layouts (Section~\ref{S-sec:S-slsqp}).
+\end{enumerate}
+All methods except MS-SLSQP minimize $F_p$~\eqref{eq:penalty} (Type~I: over $[-r,r]^{2N}$). GA uses the same protocol, seeds and budgets as the other methods on all four types (Table~\ref{tab:design}). Grid-based GAs~\cite{Mosetti1994,Grady2005} optimize a discrete formulation, and ACO~\cite{Eroglu2012} and BBO~\cite{Bansal2017} were not re-implemented; the pool is a controlled set of baselines, not a survey of WFLOP optimizers (Section~\ref{sec:limits}).
 
-The \emph{ablation study} (Section~\ref{sec:ablation}) keeps the two-phase template of PSO-VNS and changes only Phase~1 (Section~\ref{sec:template}): SSA-VNS and \emph{LX-SSA-VNS} use SSA or LX-SSA, and two random-sampling controls draw, after the common initial population, their Phase-1 layouts uniformly in the farm disc (\emph{RSD-VNS}) or in the bounding square (\emph{RS-VNS}) (3,015 layouts versus the hybrids' 3,030 Phase-1 evaluations). A split study varies $\omega$ on twelve cases (Section~\ref{sec:split}). Table~\ref{tab:design} lists all studies; the re-evaluations and diagnostics use stored layouts and runs.
+The \emph{ablation study} of PSO-VNS (Section~\ref{sec:ablation}) keeps its two-phase template and changes only Phase~1 (Section~\ref{sec:template}): SSA-VNS and \emph{LX-SSA-VNS} use SSA or LX-SSA, and the random-sampling controls \emph{RS-VNS} and \emph{RSD-VNS} draw, after the common initial population, uniform layouts in the bounding square or in the farm disc (3,015 Phase-1 evaluations versus the hybrids' 3,030). A split study varies $\omega$ on twelve cases (Section~\ref{sec:split}). Table~\ref{tab:design} lists all studies; the re-evaluations and diagnostics use stored layouts and runs.
 % CHECK-FINAL [C61]: RS-VNS and RSD-VNS switch after round(0.5 x 6,030) = 3,015 Phase-1 evaluations; RSD-VNS = experiment rsdisc (68 cases x 30 seeds only; not in the budget, feasible-start, Horns Rev or IEA37 studies); CHECK-DIAG [D17]: RS-VNS Phase-1 replay
 
 \begin{table}[!htbp]
 \centering
-\caption{Experimental design. Budget: objective evaluations per run, all counted (initial population, finite-difference evaluations of MS-SLSQP); r: random, f: feasibility-preserving initialization. Runs: optimization runs made for that study (``reused'': taken from another study in this table). Eight methods: the nine of Section~\ref{sec:setup-methods} without GA; ten methods: these eight, LX-SSA-VNS and RS-VNS. Split cases: middle and largest $N$ per farm and data set; six largest: largest $N$ per farm and data set. In total, 47{,}710 optimization runs (16{,}800 in the additional experiments and sensitivity studies).}
+\caption{Experimental design. Budget: objective evaluations per run, all counted (initial population, finite-difference evaluations of MS-SLSQP); r: random, f: feasibility-preserving initialization. Runs: optimization runs made for that study (``reused'': taken from another study in this table). Eight methods: the nine of Section~\ref{sec:setup-methods} without GA; ten methods: these eight, LX-SSA-VNS and RS-VNS; ``GA: GA row'': GA was also run on these cases, and its runs are counted in the row ``Real-coded GA''. Split cases: middle and largest $N$ per farm and data set; six largest: largest $N$ per farm and data set. In total, 47{,}710 optimization runs (16{,}800 in the additional experiments and sensitivity studies).}
 \label{tab:design}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -63,19 +69,19 @@ The \emph{ablation study} (Section~\ref{sec:ablation}) keeps the two-phase templ
 \toprule
 Study & Cases & Methods & Budget (init.) & Seeds & Runs & Sec. \\
 \midrule
-Main comparison & 68 benchmark & PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, VNS, MS-SLSQP (GA: below) & 6,030 (r) & 1--30 & 16{,}320 & \ref{sec:overall} \\
+Main comparison & 68 benchmark & PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, VNS, MS-SLSQP (GA: GA row) & 6,030 (r) & 1--30 & 16{,}320 & \ref{sec:overall} \\
 Component analysis & 68 & LX-SSA-VNS, RS-VNS, RSD-VNS (2{,}040 each); six reused & 6,030 (r) & 1--30 & 6{,}120 & \ref{sec:ablation} \\
 Budget split & 12 split cases & PSO-VNS, $\omega=0.25$, 0.75, 0.9 (360 each); $\omega=0.5$, 1 reused & 6,030 (r) & 1--30 & 1{,}080 & \ref{sec:split} \\
 Budget scaling & six largest & ten methods (6,030 reused) & 30,030; 120,030 (r) & 1--30 & 3{,}600 & \ref{sec:budget} \\
 Feasible starts & six largest & ten methods except RS-VNS & 6,030 (f) & 1--30 & 1{,}620 & \ref{sec:feasinit} \\
-Horns Rev~1 & 16 turbines & ten methods (f: except RS-VNS) & 6,030 (r, f); 30,030, 120,030 (r) & 1--30; 1--10 at 120,030 & 970 & \ref{sec:hornsrev-site} \\
-IEA37 CS~1 & 16, 36 turbines & ten methods & 6,030; 30,030 (r) & 1--30 & 1{,}200 & \ref{sec:iea37} \\
+Horns Rev~1 & 16 turbines & ten methods (GA: GA row; f: except RS-VNS) & 6,030 (r, f); 30,030, 120,030 (r) & 1--30; 1--10 at 120,030 & 970 & \ref{sec:hornsrev-site} \\
+IEA37 CS~1 & 16, 36 turbines & ten methods (GA: GA row) & 6,030; 30,030 (r) & 1--30 & 1{,}200 & \ref{sec:iea37} \\
 \multicolumn{7}{@{}l}{\emph{Additional experiments and sensitivity studies}} \\
 Spacing $5D$, $6D$ & 12 split cases & eight methods and RSD-VNS ($4D$: stored runs reused) & 6,030 (r) & 1--30 & 6{,}480 & \ref{sec:spacing} \\
 Laplace ablation & 12 split cases & LX-SSA without re-evaluation; Laplace candidate replacing the midpoint; $\gamma\sim U(-2,2)$; $\chi=0.25$, 0.5, 2 (360 each); SSA, LX-SSA reused & 6,030 (r) & 1--30 & 2{,}160 & \ref{S-sec:S-xp-lap} \\
 Real-coded GA & 68; Horns Rev~1; Lillgrund; IEA37 CS~1 & GA (other methods reused) & 6,030 (r); sites also 30,030 (r) & 1--30 & 2{,}280 & \ref{S-sec:S-xp-ga} \\
 Exact gradients & IEA37 CS~1, 16 and 36 turbines & MS-SLSQP and PSO-SLSQP with exact gradients & 6,030; 30,030 (r) & 1--30 & 240 & \ref{S-sec:S-xp-grad} \\
-Lillgrund & 16 turbines (block) & eight methods and RSD-VNS & 6,030; 30,030 (r) & 1--30 & 540 & \ref{sec:lillgrund} \\
+Lillgrund & 16 turbines (block) & nine methods (GA: GA row) and RSD-VNS & 6,030; 30,030 (r) & 1--30 & 540 & \ref{sec:lillgrund} \\
 Constraint handling & 6 (3 per data set) & PSO-VNS, PSO, GA, SSA-VNS, DE; three constraint handlings (900 each) & 6,030 (r) & 31--60 & 2{,}700 & \ref{sec:boundary} \\
 Direct 1$^\circ$ optimization & 8 (4 per data set) & PSO-VNS, PSO, GA, MS-SLSQP, RSD-VNS; 1$^\circ$ objective and seed-paired 15$^\circ$ control (1{,}200 each) & 6,030 (r) & 31--60 & 2{,}400 & \ref{sec:direction} \\
 \midrule
@@ -101,51 +107,32 @@ Diagnostics & 6; 12; 7 & instrumented: PSO; Phase~2 of PSO-VNS, SSA-VNS, RS-VNS;
 
 \subsection{Comparison Design and Statistics}
 \label{sec:setup-stats}
-\emph{Equal budgets and paired seeds.} A run uses exactly the budget $B$ of its study ($B=6{,}030$ objective evaluations unless stated otherwise). The budget is a model-query budget: it counts objective calls, including the initial population, finite-difference calls and repeated evaluations of a layout, and charges an exact gradient (IEA37 only) as $c_g=3$ objective equivalents (Section~\ref{sec:iea37}). Only calls of the objective are counted; other computations, such as the optimizer's own arithmetic, constraint checks, the internal subproblems of SLSQP and the geometric packing of the feasibility-preserving initialization, are not. Two methods with the same budget therefore make the same number of objective calls but may need different computing (wall-clock) times (Section~\ref{sec:runtime}). Each method uses seeds 1--30 and draws its initial population first, so runs with equal seeds share it and are paired.
+All comparisons follow the rules below. The scoring of runs, the rounding and the Holm families are detailed in Section~\ref{S-sec:S-stats}, and the equivalence analysis in Section~\ref{S-sec:S-th-equiv}.
+\begin{enumerate}
+\item \emph{Equal budgets.} Every run uses exactly the budget $B$ of its study ($B=6{,}030$ objective evaluations unless stated otherwise). The budget counts every call of the objective: the initial population, repeated evaluations of a layout and the finite-difference calls of MS-SLSQP; an exact gradient (IEA37 only) is charged as $c_g=3$ evaluations (Section~\ref{sec:iea37}). Work outside the objective is not counted: the optimizer's own arithmetic, the constraint checks, the internal subproblems of SLSQP and the geometric packing of the feasibility-preserving initialization.
+\item \emph{Equal budgets do not mean equal elapsed times.} Two methods with the same budget make the same number of objective calls, but the uncounted work differs between them (MS-SLSQP, for example, also solves the SLSQP subproblems and needs more than twice as long per evaluation as PSO), and the elapsed time also depends on the machine and its load. Elapsed times are therefore reported separately (Section~\ref{sec:runtime}).
+\item \emph{Paired seeds.} Every method uses seeds 1--30 and draws its initial population first, so runs with the same seed start from the same population and are paired.
 % verified 2026-09-28: first Curve value identical across fresh_grid/vgrid/bgrid and mpce_psoc/psobv/rsvns/slsqp (13 files) for all 792 case-seed pairs with a feasible initial best (else NaN)
-
-\emph{Feasibility-aware ranking.} Let $f_{a,c}$ be the number of feasible runs of method $a$ in case $c$ (tolerance $10^{-6}$~m; Section~\ref{S-sec:S-tol}) and $\bar L_{a,c}$ the mean wake loss of these runs. Method $a$ is \emph{qualified} in case $c$ if at least half of its runs are feasible (15 of 30, 5 of 10 for 10 seeds). Within a case:
-\begin{itemize}
-\item the qualified methods are ranked by the mean benchmark objective of their feasible runs (rounded to $10^{-6}$, so that exact ties, e.g., at the wake-free optimum for $N=2$, share their average rank);
-\item the other methods rank below them, by their number of feasible runs.
-\end{itemize}
-This rule is not a feasibility-first ordering of all runs: once two methods qualify, 15/30 feasible runs can outrank 30/30 if their conditional mean is better, so it limits, but does not remove, survivorship bias. The ranks therefore summarize conditional solution quality subject to a minimum success threshold, not reliability; we report success counts separately and add an all-run paired outcome for the 68 cases, the Lillgrund block (Section~\ref{sec:archive-reliability}) and the spacing study (Section~\ref{sec:spacing}).
-
-\emph{Inference hierarchy.}
-\begin{itemize}
-\item \emph{Differences} between two methods rest on the case-mean Wilcoxon signed-rank tests (item~2 below), the primary test of the main comparison, Holm-corrected within each table; as the 68 cases are designed, not sampled, their $p$ values describe this benchmark, not a population of farms.
-\item \emph{Practical equivalence or non-superiority}, among them the two primary questions below, is decided at the seed level, for the fixed benchmark (Definition~\ref{def:S-equiv}(a)); the case and cluster levels, joint resampling of the synchronized seeds and equal-cluster weighting are sensitivity analyses.
-\item \emph{Average ranks} are descriptive summaries that depend on the method pool; their Friedman and post hoc tests are reported for comparison with common practice, and the run-level W/T/L counts are tallies.
-\item The \emph{all-run paired outcome} is a separate, secondary endpoint: it counts wins and does not measure the size of a difference.
-\item The additional experiments and sensitivity studies of Table~\ref{tab:design} were designed after the main comparison and are secondary to it.
-\end{itemize}
-
-\emph{Tests.} All tests are two-sided ($\alpha=0.05$), with Holm's correction~\cite{Holm1979} within each family of comparisons.
+\item \emph{Feasibility.} A final layout is feasible if it meets the spacing and boundary constraints within $10^{-6}$~m (Section~\ref{S-sec:S-tol}). Method $a$ is \emph{qualified} in case $c$ if at least half of its runs are feasible (15 of 30; 5 of 10 with 10 seeds); $\bar L_{a,c}$ is the mean wake loss of its feasible runs. For two methods $A$ and $B$, $d_c=\bar L_{A,c}-\bar L_{B,c}$ is the case-mean difference (percentage points, pp; negative: $A$ better) and $\overline{\Delta L}$ the mean of $d_c$ over the cases in which both are qualified.
+\item \emph{Ranking.} Within a case, the qualified methods are ranked by the mean benchmark objective of their feasible runs (rounded to $10^{-6}$; ties share their average rank), and the other methods below them by their number of feasible runs. The rank thus measures solution quality above a success threshold, not reliability (15 of 30 feasible runs can outrank 30 of 30); reliability is reported separately, by the feasible-run counts and an all-run paired outcome (Section~\ref{sec:archive-reliability}).
+\item \emph{Tests.} All tests are two-sided ($\alpha=0.05$); Holm's correction~\cite{Holm1979} is applied over the comparisons of one table.
 \begin{enumerate}
-\item[1)] \emph{Case ranks}: the Friedman test on the case-by-method rank matrix with the Iman--Davenport $F$ statistic, and post hoc $z$ tests of the average rank $\bar R_a$ of every method against that of PSO-VNS,
-\begin{equation*}
-z=(\bar R_a-\bar R_{\text{PSO-VNS}})/\sqrt{k(k+1)/(6n)}
-\end{equation*}
-for $k$ methods and $n$ cases~\cite{Demsar2006,Derrac2011,LaTorre2021}.
-\item[2)] \emph{Case means} (the primary test for differences, as mean-rank post hoc tests depend on the pool~\cite{Benavoli2016}): for methods $A$ and $B$, the case-mean difference is $d_c=\bar L_{A,c}-\bar L_{B,c}$ (percentage points, pp; negative: $A$ better), and the Wilcoxon signed-rank test is applied to the $d_c$ of each compared pair (in the main comparison, PSO-VNS against each method); a case in which only one of the two methods is qualified counts as a maximal difference in its favor (larger than every observed difference; cases: 2 for SSA, 2 for LX-SSA and 18 for DE), and one in which neither is qualified is dropped (0 cases). With such cases, the signed-rank test concerns this constructed combined score, which mixes wake-loss differences with qualification outcomes, rather than wake loss alone; $\overline{\Delta L}$ excludes them. The mean $\overline{\Delta L}$ of the $d_c$ over the cases in which both are qualified carries a 95\% percentile bootstrap CI (10{,}000 resamples of the cases, fixed seed). For key pairs we also give the Hodges--Lehmann estimate that belongs to the Wilcoxon test (median of the Walsh averages $(d_c+d_{c'})/2$, $c\le c'$; 95\% CI by exact test inversion; Table~\ref{S-tab:X-hl}), which can differ from $\overline{\Delta L}$ when a few large differences dominate the mean.
-\item[3)] \emph{Runs}: per case, Wilcoxon signed-rank tests on the 30 seed-paired runs, scored feasibility first (infeasible runs below every feasible run and ordered by minimum spacing; paired run differences $\lvert d\rvert\le10^{-9}$ dropped), with the rank-biserial correlation $r_{\rm rb}$ and the counts of cases with a significant win, no significant difference and a significant loss (W/T/L, descriptive tallies).
+\item[(a)] Friedman test on the case ranks (with the Iman--Davenport statistic) and post hoc $z$ tests of each method's average rank against that of PSO-VNS, $z=(\bar R_a-\bar R_{\text{PSO-VNS}})/\sqrt{k(k+1)/(6n)}$ for $k$ methods and $n$ cases~\cite{Demsar2006,Derrac2011,LaTorre2021}.
+\item[(b)] Holm-adjusted Wilcoxon signed-rank test on the case means ($d_c$), the primary test for differences~\cite{Benavoli2016}; a case in which only one method is qualified counts as a maximal difference in its favor (the test then concerns a combined score of wake loss and qualification), and one in which neither is, is dropped. $\overline{\Delta L}$ is given with a 95\% percentile bootstrap CI (10{,}000 resamples of the cases) and, for key pairs, with the Hodges--Lehmann estimate (Table~\ref{S-tab:X-hl}).
+\item[(c)] Per case, Wilcoxon signed-rank test on the 30 seed-paired runs, scored feasibility first, with the rank-biserial correlation $r_{\rm rb}$; W/T/L counts the cases with a significant win, no significant difference and a significant loss.
+\item[(d)] Exact McNemar test on the seed-paired feasibility outcomes (feasible or not) of two methods in one case.
+\item[(e)] Practical equivalence by two one-sided tests (TOST)~\cite{Lakens2017} at the margin $m=0.05$~pp, decided by interval inclusion (Definition~\ref{def:S-equiv}), and the Bayesian signed-rank test~\cite{Benavoli2017}, which reports $P_{\rm rope}$ ($P_{\rm A}$, $P_{\rm B}$), the posterior probability that practical equivalence ($A$ better, $B$ better by more than $m$) is the most probable of the three outcomes (Section~\ref{S-sec:S-th-equiv}).
 \end{enumerate}
-
-\emph{Holm families.} A family is the set of comparisons of one table:
-\begin{itemize}
-\item for the rank post hoc tests, the $k-1$ comparisons with PSO-VNS of one Friedman analysis;
-\item for the case means, the comparisons of PSO-VNS with the other eight methods of the main comparison, or the fifteen contrasts of the component analysis (Section~\ref{sec:ablation});
-\item for the run-level tests, the comparisons of one table within one case.
-\end{itemize}
-The main-comparison and the component-analysis tables are different families, so a pair can have slightly different W/T/L tallies in the two; one family over all 28 case-mean tests is examined below.
 % CHECK (manual, 2026-09-29): constants in analysis/mpce_results.py: BOOT_N = 10000 (fixed seed), wil() drops |d| <= 1e-9, rank_rule rounds to 1e-6 and ranks non-qualified methods by nfeas (average ranks for ties); Holm families: friedman_block (vs focus), case_mean_wilcoxon (per table), paired_vs / ablation contrasts (per case and table)
-
-\emph{Practical equivalence.} A nonsignificant test does not show that two methods are equally good, and a significant difference can be negligible; we therefore assess equivalence by interval inclusion, motivated by two one-sided tests (TOST)~\cite{Lakens2017}. Two equivalence questions are primary, each assessed on its own at $\alpha=0.05$:
+\item \emph{Inference hierarchy.}
 \begin{enumerate}
-\item whether the VNS phase adds a practically relevant gain to PSO (PSO-VNS vs.\ PSO, two-sided equivalence);
-\item whether an SSA first phase gives a practically relevant gain over disc sampling (SSA-VNS vs.\ RSD-VNS, non-superiority).
+\item[(i)] Differences rest on the case-mean Wilcoxon tests~(b); the 68 cases are designed, not sampled, so their $p$ values describe this benchmark, not a population of farms.
+\item[(ii)] Two equivalence questions are primary, each assessed on its own at $\alpha=0.05$ and decided at the seed level (Definition~\ref{def:S-equiv}(a)): whether the VNS phase adds a practically relevant gain to PSO (PSO-VNS vs.\ PSO, two-sided equivalence), and whether an SSA first phase gives a practically relevant gain over disc sampling (SSA-VNS vs.\ RSD-VNS, non-superiority). The case and cluster levels are sensitivity analyses; all other equivalence results are exploratory.
+\item[(iii)] Average ranks with their Friedman and post hoc tests, and the W/T/L counts, are descriptive summaries; the ranks depend on the method pool.
+\item[(iv)] The all-run paired outcome is a secondary endpoint: it counts wins and does not measure the size of a difference.
+\item[(v)] The additional experiments and sensitivity studies of Table~\ref{tab:design} are secondary analyses.
 \end{enumerate}
-All other equivalence results (further pairs, subgroups, spacings, direction resolutions and the GA comparisons) are exploratory and are not combined into a family-wide equivalence claim.
+\end{enumerate}
 
 \begin{definition}[Practical equivalence at three levels of inference]
 \label{def:S-equiv}
@@ -157,43 +144,73 @@ Let $A$ and $B$ be two methods, $d_c$ their case-mean difference over the $n$ ca
 \end{enumerate}
 The \emph{minimal margin} of a level, $m_{\min}=\max(\lvert\ell\rvert,\lvert u\rvert)$ for the 90\% interval $[\ell,u]$, is the smallest margin at which equivalence holds: it holds for every $m>m_{\min}$ and for none smaller.
 \end{definition}
-For one pair, the intersection--union principle controls TOST at level $\alpha$ when its constituent tests are calibrated; it does not itself calibrate percentile-bootstrap tail shares or adjust comparisons of several pairs (Section~\ref{S-sec:S-th-equiv}). Every equivalence and non-superiority verdict is decided by interval inclusion (seed and case level: 90\% percentile bootstrap intervals; cluster level: the CR2 interval together with the wild-cluster bootstrap TOST); the bootstrap $p_{\rm TOST}$ agrees with this rule for all 18 pairs at every level (Table~\ref{S-tab:S-sa-tostaudit}). In an empirical shifted-null simulation on this dataset (differences shifted to a true mean at the margin), the equivalence decision has an empirical size of 4.4--7.4\% for PSO-VNS vs.\ PSO (case and seed level) and 4.7--6.0\% for SSA-VNS vs.\ RSD-VNS at the seed level, but 15.0\% for the latter's case-level non-superiority test (one outlying case, $d_c=-1.33$~pp), so the nominal 5\% is not attained exactly. With the seed vectors drawn jointly (5,000 shifted-null replications; Table~\ref{S-tab:S-sa-dep-bench}), the seed-level sizes are 6.94\% at $-m$ and 4.30\% at $+m$ for PSO-VNS vs.\ PSO and 5.42\% and 5.68\% for SSA-VNS vs.\ RSD-VNS; the calibrated $p$ values support the two primary verdicts (PSO-VNS vs.\ PSO equivalent, $p<0.001$ on both sides; no gain of SSA-VNS over RSD-VNS larger than $m$, $p_-<0.001$), whereas the equivalence of SSA-VNS and RSD-VNS is not established ($p_+=0.058$).
-
-$\overline{\Delta L}$ is the same at all levels, but its intervals differ, so an equivalence statement must name its level. Seed $k$ seeds the same random stream in every case; resampling one seed vector jointly for all cases widens the seed-level intervals by up to 1.9$\times$, leaves PSO-VNS vs.\ PSO unchanged and moves SSA-VNS vs.\ RSD-VNS to [$-$0.002, 0.050]: its seed-level equivalence is not robust, its non-superiority is (Table~\ref{S-tab:S-sa-syncseed}). The set of cases in which both methods qualify is fixed from the original data (for the two primary pairs, at least 99.6\% of the runs are feasible). Weighting the six clusters equally instead of the cases leaves every verdict at $\pm0.05$~pp unchanged (PSO-VNS minus PSO: $-0.014$~pp, 90\% CI [$-$0.063, 0.035]; Table~\ref{S-tab:S-sa-eqclus}).
-
-``$A$ gives no gain larger than $m$ over $B$'' (non-superiority) needs only one of the two tests: the lower end of the 90\% interval must lie above $-m$. A result that is neither equivalent nor significantly different is inconclusive and supports no statement of the kind ``as good as''. The margin $m=0.05$~pp (4.1 and 2.1~MWh/yr per turbine in Data Sets I and II) is a post hoc convention; the minimal margins $m_{\min}$ let readers apply their own, and a confirmatory practical-equivalence claim would need a margin fixed before a new study.
-
-\emph{Bayesian signed-rank test.} The Bayesian signed-rank test~\cite{Benavoli2017} places a Dirichlet-process prior (strength 0.5, pseudo-observation at 0) on the distribution of the $d_c$ and, for every posterior sample, computes the shares $\pi_A$, $\pi_{\rm rope}$ and $\pi_B$ of the Walsh averages $(d_c+d_{c'})/2$ below $-m$, inside the region of practical equivalence (ROPE) $[-m,m]$ and above $m$. We report $P_{\rm rope}$, the share of the 50{,}000 posterior samples in which $\pi_{\rm rope}$ is the largest ($P_{\rm A}$ and $P_{\rm B}$: the shares in which $\pi_A$ or $\pi_B$ is the largest) (Section~\ref{sec:abl-swarm} and Table~\ref{S-tab:X-bayes}). It is not the probability that $\Delta$ lies within $\pm m$; it concerns the typical pairwise-averaged case difference, so it can disagree with TOST, and it treats the cases as exchangeable.
+Non-superiority (``$A$ gives no gain larger than $m$ over $B$'') needs only one of the two tests: the lower end of the 90\% interval must lie above $-m$. A result that is neither equivalent nor significantly different is inconclusive. The margin $m=0.05$~pp is a post hoc convention; the minimal margins let readers apply their own. The calibration of the bootstrap TOST, the joint resampling of the seeds (seed $k$ seeds the same random stream in every case) and an equal weighting of the clusters are reported in Section~\ref{S-sec:S-th-equiv} and Tables~\ref{S-tab:S-sa-tostaudit}, \ref{S-tab:S-sa-syncseed} and~\ref{S-tab:S-sa-eqclus}.
 % CHECK-FINAL [C49]-[C52]: margin_pp == EQ_MARGIN; TOST: 90 % bootstrap CI inside (-m, m); Bayes signed-rank, rope (-m, m); min_margin_pp in tab:equivalence
 % CHECK-EXTRA [X38]-[X42]: seed / case / cluster (CR2 t(5), wild-cluster Webb) levels and minimal margins (tab:X-equiv-levels); [X56]: margin = \NXMarginMWhTurbDsI / \NXMarginMWhTurbDsII MWh/yr per turbine; [X48]: Bayes = P(rope most probable); [X49]-[X51]: Hodges-Lehmann (tab:X-hl). Model-shift margin justification (X29/X30) deliberately dropped (D13).
 % CHECK (manual, 2026-09-29): analysis/mpce_inference_extra.py: seed level resamples the 30 seed indices within every case (paired), cr2() uses t with G - 1 = 5 d.f., webb_all() enumerates 6^6 = 46,656 Webb draws, cluster-level equivalence = CR2 CI inside +-m and wild p_TOST <= 0.05; mpce_results.py: tost() add-one corrected tail shares, BAYES_S = 0.5, BAYES_Z0 = 0, BAYES_N = 50000. Definition adapted from optA/supp_theory.tex (def:S-equiv moved to the main text, see optA/sw/moved.md)
 
-\emph{Robustness of inference.} Six qualification thresholds (1, 10, 15, 20, 25 and 30 feasible runs), dropping the cases with an imputed maximal difference and keeping zero differences (Pratt; Table~\ref{S-tab:S-sa-imputation}) change no verdict; cluster analyses (sign per cluster, cluster-robust $t$ with CR1 variance and 5 degrees of freedom, cluster bootstrap, leave-one-out) qualify only the significant contrasts of the salp-swarm hybrids with the controls; one Holm family over all 28 case-mean tests makes only PSO-VNS vs.\ PSO on the cases with $N\ge 10$ (both data sets) and PSO-VNS ($\omega =0.5$) vs.\ PSO-VNS ($\omega =0.9$) nonsignificant (Tables~\ref{S-tab:X-threshold}--\ref{S-tab:X-multiplicity}).
+\emph{Sensitivity of the inference.} Six qualification thresholds (1--30 feasible runs), dropping the cases with an imputed maximal difference and keeping zero differences change no verdict; cluster analyses over the six (data set, radius) clusters qualify only the significant contrasts of the salp-swarm hybrids with the controls; and one Holm family over all 28 case-mean tests makes only PSO-VNS vs.\ PSO on the cases with $N\ge 10$ and PSO-VNS ($\omega=0.5$) vs.\ PSO-VNS ($\omega=0.9$) nonsignificant (Section~\ref{S-sec:S-inference}; Tables~\ref{S-tab:S-sa-imputation} and~\ref{S-tab:X-threshold}--\ref{S-tab:X-multiplicity}).
 % CHECK-EXTRA [X02]-[X09]/[X31]: six thresholds (NXThrList) change no verdict; [X10]: six clusters; [X11]: significant pairs unanimous in 6/6 clusters except \NXClCaseSigNotUnanimous (the significant contrasts of the salp-swarm hybrids with the controls are exactly these two plus SSA-VNS vs RS-VNS; LX-SSA-VNS vs RS-VNS is not significant, [X13]); [X16]/[X17]: cluster-robust t not significant for the two RSD-VNS contrasts and SSA-VNS vs RS-VNS (p \NXClSSAVNSvsRSVNSCRP); [X14]: LOCO changes only \NXLocoChanged; [X18]: one Holm family over the \NXMultN case-mean Wilcoxon tests loses \NXMultLostHolm. CHECK-DIR [F01]: 1-deg sub-bin re-evaluation (one sub-bin reproduces the benchmark objective)
 % CHECK (manual, 2026-09-29): tab:X-cluster caption (mpce_supp_inference.tex): CR = cluster-robust t of the case-weighted mean, CR1 variance, 5 d.f.
 
 \subsection{Verification and Reproducibility}
 \label{sec:validation}
-\emph{Generated results and automated checks.} Every table, figure and number of the article and the supplement is generated from the stored per-run records by the analysis scripts, and every outcome-dependent statement is linked to an automated condition. Re-executed from the stored records in the reproducibility package, all 211 regenerated or compared tables, number macros, summaries and figures (117 of them from the sensitivity analyses) are identical to the stored pipeline outputs apart from time stamps, recorded run times and software versions; all 62 main-result, 57 statistical, 22 diagnostic and 41 direction-resolution checks and the 49 conditions of the theory checks T01--T13 pass, as does the audit of the records of the additional experiments, whose analysis reproduces its summary (4{,}670 values) exactly (Section~\ref{S-sec:S-archive}).
+Every table, figure and number of the article and the supplement is generated from the stored per-run records by the analysis scripts, and every outcome-dependent statement is linked to an automated check. Table~\ref{tab:verification} lists what was verified. The diagnostics rerun stored runs with instrumented copies of the optimizers, which differ from the code of the paper only by logging lines that read the state and draw no random numbers. Not re-executed were the optimization runs themselves, the instrumented diagnostic reruns (their stored outputs pass the diagnostic checks) and the calibration runs of the reference implementation (recomputed from their stored outputs) (Section~\ref{S-sec:S-archive}).
 
-The validation also reran a determinism sample (four runs of PSO-VNS and SSA-VNS), and the precision audit reran the 5{,}714 records whose feasibility labels the rounded coordinates cannot decide, both with the archived drivers: gradient-free runs reproduce their records bit for bit or to floating-point noise, except for the elapsed time, whereas SLSQP-based runs (MS-SLSQP, exact-gradient SLSQP) are not bit-reproducible across CPU and BLAS builds (Section~\ref{sec:archive-reliability}). The optimization runs themselves, the instrumented diagnostic reruns (below; their stored outputs pass the diagnostic checks) and the calibration runs of the original code (recomputed from their stored outputs) were not re-executed.
+\begin{table}[!htb]
+\centering
+\caption{Verification of the results and the code.}
+\label{tab:verification}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{6.6cm}@{}}
+\toprule
+Check & Compared with & Result \\
+\midrule
+Analysis pipeline, re-executed from the reproducibility package & stored pipeline outputs & all 211 regenerated or compared tables, number macros, summaries and figures (117 from the sensitivity analyses) identical apart from time stamps, recorded run times and software versions \\
+Automated statement checks & generated results & all pass: 62 main-result, 57 statistical, 22 diagnostic and 41 direction-resolution checks, 49 conditions of the theory checks T01--T13 \\
+Records of the additional experiments & their summary & audit passes; the analysis reproduces the summary (4{,}670 values) exactly \\
+Determinism sample (four runs of PSO-VNS and SSA-VNS); precision audit (5{,}714 records whose feasibility labels the rounded coordinates cannot decide), rerun with the archived drivers & stored records & gradient-free runs reproduce their records bit for bit or to floating-point noise, except for the elapsed time; SLSQP-based runs (MS-SLSQP, exact-gradient SLSQP) are not bit-reproducible across CPU and BLAS builds (Section~\ref{sec:archive-reliability}) \\
+Instrumented diagnostic reruns (Table~\ref{tab:design}) & stored runs & all 522 reproduce wake loss, coordinates, convergence curve and evaluations; seed~1 of every case and method with the uninstrumented code in the same process: bit-identical (62 of 62); replay of the random stream of Phase~1 of RS-VNS: agrees (120 of 120) \\
+Objective & reference implementation; official IEA37 calculator & largest difference $8.7\times10^{-11}$ over 720 archived final objectives; relative difference ${<}10^{-11}$ \\
+Horns Rev~1 and Lillgrund models & PyWake's NOJ model at identical bins & Section~\ref{sec:hornsrev-site} \\
+Reused SSA, LX-SSA, PSO and DE code & recorded result distributions of the reference implementation (stored calibration runs) & 2 of 24 Mann--Whitney tests reject at $\alpha=0.05$ (1.2 expected) \\
+\bottomrule
+\end{tabular}
+\end{table}
 % CHECK (manual, 2026-10-04; typed counts, no macro): re-execution from the package, repro_package_build/verification/verification_summary.txt: 91 outputs (58 byte-identical, 33 identical apart from time stamps), check_final 62 PASS / 0 FAIL, check_extra 57/57, check_diag 22/22 (stored diagnostics summary), check_dir 41/41, rev2_summary.json 4,670 values, audit_archive.py PASS, verify_determinism.py 4/4 bit-identical except Seconds (PSO-VNS, SSA-VNS); C4 reruns (analysis/rev3_precision_rerun_summary.json, 2026-10-04 22:11): all diverged reruns are SLSQP-based (MS-SLSQP of fresh_hr16, mpce_iea, rev2_grad). Earlier (2026-09-29): analysis/check_final.log "62 PASS, 0 FAIL, 0 PENDING, 0 TAG ERRORS"; check_extra.log "57 PASS / 0 FAIL"; check_diag.log "22 PASS / 0 FAIL / 0 PENDING"; check_dir.log "41/41 checks passed" (optA/reviews2/R5_claims_audit.md; re-run on a scratch copy 2026-09-29). Theory checks T01--T13: "49 PASS, 0 FAIL" (theory check of 2026-10-14; formerly 57 PASS).
-
-\emph{Instrumented diagnostics.} The diagnostics (Table~\ref{tab:design}) rerun stored runs with instrumented copies of the optimizers, which differ from the code of the paper only by logging lines that read the state and draw no random numbers. All 522 instrumented runs reproduce the stored runs (wake loss, coordinates, convergence curve, evaluations), and seed~1 of every case and method, rerun with the original, uninstrumented code in the same process, is bit-identical (62 of 62 runs). A replay of the random stream of Phase~1 of RS-VNS agrees with the stored runs (120 of 120).
 % CHECK-DIAG [D01]: instrumented runs reproduce the stored runs (\NDVerStoredMatch/\NDVerRuns); [D02]: seed-1 reruns with the original classes bit-identical (\NDVerBitMatch/\NDVerBitRuns); [D17]: RS-VNS Phase-1 replay agrees
-
-\emph{Evaluator and code validation.} Re-executed from the package: our objective matches the original implementation (largest difference $8.7\times10^{-11}$ over 720 archived final objectives) and the official IEA37 calculator (relative difference ${<}10^{-11}$), and the Horns Rev~1 and Lillgrund models were compared with PyWake's NOJ model at identical bins (Section~\ref{sec:hornsrev-site}). Recomputed from the stored calibration runs (not re-executed): our reused SSA, LX-SSA, PSO and DE code reproduces the recorded result distributions of the original code (2 of 24 Mann--Whitney tests reject at $\alpha=0.05$; 1.2 expected).
 % CHECK (manual, re-run 2026-09-29; no macro): analysis/validate_evaluator.py -> 720 records, max|dObj| 8.73e-11; python3 analysis/iea37_model.py -> rel.err 8.8e-12 / 2.8e-12 / 2.9e-12 (16/36/64); analysis/calibration_vs_recorded.csv (calibrate_authors_code.py; regenerated from the stored calibration outputs by analyze_authors_runs.py in the package verification, the calibration runs themselves not re-executed, verification_summary.txt items 2 and 4; Lillgrund vs PyWake: rev2_site_model.py --pywake) -> 2 of 24 P < 0.05, 0.05 x 24 = 1.2. Lead: move into generated macros + check (R5-U3) if time permits
 % CHECK-DIR [F31]: PyWake NOJ comparison at identical bins
 
-
-\emph{Code, data and environment.} Runs: Linux containers (Intel Xeon; Python~3.11.15, NumPy~2.4.6, SciPy~1.17.1). Each run record gives the method, case, seed, budget, initialization, evaluations, final objective, feasibility, minimum spacing, elapsed seconds, coordinates and convergence curve. The reproducibility package (Data availability; Section~\ref{S-sec:S-archive}) contains all records, models, optimizers and analysis scripts, a build script, a README with the command behind every run file and every table, figure and number, checksums and a Dockerfile; it is available from the corresponding author upon reasonable request.
+Runs: Linux containers (Intel Xeon; Python~3.11.15, NumPy~2.4.6, SciPy~1.17.1). Each run record gives the method, case, seed, budget, initialization, evaluations, final objective, feasibility, minimum spacing, elapsed seconds, coordinates and convergence curve. The reproducibility package (Data availability; Section~\ref{S-sec:S-archive}) contains all records, models, optimizers and analysis scripts, a build script, a README with the command behind every run file and every table, figure and number, checksums and a Dockerfile; it is available from the corresponding author upon reasonable request.
 % CHECK (manual, resolved 2026-09-29): versions pinned in analysis/requirements.txt ("from the container that produced the results"); clock speed and core count dropped because the analysis container (Xeon 2.1 GHz) and earlier run containers (2.8 GHz, final_prose.py) differ
 % CHECK (manual, 2026-09-29): run-file columns Algorithm, Dataset, Radius, Turbines, Seed, Budget, Init, Calls, Objective, Ideal, WakeLoss, Feasible, MinSpacing, Seconds, Coordinates, Curve (mpce_*.csv); analysis/README_reproduce.md (command per run file); analysis/build_swevo.sh / build_mpce_paper.sh (mpce_results.py + check scripts)
 
 \subsection{Computational Cost}
 \label{sec:literature}
 \label{sec:runtime}
-Per evaluation, the metaheuristics need 0.23--0.45~ms (median over runs) and MS-SLSQP 0.53~ms, 2.3 times as long as PSO (Table~\ref{S-tab:S-sa-time}; means: Table~\ref{S-tab:cost}); stored MS-SLSQP runs with $N\ge8$ that took 16--22~s because of thread contention take 4--7~s re-timed single-threaded. The feasibility-preserving initialization, which is not charged, takes a median of 3.85~s of CPU time for the 30 layouts of a run on the six largest cases, more than a 6,030-evaluation PSO-VNS run itself (2.8~s). The 36,190 runs of the main experiments took 101 aggregate worker-hours (sum of the per-run wall-clock times). In the additional experiments (medians per run; Table~\ref{S-tab:S-time}), MS-SLSQP takes 1.8 times as long as PSO-VNS in the spacing study and 2.2 and 1.6 times on the Lillgrund block at 6,030 and 30,030 evaluations (exact-gradient methods: Section~\ref{sec:iea-grad}). Times from separate batches are indicative. Published Kusiak--Song results~\cite{Kusiak2010,Eroglu2012,Eroglu2013,Bansal2017} use other budgets, constraint handling and reporting; they are discussed, not compared numerically, in Section~\ref{S-sec:S-literature}.
+Table~\ref{tab:runtime} gives the elapsed times. Per evaluation, the metaheuristics need similar times and MS-SLSQP more than every metaheuristic, so at equal budgets an MS-SLSQP run takes longer; the feasibility-preserving initialization, which is not charged, takes longer than a 6,030-evaluation PSO-VNS run. Times from separate batches are indicative. Published Kusiak--Song results~\cite{Kusiak2010,Eroglu2012,Eroglu2013,Bansal2017} use other budgets, constraint handling and reporting; they are discussed, not compared numerically, in Section~\ref{S-sec:S-literature}.
+
+\begin{table}[!htb]
+\centering
+\caption{Elapsed times (medians over runs unless stated otherwise).}
+\label{tab:runtime}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{7.2cm}>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{2.6cm}@{}}
+\toprule
+Quantity & Time & Source \\
+\midrule
+Time per evaluation, metaheuristics (main study) & 0.23--0.45~ms & Table~\ref{S-tab:S-sa-time} \\
+Time per evaluation, MS-SLSQP (main study) & 0.53~ms (2.3 times that of PSO) & Table~\ref{S-tab:S-sa-time} \\
+Feasibility-preserving initialization (30 layouts, six largest cases; CPU time) vs.\ a 6,030-evaluation PSO-VNS run & 3.85~s vs.\ 2.8~s & Table~\ref{S-tab:S-sa-time} \\
+MS-SLSQP / PSO-VNS per run, spacing study & 1.8 & Table~\ref{S-tab:S-time} \\
+MS-SLSQP / PSO-VNS per run, Lillgrund block, 6,030 and 30,030 evaluations & 2.2 and 1.6 & Table~\ref{S-tab:S-time} \\
+36,190 runs of the main experiments (sum of the per-run wall-clock times) & 101 aggregate worker-hours & Section~\ref{S-sec:S-sa-time} \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Means: Table~\ref{S-tab:cost}. Stored MS-SLSQP runs with $N\ge8$ that took 16--22~s because of thread contention take 4--7~s re-timed single-threaded. Exact-gradient methods: Section~\ref{sec:iea-grad}.}
+\end{table}
 % CHECK-FINAL [C46]: cost per evaluation (metaheuristics similar, MS-SLSQP slower than every metaheuristic)
 % CHECK (manual, 2026-10-04): analysis/rev3_sites.json init_time.benchmark_six_largest: median_cpu_s 3.848, max_cpu_s 9.677, median_s (wall) 4.822 at load average 10-14 on 4 cores; time.benchmark.slsqp_earlier_platform median_s_by_N for N >= 8: 2.95-4.02 s; exact-gradient ratios to PSO-VNS (medians, Table S-sa-time-sites): MS-SLSQP 3.28-5.64, PSO-SLSQP 2.26-3.46
