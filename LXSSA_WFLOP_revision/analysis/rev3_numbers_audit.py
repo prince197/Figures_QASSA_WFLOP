@@ -38,8 +38,8 @@ R2 = os.path.join(ROOT, "SWEVO_rev2", "latex_source")
 VAL = os.path.join(ROOT, "SWEVO_rev2", "validation")
 
 MAIN_FILES = ["optA/swevo_front.tex"] + [f"optA/sw/{b}.tex" for b in (
-    "02_intro", "02b_related", "03_model", "04_methods", "05_setup", "06_results", "07_ablation", "08_beyond",
-    "09_robust", "10_limits_concl")]
+    "02_intro", "02b_related", "03_model", "04_methods", "05_setup", "06_type1", "06b_type2", "06c_type3",
+    "06d_type4", "07_ablation", "10_concl")]
 SUPP_FILES = ["SWEVO_supplement.tex", "optA/sw/supp_theory.tex"]
 # repository counterparts (macro versions) of the revision-2 files, for the positional alignment
 REPO_PAIR = {f: f for f in MAIN_FILES + SUPP_FILES}
@@ -838,7 +838,7 @@ def targeted():
     """Recompute numbers of the revision-2 text that are not stored in any generated output (or only loosely)."""
     import numpy as np, pandas as pd
     out = []
-    sup, beyond = "SWEVO_supplement.tex", "optA/sw/08_beyond.tex"
+    sup, beyond = "SWEVO_supplement.tex", "optA/sw/06_type1.tex"
     # ---- elapsed-time table (tab:S-time) and the main-text ratios
     sp = _rev2("spacing")
     sp = sp[~((sp.Radius == 500) & (sp.Turbines == 10))]
@@ -1024,7 +1024,7 @@ def targeted():
            "1.081; 4.24; 15.7", "; ".join(f"{a}: {b}, {c}, {d}" for a, b, c, d in res_g),
            any(r[1] == "1.081" for r in res_g), "conclusion (< 16 turbines) holds for both polygons")
     # ---- compact main-text equivalence table (tab:equiv-main) vs. the generated tab:X-equiv-levels and Bayes macros
-    eqm = _table_by_label(open(os.path.join(R2, "optA/sw/06_results.tex"), encoding="utf-8").read(), "tab:equiv-main")
+    eqm = _table_by_label(open(os.path.join(R2, "optA/sw/06_type1.tex"), encoding="utf-8").read(), "tab:equiv-main")
     lev = _table_by_label(open(os.path.join(HERE, "mpce_supp_inference.tex"), encoding="utf-8").read(), "tab:X-equiv-levels")
     MR_ = load_macros(sorted(glob.glob(os.path.join(HERE, "mpce_numbers*.tex"))))
     rope = {"PSO-VNS vs.\\ PSO": "NBayPSOVNSvsPSORope", "SSA-VNS vs.\\ RSD-VNS": "NBaySSAVNSvsRSDVNSRope",
@@ -1038,7 +1038,7 @@ def targeted():
         # generated: n, dL, seed CI, m, Eq, case CI, m, p, Eq, CR2 CI, ...
         want = _nums("&".join([ref[2], ref[3], ref[6], ref[10]])) + _nums(expand("\\" + rope[pair], MR_))
         got = _nums(row)
-        _claim(out, "optA/sw/06_results.tex: tab:equiv-main", f"{pair}: dL, seed / case / cluster 90% CI, P_rope",
+        _claim(out, "optA/sw/06_type1.tex: tab:equiv-main", f"{pair}: dL, seed / case / cluster 90% CI, P_rope",
                " ".join(got), " ".join(want), got == want, "tab:X-equiv-levels (analysis/mpce_supp_inference.tex) and \\NBay...Rope")
     # ---- revision record counts (design table and Section S-archive)
     cnt = {e: len(_rev2(e)) for e in ("ga", "gahr", "gaiea", "grad", "laplace", "spacing", "lg16", "lg16b")}

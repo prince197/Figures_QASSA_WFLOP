@@ -498,7 +498,7 @@ def log_site(tag, b, st):
 
 
 # ====================================================================== cross-checks
-PRINTED = {   # values printed in the manuscript (SWEVO_rev2/latex_source/optA/sw/06_results.tex, 08_beyond.tex)
+PRINTED = {   # values printed in the manuscript (SWEVO_rev2/latex_source/optA/sw/06_type1.tex-06d_type4.tex)
     "tab:friedman68 avg rank (8 methods)": {"PSOBV": 1.82, "PSOC": 1.97, "SSABV": 3.45, "BVNS": 4.40, "SSA": 5.38,
                                              "SLSQP": 5.88, "LXSSA": 6.06, "DE": 7.04},
     "tab:ga-main avg rank (9 methods)": {"PSOBV": 2.18, "PSOC": 2.40, "GA": 2.74, "SSABV": 4.32, "BVNS": 5.21, "SSA": 6.34,

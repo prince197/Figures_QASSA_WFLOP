@@ -1,5 +1,33 @@
-\section{Discussion}
+\section{Conclusions and Future Directions}
 \label{sec:discussion}
+\subsection{Summary of the Results}
+\label{sec:farm-summary}
+% Cells computed from analysis/rev4_farm_tables.json (tables.*.ranking_order, methods.*.rank, psovns_vs.outcome; Type I: tab:farm-I-stats avg_rank, vs_psovns p_wilcoxon_holm).
+\begin{table}[!htb]
+\centering
+\caption{Summary of the nine methods by wind farm type: rank-1 method, ranks of PSO-VNS and PSO, and significant differences of PSO-VNS against the other methods.}
+\label{tab:farm-summary}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llcccc}
+\toprule
+Farm type & Budget & Rank-1 method & PSO-VNS & PSO & W/L \\
+\midrule
+I: benchmark (68 cases) & 6{,}030 & PSO-VNS & 1 & 2 & 6/0 \\
+II: Horns Rev~1 & 6{,}030 & PSO-VNS & 1 & 3 & 7/0 \\
+ & 30{,}030 & GA & 2 & 3 & 7/1 \\
+III: Lillgrund & 6{,}030 & PSO-VNS & 1 & 7.5 & 6/1 \\
+ & 30{,}030 & PSO-VNS & 1 & 6 & 7/0 \\
+IV: IEA37, 16 turbines & 6{,}030 & PSO-VNS & 1 & 3 & 8/0 \\
+ & 30{,}030 & PSO-VNS & 1 & 3 & 7/0 \\
+IV: IEA37, 36 turbines & 6{,}030 & GA & 3 & 4 & 5/1 \\
+ & 30{,}030 & GA & 2 & 3 & 6/1 \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Rank: Type~I, position by average rank (Table~\ref{tab:farm-I-stats}); Types~II--IV, feasibility-aware rank of the mean AEP (Tables~\ref{tab:farm-II}--\ref{tab:farm-IV}; 7.5: tied, no feasible run). W/L: methods to which PSO-VNS is significantly better / worse among its 8 comparisons (Holm-adjusted, $\alpha=0.05$; Type~I: case-mean Wilcoxon test, Types~II--IV: seed-paired Wilcoxon test).}
+\end{table}
+
+PSO-VNS ranks first in six of the nine settings of Table~\ref{tab:farm-summary} and second or third in the other three, in which GA ranks first: the Horns Rev~1 block at 30,030 evaluations and both IEA37 budgets with 36 turbines. PSO-VNS ranks ahead of PSO in every setting and is significantly better than PSO in every site setting, but not on the benchmark, where the two are practically equivalent at the seed level (Section~\ref{sec:psovns-pso}). PSO-VNS is significantly worse than one method in four settings (GA three times; MS-SLSQP on the Lillgrund block at 6,030 evaluations, where it is feasible in all runs) and never worse than more than one.
+
 \subsection{Where PSO-VNS Helps and Where It Does Not}
 \label{sec:disc-where}
 PSO-VNS
@@ -54,7 +82,7 @@ Table~\ref{tab:recommendations} condenses the protocol into a checklist~\cite{Ba
 \end{table}
 % CHECK-DIAG [D01]/[D02]: instrumented runs reproduce the stored runs; CHECK-EXTRA [X02]-[X09], [X11]/[X14], [X18] (item 3); [X41]: minimal margin grows with the level (item 4); CHECK-FINAL [C57]/[C60] (item 5); [C28] (item 6); CHECK-DIR [F03]/[F07] (item 7); CHECK (manual, 2026-10-04): item 2 all-run endpoint on 68 cases (tab:S-sa-allrun); item 7 direct 1-deg optimization on 8 cases (rev3_fine.json); item 8 constraint study, GA best case-level rank under Deb + clipping (rev3_constraint.json)
 
-\section{Threats to Validity}
+\subsection{Limitations}
 \label{sec:limits}
 Each threat below names the claims it limits; unless a check is cited, the threat is disclosed rather than resolved.
 
@@ -93,7 +121,7 @@ Each threat below names the claims it limits; unless a check is cited, the threa
 \end{itemize}
 % CHECK-FINAL [C49] + CHECK-EXTRA [X41]: post hoc margin, minimal margins; [X47]: density pattern (exploratory); [X10]: six clusters; [X11]: exact p = \NXClMinP; [X42]: CR2 5 d.f.; CHECK-FINAL [C29]: rank differences not tested; CHECK-EXTRA [X52]; CHECK (manual, 2026-10-04): joint seed resampling (tab:S-sa-syncseed): PSO-VNS vs PSO [-0.026, -0.010] unchanged; SSA-VNS vs RSD-VNS [-0.002, 0.050], seed-level equivalence not robust, non-superiority robust
 
-\section{Conclusions and Future Work}
+\subsection{Conclusions and Future Directions}
 \label{sec:conclusion}
 We proposed PSO-VNS, a two-phase method for the WFLOP that runs the standard PSO with constriction coefficients for half of the evaluation budget and then a variable neighborhood search from the best layout found. We compared it with eight methods (PSO, SSA-VNS, SSA, LX-SSA, DE, GA, VNS and MS-SLSQP) on four types of wind farm, with equal evaluation budgets, seed-paired runs, random starts and the implemented penalty and box repair. The findings are:
 \begin{enumerate}
