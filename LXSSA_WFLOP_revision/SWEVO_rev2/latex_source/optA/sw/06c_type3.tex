@@ -45,7 +45,7 @@ MS-SLSQP & 30/30 & 112.87\,$\pm$\,0.70 & 113.91 & 2 & 0.008$^{-}$ & 30/30 & 113.
 PSO-VNS has the highest mean AEP at both budgets (Table~\ref{tab:farm-III}), but at 6,030 evaluations it is feasible in only 17 of 30 runs, and only MS-SLSQP is feasible in all 30. No method reaches the installed block on average; one PSO-VNS layout exceeds it by 0.05\%, also with 1$^\circ$ bins.
 
 \subsection{Statistical Analysis}
-In the seed-paired tests of Table~\ref{tab:farm-III}, which score feasibility first, MS-SLSQP is better than PSO-VNS at 6,030 evaluations, and at 30,030 evaluations PSO-VNS is better than every other method except VNS. The feasibility advantage of PSO-VNS over PSO is significant at both budgets, but with the final layouts re-evaluated with 1$^\circ$ bins, its lead over the runners-up SSA-VNS, VNS and MS-SLSQP at 30,030 evaluations is not significant, and MS-SLSQP has the higher mean AEP with 1$^\circ$ bins at 6,030 evaluations and under PyWake's NOJ model at both budgets (Table~\ref{tab:farm-III-tests}).
+In the seed-paired tests of Table~\ref{tab:farm-III}, which score feasibility first, MS-SLSQP is better than PSO-VNS at 6,030 evaluations, and at 30,030 evaluations PSO-VNS is better than every other method except VNS. The feasibility advantage of PSO-VNS over PSO is significant at both budgets, but with the final layouts re-evaluated with 1$^\circ$ bins, its lead over SSA-VNS, VNS and MS-SLSQP at 30,030 evaluations is not significant (against GA, the next-best mean, it is significant only through feasibility, 30 vs.\ 21 feasible runs), and MS-SLSQP has the higher mean AEP with 1$^\circ$ bins at 6,030 evaluations and under PyWake's NOJ model at both budgets (Table~\ref{tab:farm-III-tests}).
 % CHECK (manual, 2026-10-04): analysis/rev3_sites.json lg_eval, tab:S-sa-lg-eval: 30,030, 1 deg: PSOBV 112.641 highest; p_Holm vs SSABV 0.165, BVNS 0.579, SLSQP 0.579 (5 deg, rev2_summary.json: BVNS 0.058, SSABV 0.016); 6,030, 1 deg: SLSQP 112.105 vs PSOBV 111.973, p_Holm 0.0014 (L); PyWake NOJ 1 deg: SLSQP 112.608 / 113.015 vs PSOBV 112.424 / 112.925; above_installed_total: 5 deg 1, 1 deg 1, PyWake 16
 
 \begin{table}[!htb]
@@ -61,12 +61,14 @@ Budget & Method & (McNemar $p$) & Mean AEP & $p_{\rm Holm}$ & Mean AEP \\
 \midrule
 6{,}030 & PSO & 17 vs.\ 0 ($1.5\times10^{-5}$) & 111.97 vs.\ -- & $9.2\times10^{-4}$ (W) & 112.42 vs.\ -- \\
  & MS-SLSQP & 17 vs.\ 30 & 111.97 vs.\ 112.10 & 0.0014 (L) & 112.42 vs.\ 112.61 \\
+ & GA & 17 vs.\ 0 ($1.5\times10^{-5}$) & 111.97 vs.\ -- & $1.3\times10^{-7}$ (W) & 112.42 vs.\ -- \\
 \midrule
-30{,}030 & PSO & 30 vs.\ 19 ($9.8\times10^{-4}$) & 112.64 vs.\ 112.28 & $2.2\times10^{-6}$ (W) & 112.93 vs.\ 112.71 \\
+30{,}030 & PSO & 30 vs.\ 19 ($9.8\times10^{-4}$) & 112.64 vs.\ 112.28 & $2.5\times10^{-6}$ (W) & 112.93 vs.\ 112.71 \\
  & SSA-VNS & 30 vs.\ 29 & 112.64 vs.\ 112.26 & 0.165 (T) & 112.93 vs.\ 112.58 \\
  & VNS & 30 vs.\ 30 & 112.64 vs.\ 112.40 & 0.579 (T) & 112.93 vs.\ 112.67 \\
  & MS-SLSQP & 30 vs.\ 30 & 112.64 vs.\ 112.53 & 0.579 (T) & 112.93 vs.\ 113.01 \\
+ & GA & 30 vs.\ 21 (0.0039) & 112.64 vs.\ 112.58 & 0.048 (W) & 112.93 vs.\ 112.85 \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize PSO-VNS vs.\ method. Feasible runs of 30 (stored labels, independent of the evaluator); exact McNemar test on the 30 seed pairs (every seed with a feasible PSO run also has a feasible PSO-VNS run). Mean AEP (GWh/yr) of the feasible runs, final layouts re-evaluated, not re-optimized (Table~\ref{S-tab:S-sa-lg-eval}); --: no feasible run. $p_{\rm Holm}$: seed-paired Wilcoxon test with the 1$^\circ$ AEP (feasibility first), Holm-adjusted over the 8 comparisons of PSO-VNS in the pool of Table~\ref{S-tab:S-xp-site}; W/T/L: PSO-VNS significantly better / not different / worse. With 1$^\circ$ bins the installed block loses 1.65\% of its AEP and the optimized layouts 1.14\% on average; under PyWake, 16 optimized layouts exceed the installed block.}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize PSO-VNS vs.\ method. Feasible runs of 30 (stored labels, independent of the evaluator); exact McNemar test on the 30 seed pairs (every seed with a feasible PSO run also has a feasible PSO-VNS run). Mean AEP (GWh/yr) of the feasible runs, final layouts re-evaluated, not re-optimized (Table~\ref{S-tab:S-sa-lg-eval}); --: no feasible run. $p_{\rm Holm}$: seed-paired Wilcoxon test with the 1$^\circ$ AEP (feasibility first), Holm-adjusted over the 9 comparisons of PSO-VNS in the pool of Table~\ref{S-tab:S-xp-site}; W/T/L: PSO-VNS significantly better / not different / worse. With 1$^\circ$ bins the installed block loses 1.65\% of its AEP and the optimized layouts 1.15\% on average; under PyWake, 18 optimized layouts exceed the installed block. Against GA at 30,030 evaluations, the difference is one of feasibility: on the 21 seeds on which both are feasible, the 1$^\circ$ AEP difference is $+0.002$~GWh/yr ($p=0.92$).}
 \end{table}

@@ -1,0 +1,4366 @@
+{
+ "generated": "2026-10-28 04:11:59",
+ "script": "rev5_ga_supp_tables.py",
+ "reeval_recompute_check": "541 LG rows of rev3_sites_reeval.csv recomputed: identical after the %.10g round trip",
+ "ga_reeval": {
+  "file": "rev5_ga_sites_reeval.csv",
+  "layouts": 60,
+  "feasible": 21,
+  "replay_5deg_max_abs_dev_gwh": 0.0,
+  "seconds": 1.9
+ },
+ "lg_eval_old": {
+  "installed": {
+   "5deg_2.5": 116.0963449,
+   "1deg_0.5": 114.1835865,
+   "PyWakeNOJ_1deg": 113.6180802
+  },
+  "n_layouts": 540,
+  "installed_drop_5to1_pct": 1.647561257546537,
+  "budgets": {
+   "6030": {
+    "methods": {
+     "PSOBV": {
+      "runs": 30,
+      "feasible": 17,
+      "mean_5deg_2.5": 113.07400554705883,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.97344221764706,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.4239549764706,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 0.9733124108296853
+     },
+     "PSOC": {
+      "runs": 30,
+      "feasible": 0,
+      "mean_5deg_2.5": null,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": null,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": null,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": null
+     },
+     "SSABV": {
+      "runs": 30,
+      "feasible": 13,
+      "mean_5deg_2.5": 112.57086452307693,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.25467457692307,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.70940862307694,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.1692101253109377
+     },
+     "SSA": {
+      "runs": 30,
+      "feasible": 3,
+      "mean_5deg_2.5": 111.47892426666665,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.15705463333335,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.7395614,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 0.2887268920566233
+     },
+     "LXSSA": {
+      "runs": 30,
+      "feasible": 0,
+      "mean_5deg_2.5": null,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": null,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": null,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": null
+     },
+     "DE": {
+      "runs": 30,
+      "feasible": 0,
+      "mean_5deg_2.5": null,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": null,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": null,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": null
+     },
+     "BVNS": {
+      "runs": 30,
+      "feasible": 8,
+      "mean_5deg_2.5": 112.88258533749999,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.627682925,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.1619851875,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.1116882278590978
+     },
+     "SLSQP": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 112.86525881333334,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.10499892666665,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.60835585000002,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 0.6735995599177924
+     },
+     "RSDVNS": {
+      "runs": 30,
+      "feasible": 6,
+      "mean_5deg_2.5": 112.581842,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.48008403333331,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.94816243333332,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 0.9786284778203203
+     }
+    },
+    "highest_mean": {
+     "5deg_2.5": {
+      "order_qualified": [
+       "PSOBV",
+       "SLSQP"
+      ],
+      "values": {
+       "PSOBV": 113.07400554705883,
+       "SLSQP": 112.86525881333334
+      }
+     },
+     "1deg_0.5": {
+      "order_qualified": [
+       "SLSQP",
+       "PSOBV"
+      ],
+      "values": {
+       "SLSQP": 112.10499892666665,
+       "PSOBV": 111.97344221764706
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "order_qualified": [
+       "SLSQP",
+       "PSOBV"
+      ],
+      "values": {
+       "SLSQP": 112.60835585000002,
+       "PSOBV": 112.4239549764706
+      }
+     }
+    },
+    "psovns_tests": {
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12935307621955872,
+       "rb": 0.3204301075268817,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6129032258064516,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.010240361094474792,
+       "rb": -0.6129032258064516,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.13473508320748806,
+       "rb": 0.3161290322580645,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0013798326253890991,
+       "rb": -0.7118279569892473,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12413446232676506,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0005313903093338013,
+       "rb": -0.7677419354838709,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    }
+   },
+   "30030": {
+    "methods": {
+     "PSOBV": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 114.58250402999998,
+      "above_5deg_2.5": 1,
+      "mean_1deg_0.5": 112.64131866666666,
+      "above_1deg_0.5": 1,
+      "mean_PyWakeNOJ_1deg": 112.92512727333332,
+      "above_PyWakeNOJ_1deg": 4,
+      "mean_drop_5to1_pct": 1.694137669416862
+     },
+     "PSOC": {
+      "runs": 30,
+      "feasible": 19,
+      "mean_5deg_2.5": 113.60107190000001,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.27927745789475,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.70984285789473,
+      "above_PyWakeNOJ_1deg": 2,
+      "mean_drop_5to1_pct": 1.1635404666505256
+     },
+     "SSABV": {
+      "runs": 30,
+      "feasible": 29,
+      "mean_5deg_2.5": 113.99953851724138,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.26455822068964,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.58492635517241,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 1.5219187017053937
+     },
+     "SSA": {
+      "runs": 30,
+      "feasible": 28,
+      "mean_5deg_2.5": 112.12323696785714,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.37974509642859,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.913154875,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 0.6631023965546823
+     },
+     "LXSSA": {
+      "runs": 30,
+      "feasible": 18,
+      "mean_5deg_2.5": 110.69559938888888,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 110.58224728333333,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.22822049999999,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 0.10239982996733676
+     },
+     "DE": {
+      "runs": 30,
+      "feasible": 21,
+      "mean_5deg_2.5": 114.00736796190478,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.13555973333334,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.48455721428573,
+      "above_PyWakeNOJ_1deg": 2,
+      "mean_drop_5to1_pct": 1.6418309290298638
+     },
+     "BVNS": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 114.19420649666667,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.40396155333336,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.67164941666667,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.5677195877582095
+     },
+     "SLSQP": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 113.45141302000002,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.53423742999999,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 113.01478354000001,
+      "above_PyWakeNOJ_1deg": 4,
+      "mean_drop_5to1_pct": 0.8084302923916376
+     },
+     "RSDVNS": {
+      "runs": 30,
+      "feasible": 27,
+      "mean_5deg_2.5": 113.21663855185183,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.44951042962965,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.92828274814816,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.5608378281014357
+     }
+    },
+    "highest_mean": {
+     "5deg_2.5": {
+      "order_qualified": [
+       "PSOBV",
+       "BVNS",
+       "DE",
+       "SSABV",
+       "PSOC",
+       "SLSQP",
+       "RSDVNS",
+       "SSA",
+       "LXSSA"
+      ],
+      "values": {
+       "PSOBV": 114.58250402999998,
+       "BVNS": 114.19420649666667,
+       "DE": 114.00736796190478,
+       "SSABV": 113.99953851724138,
+       "PSOC": 113.60107190000001,
+       "SLSQP": 113.45141302000002,
+       "RSDVNS": 113.21663855185183,
+       "SSA": 112.12323696785714,
+       "LXSSA": 110.69559938888888
+      }
+     },
+     "1deg_0.5": {
+      "order_qualified": [
+       "PSOBV",
+       "SLSQP",
+       "BVNS",
+       "PSOC",
+       "SSABV",
+       "DE",
+       "RSDVNS",
+       "SSA",
+       "LXSSA"
+      ],
+      "values": {
+       "PSOBV": 112.64131866666666,
+       "SLSQP": 112.53423742999999,
+       "BVNS": 112.40396155333336,
+       "PSOC": 112.27927745789475,
+       "SSABV": 112.26455822068964,
+       "DE": 112.13555973333334,
+       "RSDVNS": 111.44951042962965,
+       "SSA": 111.37974509642859,
+       "LXSSA": 110.58224728333333
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "order_qualified": [
+       "SLSQP",
+       "PSOBV",
+       "PSOC",
+       "BVNS",
+       "SSABV",
+       "DE",
+       "RSDVNS",
+       "SSA",
+       "LXSSA"
+      ],
+      "values": {
+       "SLSQP": 113.01478354000001,
+       "PSOBV": 112.92512727333332,
+       "PSOC": 112.70984285789473,
+       "BVNS": 112.67164941666667,
+       "SSABV": 112.58492635517241,
+       "DE": 112.48455721428573,
+       "RSDVNS": 111.92828274814816,
+       "SSA": 111.913154875,
+       "LXSSA": 111.22822049999999
+      }
+     }
+    },
+    "psovns_tests": {
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 5.587935447692871e-08,
+       "rb": 0.9870967741935484,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.016285959631204605,
+       "rb": 0.5440860215053763,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.0008497908711433411,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.0635564886033535,
+       "rb": 0.38924731182795697,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 7.096678018569946e-06,
+       "rb": 0.8924731182795699,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 7.096678018569946e-06,
+       "rb": 0.896774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 2.203509211540222e-06,
+       "rb": 0.9311827956989247,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.16476488672196865,
+       "rb": 0.4021505376344086,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 4.995614290237427e-06,
+       "rb": 0.9096774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001133054494857788,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.22580645161290322,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.2,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 9.122304618358612e-05,
+       "rb": 0.8236559139784946,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 3.298744559288025e-06,
+       "rb": 0.9225806451612903,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.11525525338947773,
+       "rb": 0.432258064516129,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 2.2742897272109985e-05,
+       "rb": 0.8709677419354839,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.0004933476448059082,
+       "rb": 0.7548387096774194,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.24826892465353012,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.8078304156661034,
+       "rb": -0.053763440860215055,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.00022037886083126068,
+       "rb": 0.7935483870967742,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    }
+   }
+  },
+  "replay_5deg": {
+   "n_feasible": 309,
+   "max_abs_dev_gwh": 0.22507199999999727,
+   "n_abs_dev_gt_0_01": 14,
+   "mean_signed_dev_gwh": -0.0043935663430420355
+  },
+  "above_installed_total": {
+   "5deg_2.5": 1,
+   "1deg_0.5": 1,
+   "PyWakeNOJ_1deg": 16
+  },
+  "mean_drop_5to1_pct_all_feasible": 1.1404396301923494
+ },
+ "lg_eval_new": {
+  "installed": {
+   "5deg_2.5": 116.0963449,
+   "1deg_0.5": 114.1835865,
+   "PyWakeNOJ_1deg": 113.6180802
+  },
+  "n_layouts": 600,
+  "installed_drop_5to1_pct": 1.647561257546537,
+  "budgets": {
+   "6030": {
+    "methods": {
+     "PSOBV": {
+      "runs": 30,
+      "feasible": 17,
+      "mean_5deg_2.5": 113.07400554705883,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.97344221764706,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.4239549764706,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 0.9733124108296853
+     },
+     "PSOC": {
+      "runs": 30,
+      "feasible": 0,
+      "mean_5deg_2.5": null,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": null,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": null,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": null
+     },
+     "SSABV": {
+      "runs": 30,
+      "feasible": 13,
+      "mean_5deg_2.5": 112.57086452307693,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.25467457692307,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.70940862307694,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.1692101253109377
+     },
+     "SSA": {
+      "runs": 30,
+      "feasible": 3,
+      "mean_5deg_2.5": 111.47892426666665,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.15705463333335,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.7395614,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 0.2887268920566233
+     },
+     "LXSSA": {
+      "runs": 30,
+      "feasible": 0,
+      "mean_5deg_2.5": null,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": null,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": null,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": null
+     },
+     "DE": {
+      "runs": 30,
+      "feasible": 0,
+      "mean_5deg_2.5": null,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": null,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": null,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": null
+     },
+     "GA": {
+      "runs": 30,
+      "feasible": 0,
+      "mean_5deg_2.5": null,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": null,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": null,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": null
+     },
+     "BVNS": {
+      "runs": 30,
+      "feasible": 8,
+      "mean_5deg_2.5": 112.88258533749999,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.627682925,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.1619851875,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.1116882278590978
+     },
+     "SLSQP": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 112.86525881333334,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.10499892666665,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.60835585000002,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 0.6735995599177924
+     },
+     "RSDVNS": {
+      "runs": 30,
+      "feasible": 6,
+      "mean_5deg_2.5": 112.581842,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.48008403333331,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.94816243333332,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 0.9786284778203203
+     }
+    },
+    "highest_mean": {
+     "5deg_2.5": {
+      "order_qualified": [
+       "PSOBV",
+       "SLSQP"
+      ],
+      "values": {
+       "PSOBV": 113.07400554705883,
+       "SLSQP": 112.86525881333334
+      }
+     },
+     "1deg_0.5": {
+      "order_qualified": [
+       "SLSQP",
+       "PSOBV"
+      ],
+      "values": {
+       "SLSQP": 112.10499892666665,
+       "PSOBV": 111.97344221764706
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "order_qualified": [
+       "SLSQP",
+       "PSOBV"
+      ],
+      "values": {
+       "SLSQP": 112.60835585000002,
+       "PSOBV": 112.4239549764706
+      }
+     }
+    },
+    "psovns_tests": {
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12935307621955872,
+       "rb": 0.3204301075268817,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.30385160446167e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6129032258064516,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.010240361094474792,
+       "rb": -0.6129032258064516,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.13473508320748806,
+       "rb": 0.3161290322580645,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.30385160446167e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0013798326253890991,
+       "rb": -0.7118279569892473,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12413446232676506,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.30385160446167e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0005313903093338013,
+       "rb": -0.7677419354838709,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    }
+   },
+   "30030": {
+    "methods": {
+     "PSOBV": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 114.58250402999998,
+      "above_5deg_2.5": 1,
+      "mean_1deg_0.5": 112.64131866666666,
+      "above_1deg_0.5": 1,
+      "mean_PyWakeNOJ_1deg": 112.92512727333332,
+      "above_PyWakeNOJ_1deg": 4,
+      "mean_drop_5to1_pct": 1.694137669416862
+     },
+     "PSOC": {
+      "runs": 30,
+      "feasible": 19,
+      "mean_5deg_2.5": 113.60107190000001,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.27927745789475,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.70984285789473,
+      "above_PyWakeNOJ_1deg": 2,
+      "mean_drop_5to1_pct": 1.1635404666505256
+     },
+     "SSABV": {
+      "runs": 30,
+      "feasible": 29,
+      "mean_5deg_2.5": 113.99953851724138,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.26455822068964,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.58492635517241,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 1.5219187017053937
+     },
+     "SSA": {
+      "runs": 30,
+      "feasible": 28,
+      "mean_5deg_2.5": 112.12323696785714,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.37974509642859,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.913154875,
+      "above_PyWakeNOJ_1deg": 1,
+      "mean_drop_5to1_pct": 0.6631023965546823
+     },
+     "LXSSA": {
+      "runs": 30,
+      "feasible": 18,
+      "mean_5deg_2.5": 110.69559938888888,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 110.58224728333333,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.22822049999999,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 0.10239982996733676
+     },
+     "DE": {
+      "runs": 30,
+      "feasible": 21,
+      "mean_5deg_2.5": 114.00736796190478,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.13555973333334,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.48455721428573,
+      "above_PyWakeNOJ_1deg": 2,
+      "mean_drop_5to1_pct": 1.6418309290298638
+     },
+     "GA": {
+      "runs": 30,
+      "feasible": 21,
+      "mean_5deg_2.5": 114.12457727142856,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.57935603333334,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.84887732857145,
+      "above_PyWakeNOJ_1deg": 2,
+      "mean_drop_5to1_pct": 1.3539776225590217
+     },
+     "BVNS": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 114.19420649666667,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.40396155333336,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 112.67164941666667,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.5677195877582095
+     },
+     "SLSQP": {
+      "runs": 30,
+      "feasible": 30,
+      "mean_5deg_2.5": 113.45141302000002,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 112.53423742999999,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 113.01478354000001,
+      "above_PyWakeNOJ_1deg": 4,
+      "mean_drop_5to1_pct": 0.8084302923916376
+     },
+     "RSDVNS": {
+      "runs": 30,
+      "feasible": 27,
+      "mean_5deg_2.5": 113.21663855185183,
+      "above_5deg_2.5": 0,
+      "mean_1deg_0.5": 111.44951042962965,
+      "above_1deg_0.5": 0,
+      "mean_PyWakeNOJ_1deg": 111.92828274814816,
+      "above_PyWakeNOJ_1deg": 0,
+      "mean_drop_5to1_pct": 1.5608378281014357
+     }
+    },
+    "highest_mean": {
+     "5deg_2.5": {
+      "order_qualified": [
+       "PSOBV",
+       "BVNS",
+       "GA",
+       "DE",
+       "SSABV",
+       "PSOC",
+       "SLSQP",
+       "RSDVNS",
+       "SSA",
+       "LXSSA"
+      ],
+      "values": {
+       "PSOBV": 114.58250402999998,
+       "BVNS": 114.19420649666667,
+       "GA": 114.12457727142856,
+       "DE": 114.00736796190478,
+       "SSABV": 113.99953851724138,
+       "PSOC": 113.60107190000001,
+       "SLSQP": 113.45141302000002,
+       "RSDVNS": 113.21663855185183,
+       "SSA": 112.12323696785714,
+       "LXSSA": 110.69559938888888
+      }
+     },
+     "1deg_0.5": {
+      "order_qualified": [
+       "PSOBV",
+       "GA",
+       "SLSQP",
+       "BVNS",
+       "PSOC",
+       "SSABV",
+       "DE",
+       "RSDVNS",
+       "SSA",
+       "LXSSA"
+      ],
+      "values": {
+       "PSOBV": 112.64131866666666,
+       "GA": 112.57935603333334,
+       "SLSQP": 112.53423742999999,
+       "BVNS": 112.40396155333336,
+       "PSOC": 112.27927745789475,
+       "SSABV": 112.26455822068964,
+       "DE": 112.13555973333334,
+       "RSDVNS": 111.44951042962965,
+       "SSA": 111.37974509642859,
+       "LXSSA": 110.58224728333333
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "order_qualified": [
+       "SLSQP",
+       "PSOBV",
+       "GA",
+       "PSOC",
+       "BVNS",
+       "SSABV",
+       "DE",
+       "RSDVNS",
+       "SSA",
+       "LXSSA"
+      ],
+      "values": {
+       "SLSQP": 113.01478354000001,
+       "PSOBV": 112.92512727333332,
+       "GA": 112.84887732857145,
+       "PSOC": 112.70984285789473,
+       "BVNS": 112.67164941666667,
+       "SSABV": 112.58492635517241,
+       "DE": 112.48455721428573,
+       "RSDVNS": 111.92828274814816,
+       "SSA": 111.913154875,
+       "LXSSA": 111.22822049999999
+      }
+     }
+    },
+    "psovns_tests": {
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 6.51925802230835e-08,
+       "rb": 0.9870967741935484,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.016285959631204605,
+       "rb": 0.5440860215053763,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001133054494857788,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.0023936927318573,
+       "rb": 0.6731182795698925,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.0635564886033535,
+       "rb": 0.38924731182795697,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 8.516013622283936e-06,
+       "rb": 0.8924731182795699,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 8.516013622283936e-06,
+       "rb": 0.896774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 2.518296241760254e-06,
+       "rb": 0.9311827956989247,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.16476488672196865,
+       "rb": 0.4021505376344086,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 5.8282166719436646e-06,
+       "rb": 0.9096774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001416318118572235,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.048190489411354065,
+       "rb": 0.5182795698924731,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.22580645161290322,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.2,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.00010946765542030334,
+       "rb": 0.8236559139784946,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 3.769993782043457e-06,
+       "rb": 0.9225806451612903,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.11525525338947773,
+       "rb": 0.432258064516129,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 2.6533380150794983e-05,
+       "rb": 0.8709677419354839,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.0006166845560073853,
+       "rb": 0.7548387096774194,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.0513349324464798,
+       "rb": 0.513978494623656,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.24826892465353012,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.8078304156661034,
+       "rb": -0.053763440860215055,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.0002644546329975128,
+       "rb": 0.7935483870967742,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    }
+   }
+  },
+  "replay_5deg": {
+   "n_feasible": 330,
+   "max_abs_dev_gwh": 0.22507199999999727,
+   "n_abs_dev_gt_0_01": 14,
+   "mean_signed_dev_gwh": -0.004113975757575724
+  },
+  "above_installed_total": {
+   "5deg_2.5": 1,
+   "1deg_0.5": 1,
+   "PyWakeNOJ_1deg": 18
+  },
+  "mean_drop_5to1_pct_all_feasible": 1.1539417355468495
+ },
+ "xp_site_old": {
+  "installed_aep": 116.09634485929662,
+  "ideal_aep": 139.40196148739233,
+  "installed_loss_pct": 16.718284577511845,
+  "smin_m": 279.0,
+  "budgets": {
+   "6030": {
+    "dropped_unpaired_runs": 0,
+    "completeness": {
+     "complete": true,
+     "n_groups_with_fewer_runs": 0,
+     "groups_with_fewer_runs_examples": {},
+     "methods_missing": [],
+     "runs_per_group_min": 30
+    },
+    "run_level_friedman_p": 9.987606049793581e-31,
+    "methods": {
+     "PSOBV": {
+      "mean": 113.07400490677824,
+      "sd": 1.3216990558640096,
+      "best": 115.40246224485712,
+      "loss_pct": 18.88636020591088,
+      "feasible": 17,
+      "runs": 30,
+      "rank": 1.0,
+      "mean_vs_installed_pct": -2.6033032789975596,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": null,
+      "rb_psovns_vs": null
+     },
+     "PSOC": {
+      "mean": null,
+      "sd": null,
+      "best": null,
+      "loss_pct": null,
+      "feasible": 0,
+      "runs": 30,
+      "rank": 8.0,
+      "mean_vs_installed_pct": null,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.0010193847119808197,
+      "rb_psovns_vs": 0.7419354838709677
+     },
+     "SSABV": {
+      "mean": 112.57086030029593,
+      "sd": 0.9361095416173885,
+      "best": 114.24149179603748,
+      "loss_pct": 19.247290999935483,
+      "feasible": 13,
+      "runs": 30,
+      "rank": 3.0,
+      "mean_vs_installed_pct": -3.0366886772132284,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.12935307621955872,
+      "rb_psovns_vs": 0.3204301075268817
+     },
+     "SSA": {
+      "mean": 111.47893219214102,
+      "sd": 1.534862316087931,
+      "best": 113.19728388838396,
+      "loss_pct": 20.03058565124761,
+      "feasible": 3,
+      "runs": 30,
+      "rank": 6.0,
+      "mean_vs_installed_pct": -3.977224840929916,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.0010193847119808197,
+      "rb_psovns_vs": 0.7419354838709677
+     },
+     "LXSSA": {
+      "mean": null,
+      "sd": null,
+      "best": null,
+      "loss_pct": null,
+      "feasible": 0,
+      "runs": 30,
+      "rank": 8.0,
+      "mean_vs_installed_pct": null,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 3.91155481338501e-08,
+      "rb_psovns_vs": 0.9913978494623656
+     },
+     "DE": {
+      "mean": null,
+      "sd": null,
+      "best": null,
+      "loss_pct": null,
+      "feasible": 0,
+      "runs": 30,
+      "rank": 8.0,
+      "mean_vs_installed_pct": null,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 1.4901161193847656e-08,
+      "rb_psovns_vs": 1.0
+     },
+     "BVNS": {
+      "mean": 112.88258259074284,
+      "sd": 0.8109541967399588,
+      "best": 113.75682060597028,
+      "loss_pct": 19.023677008338172,
+      "feasible": 8,
+      "runs": 30,
+      "rank": 4.0,
+      "mean_vs_installed_pct": -2.7681855724645876,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.010240361094474792,
+      "rb_psovns_vs": 0.6129032258064516
+     },
+     "SLSQP": {
+      "mean": 112.86525487953061,
+      "sd": 0.7036185620239239,
+      "best": 113.90766988098866,
+      "loss_pct": 19.036107042340095,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 2.0,
+      "mean_vs_installed_pct": -2.7831108582117237,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.010240361094474792,
+      "rb_psovns_vs": -0.6129032258064516
+     },
+     "RSDVNS": {
+      "mean": 112.58185586255479,
+      "sd": 0.7031404048099066,
+      "best": 113.40178179023631,
+      "loss_pct": 19.23940333311823,
+      "feasible": 6,
+      "runs": 30,
+      "rank": 5.0,
+      "mean_vs_installed_pct": -3.0272176105124005,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.010240361094474792,
+      "rb_psovns_vs": 0.6
+     }
+    }
+   },
+   "30030": {
+    "dropped_unpaired_runs": 0,
+    "completeness": {
+     "complete": true,
+     "n_groups_with_fewer_runs": 0,
+     "groups_with_fewer_runs_examples": {},
+     "methods_missing": [],
+     "runs_per_group_min": 30
+    },
+    "run_level_friedman_p": 1.8540633338595495e-20,
+    "methods": {
+     "PSOBV": {
+      "mean": 114.59220801498746,
+      "sd": 0.768357854565976,
+      "best": 116.15527703571205,
+      "loss_pct": 17.797277174359326,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 1.0,
+      "mean_vs_installed_pct": -1.2955936262524892,
+      "runs_above_installed": 1,
+      "p_holm_psovns_vs": null,
+      "rb_psovns_vs": null
+     },
+     "PSOC": {
+      "mean": 113.61513485853209,
+      "sd": 0.9270264812498744,
+      "best": 115.54080147795196,
+      "loss_pct": 18.49818062365818,
+      "feasible": 19,
+      "runs": 30,
+      "rank": 5.0,
+      "mean_vs_installed_pct": -2.137199068387252,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 5.587935447692871e-08,
+      "rb_psovns_vs": 0.9870967741935484
+     },
+     "SSABV": {
+      "mean": 114.00503197083042,
+      "sd": 1.0338477850889332,
+      "best": 115.55344773490832,
+      "loss_pct": 18.21848792196431,
+      "feasible": 29,
+      "runs": 30,
+      "rank": 4.0,
+      "mean_vs_installed_pct": -1.8013598024991917,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.016285959631204605,
+      "rb_psovns_vs": 0.5440860215053763
+     },
+     "SSA": {
+      "mean": 112.13851420995994,
+      "sd": 1.1365126349069274,
+      "best": 114.00522450721353,
+      "loss_pct": 19.557434476915972,
+      "feasible": 28,
+      "runs": 30,
+      "rank": 8.0,
+      "mean_vs_installed_pct": -3.4090915214715745,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 3.91155481338501e-08,
+      "rb_psovns_vs": 0.9913978494623656
+     },
+     "LXSSA": {
+      "mean": 110.7060649652575,
+      "sd": 0.8528531029047268,
+      "best": 112.10812620550138,
+      "loss_pct": 20.585001972680363,
+      "feasible": 18,
+      "runs": 30,
+      "rank": 9.0,
+      "mean_vs_installed_pct": -4.642936778562579,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 1.4901161193847656e-08,
+      "rb_psovns_vs": 1.0
+     },
+     "DE": {
+      "mean": 114.00736783438853,
+      "sd": 1.146331207235748,
+      "best": 115.95716853551508,
+      "loss_pct": 18.216812290191847,
+      "feasible": 21,
+      "runs": 30,
+      "rank": 3.0,
+      "mean_vs_installed_pct": -1.7993477981066763,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.0007688663899898529,
+      "rb_psovns_vs": 0.7247311827956989
+     },
+     "BVNS": {
+      "mean": 114.1942100340116,
+      "sd": 0.6641928025693803,
+      "best": 115.543781755617,
+      "loss_pct": 18.082781034369116,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 2.0,
+      "mean_vs_installed_pct": -1.6384106042186874,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.05768792890012264,
+      "rb_psovns_vs": 0.3978494623655914
+     },
+     "SLSQP": {
+      "mean": 113.45220137679527,
+      "sd": 0.4687519822754424,
+      "best": 114.47602851681104,
+      "loss_pct": 18.615060960203188,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 6.0,
+      "mean_vs_installed_pct": -2.2775424029980673,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 7.096678018569946e-06,
+      "rb_psovns_vs": 0.8924731182795699
+     },
+     "RSDVNS": {
+      "mean": 113.21664547846297,
+      "sd": 0.9520343493448067,
+      "best": 114.8652621011791,
+      "loss_pct": 18.78403698881783,
+      "feasible": 27,
+      "runs": 30,
+      "rank": 7.0,
+      "mean_vs_installed_pct": -2.480439314712035,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 7.096678018569946e-06,
+      "rb_psovns_vs": 0.896774193548387
+     }
+    }
+   }
+  }
+ },
+ "xp_site_new": {
+  "installed_aep": 116.09634485929662,
+  "ideal_aep": 139.40196148739233,
+  "installed_loss_pct": 16.718284577511845,
+  "smin_m": 279.0,
+  "budgets": {
+   "6030": {
+    "dropped_unpaired_runs": 0,
+    "completeness": {
+     "complete": true,
+     "n_groups_with_fewer_runs": 0,
+     "groups_with_fewer_runs_examples": {},
+     "methods_missing": [],
+     "runs_per_group_min": 30
+    },
+    "run_level_friedman_p": 1.7368680437439977e-35,
+    "methods": {
+     "PSOBV": {
+      "mean": 113.07400490677824,
+      "sd": 1.3216990558640096,
+      "best": 115.40246224485712,
+      "loss_pct": 18.88636020591088,
+      "feasible": 17,
+      "runs": 30,
+      "rank": 1.0,
+      "mean_vs_installed_pct": -2.6033032789975596,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": null,
+      "rb_psovns_vs": null
+     },
+     "PSOC": {
+      "mean": null,
+      "sd": null,
+      "best": null,
+      "loss_pct": null,
+      "feasible": 0,
+      "runs": 30,
+      "rank": 8.5,
+      "mean_vs_installed_pct": null,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.0010193847119808197,
+      "rb_psovns_vs": 0.7419354838709677
+     },
+     "SSABV": {
+      "mean": 112.57086030029593,
+      "sd": 0.9361095416173885,
+      "best": 114.24149179603748,
+      "loss_pct": 19.247290999935483,
+      "feasible": 13,
+      "runs": 30,
+      "rank": 3.0,
+      "mean_vs_installed_pct": -3.0366886772132284,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.12935307621955872,
+      "rb_psovns_vs": 0.3204301075268817
+     },
+     "SSA": {
+      "mean": 111.47893219214102,
+      "sd": 1.534862316087931,
+      "best": 113.19728388838396,
+      "loss_pct": 20.03058565124761,
+      "feasible": 3,
+      "runs": 30,
+      "rank": 6.0,
+      "mean_vs_installed_pct": -3.977224840929916,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.0010193847119808197,
+      "rb_psovns_vs": 0.7419354838709677
+     },
+     "LXSSA": {
+      "mean": null,
+      "sd": null,
+      "best": null,
+      "loss_pct": null,
+      "feasible": 0,
+      "runs": 30,
+      "rank": 8.5,
+      "mean_vs_installed_pct": null,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 4.470348358154297e-08,
+      "rb_psovns_vs": 0.9913978494623656
+     },
+     "DE": {
+      "mean": null,
+      "sd": null,
+      "best": null,
+      "loss_pct": null,
+      "feasible": 0,
+      "runs": 30,
+      "rank": 8.5,
+      "mean_vs_installed_pct": null,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 1.6763806343078613e-08,
+      "rb_psovns_vs": 1.0
+     },
+     "GA": {
+      "mean": null,
+      "sd": null,
+      "best": null,
+      "loss_pct": null,
+      "feasible": 0,
+      "runs": 30,
+      "rank": 8.5,
+      "mean_vs_installed_pct": null,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 1.30385160446167e-07,
+      "rb_psovns_vs": 0.978494623655914
+     },
+     "BVNS": {
+      "mean": 112.88258259074284,
+      "sd": 0.8109541967399588,
+      "best": 113.75682060597028,
+      "loss_pct": 19.023677008338172,
+      "feasible": 8,
+      "runs": 30,
+      "rank": 4.0,
+      "mean_vs_installed_pct": -2.7681855724645876,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.010240361094474792,
+      "rb_psovns_vs": 0.6129032258064516
+     },
+     "SLSQP": {
+      "mean": 112.86525487953061,
+      "sd": 0.7036185620239239,
+      "best": 113.90766988098866,
+      "loss_pct": 19.036107042340095,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 2.0,
+      "mean_vs_installed_pct": -2.7831108582117237,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.010240361094474792,
+      "rb_psovns_vs": -0.6129032258064516
+     },
+     "RSDVNS": {
+      "mean": 112.58185586255479,
+      "sd": 0.7031404048099066,
+      "best": 113.40178179023631,
+      "loss_pct": 19.23940333311823,
+      "feasible": 6,
+      "runs": 30,
+      "rank": 5.0,
+      "mean_vs_installed_pct": -3.0272176105124005,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.010240361094474792,
+      "rb_psovns_vs": 0.6
+     }
+    }
+   },
+   "30030": {
+    "dropped_unpaired_runs": 0,
+    "completeness": {
+     "complete": true,
+     "n_groups_with_fewer_runs": 0,
+     "groups_with_fewer_runs_examples": {},
+     "methods_missing": [],
+     "runs_per_group_min": 30
+    },
+    "run_level_friedman_p": 8.698240339157363e-19,
+    "methods": {
+     "PSOBV": {
+      "mean": 114.59220801498746,
+      "sd": 0.768357854565976,
+      "best": 116.15527703571205,
+      "loss_pct": 17.797277174359326,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 1.0,
+      "mean_vs_installed_pct": -1.2955936262524892,
+      "runs_above_installed": 1,
+      "p_holm_psovns_vs": null,
+      "rb_psovns_vs": null
+     },
+     "PSOC": {
+      "mean": 113.61513485853209,
+      "sd": 0.9270264812498744,
+      "best": 115.54080147795196,
+      "loss_pct": 18.49818062365818,
+      "feasible": 19,
+      "runs": 30,
+      "rank": 6.0,
+      "mean_vs_installed_pct": -2.137199068387252,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 6.51925802230835e-08,
+      "rb_psovns_vs": 0.9870967741935484
+     },
+     "SSABV": {
+      "mean": 114.00503197083042,
+      "sd": 1.0338477850889332,
+      "best": 115.55344773490832,
+      "loss_pct": 18.21848792196431,
+      "feasible": 29,
+      "runs": 30,
+      "rank": 5.0,
+      "mean_vs_installed_pct": -1.8013598024991917,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.016285959631204605,
+      "rb_psovns_vs": 0.5440860215053763
+     },
+     "SSA": {
+      "mean": 112.13851420995994,
+      "sd": 1.1365126349069274,
+      "best": 114.00522450721353,
+      "loss_pct": 19.557434476915972,
+      "feasible": 28,
+      "runs": 30,
+      "rank": 9.0,
+      "mean_vs_installed_pct": -3.4090915214715745,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 4.470348358154297e-08,
+      "rb_psovns_vs": 0.9913978494623656
+     },
+     "LXSSA": {
+      "mean": 110.7060649652575,
+      "sd": 0.8528531029047268,
+      "best": 112.10812620550138,
+      "loss_pct": 20.585001972680363,
+      "feasible": 18,
+      "runs": 30,
+      "rank": 10.0,
+      "mean_vs_installed_pct": -4.642936778562579,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 1.6763806343078613e-08,
+      "rb_psovns_vs": 1.0
+     },
+     "DE": {
+      "mean": 114.00736783438853,
+      "sd": 1.146331207235748,
+      "best": 115.95716853551508,
+      "loss_pct": 18.216812290191847,
+      "feasible": 21,
+      "runs": 30,
+      "rank": 4.0,
+      "mean_vs_installed_pct": -1.7993477981066763,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.0010251551866531372,
+      "rb_psovns_vs": 0.7247311827956989
+     },
+     "GA": {
+      "mean": 114.12457727886266,
+      "sd": 0.8505787043927233,
+      "best": 115.44395841423209,
+      "loss_pct": 18.132732092737292,
+      "feasible": 21,
+      "runs": 30,
+      "rank": 3.0,
+      "mean_vs_installed_pct": -1.6983890257903034,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.0023936927318573,
+      "rb_psovns_vs": 0.6731182795698925
+     },
+     "BVNS": {
+      "mean": 114.1942100340116,
+      "sd": 0.6641928025693803,
+      "best": 115.543781755617,
+      "loss_pct": 18.082781034369116,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 2.0,
+      "mean_vs_installed_pct": -1.6384106042186874,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 0.05768792890012264,
+      "rb_psovns_vs": 0.3978494623655914
+     },
+     "SLSQP": {
+      "mean": 113.45220137679527,
+      "sd": 0.4687519822754424,
+      "best": 114.47602851681104,
+      "loss_pct": 18.615060960203188,
+      "feasible": 30,
+      "runs": 30,
+      "rank": 7.0,
+      "mean_vs_installed_pct": -2.2775424029980673,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 8.516013622283936e-06,
+      "rb_psovns_vs": 0.8924731182795699
+     },
+     "RSDVNS": {
+      "mean": 113.21664547846297,
+      "sd": 0.9520343493448067,
+      "best": 114.8652621011791,
+      "loss_pct": 18.78403698881783,
+      "feasible": 27,
+      "runs": 30,
+      "rank": 8.0,
+      "mean_vs_installed_pct": -2.480439314712035,
+      "runs_above_installed": 0,
+      "p_holm_psovns_vs": 8.516013622283936e-06,
+      "rb_psovns_vs": 0.896774193548387
+     }
+    }
+   }
+  }
+ },
+ "archive_old": {
+  "rows": [
+   {
+    "algorithm": "BVNS",
+    "label": "VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 8,
+    "success": 0.26666666666666666,
+    "wilson95_lower": 0.14182663319596317,
+    "wilson95_upper": 0.4444796169518888,
+    "conditional_mean_GWh": 112.88258259074283
+   },
+   {
+    "algorithm": "DE",
+    "label": "DE",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 0,
+    "success": 0.0,
+    "wilson95_lower": 0.0,
+    "wilson95_upper": 0.11351339317396876,
+    "conditional_mean_GWh": null
+   },
+   {
+    "algorithm": "LXSSA",
+    "label": "LX-SSA",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 0,
+    "success": 0.0,
+    "wilson95_lower": 0.0,
+    "wilson95_upper": 0.11351339317396876,
+    "conditional_mean_GWh": null
+   },
+   {
+    "algorithm": "PSOBV",
+    "label": "PSO-VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 17,
+    "success": 0.5666666666666667,
+    "wilson95_lower": 0.3919730700081361,
+    "wilson95_upper": 0.7262251442353347,
+    "conditional_mean_GWh": 113.07400490677824
+   },
+   {
+    "algorithm": "PSOC",
+    "label": "PSO",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 0,
+    "success": 0.0,
+    "wilson95_lower": 0.0,
+    "wilson95_upper": 0.11351339317396876,
+    "conditional_mean_GWh": null
+   },
+   {
+    "algorithm": "RSDVNS",
+    "label": "RSD-VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 6,
+    "success": 0.2,
+    "wilson95_lower": 0.0950510717728987,
+    "wilson95_upper": 0.3730569641314825,
+    "conditional_mean_GWh": 112.58185586255479
+   },
+   {
+    "algorithm": "SLSQP",
+    "label": "MS-SLSQP",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 112.86525487953058
+   },
+   {
+    "algorithm": "SSA",
+    "label": "SSA",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 3,
+    "success": 0.1,
+    "wilson95_lower": 0.03459988874733419,
+    "wilson95_upper": 0.25621082579184085,
+    "conditional_mean_GWh": 111.47893219214099
+   },
+   {
+    "algorithm": "SSABV",
+    "label": "SSA-VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 13,
+    "success": 0.43333333333333335,
+    "wilson95_lower": 0.2737748557646652,
+    "wilson95_upper": 0.6080269299918639,
+    "conditional_mean_GWh": 112.57086030029595
+   },
+   {
+    "algorithm": "BVNS",
+    "label": "VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 114.1942100340116
+   },
+   {
+    "algorithm": "DE",
+    "label": "DE",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 21,
+    "success": 0.7,
+    "wilson95_lower": 0.5212421254128504,
+    "wilson95_upper": 0.8333525173175619,
+    "conditional_mean_GWh": 114.00736783438855
+   },
+   {
+    "algorithm": "LXSSA",
+    "label": "LX-SSA",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 18,
+    "success": 0.6,
+    "wilson95_lower": 0.42320360253322475,
+    "wilson95_upper": 0.7540937188319815,
+    "conditional_mean_GWh": 110.70606496525751
+   },
+   {
+    "algorithm": "PSOBV",
+    "label": "PSO-VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 114.59220801498746
+   },
+   {
+    "algorithm": "PSOC",
+    "label": "PSO",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 19,
+    "success": 0.6333333333333333,
+    "wilson95_lower": 0.4551356365479487,
+    "wilson95_upper": 0.7812607919389929,
+    "conditional_mean_GWh": 113.61513485853209
+   },
+   {
+    "algorithm": "RSDVNS",
+    "label": "RSD-VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 27,
+    "success": 0.9,
+    "wilson95_lower": 0.7437891742081593,
+    "wilson95_upper": 0.9654001112526658,
+    "conditional_mean_GWh": 113.21664547846295
+   },
+   {
+    "algorithm": "SLSQP",
+    "label": "MS-SLSQP",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 113.45220137679526
+   },
+   {
+    "algorithm": "SSA",
+    "label": "SSA",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 28,
+    "success": 0.9333333333333333,
+    "wilson95_lower": 0.7867654163738308,
+    "wilson95_upper": 0.9815229762087295,
+    "conditional_mean_GWh": 112.13851420995994
+   },
+   {
+    "algorithm": "SSABV",
+    "label": "SSA-VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 29,
+    "success": 0.9666666666666667,
+    "wilson95_lower": 0.8332960900859082,
+    "wilson95_upper": 0.9940914096183874,
+    "conditional_mean_GWh": 114.00503197083042
+   }
+  ],
+  "pairs": [
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "BVNS",
+    "label": "VNS",
+    "wins": 16,
+    "ties": 10,
+    "losses": 4,
+    "superiority": 0.7,
+    "bootstrap95_lower": 0.5666666666666667,
+    "bootstrap95_upper": 0.8166666666666667,
+    "exact_sign_p": 0.01181793212890625,
+    "holm16_p": 0.08272552490234375
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "DE",
+    "label": "DE",
+    "wins": 17,
+    "ties": 13,
+    "losses": 0,
+    "superiority": 0.7833333333333333,
+    "bootstrap95_lower": 0.7,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 1.52587890625e-05,
+    "holm16_p": 0.0001678466796875
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "LXSSA",
+    "label": "LX-SSA",
+    "wins": 17,
+    "ties": 13,
+    "losses": 0,
+    "superiority": 0.7833333333333333,
+    "bootstrap95_lower": 0.7,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 1.52587890625e-05,
+    "holm16_p": 0.0001678466796875
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "PSOC",
+    "label": "PSO",
+    "wins": 17,
+    "ties": 13,
+    "losses": 0,
+    "superiority": 0.7833333333333333,
+    "bootstrap95_lower": 0.7,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 1.52587890625e-05,
+    "holm16_p": 0.0001678466796875
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "RSDVNS",
+    "label": "RSD-VNS",
+    "wins": 15,
+    "ties": 11,
+    "losses": 4,
+    "superiority": 0.6833333333333333,
+    "bootstrap95_lower": 0.55,
+    "bootstrap95_upper": 0.8,
+    "exact_sign_p": 0.0192108154296875,
+    "holm16_p": 0.09674881026148796
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "SLSQP",
+    "label": "MS-SLSQP",
+    "wins": 10,
+    "ties": 0,
+    "losses": 20,
+    "superiority": 0.3333333333333333,
+    "bootstrap95_lower": 0.16666666666666666,
+    "bootstrap95_upper": 0.5,
+    "exact_sign_p": 0.09873714670538902,
+    "holm16_p": 0.3949485868215561
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "SSA",
+    "label": "SSA",
+    "wins": 17,
+    "ties": 11,
+    "losses": 2,
+    "superiority": 0.75,
+    "bootstrap95_lower": 0.6333333333333333,
+    "bootstrap95_upper": 0.85,
+    "exact_sign_p": 0.000728607177734375,
+    "holm16_p": 0.005828857421875
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "SSABV",
+    "label": "SSA-VNS",
+    "wins": 15,
+    "ties": 8,
+    "losses": 7,
+    "superiority": 0.6333333333333333,
+    "bootstrap95_lower": 0.48333333333333334,
+    "bootstrap95_upper": 0.767083333333297,
+    "exact_sign_p": 0.13380050659179688,
+    "holm16_p": 0.3949485868215561
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "BVNS",
+    "label": "VNS",
+    "wins": 20,
+    "ties": 0,
+    "losses": 10,
+    "superiority": 0.6666666666666666,
+    "bootstrap95_lower": 0.5,
+    "bootstrap95_upper": 0.8333333333333334,
+    "exact_sign_p": 0.09873714670538902,
+    "holm16_p": 0.3949485868215561
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "DE",
+    "label": "DE",
+    "wins": 22,
+    "ties": 0,
+    "losses": 8,
+    "superiority": 0.7333333333333333,
+    "bootstrap95_lower": 0.5666666666666667,
+    "bootstrap95_upper": 0.9,
+    "exact_sign_p": 0.016124801710247993,
+    "holm16_p": 0.09674881026148796
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "LXSSA",
+    "label": "LX-SSA",
+    "wins": 30,
+    "ties": 0,
+    "losses": 0,
+    "superiority": 1.0,
+    "bootstrap95_lower": 1.0,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 1.862645149230957e-09,
+    "holm16_p": 2.9802322387695312e-08
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "PSOC",
+    "label": "PSO",
+    "wins": 28,
+    "ties": 0,
+    "losses": 2,
+    "superiority": 0.9333333333333333,
+    "bootstrap95_lower": 0.8333333333333334,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 8.67992639541626e-07,
+    "holm16_p": 1.2151896953582764e-05
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "RSDVNS",
+    "label": "RSD-VNS",
+    "wins": 27,
+    "ties": 0,
+    "losses": 3,
+    "superiority": 0.9,
+    "bootstrap95_lower": 0.7666666666666667,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 8.430331945419312e-06,
+    "holm16_p": 0.00010116398334503174
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "SLSQP",
+    "label": "MS-SLSQP",
+    "wins": 28,
+    "ties": 0,
+    "losses": 2,
+    "superiority": 0.9333333333333333,
+    "bootstrap95_lower": 0.8333333333333334,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 8.67992639541626e-07,
+    "holm16_p": 1.2151896953582764e-05
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "SSA",
+    "label": "SSA",
+    "wins": 29,
+    "ties": 0,
+    "losses": 1,
+    "superiority": 0.9666666666666667,
+    "bootstrap95_lower": 0.9,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 5.774199962615967e-08,
+    "holm16_p": 8.66129994392395e-07
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "SSABV",
+    "label": "SSA-VNS",
+    "wins": 19,
+    "ties": 0,
+    "losses": 11,
+    "superiority": 0.6333333333333333,
+    "bootstrap95_lower": 0.4666666666666667,
+    "bootstrap95_upper": 0.8,
+    "exact_sign_p": 0.20048842206597328,
+    "holm16_p": 0.3949485868215561
+   }
+  ]
+ },
+ "archive_new": {
+  "rows": [
+   {
+    "algorithm": "BVNS",
+    "label": "VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 8,
+    "success": 0.26666666666666666,
+    "wilson95_lower": 0.14182663319596317,
+    "wilson95_upper": 0.4444796169518888,
+    "conditional_mean_GWh": 112.88258259074283
+   },
+   {
+    "algorithm": "DE",
+    "label": "DE",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 0,
+    "success": 0.0,
+    "wilson95_lower": 0.0,
+    "wilson95_upper": 0.11351339317396876,
+    "conditional_mean_GWh": null
+   },
+   {
+    "algorithm": "GA",
+    "label": "GA",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 0,
+    "success": 0.0,
+    "wilson95_lower": 0.0,
+    "wilson95_upper": 0.11351339317396876,
+    "conditional_mean_GWh": null
+   },
+   {
+    "algorithm": "LXSSA",
+    "label": "LX-SSA",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 0,
+    "success": 0.0,
+    "wilson95_lower": 0.0,
+    "wilson95_upper": 0.11351339317396876,
+    "conditional_mean_GWh": null
+   },
+   {
+    "algorithm": "PSOBV",
+    "label": "PSO-VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 17,
+    "success": 0.5666666666666667,
+    "wilson95_lower": 0.3919730700081361,
+    "wilson95_upper": 0.7262251442353347,
+    "conditional_mean_GWh": 113.07400490677824
+   },
+   {
+    "algorithm": "PSOC",
+    "label": "PSO",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 0,
+    "success": 0.0,
+    "wilson95_lower": 0.0,
+    "wilson95_upper": 0.11351339317396876,
+    "conditional_mean_GWh": null
+   },
+   {
+    "algorithm": "RSDVNS",
+    "label": "RSD-VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 6,
+    "success": 0.2,
+    "wilson95_lower": 0.0950510717728987,
+    "wilson95_upper": 0.3730569641314825,
+    "conditional_mean_GWh": 112.58185586255479
+   },
+   {
+    "algorithm": "SLSQP",
+    "label": "MS-SLSQP",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 112.86525487953058
+   },
+   {
+    "algorithm": "SSA",
+    "label": "SSA",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 3,
+    "success": 0.1,
+    "wilson95_lower": 0.03459988874733419,
+    "wilson95_upper": 0.25621082579184085,
+    "conditional_mean_GWh": 111.47893219214099
+   },
+   {
+    "algorithm": "SSABV",
+    "label": "SSA-VNS",
+    "budget": 6030,
+    "runs": 30,
+    "feasible": 13,
+    "success": 0.43333333333333335,
+    "wilson95_lower": 0.2737748557646652,
+    "wilson95_upper": 0.6080269299918639,
+    "conditional_mean_GWh": 112.57086030029595
+   },
+   {
+    "algorithm": "BVNS",
+    "label": "VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 114.1942100340116
+   },
+   {
+    "algorithm": "DE",
+    "label": "DE",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 21,
+    "success": 0.7,
+    "wilson95_lower": 0.5212421254128504,
+    "wilson95_upper": 0.8333525173175619,
+    "conditional_mean_GWh": 114.00736783438855
+   },
+   {
+    "algorithm": "GA",
+    "label": "GA",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 21,
+    "success": 0.7,
+    "wilson95_lower": 0.5212421254128504,
+    "wilson95_upper": 0.8333525173175619,
+    "conditional_mean_GWh": 114.12457727886266
+   },
+   {
+    "algorithm": "LXSSA",
+    "label": "LX-SSA",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 18,
+    "success": 0.6,
+    "wilson95_lower": 0.42320360253322475,
+    "wilson95_upper": 0.7540937188319815,
+    "conditional_mean_GWh": 110.70606496525751
+   },
+   {
+    "algorithm": "PSOBV",
+    "label": "PSO-VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 114.59220801498746
+   },
+   {
+    "algorithm": "PSOC",
+    "label": "PSO",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 19,
+    "success": 0.6333333333333333,
+    "wilson95_lower": 0.4551356365479487,
+    "wilson95_upper": 0.7812607919389929,
+    "conditional_mean_GWh": 113.61513485853209
+   },
+   {
+    "algorithm": "RSDVNS",
+    "label": "RSD-VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 27,
+    "success": 0.9,
+    "wilson95_lower": 0.7437891742081593,
+    "wilson95_upper": 0.9654001112526658,
+    "conditional_mean_GWh": 113.21664547846295
+   },
+   {
+    "algorithm": "SLSQP",
+    "label": "MS-SLSQP",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 30,
+    "success": 1.0,
+    "wilson95_lower": 0.8864866068260312,
+    "wilson95_upper": 0.9999999999999999,
+    "conditional_mean_GWh": 113.45220137679526
+   },
+   {
+    "algorithm": "SSA",
+    "label": "SSA",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 28,
+    "success": 0.9333333333333333,
+    "wilson95_lower": 0.7867654163738308,
+    "wilson95_upper": 0.9815229762087295,
+    "conditional_mean_GWh": 112.13851420995994
+   },
+   {
+    "algorithm": "SSABV",
+    "label": "SSA-VNS",
+    "budget": 30030,
+    "runs": 30,
+    "feasible": 29,
+    "success": 0.9666666666666667,
+    "wilson95_lower": 0.8332960900859082,
+    "wilson95_upper": 0.9940914096183874,
+    "conditional_mean_GWh": 114.00503197083042
+   }
+  ],
+  "pairs": [
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "BVNS",
+    "label": "VNS",
+    "wins": 16,
+    "ties": 10,
+    "losses": 4,
+    "superiority": 0.7,
+    "bootstrap95_lower": 0.5666666666666667,
+    "bootstrap95_upper": 0.8166666666666667,
+    "exact_sign_p": 0.01181793212890625,
+    "holm16_p": 0.09454345703125,
+    "holm18_p": 0.09454345703125
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "DE",
+    "label": "DE",
+    "wins": 17,
+    "ties": 13,
+    "losses": 0,
+    "superiority": 0.7833333333333333,
+    "bootstrap95_lower": 0.7,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 1.52587890625e-05,
+    "holm16_p": 0.0001983642578125,
+    "holm18_p": 0.0001983642578125
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "GA",
+    "label": "GA",
+    "wins": 17,
+    "ties": 13,
+    "losses": 0,
+    "superiority": 0.7833333333333333,
+    "bootstrap95_lower": 0.7,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 1.52587890625e-05,
+    "holm16_p": 0.0001983642578125,
+    "holm18_p": 0.0001983642578125
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "LXSSA",
+    "label": "LX-SSA",
+    "wins": 17,
+    "ties": 13,
+    "losses": 0,
+    "superiority": 0.7833333333333333,
+    "bootstrap95_lower": 0.7,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 1.52587890625e-05,
+    "holm16_p": 0.0001983642578125,
+    "holm18_p": 0.0001983642578125
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "PSOC",
+    "label": "PSO",
+    "wins": 17,
+    "ties": 13,
+    "losses": 0,
+    "superiority": 0.7833333333333333,
+    "bootstrap95_lower": 0.7,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 1.52587890625e-05,
+    "holm16_p": 0.0001983642578125,
+    "holm18_p": 0.0001983642578125
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "RSDVNS",
+    "label": "RSD-VNS",
+    "wins": 15,
+    "ties": 11,
+    "losses": 4,
+    "superiority": 0.6833333333333333,
+    "bootstrap95_lower": 0.55,
+    "bootstrap95_upper": 0.8,
+    "exact_sign_p": 0.0192108154296875,
+    "holm16_p": 0.115264892578125,
+    "holm18_p": 0.115264892578125
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "SLSQP",
+    "label": "MS-SLSQP",
+    "wins": 10,
+    "ties": 0,
+    "losses": 20,
+    "superiority": 0.3333333333333333,
+    "bootstrap95_lower": 0.16666666666666666,
+    "bootstrap95_upper": 0.5,
+    "exact_sign_p": 0.09873714670538902,
+    "holm16_p": 0.3949485868215561,
+    "holm18_p": 0.3949485868215561
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "SSA",
+    "label": "SSA",
+    "wins": 17,
+    "ties": 11,
+    "losses": 2,
+    "superiority": 0.75,
+    "bootstrap95_lower": 0.6333333333333333,
+    "bootstrap95_upper": 0.85,
+    "exact_sign_p": 0.000728607177734375,
+    "holm16_p": 0.006557464599609375,
+    "holm18_p": 0.006557464599609375
+   },
+   {
+    "budget": 6030,
+    "first": "PSOBV",
+    "second": "SSABV",
+    "label": "SSA-VNS",
+    "wins": 15,
+    "ties": 8,
+    "losses": 7,
+    "superiority": 0.6333333333333333,
+    "bootstrap95_lower": 0.48333333333333334,
+    "bootstrap95_upper": 0.767083333333297,
+    "exact_sign_p": 0.13380050659179688,
+    "holm16_p": 0.3949485868215561,
+    "holm18_p": 0.3949485868215561
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "BVNS",
+    "label": "VNS",
+    "wins": 20,
+    "ties": 0,
+    "losses": 10,
+    "superiority": 0.6666666666666666,
+    "bootstrap95_lower": 0.5,
+    "bootstrap95_upper": 0.8333333333333334,
+    "exact_sign_p": 0.09873714670538902,
+    "holm16_p": 0.3949485868215561,
+    "holm18_p": 0.3949485868215561
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "DE",
+    "label": "DE",
+    "wins": 22,
+    "ties": 0,
+    "losses": 8,
+    "superiority": 0.7333333333333333,
+    "bootstrap95_lower": 0.5666666666666667,
+    "bootstrap95_upper": 0.9,
+    "exact_sign_p": 0.016124801710247993,
+    "holm16_p": 0.11287361197173595,
+    "holm18_p": 0.11287361197173595
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "GA",
+    "label": "GA",
+    "wins": 21,
+    "ties": 0,
+    "losses": 9,
+    "superiority": 0.7,
+    "bootstrap95_lower": 0.5333333333333333,
+    "bootstrap95_upper": 0.8666666666666667,
+    "exact_sign_p": 0.04277394525706768,
+    "holm16_p": 0.2138697262853384,
+    "holm18_p": 0.2138697262853384
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "LXSSA",
+    "label": "LX-SSA",
+    "wins": 30,
+    "ties": 0,
+    "losses": 0,
+    "superiority": 1.0,
+    "bootstrap95_lower": 1.0,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 1.862645149230957e-09,
+    "holm16_p": 3.3527612686157227e-08,
+    "holm18_p": 3.3527612686157227e-08
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "PSOC",
+    "label": "PSO",
+    "wins": 28,
+    "ties": 0,
+    "losses": 2,
+    "superiority": 0.9333333333333333,
+    "bootstrap95_lower": 0.8333333333333334,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 8.67992639541626e-07,
+    "holm16_p": 1.3887882232666016e-05,
+    "holm18_p": 1.3887882232666016e-05
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "RSDVNS",
+    "label": "RSD-VNS",
+    "wins": 27,
+    "ties": 0,
+    "losses": 3,
+    "superiority": 0.9,
+    "bootstrap95_lower": 0.7666666666666667,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 8.430331945419312e-06,
+    "holm16_p": 0.00011802464723587036,
+    "holm18_p": 0.00011802464723587036
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "SLSQP",
+    "label": "MS-SLSQP",
+    "wins": 28,
+    "ties": 0,
+    "losses": 2,
+    "superiority": 0.9333333333333333,
+    "bootstrap95_lower": 0.8333333333333334,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 8.67992639541626e-07,
+    "holm16_p": 1.3887882232666016e-05,
+    "holm18_p": 1.3887882232666016e-05
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "SSA",
+    "label": "SSA",
+    "wins": 29,
+    "ties": 0,
+    "losses": 1,
+    "superiority": 0.9666666666666667,
+    "bootstrap95_lower": 0.9,
+    "bootstrap95_upper": 1.0,
+    "exact_sign_p": 5.774199962615967e-08,
+    "holm16_p": 9.816139936447144e-07,
+    "holm18_p": 9.816139936447144e-07
+   },
+   {
+    "budget": 30030,
+    "first": "PSOBV",
+    "second": "SSABV",
+    "label": "SSA-VNS",
+    "wins": 19,
+    "ties": 0,
+    "losses": 11,
+    "superiority": 0.6333333333333333,
+    "bootstrap95_lower": 0.4666666666666667,
+    "bootstrap95_upper": 0.8,
+    "exact_sign_p": 0.20048842206597328,
+    "holm16_p": 0.3949485868215561,
+    "holm18_p": 0.3949485868215561
+   }
+  ]
+ },
+ "farm_III_tests": {
+  "6030": {
+   "means": {
+    "PSOBV": {
+     "feasible": 17,
+     "5deg_2.5": 113.07400554705883,
+     "1deg_0.5": 111.97344221764706,
+     "PyWakeNOJ_1deg": 112.4239549764706
+    },
+    "PSOC": {
+     "feasible": 0,
+     "5deg_2.5": null,
+     "1deg_0.5": null,
+     "PyWakeNOJ_1deg": null
+    },
+    "SSABV": {
+     "feasible": 13,
+     "5deg_2.5": 112.57086452307693,
+     "1deg_0.5": 111.25467457692307,
+     "PyWakeNOJ_1deg": 111.70940862307694
+    },
+    "SSA": {
+     "feasible": 3,
+     "5deg_2.5": 111.47892426666665,
+     "1deg_0.5": 111.15705463333335,
+     "PyWakeNOJ_1deg": 111.7395614
+    },
+    "LXSSA": {
+     "feasible": 0,
+     "5deg_2.5": null,
+     "1deg_0.5": null,
+     "PyWakeNOJ_1deg": null
+    },
+    "DE": {
+     "feasible": 0,
+     "5deg_2.5": null,
+     "1deg_0.5": null,
+     "PyWakeNOJ_1deg": null
+    },
+    "GA": {
+     "feasible": 0,
+     "5deg_2.5": null,
+     "1deg_0.5": null,
+     "PyWakeNOJ_1deg": null
+    },
+    "BVNS": {
+     "feasible": 8,
+     "5deg_2.5": 112.88258533749999,
+     "1deg_0.5": 111.627682925,
+     "PyWakeNOJ_1deg": 112.1619851875
+    },
+    "SLSQP": {
+     "feasible": 30,
+     "5deg_2.5": 112.86525881333334,
+     "1deg_0.5": 112.10499892666665,
+     "PyWakeNOJ_1deg": 112.60835585000002
+    },
+    "RSDVNS": {
+     "feasible": 6,
+     "5deg_2.5": 112.581842,
+     "1deg_0.5": 111.48008403333331,
+     "PyWakeNOJ_1deg": 111.94816243333332
+    }
+   },
+   "tests": {
+    "SP9_holm8_printed": {
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.13473508320748806,
+       "rb": 0.3161290322580645,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0013798326253890991,
+       "rb": -0.7118279569892473,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12413446232676506,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0005313903093338013,
+       "rb": -0.7677419354838709,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12935307621955872,
+       "rb": 0.3204301075268817,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6129032258064516,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.010240361094474792,
+       "rb": -0.6129032258064516,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    },
+    "SP9+GA_holm9": {
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.13473508320748806,
+       "rb": 0.3161290322580645,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0009172260761260986,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.30385160446167e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0013798326253890991,
+       "rb": -0.7118279569892473,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12413446232676506,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.30385160446167e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.006060546264052391,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0005313903093338013,
+       "rb": -0.7677419354838709,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.006445977836847305,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12935307621955872,
+       "rb": 0.3204301075268817,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0010193847119808197,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.30385160446167e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6129032258064516,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.010240361094474792,
+       "rb": -0.6129032258064516,
+       "outcome": "L",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.010240361094474792,
+       "rb": 0.6,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    },
+    "farmIII_pool9_holm8": {
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.13473508320748806,
+       "rb": 0.3161290322580645,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0007643550634384155,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.1175870895385742e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.004040364176034927,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0010348744690418243,
+       "rb": -0.7118279569892473,
+       "outcome": "L",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 0.0006114840507507324,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12413446232676506,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0006114840507507324,
+       "rb": 0.7462365591397849,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.1175870895385742e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.004040364176034927,
+       "rb": 0.6258064516129033,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.0004428252577781677,
+       "rb": -0.7677419354838709,
+       "outcome": "L",
+       "n_pairs": 30
+      }
+     },
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 0.0008494872599840164,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.12935307621955872,
+       "rb": 0.3204301075268817,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 0.0008494872599840164,
+       "rb": 0.7419354838709677,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 1.1175870895385742e-07,
+       "rb": 0.978494623655914,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.007680270820856094,
+       "rb": 0.6129032258064516,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.007680270820856094,
+       "rb": -0.6129032258064516,
+       "outcome": "L",
+       "n_pairs": 30
+      }
+     }
+    }
+   },
+   "psovns_minus_ga_joint_feasible": {
+    "5deg_2.5": {
+     "n": 0
+    },
+    "1deg_0.5": {
+     "n": 0
+    },
+    "PyWakeNOJ_1deg": {
+     "n": 0
+    }
+   },
+   "mcnemar_psovns_vs_ga": {
+    "psovns_only": 17,
+    "ga_only": 0,
+    "p_exact": 1.52587890625e-05
+   }
+  },
+  "30030": {
+   "means": {
+    "PSOBV": {
+     "feasible": 30,
+     "5deg_2.5": 114.58250402999998,
+     "1deg_0.5": 112.64131866666666,
+     "PyWakeNOJ_1deg": 112.92512727333332
+    },
+    "PSOC": {
+     "feasible": 19,
+     "5deg_2.5": 113.60107190000001,
+     "1deg_0.5": 112.27927745789475,
+     "PyWakeNOJ_1deg": 112.70984285789473
+    },
+    "SSABV": {
+     "feasible": 29,
+     "5deg_2.5": 113.99953851724138,
+     "1deg_0.5": 112.26455822068964,
+     "PyWakeNOJ_1deg": 112.58492635517241
+    },
+    "SSA": {
+     "feasible": 28,
+     "5deg_2.5": 112.12323696785714,
+     "1deg_0.5": 111.37974509642859,
+     "PyWakeNOJ_1deg": 111.913154875
+    },
+    "LXSSA": {
+     "feasible": 18,
+     "5deg_2.5": 110.69559938888888,
+     "1deg_0.5": 110.58224728333333,
+     "PyWakeNOJ_1deg": 111.22822049999999
+    },
+    "DE": {
+     "feasible": 21,
+     "5deg_2.5": 114.00736796190478,
+     "1deg_0.5": 112.13555973333334,
+     "PyWakeNOJ_1deg": 112.48455721428573
+    },
+    "GA": {
+     "feasible": 21,
+     "5deg_2.5": 114.12457727142856,
+     "1deg_0.5": 112.57935603333334,
+     "PyWakeNOJ_1deg": 112.84887732857145
+    },
+    "BVNS": {
+     "feasible": 30,
+     "5deg_2.5": 114.19420649666667,
+     "1deg_0.5": 112.40396155333336,
+     "PyWakeNOJ_1deg": 112.67164941666667
+    },
+    "SLSQP": {
+     "feasible": 30,
+     "5deg_2.5": 113.45141302000002,
+     "1deg_0.5": 112.53423742999999,
+     "PyWakeNOJ_1deg": 113.01478354000001
+    },
+    "RSDVNS": {
+     "feasible": 27,
+     "5deg_2.5": 113.21663855185183,
+     "1deg_0.5": 111.44951042962965,
+     "PyWakeNOJ_1deg": 111.92828274814816
+    }
+   },
+   "tests": {
+    "SP9_holm8_printed": {
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 2.203509211540222e-06,
+       "rb": 0.9311827956989247,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.16476488672196865,
+       "rb": 0.4021505376344086,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 4.995614290237427e-06,
+       "rb": 0.9096774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001133054494857788,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.22580645161290322,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.2,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 9.122304618358612e-05,
+       "rb": 0.8236559139784946,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 3.298744559288025e-06,
+       "rb": 0.9225806451612903,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.11525525338947773,
+       "rb": 0.432258064516129,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 2.2742897272109985e-05,
+       "rb": 0.8709677419354839,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.0004933476448059082,
+       "rb": 0.7548387096774194,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.24826892465353012,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.8078304156661034,
+       "rb": -0.053763440860215055,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.00022037886083126068,
+       "rb": 0.7935483870967742,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 5.587935447692871e-08,
+       "rb": 0.9870967741935484,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.016285959631204605,
+       "rb": 0.5440860215053763,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.0008497908711433411,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.0635564886033535,
+       "rb": 0.38924731182795697,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 7.096678018569946e-06,
+       "rb": 0.8924731182795699,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 7.096678018569946e-06,
+       "rb": 0.896774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    },
+    "SP9+GA_holm9": {
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 2.518296241760254e-06,
+       "rb": 0.9311827956989247,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.16476488672196865,
+       "rb": 0.4021505376344086,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 5.8282166719436646e-06,
+       "rb": 0.9096774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001416318118572235,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.048190489411354065,
+       "rb": 0.5182795698924731,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.22580645161290322,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.2,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.00010946765542030334,
+       "rb": 0.8236559139784946,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 3.769993782043457e-06,
+       "rb": 0.9225806451612903,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.11525525338947773,
+       "rb": 0.432258064516129,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 2.6533380150794983e-05,
+       "rb": 0.8709677419354839,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.0006166845560073853,
+       "rb": 0.7548387096774194,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.0513349324464798,
+       "rb": 0.513978494623656,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.24826892465353012,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.8078304156661034,
+       "rb": -0.053763440860215055,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 0.0002644546329975128,
+       "rb": 0.7935483870967742,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     },
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 6.51925802230835e-08,
+       "rb": 0.9870967741935484,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.016285959631204605,
+       "rb": 0.5440860215053763,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 4.470348358154297e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.6763806343078613e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001133054494857788,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.0023936927318573,
+       "rb": 0.6731182795698925,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.0635564886033535,
+       "rb": 0.38924731182795697,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 8.516013622283936e-06,
+       "rb": 0.8924731182795699,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "RSDVNS": {
+       "p_holm": 8.516013622283936e-06,
+       "rb": 0.896774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    },
+    "farmIII_pool9_holm8": {
+     "1deg_0.5": {
+      "PSOC": {
+       "p_holm": 2.203509211540222e-06,
+       "rb": 0.9311827956989247,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.16476488672196865,
+       "rb": 0.4021505376344086,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 4.995614290237427e-06,
+       "rb": 0.9096774193548387,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001416318118572235,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.048190489411354065,
+       "rb": 0.5182795698924731,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.22580645161290322,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.5787324123084545,
+       "rb": 0.2,
+       "outcome": "T",
+       "n_pairs": 30
+      }
+     },
+     "PyWakeNOJ_1deg": {
+      "PSOC": {
+       "p_holm": 3.298744559288025e-06,
+       "rb": 0.9225806451612903,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.11525525338947773,
+       "rb": 0.432258064516129,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 2.2742897272109985e-05,
+       "rb": 0.8709677419354839,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.0006166845560073853,
+       "rb": 0.7548387096774194,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.0513349324464798,
+       "rb": 0.513978494623656,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.24826892465353012,
+       "rb": 0.3247311827956989,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 0.8078304156661034,
+       "rb": -0.053763440860215055,
+       "outcome": "T",
+       "n_pairs": 30
+      }
+     },
+     "5deg_2.5": {
+      "PSOC": {
+       "p_holm": 5.587935447692871e-08,
+       "rb": 0.9870967741935484,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSABV": {
+       "p_holm": 0.016285959631204605,
+       "rb": 0.5440860215053763,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "SSA": {
+       "p_holm": 3.91155481338501e-08,
+       "rb": 0.9913978494623656,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "LXSSA": {
+       "p_holm": 1.4901161193847656e-08,
+       "rb": 1.0,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "DE": {
+       "p_holm": 0.001133054494857788,
+       "rb": 0.7204301075268817,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "GA": {
+       "p_holm": 0.0023936927318573,
+       "rb": 0.6731182795698925,
+       "outcome": "W",
+       "n_pairs": 30
+      },
+      "BVNS": {
+       "p_holm": 0.0635564886033535,
+       "rb": 0.38924731182795697,
+       "outcome": "T",
+       "n_pairs": 30
+      },
+      "SLSQP": {
+       "p_holm": 8.419156074523926e-06,
+       "rb": 0.8924731182795699,
+       "outcome": "W",
+       "n_pairs": 30
+      }
+     }
+    }
+   },
+   "psovns_minus_ga_joint_feasible": {
+    "5deg_2.5": {
+     "n": 21,
+     "mean_diff_gwh": 0.3513855571428567,
+     "p": 0.1789875030517578,
+     "first_better": 12,
+     "second_better": 9
+    },
+    "1deg_0.5": {
+     "n": 21,
+     "mean_diff_gwh": 0.00197522857142812,
+     "p": 0.9186935424804688,
+     "first_better": 11,
+     "second_better": 10
+    },
+    "PyWakeNOJ_1deg": {
+     "n": 21,
+     "mean_diff_gwh": 0.04640476666666667,
+     "p": 0.945744514465332,
+     "first_better": 10,
+     "second_better": 11
+    }
+   },
+   "mcnemar_psovns_vs_ga": {
+    "psovns_only": 9,
+    "ga_only": 0,
+    "p_exact": 0.00390625
+   }
+  }
+ },
+ "changes": {
+  "S-tab:S-xp-site": {
+   "cells": {
+    "changed": [
+     {
+      "row": "MS-SLSQP",
+      "col": "Rank 30,030",
+      "old": "6",
+      "new": "7"
+     },
+     {
+      "row": "SSA-VNS",
+      "col": "Rank 30,030",
+      "old": "4",
+      "new": "5"
+     },
+     {
+      "row": "RSD-VNS",
+      "col": "Rank 30,030",
+      "old": "7",
+      "new": "8"
+     },
+     {
+      "row": "SSA",
+      "col": "Rank 30,030",
+      "old": "8",
+      "new": "9"
+     },
+     {
+      "row": "PSO",
+      "col": "Rank 6,030",
+      "old": "8",
+      "new": "8.5"
+     },
+     {
+      "row": "PSO",
+      "col": "Rank 30,030",
+      "old": "5",
+      "new": "6"
+     },
+     {
+      "row": "LX-SSA",
+      "col": "Rank 6,030",
+      "old": "8",
+      "new": "8.5"
+     },
+     {
+      "row": "LX-SSA",
+      "col": "Rank 30,030",
+      "old": "9",
+      "new": "10"
+     },
+     {
+      "row": "DE",
+      "col": "Rank 6,030",
+      "old": "8",
+      "new": "8.5"
+     },
+     {
+      "row": "DE",
+      "col": "Rank 30,030",
+      "old": "3",
+      "new": "4"
+     }
+    ],
+    "added_rows": [
+     "GA & -- & 0/30 & -- & -- & 8.5 & 114.12 & 21/30 & 18.13 & $-$1.70 & 3"
+    ],
+    "removed_rows": []
+   },
+   "text": [
+    {
+     "old": "$p=9.99\\times10^{-31}$",
+     "new": "$p=1.74\\times10^{-35}$"
+    },
+    {
+     "old": "$1.85\\times10^{-20}$",
+     "new": "$8.70\\times10^{-19}$"
+    }
+   ]
+  },
+  "S-tab:S-sa-lg-eval": {
+   "cells": {
+    "changed": [
+     {
+      "row": "PSO",
+      "col": "PSO-VNS vs., 1deg (30,030)",
+      "old": "$2.2\\times10^{-6}$ (W)",
+      "new": "$2.5\\times10^{-6}$ (W)"
+     },
+     {
+      "row": "RSD-VNS",
+      "col": "PSO-VNS vs., 1deg (30,030)",
+      "old": "$9.1\\times10^{-5}$ (W)",
+      "new": "$1.1\\times10^{-4}$ (W)"
+     },
+     {
+      "row": "SSA",
+      "col": "PSO-VNS vs., 1deg (30,030)",
+      "old": "$5.0\\times10^{-6}$ (W)",
+      "new": "$5.8\\times10^{-6}$ (W)"
+     },
+     {
+      "row": "LX-SSA",
+      "col": "PSO-VNS vs., 1deg (30,030)",
+      "old": "$1.5\\times10^{-8}$ (W)",
+      "new": "$1.7\\times10^{-8}$ (W)"
+     }
+    ],
+    "added_rows": [
+     "GA & 0/30 & -- & -- & -- &  & 21/30 & 114.12 & 112.58 & 112.85 & 0.048 (W)"
+    ],
+    "removed_rows": []
+   },
+   "text": [
+    {
+     "old": "(nine",
+     "new": "(ten"
+    },
+    {
+     "old": "1~cm;",
+     "new": "1~cm, GA: 17 significant digits;"
+    },
+    {
+     "old": "309",
+     "new": "330"
+    },
+    {
+     "old": "8",
+     "new": "9"
+    }
+   ]
+  },
+  "S-tab:S-sa-allrun": {
+   "cells": {
+    "changed": [
+     {
+      "row": "PSO-VNS vs.\\ SSA-VNS",
+      "col": "p_sign (Holm)",
+      "old": "$4.3\\times10^{-123}$",
+      "new": "$6.5\\times10^{-123}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ VNS",
+      "col": "p_sign (Holm)",
+      "old": "$2.9\\times10^{-172}$",
+      "new": "$3.8\\times10^{-172}$"
+     }
+    ],
+    "added_rows": [
+     "PSO-VNS vs.\\ GA & 100.0/98.6 & $-$0.026 & 969/318/753 & 0.553 & [0.524, 0.582] & [0.518, 0.588] & $4.3\\times10^{-7}$ & 0.553"
+    ],
+    "removed_rows": []
+   },
+   "text": [
+    {
+     "old": "7",
+     "new": "8"
+    },
+    {
+     "old": "7)}}",
+     "new": "8)}}"
+    }
+   ]
+  },
+  "S-tab:S-sa-dep-bench": {
+   "cells": {
+    "changed": [
+     {
+      "row": "PSO-VNS vs.\\ PSO",
+      "col": "p_grp (Holm)",
+      "old": "0.219",
+      "new": "0.250"
+     },
+     {
+      "row": "PSO-VNS vs.\\ SSA-VNS",
+      "col": "p_flip (Holm)",
+      "old": "$1.3\\times10^{-8}$",
+      "new": "$1.5\\times10^{-8}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ SSA-VNS",
+      "col": "p_W (Holm)",
+      "old": "$1.2\\times10^{-5}$",
+      "new": "$1.3\\times10^{-5}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ SSA-VNS",
+      "col": "p_grp (Holm)",
+      "old": "0.219",
+      "new": "0.250"
+     },
+     {
+      "row": "PSO-VNS vs.\\ SSA",
+      "col": "p_flip (Holm)",
+      "old": "$1.3\\times10^{-8}$",
+      "new": "$1.5\\times10^{-8}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ SSA",
+      "col": "p_W (Holm)",
+      "old": "$1.2\\times10^{-5}$",
+      "new": "$1.3\\times10^{-5}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ SSA",
+      "col": "p_grp (Holm)",
+      "old": "0.219",
+      "new": "0.250"
+     },
+     {
+      "row": "PSO-VNS vs.\\ LX-SSA",
+      "col": "p_flip (Holm)",
+      "old": "$1.3\\times10^{-8}$",
+      "new": "$1.5\\times10^{-8}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ LX-SSA",
+      "col": "p_W (Holm)",
+      "old": "$1.2\\times10^{-5}$",
+      "new": "$1.3\\times10^{-5}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ LX-SSA",
+      "col": "p_grp (Holm)",
+      "old": "0.219",
+      "new": "0.250"
+     },
+     {
+      "row": "PSO-VNS vs.\\ DE",
+      "col": "p_flip (Holm)",
+      "old": "$1.3\\times10^{-8}$",
+      "new": "$1.5\\times10^{-8}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ DE",
+      "col": "p_W (Holm)",
+      "old": "$1.2\\times10^{-5}$",
+      "new": "$1.3\\times10^{-5}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ DE",
+      "col": "p_grp (Holm)",
+      "old": "0.219",
+      "new": "0.250"
+     },
+     {
+      "row": "PSO-VNS vs.\\ VNS",
+      "col": "p_flip (Holm)",
+      "old": "$1.3\\times10^{-8}$",
+      "new": "$1.5\\times10^{-8}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ VNS",
+      "col": "p_W (Holm)",
+      "old": "$1.2\\times10^{-5}$",
+      "new": "$1.3\\times10^{-5}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ VNS",
+      "col": "p_grp (Holm)",
+      "old": "0.219",
+      "new": "0.250"
+     },
+     {
+      "row": "PSO-VNS vs.\\ MS-SLSQP",
+      "col": "p_flip (Holm)",
+      "old": "$1.3\\times10^{-8}$",
+      "new": "$1.5\\times10^{-8}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ MS-SLSQP",
+      "col": "p_W (Holm)",
+      "old": "$1.2\\times10^{-5}$",
+      "new": "$1.3\\times10^{-5}$"
+     },
+     {
+      "row": "PSO-VNS vs.\\ MS-SLSQP",
+      "col": "p_grp (Holm)",
+      "old": "0.219",
+      "new": "0.250"
+     }
+    ],
+    "added_rows": [
+     "PSO-VNS vs.\\ GA & 969/318/753 & 0.553 & [0.536, 0.571] & 25/4 & $5.5\\times10^{-6}$ & $6.0\\times10^{-5}$ & 6/0 & 0.250"
+    ],
+    "removed_rows": []
+   },
+   "text": [
+    {
+     "old": "7",
+     "new": "8"
+    },
+    {
+     "old": "7)}}",
+     "new": "8)}}"
+    }
+   ]
+  },
+  "S-tab:archive-reliability": {
+   "cells": {
+    "changed": [],
+    "added_rows": [
+     "GA & 0/30 & [0.00, 0.11] & -- & 21/30 & [0.52, 0.83] & 114.125"
+    ],
+    "removed_rows": []
+   },
+   "text": []
+  },
+  "S-tab:archive-paired": {
+   "cells": {
+    "changed": [
+     {
+      "row": "6,030 / VNS",
+      "col": "Holm p",
+      "old": "0.0827",
+      "new": "0.0945"
+     },
+     {
+      "row": "6,030 / DE",
+      "col": "Holm p",
+      "old": "0.000168",
+      "new": "0.000198"
+     },
+     {
+      "row": "6,030 / LX-SSA",
+      "col": "Holm p",
+      "old": "0.000168",
+      "new": "0.000198"
+     },
+     {
+      "row": "6,030 / PSO",
+      "col": "Holm p",
+      "old": "0.000168",
+      "new": "0.000198"
+     },
+     {
+      "row": "6,030 / RSD-VNS",
+      "col": "Holm p",
+      "old": "0.0967",
+      "new": "0.115"
+     },
+     {
+      "row": "6,030 / SSA",
+      "col": "Holm p",
+      "old": "0.00583",
+      "new": "0.00656"
+     },
+     {
+      "row": "30,030 / DE",
+      "col": "Holm p",
+      "old": "0.0967",
+      "new": "0.113"
+     },
+     {
+      "row": "30,030 / LX-SSA",
+      "col": "Holm p",
+      "old": "2.98e-08",
+      "new": "3.35e-08"
+     },
+     {
+      "row": "30,030 / PSO",
+      "col": "Holm p",
+      "old": "1.22e-05",
+      "new": "1.39e-05"
+     },
+     {
+      "row": "30,030 / RSD-VNS",
+      "col": "Holm p",
+      "old": "0.000101",
+      "new": "0.000118"
+     },
+     {
+      "row": "30,030 / MS-SLSQP",
+      "col": "Holm p",
+      "old": "1.22e-05",
+      "new": "1.39e-05"
+     },
+     {
+      "row": "30,030 / SSA",
+      "col": "Holm p",
+      "old": "8.66e-07",
+      "new": "9.82e-07"
+     }
+    ],
+    "added_rows": [
+     "6,030 & GA & 17/13/0 & 0.783 & [0.700, 0.867] & [0.805, 1.000] & 0.000198",
+     "30,030 & GA & 21/0/9 & 0.700 & [0.533, 0.867] & [0.506, 0.853] & 0.214"
+    ],
+    "removed_rows": []
+   },
+   "text": [
+    {
+     "old": "16",
+     "new": "18"
+    }
+   ]
+  }
+ },
+ "seconds": 21.8
+}

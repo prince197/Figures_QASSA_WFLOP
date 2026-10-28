@@ -109,17 +109,30 @@ def _first_calls(kind, alg, task, ncalls=30):
                 raise _Stop
             return f(x)
         return g
-    mx.make_objective = mo; rsp.make_objective = mo
+    orig_hr = mx.hr.make_objective
+
+    def mo_hr(*a, **k):
+        f, ideal, poly = orig_hr(*a, **k)
+
+        def g(x):
+            seen.append(np.array(x, float).copy())
+            if len(seen) >= ncalls:
+                raise _Stop
+            return f(x)
+        return g, ideal, poly
+    mx.make_objective = mo; rsp.make_objective = mo; mx.hr.make_objective = mo_hr
     try:
         t = (alg,) + tuple(task)
         if kind == "spacing":
             run_grid_sp_ga(t)
+        elif kind == "hr":
+            rev2_ga._with_ga(mx.run_hr, t)
         else:
             rev2_ga._with_ga(mx.run_grid, t)
     except _Stop:
         pass
     finally:
-        mx.make_objective = orig_mo; rsp.make_objective = orig_mo
+        mx.make_objective = orig_mo; rsp.make_objective = orig_mo; mx.hr.make_objective = orig_hr
         import init_hook
         init_hook.GEN = None
     return np.array(seen[:ncalls])
@@ -134,20 +147,23 @@ def verify():
                ("grid", (2, 1000, 15), 120030, "random", None),
                ("grid", (1, 750, 12), 6030, "feasible", None),
                ("spacing", (2, 750, 8), 6030, "random", "5D"),
-               ("spacing", (1, 1000, 10), 6030, "random", "6D")]
+               ("spacing", (1, 1000, 10), 6030, "random", "6D"),
+               ("hr", (16,), 120030, "random", None),
+               ("hr", (16,), 6030, "feasible", None)]
     for kind, c, b, init, sp in designs:
         for s in (1, 2):
             task = (*c, s, b, init) + ((sp,) if sp else ())
             ga = _first_calls(kind, "GA", task)
             for other in ("PSOC", "PSOBV"):
                 o = _first_calls(kind, other, task)
-                eq = ga.shape == o.shape == (30, 2 * c[2]) and np.array_equal(ga, o)
+                eq = ga.shape == o.shape == (30, 2 * c[-1]) and np.array_equal(ga, o)
                 ok &= eq
                 print(f"pairing {kind:7s} case {c} B={b} {init:8s} {sp or '4D'} seed {s}: GA vs {other}: first 30 "
                       f"evaluations identical = {eq}", flush=True)
     # runner reproduction of stored records (cheap ones)
     chk = [("mpce_feas_s0of1.csv", mx.run_grid, ("PSOC", 1, 500, 10, 1, 6030, "feasible"), None),
-           ("rev2_spacing", run_grid_sp_ga, ("PSOC", 2, 750, 8, 1, 6030, "random", "5D"), "5D")]
+           ("rev2_spacing", run_grid_sp_ga, ("PSOC", 2, 750, 8, 1, 6030, "random", "5D"), "5D"),
+           ("mpce_hrfix", mx.run_hr, ("PSOC", "HR", 0, 16, 1, 6030, "feasible"), None)]
     import glob
     for src, fn, t, sp in chk:
         files = sorted(glob.glob(src if src.endswith(".csv") else f"{src}_s*of*.csv"))
@@ -157,7 +173,8 @@ def verify():
         if sp:
             m &= D.Spacing == sp
         rec = D[m].iloc[0]
-        row = fn(t) if fn is run_grid_sp_ga else rev2_ga._with_ga(fn, t)
+        tt = (t[0], t[3], t[4], t[5], t[6]) if fn is mx.run_hr else t          # run_hr task: (alg, n, seed, budget, init)
+        row = fn(tt) if fn is run_grid_sp_ga else rev2_ga._with_ga(fn, tt)
         import init_hook
         init_hook.GEN = None
         same = (row["Objective"] == rec.Objective) and (row["Calls"] == rec.Calls) and (bool(row["Feasible"]) == bool(rec.Feasible))

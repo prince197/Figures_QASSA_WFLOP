@@ -12,7 +12,8 @@ PARTIAL in the summary):
             4D = the stored rev2_ga runs of the 12 split cases, 5D / 6D = rev5_ga_spacing (rev5_ga_secondary.py
             spacing, the design of rev2_spacing.py with the GA label); --no-ga-spacing: without GA (nine methods)
   laplace   rev2_laplace  (LXNR, LXREP, LXU, LXC025, LXC05, LXC2; 12 split cases) + stored LXSSA / SSA runs
-  ga        rev2_ga (GA, 68 cases) + stored runs of the 8 main methods; rev2_gahr (GA, Horns Rev 16) + mpce_hrfix;
+  ga        rev2_ga (GA, 68 cases) + stored runs of the 8 main methods; rev2_gahr (GA, Horns Rev 16) + rev5_ga_hr
+            (GA, Horns Rev 16, 120,030 R / 6,030 F; rev5_ga_secondary.py) + mpce_hrfix;
             rev2_gaiea (GA, IEA37 16 / 36) + mpce_iea16/36 (+ PSO-VNS arms mpce_iea16p/36p)
   site      rev2_lg16 (6,030) and rev2_lg16b (30,030): Lillgrund 16-turbine block, 9 methods
   grad      rev2_grad (SLSQPX, PSOSLSQPX on IEA37 16 / 36) + mpce_iea16/36(p)
@@ -62,7 +63,8 @@ HR10 = [a for a in MR.HR_ORDER]                                                 
 EXCL = [("1", 500, 10), ("2", 500, 10)]                                           # no feasible layout at 5D / 6D
 SPACINGS = ["4D", "5D", "6D"]
 CONTRASTS_SP = [("PSOBV", "PSOC"), ("SSABV", "RSDVNS")]
-GA_SPACING = True       # GA in the spacing pool (4D: rev2_ga, 5D / 6D: rev5_ga_spacing); --no-ga-spacing: the nine methods
+GA_SPACING = True       # rev5 GA runs used (spacing pool 4D: rev2_ga, 5D / 6D: rev5_ga_spacing; Horns Rev GA at 120,030 R and
+                        # 6,030 F: rev5_ga_hr); --no-ga-spacing: neither (outputs as before rev5)
 
 LAB = dict(MR.LAB)
 LAB.update(GA="GA", LXNR="LX-SSA, no re-evaluation", LXREP="LX-SSA, Laplace replaces midpoint",
@@ -585,6 +587,13 @@ def block_ga(data_dir, summ, tex):
         H = read_mpce("hrfix")
         H = H[(H.Dataset == "HR") & (H.Turbines == 16)]
         Nh = Nh[(Nh.Algorithm == "GA") & (Nh.Dataset == "HR")]
+        # GA at 120,030 (random, seeds 1-10) and 6,030 (feasible init., seeds 1-30): rev5_ga_hr (rev5_ga_secondary.py hr,
+        # the hrfix design of the other methods); without it these GA cells are n/r
+        Nh5 = None
+        if GA_SPACING:
+            Nh5, summ["data"]["rev5_ga_hr"] = read_rev2("hr", data_dir, prefix="rev5_ga")
+        if Nh5 is not None:
+            Nh = pd.concat([Nh, Nh5[(Nh5.Algorithm == "GA") & (Nh5.Dataset == "HR")]], ignore_index=True)
         if abs(float(Nh.Ideal.iloc[0]) - float(H.Ideal.iloc[0])) > 1e-6:
             NOTES.append("GA Horns Rev wake-free AEP differs from mpce_hrfix: model mismatch")
         HH = pd.concat([H, Nh], ignore_index=True)
@@ -810,7 +819,8 @@ def main(argv=None):
     ap.add_argument("--data-dir", default=HERE, help="folder of the rev2_*.csv files")
     ap.add_argument("--out-dir", default=HERE)
     ap.add_argument("--only", default=",".join(BLOCKS))
-    ap.add_argument("--no-ga-spacing", action="store_true", help="spacing block without GA (the nine methods of rev2_spacing)")
+    ap.add_argument("--no-ga-spacing", action="store_true",
+                    help="without the rev5 GA runs: spacing block without GA (nine methods), Horns Rev GA 120,030 / feasible n/r")
     args = ap.parse_args(argv)
     global GA_SPACING
     GA_SPACING = not args.no_ga_spacing
