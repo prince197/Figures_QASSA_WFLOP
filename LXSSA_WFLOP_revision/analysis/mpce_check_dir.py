@@ -102,10 +102,12 @@ CHECKS = [
      lambda s, P, I: R(s, "J3")["friedman"]["best_ranked"] == "PSOBV" and R(s, "J15")["friedman"]["best_ranked"] == "PSOBV"
      and [a for a, p in R(s, "J15")["friedman"]["p_holm_vs_focus"].items() if p >= 0.05] == ["PSOC"]),
     ("F07", "The rest of the order changes: MS-SLSQP moves from sixth to third (average rank \\NFRankMSSLSQPFifteen to "
-            "\\NFRankMSSLSQPOne) and VNS from fourth to sixth; the within-case ordering agrees only moderately with the benchmark "
+            "\\NFRankMSSLSQPOne) and VNS from fourth to sixth (nine-method pool with GA: MS-SLSQP seventh to fourth, VNS fifth "
+            "to seventh); the within-case ordering agrees only moderately with the benchmark "
             "(mean Kendall tau \\NFTauOne; same best method in \\NFSameBestOne % of the cases).",
-     lambda s, P, I: R(s, "rec")["rank_order"].index("SLSQP") == 5 and R(s, "J15")["rank_order"].index("SLSQP") == 2
-     and R(s, "rec")["rank_order"].index("BVNS") == 3 and R(s, "J15")["rank_order"].index("BVNS") == 5
+     lambda s, P, I: (lambda g: R(s, "rec")["rank_order"].index("SLSQP") == 5 + g and R(s, "J15")["rank_order"].index("SLSQP") == 2 + g
+     and R(s, "rec")["rank_order"].index("BVNS") == 3 + g and R(s, "J15")["rank_order"].index("BVNS") == 5 + g)
+     (int("GA" in R(s, "rec")["rank_order"]))
      and R(s, "J15")["tau_within_case"] < 0.7 and R(s, "J15")["same_best_pct"] < 50),
     ("F08", "The gap of MS-SLSQP to PSO-VNS shrinks from \\NFSLSQPGapFifteen to \\NFSLSQPGapOne pp (to less than a third) but "
             "remains significant (Holm).",

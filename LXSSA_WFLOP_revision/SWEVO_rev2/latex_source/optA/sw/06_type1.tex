@@ -164,11 +164,11 @@ The feasibility-aware rank compares conditional means and can favor a method wit
 \item of two feasible runs, the better objective wins (ties within $10^{-9}$);
 \item two infeasible runs tie.
 \end{enumerate}
-Over $n_s$ seed pairs with $n_W$ wins and $n_T$ ties, the score is $(n_W+n_T/2)/n_s$ (0.5: no difference). Table~\ref{tab:allrun} gives it for the methods without GA. On the benchmark, PSO-VNS is better more often than not against every method, also with the 30 synchronized seeds as the unit of replication; this frequency does not measure the size of the differences, and against PSO the mean difference lies within the margin (Table~\ref{tab:equiv-main}). SSA-VNS loses slightly more often than it wins against RSD-VNS. On Lillgrund, PSO-VNS is better than PSO at both budgets, but not better than MS-SLSQP at 6,030 evaluations.
+Over $n_s$ seed pairs with $n_W$ wins and $n_T$ ties, the score is $(n_W+n_T/2)/n_s$ (0.5: no difference). Table~\ref{tab:allrun} gives it for the nine methods. On the benchmark, PSO-VNS is better more often than not against every method, also with the 30 synchronized seeds as the unit of replication; this frequency does not measure the size of the differences, and against PSO the mean difference lies within the margin (Table~\ref{tab:equiv-main}). SSA-VNS loses slightly more often than it wins against RSD-VNS. On Lillgrund, PSO-VNS is better than PSO at both budgets and than GA at 6,030 evaluations (at 30,030 the GA comparison is not significant), but not better than MS-SLSQP at 6,030 evaluations.
 
 \begin{table}[!htb]
 \centering
-\caption{All-run paired outcome: score of the first method (0.5: no difference; above 0.5: first method better), methods without GA.}
+\caption{All-run paired outcome: score of the first method (0.5: no difference; above 0.5: first method better).}
 \label{tab:allrun}
 \scriptsize\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lcccccc@{}}
@@ -179,22 +179,25 @@ Pair (first vs.\ second) & W/T/L & Score & 95\% CI & $p_{\rm Holm}$ & 95\% CI & 
 \midrule
 \multicolumn{7}{@{}l}{\emph{Benchmark, 68 cases, 2,040 seed pairs}} \\
 PSO-VNS vs.\ PSO & 950/348/742 & 0.551 & [0.516, 0.587] & $4.7\times10^{-7}$ & [0.531, 0.572] & $1.2\times10^{-5}$ \\
-PSO-VNS vs.\ SSA-VNS & 1336/321/383 & 0.734 & [0.700, 0.766] & $4.3\times10^{-123}$ & [0.715, 0.752] & $1.3\times10^{-8}$ \\
-PSO-VNS vs.\ SSA & 1650/276/114 & 0.876 & [0.839, 0.911] & $<10^{-300}$ & [0.866, 0.886] & $1.3\times10^{-8}$ \\
-PSO-VNS vs.\ LX-SSA & 1658/273/109 & 0.880 & [0.842, 0.914] & $<10^{-300}$ & [0.868, 0.891] & $1.3\times10^{-8}$ \\
-PSO-VNS vs.\ DE & 1682/296/62 & 0.897 & [0.851, 0.938] & $<10^{-300}$ & [0.888, 0.905] & $1.3\times10^{-8}$ \\
-PSO-VNS vs.\ VNS & 1406/338/296 & 0.772 & [0.729, 0.812] & $2.9\times10^{-172}$ & [0.751, 0.792] & $1.3\times10^{-8}$ \\
-PSO-VNS vs.\ MS-SLSQP & 1649/218/173 & 0.862 & [0.823, 0.897] & $<10^{-300}$ & [0.850, 0.874] & $1.3\times10^{-8}$ \\
+PSO-VNS vs.\ GA & 969/318/753 & 0.553 & [0.524, 0.582] & $4.3\times10^{-7}$ & [0.536, 0.571] & $5.5\times10^{-6}$ \\
+PSO-VNS vs.\ SSA-VNS & 1336/321/383 & 0.734 & [0.700, 0.766] & $6.5\times10^{-123}$ & [0.715, 0.752] & $1.5\times10^{-8}$ \\
+PSO-VNS vs.\ SSA & 1650/276/114 & 0.876 & [0.839, 0.911] & $<10^{-300}$ & [0.866, 0.886] & $1.5\times10^{-8}$ \\
+PSO-VNS vs.\ LX-SSA & 1658/273/109 & 0.880 & [0.842, 0.914] & $<10^{-300}$ & [0.868, 0.891] & $1.5\times10^{-8}$ \\
+PSO-VNS vs.\ DE & 1682/296/62 & 0.897 & [0.851, 0.938] & $<10^{-300}$ & [0.888, 0.905] & $1.5\times10^{-8}$ \\
+PSO-VNS vs.\ VNS & 1406/338/296 & 0.772 & [0.729, 0.812] & $3.8\times10^{-172}$ & [0.751, 0.792] & $1.5\times10^{-8}$ \\
+PSO-VNS vs.\ MS-SLSQP & 1649/218/173 & 0.862 & [0.823, 0.897] & $<10^{-300}$ & [0.850, 0.874] & $1.5\times10^{-8}$ \\
 SSA-VNS vs.\ RSD-VNS & 812/318/910 & 0.476 & [0.452, 0.500] & 0.019 & [0.455, 0.498] & 0.047 \\
 \midrule
 \multicolumn{7}{@{}l}{\emph{Lillgrund, 30 seed pairs}} \\
-PSO-VNS vs.\ PSO, 6,030 & 17/13/0 & 0.783 & -- & -- & [0.700, 0.867] & $1.68\times10^{-4}$ \\
-PSO-VNS vs.\ PSO, 30,030 & 28/0/2 & 0.933 & -- & -- & [0.833, 1.000] & $1.22\times10^{-5}$ \\
+PSO-VNS vs.\ PSO, 6,030 & 17/13/0 & 0.783 & -- & -- & [0.700, 0.867] & $1.98\times10^{-4}$ \\
+PSO-VNS vs.\ PSO, 30,030 & 28/0/2 & 0.933 & -- & -- & [0.833, 1.000] & $1.39\times10^{-5}$ \\
+PSO-VNS vs.\ GA, 6,030 & 17/13/0 & 0.783 & -- & -- & [0.700, 0.867] & $1.98\times10^{-4}$ \\
+PSO-VNS vs.\ GA, 30,030 & 21/0/9 & 0.700 & -- & -- & [0.533, 0.867] & 0.214 \\
 PSO-VNS vs.\ MS-SLSQP, 6,030 & 10/0/20 & 0.333 & -- & -- & [0.167, 0.500] & 0.395 \\
-PSO-VNS vs.\ MS-SLSQP, 30,030 & 28/0/2 & 0.933 & -- & -- & [0.833, 1.000] & $1.22\times10^{-5}$ \\
+PSO-VNS vs.\ MS-SLSQP, 30,030 & 28/0/2 & 0.933 & -- & -- & [0.833, 1.000] & $1.39\times10^{-5}$ \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Pooled seed pairs: 95\% interval from resampling the cases, exact sign test over the discordant pairs treated as independent. Seeds as unit: 95\% interval from resampling the 30 seeds (benchmark: complete seed vectors over all cases; 25 of 29 non-tied seeds favor PSO-VNS against PSO) and exact sign-flip (benchmark) or sign test (Lillgrund). Holm over the comparisons of PSO-VNS (benchmark: 7; Lillgrund: 16, eight methods at two budgets) and over the 5 sampling-control contrasts (SSA-VNS vs.\ RSD-VNS). All 12 benchmark comparisons significant in the pooled tests stay significant with seeds as the unit. Details: Tables~\ref{S-tab:S-sa-allrun}, \ref{S-tab:S-sa-dep-bench} and~\ref{S-tab:archive-paired}; Section~\ref{S-sec:S-sa-dep}.}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Pooled seed pairs: 95\% interval from resampling the cases, exact sign test over the discordant pairs treated as independent. Seeds as unit: 95\% interval from resampling the 30 seeds (benchmark: complete seed vectors over all cases; 25 of 29 non-tied seeds favor PSO-VNS against PSO) and exact sign-flip (benchmark) or sign test (Lillgrund). Holm over the comparisons of PSO-VNS (benchmark: 8; Lillgrund: 18, nine methods at two budgets) and over the 5 sampling-control contrasts (SSA-VNS vs.\ RSD-VNS). All 13 benchmark comparisons significant in the pooled tests stay significant with seeds as the unit. Details: Tables~\ref{S-tab:S-sa-allrun}, \ref{S-tab:S-sa-dep-bench} and~\ref{S-tab:archive-paired}; Section~\ref{S-sec:S-sa-dep}.}
 \end{table}
 
 \emph{Coordinate precision.} The stored coordinates are rounded to three (benchmark, IEA37) or two decimals (Horns Rev~1, Lillgrund). Of the 56,540 stored records, the rounded coordinates confirm 50,826 feasibility labels at $10^{-6}$~m and contradict none (Table~\ref{S-tab:S-sa-precision}); rerun with a 17-digit writer, 4,794 of the other 5,714 are confirmed (0 changed). The remaining 920 are SLSQP-based (SciPy's SLSQP is not bit-reproducible across CPU and BLAS builds), among them 220 of the 240 exact-gradient runs; they keep the labels reported by the runs, which the audit neither confirms nor contradicts. Taking every open label as infeasible leaves the order of the eight benchmark methods without GA unchanged (Section~\ref{S-sec:S-sa-feasbounds}). Replayed from the rounded coordinates, 905 of the 51,810 feasible records differ from their stored objective by more than 0.05~pp where the hub-center wake test makes the objective jump, among them 233 of the 21,716 benchmark layouts re-evaluated in Section~\ref{sec:robustness}; ranked by the replayed objective, the eight methods and the site means keep their order (PSO-VNS${}-{}$PSO: $-0.018$~pp, unchanged). All writers of the reproducibility package store 17 significant digits.
@@ -293,18 +296,20 @@ In Table~\ref{S-tab:D-feasstart}, which logs every candidate, the only feasible 
 \label{sec:robustness}
 % tab:robust-final is placed in the main text; the full re-evaluation stays in the supplement (Table S-robust). tab:F-bench and tab:F-equiv are
 % captured in 06_type1.tex (\CaptureSuppTables{analysis/mpce_supp_direction.tex}).
-The benchmark (Type~I) fixes a power curve, a wake model, a minimum spacing, a boundary rule and a discretization of the wind rose. We tested each choice on the benchmark; GA is included only where stated:
+The benchmark (Type~I) fixes five modeling choices. We tested each of them with the nine methods:
 \begin{enumerate}
-\item power curve and wake model: every feasible final layout of the eight methods without GA re-evaluated, not re-optimized (Table~\ref{tab:robust-final}; all methods: Table~\ref{S-tab:robust}), which asks whether the delivered layouts keep their order under another model, not which layouts the methods would find for it;
-\item minimum spacing and boundary rule: methods re-optimized on subsets of the cases;
-\item direction resolution: both re-evaluation and re-optimization.
+\item \emph{power curve} and
+\item \emph{wake model}: every feasible final layout re-evaluated, not re-optimized (Table~\ref{tab:robust-final}; all methods: Table~\ref{S-tab:robust}), which asks whether the delivered layouts keep their order under another model;
+\item \emph{minimum spacing}: methods re-optimized at $5D$ and $6D$ on the split cases;
+\item \emph{boundary rule}: five methods re-optimized under two other constraint handlings on six cases;
+\item \emph{direction resolution}: final layouts re-evaluated with finer wind roses, and the fine rose optimized directly on eight cases (Table~\ref{tab:direction}).
 \end{enumerate}
 Re-evaluations use the stored rounded coordinates (Section~\ref{sec:archive-reliability}).
-% >>>>> begin analysis/mpce_tab_robust_final.tex
-%% generated by mpce_results.py -- do not edit by hand
+% >>>>> begin analysis/rev5_ga_tab_robust_final.tex
+%% generated by rev5_ga_reeval.py (pipeline of mpce_results.py section 8, GA added to the pool) -- do not edit by hand
 \begin{table}[!t]
 \centering
-\caption{Robustness to the benchmark model: final layouts re-evaluated, not re-optimized.}
+\caption{Robustness to the benchmark model (Type~I, nine methods): final layouts re-evaluated, not re-optimized.}
 \label{tab:robust-final}
 \scriptsize\setlength{\tabcolsep}{2.4pt}
 \begin{tabular}{lcccccc}
@@ -313,26 +318,26 @@ Re-evaluations use the stored rounded coordinates (Section~\ref{sec:archive-reli
 \cmidrule(lr){2-3}
 Model & DS I & DS II & Rank & Best & $\bar\tau$ & Same \\
 \midrule
-Benchmark & +0.0 & +0.0 & 1.82 & PSO-VNS & -- & -- \\
-Cubic curve & $-17.7$ & $-36.9$ & 1.82 & PSO-VNS & 0.95 & 94 \\
-Cubic, 25~m/s cut-out & $-21.5$ & $-37.0$ & 1.80 & PSO-VNS & 0.95 & 93 \\
-Gaussian wake & $-0.3$ & $-0.4$ & 1.97 & PSO & 0.66 & 54 \\
+Benchmark & +0.0 & +0.0 & 2.18 & PSO-VNS & -- & -- \\
+Cubic curve & $-17.7$ & $-36.9$ & 2.24 & PSO-VNS & 0.94 & 90 \\
+Cubic, 25~m/s cut-out & $-21.5$ & $-37.0$ & 2.22 & PSO-VNS & 0.94 & 90 \\
+Gaussian wake & $-0.3$ & $-0.4$ & 2.31 & PSO & 0.66 & 49 \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize All feasible final layouts of the 68 cases. $\Delta$: mean relative change of the objective (\%); Rank: average rank of PSO-VNS (pool of the eight methods without GA); Best: best-ranked method; $\bar\tau$: mean Kendall correlation between the benchmark and the alternative ordering within a case; Same: cases (\%) with unchanged best method. Ranks of all methods: supplementary material.}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize All feasible final layouts of the 68 cases. $\Delta$: mean relative change of the objective (\%); Rank: average rank of PSO-VNS; Best: best-ranked method; $\bar\tau$: mean Kendall correlation between the benchmark and the alternative ordering within a case; Same: cases (\%) with unchanged best method. Ranks of all methods: supplementary material.}
 \end{table}
-% <<<<< end analysis/mpce_tab_robust_final.tex
+% <<<<< end analysis/rev5_ga_tab_robust_final.tex
 
 \subsubsection{Power Curve}
 \label{sec:powercurve}
-A cubic power curve between cut-in and rated speed~\cite{Carrillo2013} (also with a 25~m/s cut-out) lowers the expected power by 17.7\% (Data Set~I) and 36.9\% (Data Set~II), so our energy values are benchmark values, but it leaves the ranking intact ($\bar\tau=0.95$; same best method in 94\% of the cases; PSO-VNS first, also with the cut-out). The $\pm0.05$~pp equivalence verdicts (Sections~\ref{sec:psovns-pso} and~\ref{sec:ablation}) were evaluated under the linear benchmark curve only.
+A cubic power curve between cut-in and rated speed~\cite{Carrillo2013} (also with a 25~m/s cut-out) lowers the expected power by 17.7\% (Data Set~I) and 36.9\% (Data Set~II), so our energy values are benchmark values, but it leaves the ranking intact ($\bar\tau=0.94$; same best method in 90\% of the cases; PSO-VNS first, PSO second and GA third, also with the cut-out). The $\pm0.05$~pp equivalence verdicts (Sections~\ref{sec:psovns-pso} and~\ref{sec:ablation}) were evaluated under the linear benchmark curve only.
 % CHECK-FINAL [C21]: robustness.Cubic/CubicCutout: tau >= 0.9, PSO-VNS rank position 1
 
 \subsubsection{Wake Model}
 \label{sec:gaussian}
-The uncalibrated Gaussian wake of~\cite{Bastankhah2014} ($K_{\rm G}=0.04$; Section~\ref{S-sec:S-gauss}) differs from the Jensen cone ($K=0.075$) in its smooth lateral profile and expansion rate and gives no deficit to turbines upstream of the wake source. It changes the wake loss of the same final layouts by 0.38~pp on average (median 0.27~pp), 7.6 times the equivalence margin (Section~\ref{sec:setup-stats}), and by more than the margin for 86\% of the 15{,}614 layouts, whereas the per-case difference PSO-VNS${}-{}$PSO changes by only 0.031~pp on average. The ordering is less stable ($\bar\tau=0.66$): PSO is narrowly first (1.91 vs.\ 1.97), but not with 1$^\circ$ bins (Section~\ref{sec:direction}).
+The uncalibrated Gaussian wake of~\cite{Bastankhah2014} ($K_{\rm G}=0.04$; Section~\ref{S-sec:S-gauss}) differs from the Jensen cone ($K=0.075$) in its smooth lateral profile and expansion rate and gives no deficit to turbines upstream of the wake source. It changes the wake loss of the same final layouts by 0.38~pp on average (median 0.28~pp), 7.6 times the equivalence margin (Section~\ref{sec:setup-stats}), and by more than the margin for 86\% of the 17{,}626 layouts, whereas the per-case difference PSO-VNS${}-{}$PSO changes by only 0.031~pp on average. The ordering is less stable ($\bar\tau=0.66$): PSO is narrowly first (average rank 2.24; PSO-VNS 2.31, GA 3.09), but not with 1$^\circ$ bins (Table~\ref{tab:direction}).
 % CHECK-EXTRA [X30]: Jensen vs Gaussian wake loss of the same layouts: mean \NXModelShiftMean pp (median \NXModelShiftMedian; \NXModelShiftRatio x margin; > margin for \NXModelShiftAboveMarginPct % of \NXModelShiftNLayouts layouts); per-case PSO-VNS - PSO changes by \NXModelShiftPairMean pp on average (below the margin)
-% CHECK-FINAL [C22]: robustness.Gauss (15 deg): tau < 0.8, PSOC first, PSOBV second (1.91 vs 1.97); CHECK-DIR [F09]: PSO-VNS first under the Gaussian wake at 1 deg
+% CHECK-FINAL [C22]: robustness.Gauss (15 deg): tau < 0.8, PSOC first, PSOBV second (nine-method pool with GA: 2.24 vs 2.31, rev5_ga_numbers_robust.tex); CHECK-DIR [F09]: PSO-VNS first under the Gaussian wake at 1 deg
 
 \subsubsection{Minimum Spacing}
 \label{sec:spacing}
@@ -356,23 +361,41 @@ All methods clip the coordinates to the bounding square and leave the circle to 
 PSO-VNS, PSO, GA, SSA-VNS and DE were therefore rerun on six cases (seeds 31--60, 6,030 evaluations; Table~\ref{S-tab:S-sa-constraint}) under Deb's feasibility rules on the dimensionless violations $g^{\rm b}_i/r^2$ and $g^{\rm s}_{ij}/\ell_{\min}$ (reference runs under the penalty reproduce the stored runs bit for bit):
 \begin{itemize}
 \item \emph{With radial projection}, the conditional wake loss of every method fell by 0.46--0.80~pp and the feasibility of DE rose from 33.3\% to 80.0\%; the run-level order PSO-VNS, PSO, GA, SSA-VNS, DE and the leading case-level method (PSO-VNS) persisted; PSO-VNS kept its all-run advantage over GA, SSA-VNS and DE (0.683, 0.850, 0.844), but not over PSO (0.561; conditional $\overline{\Delta L}=-0.095$~pp [$-0.162$, $-0.037$]).
-\item \emph{With box clipping}, the feasibility of PSO fell from 98.9\% to 73.3\%, the conditional loss of PSO-VNS rose by 0.23~pp, its all-run advantage over GA (0.517) and SSA-VNS (0.583) was no longer significant, and GA had the best case-level rank (1.83 vs.\ 2.17; run level: PSO-VNS 2.19, GA 2.28).
+\item \emph{With box clipping}, the feasibility of PSO fell from 98.9\% to 73.3\%, the conditional loss of PSO-VNS rose by 0.23~pp, its all-run advantage over GA (0.517) and SSA-VNS (0.583) was not significant, and GA had the best case-level rank (1.83 vs.\ 2.17; run level: PSO-VNS 2.19, GA 2.28).
 \end{itemize}
 With the 30 seeds as the unit of replication, every all-run verdict is unchanged (Table~\ref{S-tab:S-sa-dep-studies}). By the survival rule stated beforehand, the conclusions fail with box clipping and, for the all-run advantage of PSO-VNS over PSO, with projection: the comparison is one of search strategies under a common penalty and repair, which is not neutral across methods.
 % CHECK (manual, 2026-10-04): constraint study (analysis/rev3_constraint.json, rev3_constraint_tables.tex, tab:S-sa-constraint): variant (i) reproduces 60/60 stored runs bit for bit; (iii) losses (i)->(iii) PSO-VNS 3.126->2.332, PSO 3.237->2.460, GA 3.307->2.550, SSA-VNS 3.502->3.044 (0.46-0.80 pp); DE feas 33.3->80.0; run-level order unchanged; scores 0.683/0.850/0.844 (p_H < 0.001), PSO 0.561 (p_H 1.000), dL -0.095 [-0.162, -0.037]; (ii) PSO feas 98.9 -> 73.3, PSO-VNS loss 3.126 -> 3.353 (+0.23), scores GA 0.517 (p_H 1.000), SSA-VNS 0.583 (p_H 0.395); case-level rank GA 1.83 vs PSO-VNS 2.17, run level 2.19 vs 2.28; survival rule (manifest): fails for (ii), fails only on PSO for (iii)
 
 \subsubsection{Direction Resolution}
 \label{sec:direction}
-Because a pair of turbines can be placed with no bin center in its narrow wake interval (Section~\ref{sec:wind}), we split each bin into 3 (5$^\circ$) or 15 (1$^\circ$) sub-bins with its Weibull parameters and an equal share of its frequency (wake-free power unchanged) and re-evaluated all 21{,}716 feasible final layouts of the benchmark methods without GA (Table~\ref{S-tab:F-bench}).
-% CHECK-DIR [F01]: one sub-bin reproduces the benchmark objective; wake-free objective identical for 1, 3 and 15 sub-bins
+Because a pair of turbines can be placed with no bin center in its narrow wake interval (Section~\ref{sec:wind}), we split each bin into 3 (5$^\circ$) or 15 (1$^\circ$) sub-bins with its Weibull parameters and an equal share of its frequency (wake-free power unchanged) and re-evaluated all 23{,}728 feasible final layouts of the benchmark methods (Tables~\ref{tab:direction} and~\ref{S-tab:F-bench}).
+\begin{table}[!htb]
+\centering
+\caption{Direction resolution on Type~I: average rank of the three leading methods when the final layouts are re-evaluated with finer wind roses (nine methods, 68 cases) and when the 1$^\circ$ objective is optimized directly (five methods, eight cases).}
+\label{tab:direction}
+\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llcccl}
+\toprule
+Wind rose & Wake model & PSO-VNS & PSO & GA & Best \\
+\midrule
+15$^\circ$ (benchmark) & Jensen & 2.18 & 2.40 & 2.74 & PSO-VNS \\
+1$^\circ$, re-evaluated & Jensen & 2.26 & 2.57 & 4.01 & PSO-VNS \\
+15$^\circ$ (benchmark) & Gaussian & 2.31 & 2.24 & 3.09 & PSO \\
+1$^\circ$, re-evaluated & Gaussian & 2.49 & 2.56 & 3.96 & PSO-VNS \\
+1$^\circ$, optimized (8 cases) & Jensen & 1.12 & 2.62 & 3.38 & PSO-VNS \\
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Re-evaluated rows: feasibility-aware average rank among the nine methods (all ranks: Table~\ref{S-tab:F-bench}). Optimized row: PSO-VNS, PSO, GA, MS-SLSQP and RSD-VNS optimized with 1$^\circ$ bins on eight cases, seeds 31--60, 6,030 evaluations (Table~\ref{S-tab:S-sa-fine}).}
+\end{table}
 \begin{itemize}
-\item The 1$^\circ$ rose raises the mean wake loss of every method, by 0.40~pp (DE) to 1.04~pp (PSO; PSO-VNS: 1.322\% to 2.335\%), mostly already with 5$^\circ$ sub-bins: optimized layouts exploit the gaps between the coarse bins, those of PSO and the VNS-based methods most.
-\item PSO-VNS still ranks first (2.09; PSO 2.37, the only method not significantly different), also under the Gaussian wake at 1$^\circ$ (2.22 vs.\ 2.35). Beyond the top two the order changes ($\bar\tau=0.52$; same best method in 37\% of the cases): MS-SLSQP moves from sixth to third, and its gap to PSO-VNS shrinks from 0.435 to 0.135~pp but remains significant.
-\item For PSO-VNS vs.\ PSO (details: Table~\ref{S-tab:F-equiv}), the case-mean difference becomes \ensuremath {-}0.043~pp (90\% CI [\ensuremath {-}0.062, \ensuremath {-}0.025]; $p=\ensuremath {2.5\times 10^{-4}}$; the same with 5$^\circ$ sub-bins): a small but significant advantage, not equivalence at $\pm0.05$~pp (minimal margin 0.062~pp). The sign of the per-case difference changes in 26 of the 60 cases with a nonzero difference; on the 44 non-trivial cases, equivalence is shown at neither resolution, and the Data Set~II $N\ge10$ advantage remains (10 of 10 cases).
-\item The ablation conclusions hold, but the small SSA gain over RS-VNS is no longer significant (Table~\ref{S-tab:F-abl}).
+\item The 1$^\circ$ rose raises the mean wake loss of every method, by 0.40~pp (DE) to 1.09~pp (GA; PSO-VNS: 1.322\% to 2.335\%), mostly already with 5$^\circ$ sub-bins: optimized layouts exploit the gaps between the coarse bins, those of GA, PSO and the VNS-based methods most.
+\item PSO-VNS still ranks first, also under the Gaussian wake at 1$^\circ$; PSO is the only method not significantly different. Beyond the top two the order changes ($\bar\tau=0.50$; same best method in 31\% of the cases): GA falls to third with the largest loss rise, and MS-SLSQP moves from seventh to fourth; its gap to PSO-VNS shrinks from 0.435 to 0.135~pp but remains significant.
+\item PSO-VNS has a lower case-mean wake loss than GA at 5$^\circ$ and 1$^\circ$ ($-0.098$ and $-0.105$~pp, Holm $p\le3.1\times10^{-7}$), whereas at 15$^\circ$ the difference ($-0.026$~pp) is not significant.
+\item For PSO-VNS vs.\ PSO (details: Table~\ref{S-tab:F-equiv}), the case-mean difference becomes $-0.043$~pp (90\% CI [$-0.062$, $-0.025$]; $p=2.5\times10^{-4}$; the same with 5$^\circ$ sub-bins): a small but significant advantage, not equivalence at $\pm0.05$~pp (minimal margin 0.062~pp). On the 44 non-trivial cases, equivalence is shown at neither resolution, and the Data Set~II $N\ge10$ advantage remains (10 of 10 cases).
+\item The ablation conclusions hold, but the small SSA gain over RS-VNS is not significant with 1$^\circ$ bins (Table~\ref{S-tab:F-abl}).
 \end{itemize}
 The order beyond the top two and the equivalence verdict are thus properties of the discretized benchmark; the first place of PSO-VNS is not.
-% CHECK-DIR [F03]: loss rise of every method, PSO-VNS 1.322 -> 2.335; [F04]: most of the change already with 5-deg sub-bins (> 70 % for PSO-VNS); [F05]: VNS-based methods and PSO rise most, DE/MS-SLSQP least ("VNS-based methods most"); [F06]: PSO-VNS first at 5 and 1 deg, PSO the only one not significantly different (Holm); [F09]: Gaussian: PSO first at 15 deg, PSO-VNS first at 1 deg; [F07]: MS-SLSQP 6th -> 3rd, tau 0.52, same best 37 %; [F08]: MS-SLSQP gap shrinks from 0.435 to 0.135 pp, still significant (Holm)
+% CHECK-DIR [F03]: loss rise of every method, PSO-VNS 1.322 -> 2.335; [F04]: most of the change already with 5-deg sub-bins (> 70 % for PSO-VNS); [F05]: VNS-based methods and PSO rise most, DE/MS-SLSQP least ("VNS-based methods most"); [F06]: PSO-VNS first at 5 and 1 deg, PSO the only one not significantly different (Holm); [F09]: Gaussian: PSO first at 15 deg, PSO-VNS first at 1 deg; [F07]: MS-SLSQP 7th -> 4th with GA in the pool (6th -> 3rd without GA), tau 0.52, same best 37 %; [F08]: MS-SLSQP gap shrinks from 0.435 to 0.135 pp, still significant (Holm)
 % CHECK-DIR [F10]: PSO-VNS - PSO -0.043, CI [-0.062, -0.025], not equivalent, p < 0.05; [F11]: same with 5-deg sub-bins; [F12]: per-case sign changes in 26 of 60 cases; [F13]: non-trivial cases: equivalence at neither resolution; [F14]: DS II N >= 10 10/10; [F16]: component-analysis conclusions hold (SSA-VNS and LX-SSA-VNS worse than RSD-VNS, PSO-VNS better than RSD-VNS, RS-VNS and VNS, PSO-VNS best of nine); [F17]: SSA-VNS vs RS-VNS not significant at 1 deg
 % Page budget: kept in the supplementary material: \SuppTable{tab:F-bench}
 

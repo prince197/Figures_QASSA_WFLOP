@@ -1321,7 +1321,7 @@ def main(argv=None):
         for r, nmax in RADII.items():
             lines = []
             for n in range(2, nmax + 1):
-                s = S9[(S9.Dataset == ds) & (S.Radius == r) & (S.Turbines == n)].set_index("Algorithm").reindex(SUP)
+                s = S9[(S9.Dataset == ds) & (S9.Radius == r) & (S9.Turbines == n)].set_index("Algorithm").reindex(SUP)
                 ideal = GG[(GG.Dataset == ds) & (GG.Radius == r) & (GG.Turbines == n)].Ideal.iloc[0]
                 qm = s.Mean.where(s.Qualified.astype(bool)).round(6)
                 best = set(qm.index[qm == qm.max()]) if qm.notna().any() else set()      # ties all bold

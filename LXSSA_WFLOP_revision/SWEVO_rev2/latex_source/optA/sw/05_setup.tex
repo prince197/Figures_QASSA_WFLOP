@@ -50,7 +50,7 @@ The main comparison runs the same nine methods on every wind farm type; Table~\r
 \item \emph{SSA}, the salp swarm algorithm~\cite{Mirjalili2017};
 \item \emph{LX-SSA}, the Laplacian SSA~\cite{Solanki2023};
 \item \emph{DE}, DE/rand/1/bin~\cite{Storn1997};
-\item \emph{GA}, a standard real-coded genetic algorithm with binary tournament, SBX~\cite{Deb1995} ($\eta_c=15$, $p_c=0.9$), polynomial mutation~\cite{DebGoyal1996} ($\eta_m=20$, $p_m=1/n$ for $n=2N$ variables), clipping to the box and elitism, all untuned;
+\item \emph{GA}, a standard real-coded genetic algorithm (binary tournament, simulated binary crossover, polynomial mutation, elitism; settings in Table~\ref{tab:params}, untuned);
 \item \emph{VNS}, the basic VNS alone (Algorithm~\ref{alg:vns});
 \item \emph{MS-SLSQP}, multistart sequential least-squares programming (SciPy's SLSQP~\cite{Kraft1988}, forward-difference gradients), which minimizes the wake loss under explicit constraints and restarts from the initial, then from random layouts (Section~\ref{S-sec:S-slsqp}).
 \end{enumerate}
@@ -85,7 +85,7 @@ Lillgrund & 16 turbines (block) & nine methods (GA: GA row) and RSD-VNS & 6,030;
 Constraint handling & 6 (3 per data set) & PSO-VNS, PSO, GA, SSA-VNS, DE; three constraint handlings (900 each) & 6,030 (r) & 31--60 & 2{,}700 & \ref{sec:boundary} \\
 Direct 1$^\circ$ optimization & 8 (4 per data set) & PSO-VNS, PSO, GA, MS-SLSQP, RSD-VNS; 1$^\circ$ objective and seed-paired 15$^\circ$ control (1{,}200 each) & 6,030 (r) & 31--60 & 2{,}400 & \ref{sec:direction} \\
 \midrule
-Re-evaluation & stored final layouts & cubic power curve, Gaussian wake (main comparison); 5$^\circ$ and 1$^\circ$ bins: 21{,}716 layouts (11 methods), 1{,}030 Horns Rev~1 and 540 Lillgrund runs (also PyWake NOJ) & -- & -- & -- & \ref{sec:robustness} \\
+Re-evaluation & stored final layouts & cubic power curve, Gaussian wake (main comparison); 5$^\circ$ and 1$^\circ$ bins: 23{,}728 layouts (12 methods), 1{,}030 Horns Rev~1 and 540 Lillgrund runs (also PyWake NOJ) & -- & -- & -- & \ref{sec:robustness} \\
 Diagnostics & 6; 12; 7 & instrumented: PSO; Phase~2 of PSO-VNS, SSA-VNS, RS-VNS; PSO, DE from feasible starts & as stored & 10; 10; 3 & 522 (reruns) & \ref{S-sec:S-diag} \\
 \bottomrule
 \end{tabular}

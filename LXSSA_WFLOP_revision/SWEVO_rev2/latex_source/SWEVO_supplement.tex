@@ -39,7 +39,11 @@
 \input{analysis/mpce_numbers.tex}
 \input{analysis/mpce_numbers_extra.tex}
 \input{analysis/mpce_numbers_diag.tex}
-\input{analysis/mpce_numbers_dir.tex}
+\input{analysis/rev5_ga_numbers_dir.tex}% direction-resolution numbers with GA in the main pool (rev5_ga_reeval.py)
+% robustness numbers with GA in the pool: same macro names as in mpce_numbers.tex / mpce_numbers_extra.tex, redefined
+\let\SWorigNewcommand\newcommand\let\newcommand\renewcommand
+\input{analysis/rev5_ga_numbers_robust.tex}
+\let\newcommand\SWorigNewcommand
 \input{optA/phase4_macros_stub.tex}
 \input{optA/phase6_macros_stub.tex}
 % a missing or empty (0-byte) figure file gives a TBD box instead of a fatal pdfTeX error
@@ -479,6 +483,7 @@ The case-level result that SSA-VNS is worse than RSD-VNS does not hold at the cl
 % in the main text (optA/sw/06_type1.tex); the captions of tab:X-heterogeneity and tab:X-bayes refer to it and to
 % tab:equivalence (main-text numbers).
 \CaptureSuppTables{analysis/mpce_supp_inference.tex}
+\CaptureSuppTables{analysis/rev5_ga_tab_robust_supp.tex}% S-tab:robust and S-tab:X-modelshift with GA (replace the eight-method versions)
 \SuppTable{tab:X-equiv-levels}
 \SuppTable{tab:X-threshold}
 \SuppTable{tab:X-threshold-controls}
@@ -598,7 +603,7 @@ The benchmark evaluates the wake only at the centres of 24 direction bins of 15$
  At 6,030 evaluations with random starts, the AEP advantage of PSO-VNS over PSO on the \NFHRPairSixKOneN{} jointly feasible seeds holds only with the 5$^\circ$ bins (\NFHRPairSixKFive~GWh/yr, $p=\NFHRPairSixKFiveP$); with 1$^\circ$ bins (\NFHRPairSixKOne~GWh/yr, $p=\NFHRPairSixKOneP$) and under PyWake (\NFHRPairSixKPyWake~GWh/yr, $p=\NFHRPairSixKPyWakeP$) PSO has the nonsignificantly higher mean. The robust result at 6,030 evaluations is feasibility (\NHRFeasPSOVNS{} vs.\ \NHRFeasPSO{} feasible runs). % CHECK-DIR [F24], [F25]
  At 30,030 evaluations, PSO-VNS keeps the highest mean AEP with 1$^\circ$ bins (\NFHRThirtyKBestOneAEP~GWh/yr) and under PyWake (\NFHRThirtyKBestPyWakeAEP~GWh/yr), and its advantage over PSO on the \NFHRPairThirtyKOneN{} jointly feasible seeds is significant under both ($p=\NFHRPairThirtyKOneP$ and \NFHRPairThirtyKPyWakeP). % CHECK-DIR [F26]
  The results of this paper are therefore results for the discretized wind roses of the benchmark and of Horns Rev~1; the 1$^\circ$ re-evaluation is a robustness check of the final layouts, and with direct optimization of the 1$^\circ$ objective on eight cases PSO-VNS remains first (Section~\ref{sec:S-sa-fine}).
-\input{analysis/mpce_supp_direction.tex}
+\input{analysis/rev5_ga_supp_direction.tex}
 
 \FloatBarrier
 \input{optA/sw/supp_theory.tex}
