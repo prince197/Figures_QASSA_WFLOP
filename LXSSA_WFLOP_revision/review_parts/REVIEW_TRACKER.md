@@ -23,3 +23,7 @@ Review files are in this folder (Part<N>_<name>_main.pdf and Part<N>_<name>_supp
   stability figure (S6.1); random-sampling proposition with proof (S6.2); discretized energy formula,
   power-curve details, direction discretization and "Why Jensen" (S1.2 Model Details); SSA implementation
   details and Laplace-step remarks (S1.3). Supplement extract: S1 (pp. 2-6) and S6 (pp. 36-41).
+- Part 1, revision 2 (co-author notes applied across the paper): PSO paragraph names the standard PSO (Kennedy and
+  Eberhart) with the constriction coefficients of Clerc and Kennedy; Table 2 has a GA row. The rest of the paper was
+  restructured (Sections 8-11 per wind farm type, 12 Ablation, 13 Conclusions and Future Directions) and GA now appears
+  in every study (49,010 runs); these parts are reviewed in Parts 2-5.

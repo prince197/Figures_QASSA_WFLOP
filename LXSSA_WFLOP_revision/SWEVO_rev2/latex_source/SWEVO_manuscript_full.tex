@@ -108,13 +108,13 @@
 \newlabel{S-fig:S-iea37-conv}{{S9}{29}{}{}{}}
 \newlabel{S-fig:S-layouts-sites}{{S10}{29}{}{}{}}
 \newlabel{S-sec:S-cost}{{S4.4}{29}{}{}{}}
-\newlabel{S-tab:cost}{{S35}{29}{}{}{}}
+\newlabel{S-tab:cost}{{S35}{30}{}{}{}}
 \newlabel{S-sec:S-robust}{{S5}{30}{}{}{}}
 \newlabel{S-sec:S-gauss}{{S5.1}{30}{}{}{}}
 \newlabel{S-eq:S-gauss}{{S3}{30}{}{}{}}
 \newlabel{S-sec:S-robust-tables}{{S5.2}{30}{}{}{}}
-\newlabel{S-tab:robust}{{S36}{30}{}{}{}}
-\newlabel{S-tab:capacity}{{S37}{30}{}{}{}}
+\newlabel{S-tab:robust}{{S36}{31}{}{}{}}
+\newlabel{S-tab:capacity}{{S37}{31}{}{}{}}
 \newlabel{S-tab:spacing-authors}{{S38}{31}{}{}{}}
 \newlabel{S-sec:S-direction}{{S5.3}{31}{}{}{}}
 \newlabel{S-tab:F-bench}{{S39}{32}{}{}{}}
@@ -1028,7 +1028,7 @@ Non-superiority (``$A$ gives no gain larger than $m$ over $B$'') needs only one 
 % CHECK-EXTRA [X38]-[X42]: seed / case / cluster (CR2 t(5), wild-cluster Webb) levels and minimal margins (tab:X-equiv-levels); [X56]: margin = \NXMarginMWhTurbDsI / \NXMarginMWhTurbDsII MWh/yr per turbine; [X48]: Bayes = P(rope most probable); [X49]-[X51]: Hodges-Lehmann (tab:X-hl). Model-shift margin justification (X29/X30) deliberately dropped (D13).
 % CHECK (manual, 2026-09-29): analysis/mpce_inference_extra.py: seed level resamples the 30 seed indices within every case (paired), cr2() uses t with G - 1 = 5 d.f., webb_all() enumerates 6^6 = 46,656 Webb draws, cluster-level equivalence = CR2 CI inside +-m and wild p_TOST <= 0.05; mpce_results.py: tost() add-one corrected tail shares, BAYES_S = 0.5, BAYES_Z0 = 0, BAYES_N = 50000. Definition adapted from optA/supp_theory.tex (def:S-equiv moved to the main text, see optA/sw/moved.md)
 
-\emph{Sensitivity of the inference.} Six qualification thresholds (1--30 feasible runs), dropping the cases with an imputed maximal difference and keeping zero differences change no verdict, except that PSO-VNS becomes significantly better than GA when all 30 runs must be feasible; cluster analyses over the six (data set, radius) clusters qualify only the significant contrasts of the salp-swarm hybrids with the controls; and one Holm family over all 29 case-mean tests makes only PSO-VNS vs.\ PSO on the cases with $N\ge 10$ and PSO-VNS ($\omega=0.5$) vs.\ PSO-VNS ($\omega=0.9$) nonsignificant (Section~\ref{S-sec:S-inference}; Tables~\ref{S-tab:S-sa-imputation} and~\ref{S-tab:X-threshold}--\ref{S-tab:X-multiplicity}).
+\emph{Sensitivity of the inference.} Six qualification thresholds (1--30 feasible runs), dropping the cases with an imputed maximal difference and keeping zero differences change no verdict, except that PSO-VNS becomes significantly better than GA when all 30 runs must be feasible; cluster analyses over the six (data set, radius) clusters qualify only the significant contrasts of the salp-swarm hybrids with the controls, and leaving out one cluster makes PSO-VNS vs.\ GA significant (unadjusted) in three of six runs; and one Holm family over all 29 case-mean tests makes only PSO-VNS vs.\ PSO on the cases with $N\ge 10$ and PSO-VNS ($\omega=0.5$) vs.\ PSO-VNS ($\omega=0.9$) nonsignificant (Section~\ref{S-sec:S-inference}; Tables~\ref{S-tab:S-sa-imputation} and~\ref{S-tab:X-threshold}--\ref{S-tab:X-multiplicity}).
 % CHECK-EXTRA [X02]-[X09]/[X31]: six thresholds (NXThrList) change no verdict (eight-method pool; with GA: one exception at threshold 30, PSO-VNS vs GA, rev5_ga_infer_time_report.md); [X10]: six clusters; [X11]: significant pairs unanimous in 6/6 clusters except \NXClCaseSigNotUnanimous (the significant contrasts of the salp-swarm hybrids with the controls are exactly these two plus SSA-VNS vs RS-VNS; LX-SSA-VNS vs RS-VNS is not significant, [X13]); [X16]/[X17]: cluster-robust t not significant for the two RSD-VNS contrasts and SSA-VNS vs RS-VNS (p \NXClSSAVNSvsRSVNSCRP); [X14]: LOCO changes only \NXLocoChanged; [X18]: one Holm family over the \NXMultN case-mean Wilcoxon tests loses \NXMultLostHolm. CHECK-DIR [F01]: 1-deg sub-bin re-evaluation (one sub-bin reproduces the benchmark objective)
 % CHECK (manual, 2026-09-29): tab:X-cluster caption (mpce_supp_inference.tex): CR = cluster-robust t of the case-weighted mean, CR1 variance, 5 d.f.
 
@@ -1170,7 +1170,7 @@ MS-SLSQP & 6.85 & $1.4\times10^{-22}$ & 66/0/2 & $4.8\times10^{-11}$ & $-0.435$ 
 \end{tabular}
 \par\vspace{2pt}\parbox{\columnwidth}{\scriptsize 68 cases, 30 seed-paired runs, 6{,}030 evaluations. Friedman test on the feasibility-aware case ranks of the nine methods: $\chi^2_F=374.8$ (8 d.f.), $p=4.5\times10^{-76}$; Iman--Davenport $F_F=148.5$ (8, 536 d.f.), $p=1.2\times10^{-130}$. $p_z$: Holm-adjusted $p$ of the average-rank $z$ test against PSO-VNS (8 comparisons). Case means: cases in which PSO-VNS has the lower / equal (or neither method qualifies) / higher mean wake loss (a case in which only one method has at least 15 feasible runs counts for that method). $p_W$: two-sided Wilcoxon signed-rank test on the 68 per-case mean wake losses, PSO-VNS vs.\ method (cases in which only one method qualifies imputed in its favour), Holm-adjusted over the 8 comparisons. $\overline{\Delta L}$: mean difference of the case-mean wake losses, PSO-VNS minus method (percentage points; negative = PSO-VNS better), over the cases in which both qualify (66 for SSA, 66 for LX-SSA, 50 for DE, otherwise 68). W/T/L: cases in which PSO-VNS is significantly better / not different / worse in the seed-paired Wilcoxon test of the 30 runs (infeasible runs below every feasible run; Holm over the 8 comparisons of PSO-VNS in each case, $\alpha=0.05$).}
 \end{table}
-The Friedman test rejects equal performance of the nine methods (Table~\ref{tab:farm-I-stats}). PSO-VNS is significantly better than the other six methods in both the average-rank test and the case-mean Wilcoxon test, but not significantly different from PSO or GA. GA and PSO are practically equivalent at $\pm0.05$~pp at the case level (exploratory), whereas equivalence of GA and PSO-VNS is not shown (90\% intervals of GA minus PSO and GA minus PSO-VNS: [$-$0.022, 0.041] and [$-$0.006, 0.062]~pp; Table~\ref{S-tab:S-xp-ga}).
+The Friedman test rejects equal performance of the nine methods (Table~\ref{tab:farm-I-stats}). PSO-VNS is significantly better than the other six methods in both the average-rank test and the case-mean Wilcoxon test, but not significantly different from PSO or GA. GA and PSO are practically equivalent at $\pm0.05$~pp at the case level (exploratory), whereas equivalence of GA and PSO-VNS is not shown at the case level (90\% intervals of GA minus PSO and GA minus PSO-VNS: [$-$0.022, 0.041] and [$-$0.006, 0.062]~pp; Table~\ref{S-tab:S-xp-ga}); on the fixed benchmark (seed level), PSO-VNS and GA are equivalent (90\% CI of PSO-VNS minus GA [$-$0.043, $-$0.009]~pp), not at the cluster level (Table~\ref{S-tab:X-equiv-levels}).
 
 \subsubsection{PSO-VNS versus PSO}
 \label{sec:psovns-pso}
@@ -1214,17 +1214,17 @@ All cases & 68 & 11/8 & $-0.018$ & [$-$0.041, 0.004] & yes \\
 $N<10$ & 48 & 2/4 & $+0.007$ & [$-$0.005, 0.021] & yes \\
 $N\ge10$ & 20 & 9/4 & $-0.079$ & [$-$0.142, $-$0.017] & no \\
 Wake loss of PSO-VNS $\ge0.2$~pp & 44 & 11/8 & $-0.026$ & [$-$0.060, 0.008] & no \\
-Data Set~II, $N\ge10^{a}$ & 10 & \multicolumn{4}{l}{PSO-VNS lower in 10 of 10; $p_{\rm Holm}\le0.018$; gain 0.221\% of AEP} \\
+Data Set~II, $N\ge10^{a}$ & 10 & \multicolumn{4}{l}{PSO-VNS lower in 10 of 10; $p_{\rm Holm}\le0.020$; gain 0.221\% of AEP} \\
 Data set $\times$ density$^{a}$ & 34 & \multicolumn{4}{l}{interaction $p=0.01$; the 7 Data Set~I cases beyond $m$ favor PSO} \\
 \bottomrule
 \end{tabular*}
-\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Beyond: cases with $\Delta L<-m$ (PSO-VNS better by more than the margin; up to 0.41~pp) / $\Delta L>+m$ (PSO better; up to 0.27~pp); Equivalent: case-level 90\% interval inside $\pm m$ (verdicts at the three levels: Table~\ref{tab:equiv-main}). $^{a}$Post hoc, exploratory. Data Set~II, $N\ge10$: case-mean Wilcoxon test, Holm over all 28 case-mean tests. Density $\phi=N(\ell_{\min}/2r)^2$, the nominal share of the farm disc covered by the exclusion discs; interaction test over the 34 pairs of cases with identical $(r,N)$ in the two data sets. Details: Tables~\ref{S-tab:X-heterogeneity}, \ref{S-tab:X-beyond}, \ref{S-tab:X-bayes} and~\ref{S-tab:X-hl}.}
+\par\vspace{2pt}\parbox{\textwidth}{\scriptsize Beyond: cases with $\Delta L<-m$ (PSO-VNS better by more than the margin; up to 0.41~pp) / $\Delta L>+m$ (PSO better; up to 0.27~pp); Equivalent: case-level 90\% interval inside $\pm m$ (verdicts at the three levels: Table~\ref{tab:equiv-main}). $^{a}$Post hoc, exploratory. Data Set~II, $N\ge10$: case-mean Wilcoxon test, Holm over all 29 case-mean tests. Density $\phi=N(\ell_{\min}/2r)^2$, the nominal share of the farm disc covered by the exclusion discs; interaction test over the 34 pairs of cases with identical $(r,N)$ in the two data sets. Details: Tables~\ref{S-tab:X-heterogeneity}, \ref{S-tab:X-beyond}, \ref{S-tab:X-bayes} and~\ref{S-tab:X-hl}.}
 \end{table}
 
 % --- tab:X-equiv-levels and tab:equivalence (all 18 pairs) moved to the supplementary material; compact main-text summary:
 \begin{table}[!t]
 \centering
-\caption{Practical equivalence at the margin $m=0.05$~pp (a post hoc convention) for the primary questions and the sampling-control contrasts (68 cases, 6,030 evaluations, 15$^\circ$ rose unless stated). $\overline{\Delta L}$: mean case-mean wake-loss difference, first minus second method (pp; negative = first better). 90\% intervals at the three levels of Definition~\ref{def:S-equiv}: seed (fixed benchmark; the level at which verdicts are decided), case and cluster (sensitivity analyses; CR2, six scenario clusters, 5 d.f.). Verdict at the seed / case / cluster level: E, equivalent (interval inside $\pm m$); NS, a gain of the first method larger than $m$ is ruled out (non-superiority); G, first method better by more than $m$; --, inconclusive. $P_{\rm rope}$: share of Bayesian signed-rank posterior samples in which practical equivalence is the most probable outcome. All 18 pairs, TOST $p$ values and minimal margins: Tables~\ref{S-tab:X-equiv-levels} and~\ref{S-tab:equivalence}.}
+\caption{Practical equivalence at the margin $m=0.05$~pp (a post hoc convention) for the primary questions and the sampling-control contrasts (68 cases, 6,030 evaluations, 15$^\circ$ rose unless stated). $\overline{\Delta L}$: mean case-mean wake-loss difference, first minus second method (pp; negative = first better). 90\% intervals at the three levels of Definition~\ref{def:S-equiv}: seed (fixed benchmark; the level at which verdicts are decided), case and cluster (sensitivity analyses; CR2, six scenario clusters, 5 d.f.). Verdict at the seed / case / cluster level: E, equivalent (interval inside $\pm m$); NS, a gain of the first method larger than $m$ is ruled out (non-superiority); G, first method better by more than $m$; --, inconclusive. $P_{\rm rope}$: share of Bayesian signed-rank posterior samples in which practical equivalence is the most probable outcome. All pairs (18 in Table~\ref{S-tab:equivalence}; with PSO-VNS vs.\ GA, 19 in Table~\ref{S-tab:X-equiv-levels}), TOST $p$ values and minimal margins: Tables~\ref{S-tab:X-equiv-levels} and~\ref{S-tab:equivalence}.}
 \label{tab:equiv-main}
 \scriptsize\setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}lcccccc@{}}
@@ -1245,7 +1245,7 @@ PSO-VNS vs.\ RSD-VNS & $-0.306$ & [$-$0.325, $-$0.287] & [$-$0.380, $-$0.239] & 
 \end{tabular}
 \par\vspace{2pt}\parbox{\linewidth}{\scriptsize $^{a}$Stored 15$^\circ$ layouts re-evaluated with 1$^\circ$ sub-bins, not re-optimized (Section~\ref{sec:direction}; Table~\ref{S-tab:F-equiv}); n/r: not reported here. SSA-VNS vs.\ RSD-VNS at the seed level is also inside $\pm m$ (not under joint seed resampling, Table~\ref{S-tab:S-sa-syncseed}); the primary question for this pair is one-sided.}
 \end{table}
-% CHECK-EXTRA [X55] no pair equivalent at the cluster level; main-comparison pairs other than PSO: whole 90% CI beyond -m at all three levels (tab:X-equiv-levels, m_min > m)
+% CHECK-EXTRA [X55] no pair equivalent at the cluster level; main-comparison pairs other than PSO and GA: whole 90% CI beyond -m at all three levels; PSO-VNS vs GA equivalent at the seed level only (rev5_ga_infer2_report.md) (tab:X-equiv-levels, m_min > m)
 
 \begin{figure}[!t]
 \centering
@@ -2292,6 +2292,12 @@ R. Storn and K. Price, ``Differential evolution---A simple and efficient heurist
 \bibitem{Kraft1988}
 D. Kraft, ``A software package for sequential quadratic programming,'' DFVLR, Inst. f\"ur Dynamik der Flugsysteme, Oberpfaffenhofen, Germany, Tech. Rep. DFVLR-FB 88-28, 1988.
 
+\bibitem{Deb1995}
+K. Deb and R. B. Agrawal, ``Simulated binary crossover for continuous search space,'' \textit{Complex Syst.}, vol. 9, no. 2, pp. 115--148, 1995.
+
+\bibitem{DebGoyal1996}
+K. Deb and M. Goyal, ``A combined genetic adaptive search (GeneAS) for engineering design,'' \textit{Comput. Sci. Informatics}, vol. 26, no. 4, pp. 30--45, 1996.
+
 \bibitem{PyWake}
 % VERIFY-REF: release date of ver. 2.6.20 (30 Mar. 2026) and licence confirmed on PyPI (py-wake), 2026-09-28; access date = first use in analysis/hornsrev_model.py (git, 2026-09-25)
 DTU Wind Energy, ``PyWake: Open-source static wake modeling framework,'' Python package \texttt{py\_wake}, ver. 2.6.20 (Horns Rev~1 and Lillgrund site data in \texttt{py\_wake/examples/data/hornsrev1.py} and \texttt{lillgrund.py}), MIT License, 2026. Accessed: Sep. 25, 2026. [Online]. Available: \url{https://gitlab.windenergy.dtu.dk/TOPFARM/PyWake}
@@ -2299,12 +2305,6 @@ DTU Wind Energy, ``PyWake: Open-source static wake modeling framework,'' Python 
 \bibitem{Gocmen2016}
 % VERIFY-REF (2026-09-30): ScienceDirect record S0960148116306346 -- authors, title, vol. 99, pp. 524-532, 2016, DOI confirmed; cited by PyWake 2.6.20 (py_wake/examples/data/lillgrund.py) as the source of the Lillgrund Weibull climate
 T. G\"o\c{c}men and G. Giebel, ``Estimation of turbulence intensity using rotor effective wind speed in Lillgrund and Horns Rev-I offshore wind farms,'' \textit{Renew. Energy}, vol. 99, pp. 524--532, 2016, doi: 10.1016/j.renene.2016.07.038.
-
-\bibitem{Deb1995}
-K. Deb and R. B. Agrawal, ``Simulated binary crossover for continuous search space,'' \textit{Complex Syst.}, vol. 9, no. 2, pp. 115--148, 1995.
-
-\bibitem{DebGoyal1996}
-K. Deb and M. Goyal, ``A combined genetic adaptive search (GeneAS) for engineering design,'' \textit{Comput. Sci. Informatics}, vol. 26, no. 4, pp. 30--45, 1996.
 
 \bibitem{Carrillo2013}
 C. Carrillo, A. F. Obando Monta\~no, J. Cidr\'as, and E. D\'{\i}az-Dorado, ``Review of power curve modelling for wind turbines,'' \textit{Renew. Sustain. Energy Rev.}, vol. 21, pp. 572--581, May 2013, doi: 10.1016/j.rser.2013.01.012.
