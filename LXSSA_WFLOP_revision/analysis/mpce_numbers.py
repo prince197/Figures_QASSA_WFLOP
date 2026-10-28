@@ -20,13 +20,15 @@ import os, json, argparse, math
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CODE = {"PSOBV": "PSOVNS", "PSOC": "PSO", "SSABV": "SSAVNS", "SSA": "SSA", "LXSSA": "LXSSA", "DE": "DE",
-        "BVNS": "VNS", "SLSQP": "SLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS", "RSDVNS": "RSDVNS"}
+        "BVNS": "VNS", "SLSQP": "SLSQP", "LXBV": "LXSSAVNS", "RSVNS": "RSVNS", "RSDVNS": "RSDVNS",
+        "GA": "GA"}
 LAB = {"PSOBV": "PSO-VNS", "PSOC": "PSO", "SSABV": "SSA-VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "DE": "DE",
-       "BVNS": "VNS", "SLSQP": "MS-SLSQP", "LXBV": "LX-SSA-VNS", "RSVNS": "RS-VNS", "RSDVNS": "RSD-VNS"}
+       "BVNS": "VNS", "SLSQP": "MS-SLSQP", "LXBV": "LX-SSA-VNS", "RSVNS": "RS-VNS", "RSDVNS": "RSD-VNS",
+       "GA": "GA"}
 MAIN8 = ["PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "BVNS", "SLSQP"]
 M10 = ["PSOBV", "SSABV", "LXBV", "RSVNS", "BVNS", "PSOC", "SSA", "LXSSA", "DE", "SLSQP"]
 ORD = {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth", 6: "sixth", 7: "seventh", 8: "eighth",
-       9: "ninth", 10: "tenth"}
+       9: "ninth", 10: "tenth", 11: "eleventh"}
 WORD = {0: "no", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight",
         9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", 15: "fifteen", 16: "sixteen"}
 BUDGETS = (6030, 30030, 120030)
@@ -347,7 +349,7 @@ def build(s, allow_partial=False):
     # ---------------- feasible initialization and budget (six largest benchmark cases)
     fb = s.get("feasbudget") or {}
     ran, fea = fb.get("random") or {}, fb.get("feasible") or {}
-    for a in ("PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "RSVNS"):
+    for a in ("PSOBV", "PSOC", "SSABV", "SSA", "LXSSA", "DE", "RSVNS") + (("GA",) if "GA" in ran else ()):
         c = CODE[a]
         P(f"NFbRandFeas{c}", lambda a=a: num(ran[a]["feas"], 1), REQ_MAIN)
         P(f"NFbRandLoss{c}", lambda a=a: numd(ran[a]["loss"], 2), REQ_MAIN)
@@ -359,7 +361,7 @@ def build(s, allow_partial=False):
     rk = fb.get("rank") or {}
     for b in BUDGETS:
         req = {6030: REQ_MAIN, 30030: REQ_B30, 120030: REQ_B120}[b]
-        for a in ("PSOBV", "PSOC", "BVNS", "RSVNS", "SLSQP", "SSABV"):
+        for a in ("PSOBV", "PSOC", "BVNS", "RSVNS", "SLSQP", "SSABV") + (("GA",) if "GA" in (fb.get("methods") or []) else ()):
             P(f"NBudRank{CODE[a]}{BNAME[b]}", lambda a=a, b=b: num(rk[str(b)][a], 2), req)
             P(f"NBudLoss{CODE[a]}{BNAME[b]}", lambda a=a, b=b: num(fb["mean_loss"][str(b)][a], 2), req)
         P(f"NBudBest{BNAME[b]}", lambda b=b: LAB[min(rk[str(b)], key=rk[str(b)].get)], req)
@@ -517,6 +519,8 @@ def build(s, allow_partial=False):
     for b in BUDGETS:
         req = {6030: REQ_MAIN, 30030: REQ_B30, 120030: REQ_B120}[b]
         P(f"NBudFirstPSOVNS{BNAME[b]}", lambda b=b: str(fb["first_count"][str(b)]["PSOBV"]), req)
+        if "GA" in (fb.get("methods") or []):      # GA in the budget pool (rev5_ga_secondary)
+            P(f"NBudFirstGA{BNAME[b]}", lambda b=b: str(fb["first_count"][str(b)]["GA"]), req)
     P("NBudCloseGapOneTwentyK", lambda: ceil_num(fb["close_gap_pp"]["120030"]["max_gap"], 2), REQ_B120)  # rounded up ("within")
     P("NBudCloseListOneTwentyK", lambda: listing(LAB[a] for a in fb["close_gap_pp"]["120030"]["methods"]), REQ_B120)
     # Horns Rev: validation of the 80-turbine farm against PyWake, methods below PSO-VNS at 120,030

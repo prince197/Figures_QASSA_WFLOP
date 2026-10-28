@@ -61,7 +61,7 @@ The \emph{ablation study} of PSO-VNS (Section~\ref{sec:ablation}) keeps its two-
 
 \begin{table}[!htbp]
 \centering
-\caption{Experimental design. Budget: objective evaluations per run, all counted (initial population, finite-difference evaluations of MS-SLSQP); r: random, f: feasibility-preserving initialization. Runs: optimization runs made for that study (``reused'': taken from another study in this table). Eight methods: the nine of Section~\ref{sec:setup-methods} without GA; ten methods: these eight, LX-SSA-VNS and RS-VNS; ``GA: GA row'': GA was also run on these cases, and its runs are counted in the row ``Real-coded GA''. Split cases: middle and largest $N$ per farm and data set; six largest: largest $N$ per farm and data set. In total, 47{,}710 optimization runs (16{,}800 in the additional experiments and sensitivity studies).}
+\caption{Experimental design. Budget: objective evaluations per run, all counted (initial population, finite-difference evaluations of MS-SLSQP); r: random, f: feasibility-preserving initialization. Runs: optimization runs made for that study (``reused'': taken from another study in this table). Nine methods: the methods of Section~\ref{sec:setup-methods}. Split cases: middle and largest $N$ per farm and data set; six largest: largest $N$ per farm and data set. In total, 49{,}010 optimization runs (14{,}700 in the additional experiments and sensitivity studies).}
 \label{tab:design}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -69,19 +69,18 @@ The \emph{ablation study} of PSO-VNS (Section~\ref{sec:ablation}) keeps its two-
 \toprule
 Study & Cases & Methods & Budget (init.) & Seeds & Runs & Sec. \\
 \midrule
-Main comparison & 68 benchmark & PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, VNS, MS-SLSQP (GA: GA row) & 6,030 (r) & 1--30 & 16{,}320 & \ref{sec:overall} \\
-Component analysis & 68 & LX-SSA-VNS, RS-VNS, RSD-VNS (2{,}040 each); six reused & 6,030 (r) & 1--30 & 6{,}120 & \ref{sec:ablation} \\
+Type~I: main comparison & 68 benchmark & nine methods & 6,030 (r) & 1--30 & 18{,}360 & \ref{sec:overall} \\
+Type~II: Horns Rev~1 & 16 turbines & nine methods, LX-SSA-VNS, RS-VNS (f: except RS-VNS) & 6,030 (r, f); 30,030, 120,030 (r) & 1--30; 1--10 at 120,030 & 1{,}070 & \ref{sec:hornsrev-site} \\
+Type~III: Lillgrund & 16 turbines (block) & nine methods, RSD-VNS & 6,030; 30,030 (r) & 1--30 & 600 & \ref{sec:lillgrund} \\
+Type~IV: IEA37 CS~1 & 16, 36 turbines & nine methods, LX-SSA-VNS, RS-VNS & 6,030; 30,030 (r) & 1--30 & 1{,}320 & \ref{sec:iea37} \\
+Ablation & 68 & LX-SSA-VNS, RS-VNS, RSD-VNS (2{,}040 each); six reused & 6,030 (r) & 1--30 & 6{,}120 & \ref{sec:ablation} \\
 Budget split & 12 split cases & PSO-VNS, $\omega=0.25$, 0.75, 0.9 (360 each); $\omega=0.5$, 1 reused & 6,030 (r) & 1--30 & 1{,}080 & \ref{sec:split} \\
-Budget scaling & six largest & ten methods (6,030 reused) & 30,030; 120,030 (r) & 1--30 & 3{,}600 & \ref{sec:budget} \\
-Feasible starts & six largest & ten methods except RS-VNS & 6,030 (f) & 1--30 & 1{,}620 & \ref{sec:feasinit} \\
-Horns Rev~1 & 16 turbines & ten methods (GA: GA row; f: except RS-VNS) & 6,030 (r, f); 30,030, 120,030 (r) & 1--30; 1--10 at 120,030 & 970 & \ref{sec:hornsrev-site} \\
-IEA37 CS~1 & 16, 36 turbines & ten methods (GA: GA row) & 6,030; 30,030 (r) & 1--30 & 1{,}200 & \ref{sec:iea37} \\
+Budget scaling & six largest & nine methods, LX-SSA-VNS, RS-VNS (6,030 reused) & 30,030; 120,030 (r) & 1--30 & 3{,}960 & \ref{sec:budget} \\
+Feasible starts & six largest & nine methods, LX-SSA-VNS & 6,030 (f) & 1--30 & 1{,}800 & \ref{sec:feasinit} \\
 \multicolumn{7}{@{}l}{\emph{Additional experiments and sensitivity studies}} \\
-Spacing $5D$, $6D$ & 12 split cases & eight methods and RSD-VNS ($4D$: stored runs reused) & 6,030 (r) & 1--30 & 6{,}480 & \ref{sec:spacing} \\
+Spacing $5D$, $6D$ & 12 split cases & nine methods, RSD-VNS ($4D$: stored runs reused) & 6,030 (r) & 1--30 & 7{,}200 & \ref{sec:spacing} \\
 Laplace ablation & 12 split cases & LX-SSA without re-evaluation; Laplace candidate replacing the midpoint; $\gamma\sim U(-2,2)$; $\chi=0.25$, 0.5, 2 (360 each); SSA, LX-SSA reused & 6,030 (r) & 1--30 & 2{,}160 & \ref{S-sec:S-xp-lap} \\
-Real-coded GA & 68; Horns Rev~1; Lillgrund; IEA37 CS~1 & GA (other methods reused) & 6,030 (r); sites also 30,030 (r) & 1--30 & 2{,}280 & \ref{S-sec:S-xp-ga} \\
 Exact gradients & IEA37 CS~1, 16 and 36 turbines & MS-SLSQP and PSO-SLSQP with exact gradients & 6,030; 30,030 (r) & 1--30 & 240 & \ref{S-sec:S-xp-grad} \\
-Lillgrund & 16 turbines (block) & nine methods (GA: GA row) and RSD-VNS & 6,030; 30,030 (r) & 1--30 & 540 & \ref{sec:lillgrund} \\
 Constraint handling & 6 (3 per data set) & PSO-VNS, PSO, GA, SSA-VNS, DE; three constraint handlings (900 each) & 6,030 (r) & 31--60 & 2{,}700 & \ref{sec:boundary} \\
 Direct 1$^\circ$ optimization & 8 (4 per data set) & PSO-VNS, PSO, GA, MS-SLSQP, RSD-VNS; 1$^\circ$ objective and seed-paired 15$^\circ$ control (1{,}200 each) & 6,030 (r) & 31--60 & 2{,}400 & \ref{sec:direction} \\
 \midrule
@@ -103,6 +102,9 @@ Diagnostics & 6; 12; 7 & instrumented: PSO; Phase~2 of PSO-VNS, SSA-VNS, RS-VNS;
 %   + rev3_fine15_s0of1.csv 1,200 (8 cases x 5 methods x 30 seeds per arm; control arm complete, 1,200 rows) = 2,400;
 %   grand total 30,910 + 11,700 + 2,700 + 2,400 = 47,710 (16,800 in the additional experiments and sensitivity studies, designed after the main comparison); re-evaluation: rev3_sites.json hr_eval.n_layouts 1,030 (970 + 60 GA), lg_eval.n_layouts 540;
 %   (2026-10-14 restructure: two studies of the earlier design removed (2,040 + 3,240 runs): 52,930 - 5,280 = 47,650; plus 60 GA Lillgrund runs = 47,710)
+%   (2026-10-28) GA added to every study row: main 16,320 + 2,040 = 18,360; Horns Rev 970 + 60 (rev2_gahr) + 40 (rev5_ga_hr) = 1,070; Lillgrund 540 + 60 (rev4_galg) = 600; IEA37 1,200 + 120 (rev2_gaiea) = 1,320;
+%   budget scaling 3,600 + 360 (rev5_ga_b30k/b120k) = 3,960; feasible starts 1,620 + 180 (rev5_ga_feas) = 1,800; spacing 6,480 + 720 (rev5_ga_spacing) = 7,200; GA row removed (its 2,280 runs are in the type rows);
+%   total 47,710 + 1,300 = 49,010; additional experiments and sensitivity studies: 7,200 + 2,160 + 240 + 2,700 + 2,400 = 14,700
 %   diagnostics \NDVerRuns = 2 x \NDDynRuns + 3 x \NDVnsRunsPSOVNS + \NDFsRunsPSO + \NDFsRunsDE (120 + 360 + 42); CHECK-DIAG [D01], [D17]
 
 \subsection{Comparison Design and Statistics}

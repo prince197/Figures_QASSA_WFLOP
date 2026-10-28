@@ -33,6 +33,12 @@ CASE = MR.CASE
 EXP_DOCS = os.path.join(HERE, "..", "SWEVO_rev2", "experiments_docs")
 
 
+def inc(D, cases, neg=False):
+    """Boolean array: row's case (Dataset, Radius, Turbines) in cases (not in cases if neg)."""
+    cs = set(cases)
+    return np.array([(c in cs) != neg for c in zip(D.Dataset, D.Radius, D.Turbines)], bool)
+
+
 def rd(pat):
     fs = sorted(glob.glob(os.path.join(HERE, pat)))
     return MR.std_cols(pd.concat([pd.read_csv(f) for f in fs], ignore_index=True)), [os.path.basename(f) for f in fs]
@@ -75,7 +81,7 @@ def main():
     # ------------------------------------------------------------ study 1: records
     G1, f1 = rd("rev5_ga_b30k_s*of*.csv"); G2, f2 = rd("rev5_ga_b120k_s*of*.csv"); G3, f3 = rd("rev5_ga_feas_s*of*.csv")
     G4, f4 = rd("rev2_ga_s*of10.csv")
-    G4 = G4[[c in set(MR.LARGE) for c in zip(G4.Dataset, G4.Radius, G4.Turbines)]]
+    G4 = G4[inc(G4, MR.LARGE)]
     rec = {"6030 random (rev2_ga)": record_checks(G4, 6030, "random", range(1, 31), MR.LARGE),
            "30030 random": record_checks(G1, 30030, "random", range(1, 31), MR.LARGE),
            "120030 random": record_checks(G2, 120030, "random", range(1, 31), MR.LARGE),
@@ -91,7 +97,7 @@ def main():
                    + ([pd.read_csv(f) for f in hrf] if hrf else []) + [pd.read_csv(f) for f in sorted(glob.glob(os.path.join(HERE, "rev5_ga_feas_s*of*.csv")))],
                    ignore_index=True)
     FE = MR.std_cols(FE)
-    FE = FE[(FE.Init == "feasible") & [c in set(MR.LARGE) for c in zip(FE.Dataset, FE.Radius, FE.Turbines)]]
+    FE = FE[(FE.Init == "feasible").values & inc(FE, MR.LARGE)]
     FE["C0"] = pd.to_numeric(FE.Curve.str.split(";").str[0], errors="coerce")
     g = FE[FE.Algorithm == "GA"].set_index(CASE + ["Seed"]).C0
     mism, comp = 0, 0
@@ -124,7 +130,7 @@ def main():
                 "rev5_ga_b30k_s*of*.csv", "rev5_ga_b120k_s*of*.csv"):
         ALLB.append(rd(pat)[0])
     B = pd.concat(ALLB, ignore_index=True)
-    B = B[[c in set(MR.LARGE) for c in zip(B.Dataset, B.Radius, B.Turbines)]]
+    B = B[inc(B, MR.LARGE)]
     w6 = {}
     for b in (30030, 120030):
         x = B[B.Budget == b]
@@ -146,10 +152,9 @@ def main():
     excl = [("1", 500, 10), ("2", 500, 10)]
     out["spacing_records"] = {sp: record_checks(S5[S5.Spacing == sp], 6030, "random", range(1, 31), MR.SPLITCASES)
                               for sp in ("5D", "6D")}
-    S5x = S5[[c not in excl for c in zip(S5.Dataset, S5.Radius, S5.Turbines)]]
     sp_old, _ = rd("rev2_spacing_s*of40.csv")
     sp_all = pd.concat([sp_old, S5], ignore_index=True)
-    sp_all = sp_all[[c not in excl for c in zip(sp_all.Dataset, sp_all.Radius, sp_all.Turbines)]]
+    sp_all = sp_all[inc(sp_all, excl, neg=True)]
     ar = {}
     for comp in ["PSOC", "SSABV", "SSA", "LXSSA", "DE", "GA", "BVNS", "SLSQP", "RSDVNS", ("SSABV", "RSDVNS")]:
         first, second = comp if isinstance(comp, tuple) else ("PSOBV", comp)
@@ -171,11 +176,11 @@ def main():
     out["spacing_holm_over_contrasts_excl"] = rs.get("holm_over_contrasts_excl")
     # PSO-VNS - GA case-mean contrast (informational; not in the Holm family of the contrast table)
     M4 = RA.main_runs()
-    M4 = M4[M4.Algorithm.isin(["PSOBV"]) & [c in set(MR.SPLITCASES) for c in zip(M4.Dataset, M4.Radius, M4.Turbines)]].assign(Spacing="4D")
+    M4 = M4[M4.Algorithm.isin(["PSOBV"]).values & inc(M4, MR.SPLITCASES)].assign(Spacing="4D")
     g4, _ = RA.read_rev2("ga", HERE)
-    g4 = g4[(g4.Algorithm == "GA") & [c in set(MR.SPLITCASES) for c in zip(g4.Dataset, g4.Radius, g4.Turbines)]].assign(Spacing="4D")
+    g4 = g4[(g4.Algorithm == "GA").values & inc(g4, MR.SPLITCASES)].assign(Spacing="4D")
     D = pd.concat([M4, g4, sp_old[sp_old.Algorithm == "PSOBV"], S5], ignore_index=True)
-    D = D[[c not in excl for c in zip(D.Dataset, D.Radius, D.Turbines)]]
+    D = D[inc(D, excl, neg=True)]
     con = {}
     for spc in ("4D", "5D", "6D"):
         Gs = D[D.Spacing == spc].reset_index(drop=True)

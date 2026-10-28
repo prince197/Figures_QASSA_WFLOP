@@ -61,7 +61,7 @@
 \newlabel{S-tab:res-1-1000}{{S4}{7}{}{}{}}
 \newlabel{S-tab:res-2-500}{{S5}{7}{}{}{}}
 \newlabel{S-tab:res-2-750}{{S6}{7}{}{}{}}
-\newlabel{S-tab:res-2-1000}{{S7}{8}{}{}{}}
+\newlabel{S-tab:res-2-1000}{{S7}{7}{}{}{}}
 \newlabel{S-sec:S-caselevel}{{S2.2}{8}{}{}{}}
 \newlabel{S-tab:friedman68-full}{{S8}{8}{}{}{}}
 \newlabel{S-tab:coords}{{S9}{8}{}{}{}}
@@ -938,7 +938,7 @@ The \emph{ablation study} of PSO-VNS (Section~\ref{sec:ablation}) keeps its two-
 
 \begin{table}[!htbp]
 \centering
-\caption{Experimental design. Budget: objective evaluations per run, all counted (initial population, finite-difference evaluations of MS-SLSQP); r: random, f: feasibility-preserving initialization. Runs: optimization runs made for that study (``reused'': taken from another study in this table). Eight methods: the nine of Section~\ref{sec:setup-methods} without GA; ten methods: these eight, LX-SSA-VNS and RS-VNS; ``GA: GA row'': GA was also run on these cases, and its runs are counted in the row ``Real-coded GA''. Split cases: middle and largest $N$ per farm and data set; six largest: largest $N$ per farm and data set. In total, 47{,}710 optimization runs (16{,}800 in the additional experiments and sensitivity studies).}
+\caption{Experimental design. Budget: objective evaluations per run, all counted (initial population, finite-difference evaluations of MS-SLSQP); r: random, f: feasibility-preserving initialization. Runs: optimization runs made for that study (``reused'': taken from another study in this table). Nine methods: the methods of Section~\ref{sec:setup-methods}. Split cases: middle and largest $N$ per farm and data set; six largest: largest $N$ per farm and data set. In total, 49{,}010 optimization runs (14{,}700 in the additional experiments and sensitivity studies).}
 \label{tab:design}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -946,19 +946,18 @@ The \emph{ablation study} of PSO-VNS (Section~\ref{sec:ablation}) keeps its two-
 \toprule
 Study & Cases & Methods & Budget (init.) & Seeds & Runs & Sec. \\
 \midrule
-Main comparison & 68 benchmark & PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, VNS, MS-SLSQP (GA: GA row) & 6,030 (r) & 1--30 & 16{,}320 & \ref{sec:overall} \\
-Component analysis & 68 & LX-SSA-VNS, RS-VNS, RSD-VNS (2{,}040 each); six reused & 6,030 (r) & 1--30 & 6{,}120 & \ref{sec:ablation} \\
+Type~I: main comparison & 68 benchmark & nine methods & 6,030 (r) & 1--30 & 18{,}360 & \ref{sec:overall} \\
+Type~II: Horns Rev~1 & 16 turbines & nine methods, LX-SSA-VNS, RS-VNS (f: except RS-VNS) & 6,030 (r, f); 30,030, 120,030 (r) & 1--30; 1--10 at 120,030 & 1{,}070 & \ref{sec:hornsrev-site} \\
+Type~III: Lillgrund & 16 turbines (block) & nine methods, RSD-VNS & 6,030; 30,030 (r) & 1--30 & 600 & \ref{sec:lillgrund} \\
+Type~IV: IEA37 CS~1 & 16, 36 turbines & nine methods, LX-SSA-VNS, RS-VNS & 6,030; 30,030 (r) & 1--30 & 1{,}320 & \ref{sec:iea37} \\
+Ablation & 68 & LX-SSA-VNS, RS-VNS, RSD-VNS (2{,}040 each); six reused & 6,030 (r) & 1--30 & 6{,}120 & \ref{sec:ablation} \\
 Budget split & 12 split cases & PSO-VNS, $\omega=0.25$, 0.75, 0.9 (360 each); $\omega=0.5$, 1 reused & 6,030 (r) & 1--30 & 1{,}080 & \ref{sec:split} \\
-Budget scaling & six largest & ten methods (6,030 reused) & 30,030; 120,030 (r) & 1--30 & 3{,}600 & \ref{sec:budget} \\
-Feasible starts & six largest & ten methods except RS-VNS & 6,030 (f) & 1--30 & 1{,}620 & \ref{sec:feasinit} \\
-Horns Rev~1 & 16 turbines & ten methods (GA: GA row; f: except RS-VNS) & 6,030 (r, f); 30,030, 120,030 (r) & 1--30; 1--10 at 120,030 & 970 & \ref{sec:hornsrev-site} \\
-IEA37 CS~1 & 16, 36 turbines & ten methods (GA: GA row) & 6,030; 30,030 (r) & 1--30 & 1{,}200 & \ref{sec:iea37} \\
+Budget scaling & six largest & nine methods, LX-SSA-VNS, RS-VNS (6,030 reused) & 30,030; 120,030 (r) & 1--30 & 3{,}960 & \ref{sec:budget} \\
+Feasible starts & six largest & nine methods, LX-SSA-VNS & 6,030 (f) & 1--30 & 1{,}800 & \ref{sec:feasinit} \\
 \multicolumn{7}{@{}l}{\emph{Additional experiments and sensitivity studies}} \\
-Spacing $5D$, $6D$ & 12 split cases & eight methods and RSD-VNS ($4D$: stored runs reused) & 6,030 (r) & 1--30 & 6{,}480 & \ref{sec:spacing} \\
+Spacing $5D$, $6D$ & 12 split cases & nine methods, RSD-VNS ($4D$: stored runs reused) & 6,030 (r) & 1--30 & 7{,}200 & \ref{sec:spacing} \\
 Laplace ablation & 12 split cases & LX-SSA without re-evaluation; Laplace candidate replacing the midpoint; $\gamma\sim U(-2,2)$; $\chi=0.25$, 0.5, 2 (360 each); SSA, LX-SSA reused & 6,030 (r) & 1--30 & 2{,}160 & \ref{S-sec:S-xp-lap} \\
-Real-coded GA & 68; Horns Rev~1; Lillgrund; IEA37 CS~1 & GA (other methods reused) & 6,030 (r); sites also 30,030 (r) & 1--30 & 2{,}280 & \ref{S-sec:S-xp-ga} \\
 Exact gradients & IEA37 CS~1, 16 and 36 turbines & MS-SLSQP and PSO-SLSQP with exact gradients & 6,030; 30,030 (r) & 1--30 & 240 & \ref{S-sec:S-xp-grad} \\
-Lillgrund & 16 turbines (block) & nine methods (GA: GA row) and RSD-VNS & 6,030; 30,030 (r) & 1--30 & 540 & \ref{sec:lillgrund} \\
 Constraint handling & 6 (3 per data set) & PSO-VNS, PSO, GA, SSA-VNS, DE; three constraint handlings (900 each) & 6,030 (r) & 31--60 & 2{,}700 & \ref{sec:boundary} \\
 Direct 1$^\circ$ optimization & 8 (4 per data set) & PSO-VNS, PSO, GA, MS-SLSQP, RSD-VNS; 1$^\circ$ objective and seed-paired 15$^\circ$ control (1{,}200 each) & 6,030 (r) & 31--60 & 2{,}400 & \ref{sec:direction} \\
 \midrule
@@ -980,6 +979,9 @@ Diagnostics & 6; 12; 7 & instrumented: PSO; Phase~2 of PSO-VNS, SSA-VNS, RS-VNS;
 %   + rev3_fine15_s0of1.csv 1,200 (8 cases x 5 methods x 30 seeds per arm; control arm complete, 1,200 rows) = 2,400;
 %   grand total 30,910 + 11,700 + 2,700 + 2,400 = 47,710 (16,800 in the additional experiments and sensitivity studies, designed after the main comparison); re-evaluation: rev3_sites.json hr_eval.n_layouts 1,030 (970 + 60 GA), lg_eval.n_layouts 540;
 %   (2026-10-14 restructure: two studies of the earlier design removed (2,040 + 3,240 runs): 52,930 - 5,280 = 47,650; plus 60 GA Lillgrund runs = 47,710)
+%   (2026-10-28) GA added to every study row: main 16,320 + 2,040 = 18,360; Horns Rev 970 + 60 (rev2_gahr) + 40 (rev5_ga_hr) = 1,070; Lillgrund 540 + 60 (rev4_galg) = 600; IEA37 1,200 + 120 (rev2_gaiea) = 1,320;
+%   budget scaling 3,600 + 360 (rev5_ga_b30k/b120k) = 3,960; feasible starts 1,620 + 180 (rev5_ga_feas) = 1,800; spacing 6,480 + 720 (rev5_ga_spacing) = 7,200; GA row removed (its 2,280 runs are in the type rows);
+%   total 47,710 + 1,300 = 49,010; additional experiments and sensitivity studies: 7,200 + 2,160 + 240 + 2,700 + 2,400 = 14,700
 %   diagnostics \NDVerRuns = 2 x \NDDynRuns + 3 x \NDVnsRunsPSOVNS + \NDFsRunsPSO + \NDFsRunsDE (120 + 360 + 42); CHECK-DIAG [D01], [D17]
 
 \subsection{Comparison Design and Statistics}
@@ -1318,31 +1320,34 @@ PSO-VNS vs.\ MS-SLSQP, 30,030 & 28/0/2 & 0.933 & -- & -- & [0.833, 1.000] & $1.3
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-8}
 Method & Loss & Feas. & Loss & Feas. & 6,030 & 30,030 & 120,030 \\
 \midrule
-PSO-VNS & 4.084 & 100.0 & 3.938 & 100.0 & 1.50 & 1.17 & 2.17 \\
-SSA-VNS & 4.678 & 95.0 & 3.955 & 100.0 & 4.33 & 4.17 & 4.17 \\
-LX-SSA-VNS & 4.802 & 98.9 & 3.952 & 100.0 & 5.17 & 5.67 & 5.83 \\
-RS-VNS & 4.830 & 93.3 & n/r & n/r & 4.67 & 6.33 & 4.67 \\
-VNS & 4.950 & 100.0 & 3.810 & 100.0 & 6.50 & 4.83 & 3.17 \\
-PSO & 4.181 & 100.0 & 5.549 & 100.0 & 1.83 & 2.50 & 5.83 \\
-SSA & 4.828 & 80.0 & 4.947 & 100.0 & 8.33 & 8.67 & 8.83 \\
-LX-SSA & 5.379 & 77.8 & 5.048 & 100.0 & 8.67 & 9.83 & 10.00 \\
-DE & -- & 1.1 & 5.549 & 100.0 & 10.00 & 5.17 & 3.33 \\
-MS-SLSQP & 4.522 & 99.4 & 4.294 & 100.0 & 4.00 & 6.67 & 7.00 \\
+PSO-VNS & 4.084 & 100.0 & 3.938 & 100.0 & 2.00 & 1.83 & 3.00 \\
+SSA-VNS & 4.678 & 95.0 & 3.955 & 100.0 & 5.17 & 5.17 & 5.00 \\
+LX-SSA-VNS & 4.802 & 98.9 & 3.952 & 100.0 & 6.17 & 6.67 & 6.67 \\
+RS-VNS & 4.830 & 93.3 & n/r & n/r & 5.67 & 7.33 & 5.50 \\
+VNS & 4.950 & 100.0 & 3.810 & 100.0 & 7.33 & 5.67 & 3.83 \\
+PSO & 4.181 & 100.0 & 5.549 & 100.0 & 2.33 & 3.33 & 6.83 \\
+SSA & 4.828 & 80.0 & 4.947 & 100.0 & 9.33 & 9.67 & 9.83 \\
+LX-SSA & 5.379 & 77.8 & 5.048 & 100.0 & 9.67 & 10.83 & 11.00 \\
+DE & -- & 1.1 & 5.549 & 100.0 & 11.00 & 6.00 & 4.33 \\
+GA & 4.282 & 85.6 & 3.759 & 100.0 & 2.67 & 2.00 & 2.17 \\
+MS-SLSQP & 4.522 & 99.4 & 4.294 & 100.0 & 4.67 & 7.50 & 7.83 \\
 \bottomrule
 \end{tabular}
-\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Loss: mean wake loss (\%) of the feasible runs; Feas.: feasible runs (\%); both at 6,030 evaluations with random and feasibility-preserving initialization. Avg.\ rank at 6,030, 30,030 and 120,030 evaluations, random initialization. n/r: not run. GA was not run in this study.}
+\par\vspace{2pt}\parbox{\columnwidth}{\scriptsize Loss: mean wake loss (\%) of the feasible runs; Feas.: feasible runs (\%); both at 6,030 evaluations with random and feasibility-preserving initialization. Avg.\ rank at 6,030, 30,030 and 120,030 evaluations, random initialization. n/r: not run.}
 \end{table}
 % <<<<< end analysis/mpce_tab_feasbudget.tex
 
-The budget study covers the six largest benchmark cases, the nine methods except GA and the ablation variants LX-SSA-VNS and RS-VNS (Table~\ref{tab:feasbudget}; Fig.~\ref{fig:budget}). From random starts:
+The budget study covers the six largest benchmark cases with the nine methods and the ablation variants LX-SSA-VNS and RS-VNS (Table~\ref{tab:feasbudget}; Fig.~\ref{fig:budget}). From random starts:
 \begin{itemize}
-\item PSO-VNS keeps the best average rank at all three budgets (6,030, 30,030 and 120,030 evaluations: 1.50, 1.17 and 2.17) and ranks first in 4, 5 and 3 of the six cases (rank differences not tested); PSO's mean wake loss minus that of PSO-VNS is +0.10, +0.18 and +0.27~pp (Table~\ref{S-tab:budget-cases}).
-\item The methods differ mainly in how much they gain from a larger budget: from 6,030 to 120,030 evaluations, PSO falls back from an average rank of 1.83 to 5.83, behind SSA-VNS (4.17), and VNS moves up from 6.50 to 3.17; the mean wake loss of VNS falls from 4.95\% to 3.17\%, that of PSO only from 4.18\% to 3.42\% (PSO-VNS: 4.08\% to 3.14\%).
-\item At 120,030 evaluations, VNS, SSA-VNS, RS-VNS, LX-SSA-VNS and DE come within 0.17~pp of the mean wake loss of PSO-VNS.
+\item PSO-VNS has the best average rank at 6,030 and 30,030 evaluations (2.00 and 1.83; GA 2.67 and 2.00), and GA at 120,030 evaluations (2.17; PSO-VNS 3.00). PSO-VNS ranks first in 2, 2 and 1 of the six cases, GA in 2, 4 and 4; in the per-case run-level tests (Holm), GA is better than PSO-VNS in 3 of the six cases at 30,030 and in 4 at 120,030 evaluations, and PSO-VNS is better than GA in none (Table~\ref{S-tab:budget-cases}).
+\item PSO's mean wake loss minus that of PSO-VNS is $+0.10$, $+0.18$ and $+0.27$~pp at the three budgets: the advantage of the VNS phase over continued PSO grows with the budget.
+\item The methods differ mainly in how much they gain from a larger budget: from 6,030 to 120,030 evaluations, the mean wake loss of GA falls from 4.28\% to 2.97\%, that of VNS from 4.95\% to 3.17\%, of PSO-VNS from 4.08\% to 3.14\% and of PSO only from 4.18\% to 3.42\%; PSO falls back from an average rank of 2.33 to 6.83.
+\item At 120,030 evaluations, GA has the lowest mean wake loss (0.17~pp below PSO-VNS), and VNS, SSA-VNS, RS-VNS, LX-SSA-VNS and DE come within 0.17~pp of PSO-VNS.
 \end{itemize}
-% CHECK-FINAL [C26] [C29] [C34]: PSO-VNS best average rank at all three budgets; first-place counts generated per budget
+PSO-VNS is thus the best method at the benchmark budget and at five times this budget; with twenty times the budget, GA, which keeps improving, is better.
+% CHECK-FINAL [C26] [C29] [C34]: PSO-VNS best average rank at 6,030 and 30,030, GA at 120,030 (nine methods with GA, mpce_summary.json feasbudget); first-place counts generated per budget
 % CHECK-FINAL [C37]: at 120,030 SSA-VNS ranks ahead of PSO; VNS, SSA-VNS, RS-VNS, LX-SSA-VNS and DE within 0.2 pp (\NBudCloseGapOneTwentyK) of PSO-VNS. PSO and VNS ranks are generated macros (not tested by C37).
-% verified (manual): budget losses from mpce_numbers.tex (\NBudLoss...): VNS - PSO-VNS mean wake loss 0.87 / 0.40 / 0.03 pp at 6,030 / 30,030 / 120,030 (decreasing); drop 6,030 -> 120,030: VNS 1.78, PSO 0.76, PSO-VNS 0.94 pp; DE feasible share at 6,030 from Table feasbudget (1.1 %); DE plotted only at 30,030 and 120,030 (at least half of the runs feasible)
+% verified (manual): rev5_ga_secondary_report.md section 4 (ranks, first-place counts, GA losses 4.282 / 3.270 / 2.972 %, PSO-VNS 3.145 % at 120,030; run-level W/T/L PSO-VNS vs GA 0/3/3 and 0/2/4 on the six cases)
 
 \begin{figure}[!htbp]
 \centering
@@ -1351,39 +1356,21 @@ The budget study covers the six largest benchmark cases, the nine methods except
 \label{fig:budget}
 \end{figure}
 
-On the Horns Rev~1 block (last panel of Fig.~\ref{fig:budget}), the mean AEP loss of PSO-VNS also falls with the budget (7.07\%, 6.52\% and 6.40\%), and at 120,030 evaluations DE has the lowest.
-% CHECK-FINAL [C25]: Horns Rev 16: 30,030 and 120,030 mean AEP loss of PSO-VNS below 6,030; CHECK-DIR [F29]: DE highest mean AEP (lowest loss) at 120,030
+On the Horns Rev~1 block (last panel of Fig.~\ref{fig:budget}), the mean AEP loss of PSO-VNS also falls with the budget (7.07\%, 6.52\% and 6.40\%), and at 30,030 and 120,030 evaluations GA has the lowest (6.16\% and 5.73\%; Table~\ref{S-tab:S-xp-ga-hr}).
+% CHECK-FINAL [C25]: Horns Rev 16: 30,030 and 120,030 mean AEP loss of PSO-VNS below 6,030; CHECK-DIR [F29]: DE highest mean AEP (lowest loss) at 120,030 among the ten methods without GA; with GA: GA (rev5_ga_secondary_report.md, tab:R2-ga-hr)
 
 \subsubsection{Feasibility-Preserving Initialization}
 \label{sec:feasinit}
-With feasibility-preserving initialization (Table~\ref{tab:feasbudget}; per case: Table~\ref{S-tab:feasinit-cases}), the share of feasible runs rises to 100.0\% for SSA-VNS (from 95.0\%), SSA (80.0\%), LX-SSA (77.8\%) and DE (1.1\%). VNS alone is then best in mean wake loss and average rank, and PSO-VNS ranks second (rank 2.83; loss 3.94\%, 4.08\% with random starts). PSO and DE never improve on the best initial layout (210 runs each; Table~\ref{S-tab:D-feasstart}): their moves change all or most coordinates at once, so in our runs no trial is both feasible and better and the global best never moves (Lemma~\ref{lem:feas-improve}, Proposition~\ref{prop:feasible-start}); VNS, which moves one coordinate at a time, is not affected. The advantage of PSO-VNS thus depends on the initialization: from random starts, PSO may help mainly by reaching feasibility.
-% CHECK-FINAL [C28] [C38]: feasible starts: VNS alone lowest loss and best rank; PSO-VNS second in rank; PSO and DE never move from the best initial layout
+With feasibility-preserving initialization (Table~\ref{tab:feasbudget}; per case: Table~\ref{S-tab:feasinit-cases}), the share of feasible runs rises to 100.0\% for SSA-VNS (from 95.0\%), GA (85.6\%), SSA (80.0\%), LX-SSA (77.8\%) and DE (1.1\%).
+\begin{itemize}
+\item VNS alone then has the best average rank (1.50) and GA the lowest mean wake loss (3.76\%; VNS 3.81\%); PSO-VNS ranks third (3.50; loss 3.94\%, 4.08\% with random starts).
+\item PSO and DE never improve on the best initial layout (210 runs each; Table~\ref{S-tab:D-feasstart}): their moves change all or most coordinates at once, and in our runs no such trial was both feasible and better (Lemma~\ref{S-lem:S-feas-improve} and Proposition~\ref{S-prop:S-frozen}; diagnostics: Section~\ref{S-sec:S-diag-feas}). VNS, which moves one coordinate at a time, and GA, which leaves its best initial layout in all 210 runs, are not affected.
+\end{itemize}
+The advantage of PSO-VNS thus depends on the initialization: from random starts, its PSO phase helps mainly by reaching feasible layouts.
+% CHECK-FINAL [C28] [C38]: feasible starts (nine methods with GA): VNS best rank, GA lowest loss, PSO-VNS third; PSO and DE never move from the best initial layout
 % CHECK-DIAG [D13]: PSO and DE never improve on the best initial layout (instrumented and all stored runs)
 % CHECK-DIAG [D14]: all PSO candidates except the G re-evaluations and all \NDFsCandDE{} DE trials infeasible, none accepted, no pbest update (first-move median min spacing \NDFsFirstMinSpPSO{} m: printed in the diagnostics paragraph below)
-
-What follows from the algorithms can be separated from what is only observed. Let $L(\mathbf X)$ be the wake loss, the first term of~\eqref{eq:penalty}, so that $F_p=L+\mathrm{Pen}$ with $\mathrm{Pen}\ge0$.
-\begin{lemma}[Improvement needs a feasible, better trial]
-\label{lem:feas-improve}
-If the global best $\mathbf G$ is feasible, a trial $\mathbf X$ replaces it only if $L(\mathbf X)<L(\mathbf G)$ and every constraint violation $g$ of $\mathbf X$ satisfies $(1+\mu_{\rm p} g)^2<L(\mathbf G)$; in the benchmark cases, $g<4.6\times10^{-8}$ (m or m$^2$), far below the reporting tolerance of $10^{-6}$~m.
-\end{lemma}
-\begin{proof}
-Replacement needs $F_p(\mathbf X)<F_p(\mathbf G)=L(\mathbf G)$, and $F_p(\mathbf X)$ is the sum of $L(\mathbf X)\ge0$ and the violation terms $(1+\mu_{\rm p} g)^2>0$. In the benchmark cases, $L(\mathbf G)\le NE_{\rm ideal}+\varepsilon$ with $N\le15$, $E_{\rm ideal}\le14{,}045.74$ ($\varepsilon$: the small negative part of the power curve above cut-in), so $\sqrt{L(\mathbf G)}<459.1$ and $g<(\sqrt{L(\mathbf G)}-1)/\mu_{\rm p}<4.6\times10^{-8}$ for $\mu_{\rm p}=10^{10}$.
-\end{proof}
-% verified: (sqrt(15 x 14045.74) - 1)/1e10 = 4.58e-8 (as optA/supp_theory.tex, Lemma S-feas-improve; the small negative part of the power curve above cut-in, epsilon, does not change the bound)
-\begin{proposition}[PSO from feasible starts]
-\label{prop:feasible-start}
-Let all initial layouts be feasible, let the velocities start at zero with $\mathbf P^i=\mathbf X^i$, and let $i^*$ be the particle with the best initial layout, so that $\mathbf X^{i^*}=\mathbf P^{i^*}=\mathbf G$.
-(a)~As long as $\mathbf G$ does not change, particle $i^*$ keeps $\mathbf V^{i^*}=\mathbf 0$ and $\mathbf X^{i^*}=\mathbf G$: it re-evaluates $\mathbf G$ once per iteration and evaluates no other point.
-(b)~The first move of every other particle is $\mathbf X^i\leftarrow\mathbf X^i+c_2\boldsymbol\rho_2\circ(\mathbf G-\mathbf X^i)$, clipped to the box: turbine $k$ of layout $i$ moves a random fraction in $[0,c_2]=[0,1.50]$ of the way, per coordinate, toward turbine $k$ of $\mathbf G$, although the numbering of the turbines of two independently generated layouts is arbitrary.
-\end{proposition}
-\begin{proof}
-(a)~By induction: with $\mathbf V^{i^*}=\mathbf 0$ and $\mathbf P^{i^*}=\mathbf X^{i^*}=\mathbf G$, all three terms of~\eqref{eq:pso-v} vanish, the particle stays at $\mathbf G$, and $F_p(\mathbf G)$ is no strict improvement, so neither $\mathbf P^{i^*}$ nor $\mathbf G$ changes. (b)~At the first move, $\mathbf V^i=\mathbf 0$ and $\mathbf P^i=\mathbf X^i$, so only the last term of~\eqref{eq:pso-v} remains.
-\end{proof}
-A DE trial for population member $i$ takes coordinate $j$ from the mutant $\mathbf X^{r_1}+F(\mathbf X^{r_2}-\mathbf X^{r_3})$, with distinct random members $r_1,r_2,r_3\ne i$, if $j=j_{\rm rand}$ (a random coordinate) or $U_j<\mathrm{CR}$ ($U_j\sim U(0,1)$), i.e., $1+\mathrm{Bin}(n-1,\mathrm{CR})$ coordinates, on average 27.1 of $n=30$ for $N=15$, again regardless of the turbine numbering. By Lemma~\ref{lem:feas-improve}, $\mathbf G$ moves only if such a combined layout is feasible and better; that this never happened in our runs is an observation, not a consequence of the proposition.
 % CHECK-THEORY [T11]: DE takes most coordinates from the mutant (mean 1+CR(n-1) = 27.1 of 30 for N = 15, CR = 0.9; PSO moves all). Lemma lem:feas-improve = Lemma S-lem:S-feas-improve and Proposition prop:feasible-start = Proposition S-prop:S-frozen (a), (b) (optA/supp_theory.tex, S-th-feas); the stall is observed (D13/D14), not implied.
-% Page budget: kept in the supplementary material: \SuppTable{tab:D-feasstart}
-
-In Table~\ref{S-tab:D-feasstart}, which logs every candidate, the only feasible PSO candidates (3.33\%) are the re-evaluations of $\mathbf G$ of part~(a), no personal best is updated, and no DE trial is feasible. The numbering of part~(b) is not the whole explanation: after relabeling the turbines of each start to their nearest turbines of $\mathbf G$, the first PSO move is feasible in only 0.1\% of the draws, a convex combination of two layouts in 16.6\%; independent weights per coordinate, with overshoot, place the turbines of two distinct dense layouts (median RMS distance 291~m) too close together (median minimum spacing after the first move 95~m, limit 308~m) or outside the site.
 % CHECK-DIAG [D16]: the feasible initial layouts are distinct (matched RMS distance to G > 50 m)
 % CHECK-DIAG [D14]: every feasible PSO candidate is the G-particle (zero velocity) re-evaluating G; no personal best updated; DE no feasible trial, none accepted; first-move median min spacing \NDFsFirstMinSpPSO{} m (95 m)
 % CHECK-DIAG [D15]: after optimal relabelling the first PSO move is feasible in < 1 % of draws; only a common weight (convex combination) more often (\NDFsMixScalar %)
@@ -1442,12 +1429,12 @@ The optimized layouts often lie on the $4D$ constraint: 49\% of the feasible fin
 % CHECK-FINAL [C23]: spacing_share.n11_15.pct_5d < 10 ("often lie on the 4D constraint")
 % verified (manual): shares 49 % / 36 % (all N) vs 4.1 % / 0.1 % (N = 11-15) from mpce_numbers.tex (\NSp...); constructive capacity at 4D/5D/6D: Table S-capacity
 
-The eight methods without GA and RSD-VNS were re-optimized at $5D$ and $6D$ on the 12 split cases, of which the two with $r=500$~m, $N=10$ admit no layout at these spacings, so the same 10 cases are compared at every spacing (Section~\ref{S-sec:S-xp-spacing}; Table~\ref{S-tab:S-xp-spacing}):
+The nine methods and RSD-VNS were re-optimized at $5D$ and $6D$ on the 12 split cases, of which the two with $r=500$~m, $N=10$ admit no layout at these spacings, so the same 10 cases are compared at every spacing (Section~\ref{S-sec:S-xp-spacing}; Table~\ref{S-tab:S-xp-spacing}):
 \begin{itemize}
-\item PSO-VNS keeps the best average rank (1.40, 1.60 and 1.90 at $4D$, $5D$ and $6D$); its mean advantage over PSO is larger at $5D$ and $6D$ ($-0.094$ and $-0.068$~pp, the latter over the 8 cases in which PSO has at least 15 feasible runs) than at $4D$ ($-0.035$~pp), with 90\% intervals below zero at the seed and the case level at $5D$ and $6D$.
-\item MS-SLSQP moves up with the spacing (average rank 5.50, 4.30 and 3.00; second at $6D$).
+\item PSO-VNS has the best average rank at $4D$ and $6D$ (1.70 and 2.10) and the second best at $5D$ (2.20), where GA ranks first (1.90); at $6D$, GA is feasible in only 62.7\% of its runs and ranks sixth (5.10). The rank differences between PSO-VNS and GA are not significant (Holm). The mean advantage of PSO-VNS over PSO is larger at $5D$ and $6D$ ($-0.094$ and $-0.068$~pp, the latter over the 8 cases in which PSO has at least 15 feasible runs) than at $4D$ ($-0.035$~pp), with 90\% intervals below zero at the seed and the case level at $5D$ and $6D$.
+\item MS-SLSQP moves up with the spacing (average rank 6.50, 5.10 and 3.40; second at $6D$).
 \item The SSA phase gives no gain over disc sampling at $5D$ (SSA-VNS${}-{}$RSD-VNS: $+0.043$~pp, case-level 90\% CI [$-$0.011, 0.103]), but at $6D$ SSA-VNS has the lower mean wake loss in all 8 cases in which both qualify ($-0.136$~pp, [$-$0.215, $-$0.073]; Wilcoxon $p=0.0078$): the no-gain finding of Section~\ref{sec:ablation} holds at $4D$ and $5D$, not at $6D$.
-\item On the all-run endpoint (Table~\ref{S-tab:S-allrun-spacing}), PSO-VNS scores 0.593 and 0.613 against PSO at $5D$ and $6D$ (95\% case-bootstrap intervals [0.497, 0.693] and [0.548, 0.670]), but 0.580 [0.432, 0.733] against MS-SLSQP at $6D$: no advantage.
+\item On the all-run endpoint (Table~\ref{S-tab:S-allrun-spacing}), PSO-VNS scores 0.593 and 0.613 against PSO at $5D$ and $6D$ (95\% case-bootstrap intervals [0.497, 0.693] and [0.548, 0.670]) and 0.567 and 0.653 against GA ([0.507, 0.627] and [0.553, 0.753]), but 0.580 [0.432, 0.733] against MS-SLSQP at $6D$: no advantage.
 \end{itemize}
 With 8 to 10 cases, these are estimates for the split cases, not general effects.
 
@@ -1976,8 +1963,8 @@ We proposed PSO-VNS, a two-phase method for the WFLOP that runs the standard PSO
 % CHECK (manual, see 06d_type4 sec:iea-grad): exact-gradient variant first in both scenarios and budgets, labels as reported (220 of 240 undecidable)
 \item \emph{Ablation (Section~\ref{sec:ablation}).} The PSO phase is the component that matters: it gives the second phase, essentially one compass-search descent, a clearly better start than random sampling in the farm. The salp-swarm first phases give no gain of practical size over random sampling in the farm at the benchmark spacing $4D$ (at $6D$ the SSA phase does gain), and LX-SSA as published makes them worse. After PSO, the VNS phase adds little on the benchmark.
 % CHECK-FINAL [C53]/[C54]: no SSA gain over disc sampling = "in the farm"; [C55]: LX-SSA-VNS worse; [C17]: LX-SSA as published worse; [C56]/[C14]/[C44]: PSO phase beats both controls; CHECK-EXTRA [X53]: gain > margin ruled out across seeds and cases (one-sided); CHECK-DIAG [D08]: essentially one descent
-\item \emph{Robustness (Sections~\ref{sec:robustness} and~\ref{sec:feasinit}).} On the benchmark, PSO-VNS keeps first place under a cubic power curve, when its layouts are re-evaluated with 1$^\circ$ direction bins and when the search itself uses 1$^\circ$ bins (eight cases), where its advantage over PSO exceeds the margin; under the Gaussian wake with 15$^\circ$ bins, PSO ranks narrowly first. Finer bins raise the wake loss of every method, because layouts optimized under a coarse rose exploit the gaps between its bins; gains found under a coarse rose should therefore be checked, and preferably obtained, at a fine resolution. The lead of PSO-VNS depends on random starts (from feasible starts, it is not first) and partly on constraint handling: with Deb's feasibility rules and box clipping, the order of the leading methods changes; with radial projection, it is kept, but the all-run advantage of PSO-VNS over PSO is not significant.
-% CHECK-DIR [F06]/[F09] + CHECK-FINAL [C21]/[C22]: PSO-VNS first at 15/5/1 deg (Jensen), cubic curves, Gaussian 1 deg; PSO first only under Gaussian 15 deg; CHECK-DIR [F03]-[F05], [F07]: every method's loss rises with 1-deg bins, coarse bins exploited; CHECK-FINAL [C28]: the leader changes from feasible starts
+\item \emph{Robustness (Sections~\ref{sec:beyond} and~\ref{sec:robustness}).} On the benchmark, PSO-VNS keeps first place under a cubic power curve, when its layouts are re-evaluated with 1$^\circ$ direction bins and when the search itself uses 1$^\circ$ bins (eight cases), where its advantage over PSO exceeds the margin; under the Gaussian wake with 15$^\circ$ bins, PSO ranks narrowly first. Finer bins raise the wake loss of every method, because layouts optimized under a coarse rose exploit the gaps between its bins; gains found under a coarse rose should therefore be checked, and preferably obtained, at a fine resolution. The lead of PSO-VNS depends on random starts (from feasible starts, VNS and GA rank ahead of it), on the budget (with twenty times the benchmark budget, GA ranks first and PSO-VNS second), on the spacing (at $5D$, GA ranks first) and partly on constraint handling: with Deb's feasibility rules and box clipping, the order of the leading methods changes; with radial projection, it is kept, but the all-run advantage of PSO-VNS over PSO is not significant.
+% CHECK-DIR [F06]/[F09] + CHECK-FINAL [C21]/[C22]: PSO-VNS first at 15/5/1 deg (Jensen), cubic curves, Gaussian 1 deg; PSO first only under Gaussian 15 deg; CHECK-DIR [F03]-[F05], [F07]: every method's loss rises with 1-deg bins, coarse bins exploited; CHECK-FINAL [C28]/[C29]: the leader changes from feasible starts (VNS rank, GA loss) and at 120,030 (GA); spacing 5D: GA best rank (rev5_ga_secondary_report.md)
 % CHECK (manual, 2026-10-04): direct 1-deg: PSO-VNS rank 1.12, PSO-VNS - PSO -0.194 pp, case 90% [-0.272, -0.114] beyond -0.05 (rev3_fine.json); direct 1-deg optimization lowers the 1-deg loss on the same seeds (analysis/rev3_fine.json); constraint study, 6 cases x 5 methods, projection: conditional dL -0.095 pp [-0.162, -0.037], all-run 0.561 ns (tab:S-sa-constraint)
 \end{enumerate}
 
@@ -1991,7 +1978,7 @@ We proposed PSO-VNS, a two-phase method for the WFLOP that runs the standard PSO
 % CHECK-DIAG [D08]-[D10]: truncated compass search
 \item \emph{Model.} The benchmark uses the top-hat Jensen wake, with its non-physical upstream deficit (Section~\ref{sec:model}), and a linear power curve, so its objective is a benchmark value, not farm quality; except in the direct 1$^\circ$ study (eight cases), the search used coarse wind roses. Turbulence and loads (critical at $4D$), wake steering, blockage, terrain, cables, electrical losses and costs are outside our scope; all AEP values are gross.
 % CHECK-FINAL [C21]: cubic curve lowers the power, ranking intact; CHECK-DIR [F32]/[F34]: PyWake 661.39 vs ours 666.75 GWh/yr, wake loss -0.72 pp, cause C_T at free-stream speed
-\item \emph{Farms and budgets.} The benchmark farms are circular, with a prescribed $N\le15$ and $4D$ spacing; measured wind climates enter only through two 16-turbine blocks, on which the feasibility advantage of PSO-VNS rests and whose AEP rankings partly depend on the evaluator; the 64-turbine IEA37 scenario was not run. The rankings are those of small budgets: at a larger budget the order of the methods changes (Section~\ref{sec:budget}).
+\item \emph{Farms and budgets.} The benchmark farms are circular, with a prescribed $N\le15$ and $4D$ spacing; measured wind climates enter only through two 16-turbine blocks, on which the feasibility advantage of PSO-VNS rests and whose AEP rankings partly depend on the evaluator; the 64-turbine IEA37 scenario was not run. The rankings are those of small budgets: at 120,030 evaluations GA overtakes PSO-VNS on the six largest benchmark cases (Section~\ref{sec:budget}).
 % CHECK-FINAL [C45] (budget study: SSA-VNS ahead of PSO at 120,030); CHECK-EXTRA [X52]: Horns Rev feasibility (one site, random starts); CHECK (manual, 2026-10-04): GA lead at 30,030 under 1-deg bins and PyWake NOJ (rev3_sites.json); Lillgrund PSO-VNS lead over the runners-up SSA-VNS, VNS, MS-SLSQP n.s. at 1 deg (p_Holm 0.16, 0.58, 0.58); still significant vs PSO, SSA, LX-SSA, DE, RSD-VNS
 \item \emph{Method pool.} The pool lacks CMA-ES~\cite{HansenOstermeier2001}, L-SHADE~\cite{Tanabe2014}, adaptive GAs, ACO~\cite{Eroglu2012} and BBO~\cite{Bansal2017}, so ``first'' means first among the nine methods compared. Exact-gradient SLSQP was run only on IEA37, and 220 of its 240 strict feasibility labels cannot be decided from the stored coordinates (Section~\ref{sec:archive-reliability}; worst case: Table~\ref{S-tab:S-sa-feasworst}).
 % CHECK-DIR [F44]: projected IEA37 gaps -1.93 / -6.23 % (30,030), feasibility convention matters on IEA37

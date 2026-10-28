@@ -143,14 +143,17 @@ CONDITIONS = [
      lambda s: (lambda o, c: all(o[h] < o["PSO"] for h in ("SSABV", "LXBV"))
                 and all(c["PSO"] < c[a] for a in ("SSA", "LXSSA", "SSABV", "LXBV")))(
          g(s, "baseline", "old", "avg_rank"), g(s, "baseline", "constriction", "avg_rank"))),
-    ("C28", "feasibility-preserving initialization, six largest cases: VNS alone (BVNS) has the best average rank and PSO-VNS ranks second",
+    ("C28", "feasibility-preserving initialization, six largest cases: VNS alone (BVNS) has the best average rank, GA second "
+            "and PSO-VNS third (with GA in the pool; without GA: PSO-VNS second)",
      "feasbudget.rank_feasible_init",
-     lambda s: (lambda r: rankpos(r, "BVNS") == 1 and min(r, key=r.get) == "BVNS" and sum(v <= r["PSOBV"] for v in r.values()) == 2)(
+     lambda s: (lambda r: rankpos(r, "BVNS") == 1 and min(r, key=r.get) == "BVNS"
+                and (sum(v <= r["PSOBV"] for v in r.values()) == 3 and sorted(r, key=r.get)[1] == "GA" if "GA" in r
+                     else sum(v <= r["PSOBV"] for v in r.values()) == 2))(
          g(s, "feasbudget", "rank_feasible_init"))),
-    ("C29", "six largest cases: PSO-VNS has the best average rank at all three budgets (6,030, 30,030, 120,030)",
+    ("C29", "six largest cases: PSO-VNS has the best average rank at 6,030 and 30,030 evaluations; at 120,030 GA has the "
+            "best and PSO-VNS the second-best average rank (with GA in the pool; without GA: PSO-VNS best at all three)",
      "feasbudget.rank.{6030,30030,120030}",
-     lambda s: all((lambda r: all(r["PSOBV"] < v for a, v in r.items() if a != "PSOBV"))(g(s, "feasbudget", "rank", b))
-                   for b in ("6030", "30030", "120030"))),
+     lambda s: _bud_best(s)),
     ("C30", "Horns Rev 1 at 30,030 evaluations (5-deg bins): PSO-VNS has the highest mean AEP (no claim "
             "that 'at least one of its runs exceeds the installed layout' -- no run does with 1-deg bins, F21 -- "
             "so that part is not evaluated; see C62; survival at 1 deg / PyWake: F26)",
@@ -164,6 +167,16 @@ CONDITIONS = [
 
 # Further conditions C31-C52 (component analysis, budgets, Horns Rev 1, IEA37, equivalence, spread). DATA conditions
 # evaluate the data only; the sentences follow them.
+def _bud_best(s):
+    """PSO-VNS best average rank at 6,030 and 30,030; at 120,030 best as well without GA, second behind GA with GA."""
+    r = {b: g(s, "feasbudget", "rank", b) for b in ("6030", "30030", "120030")}
+    first2 = all(all(r[b]["PSOBV"] < v for a, v in r[b].items() if a != "PSOBV") for b in ("6030", "30030"))
+    if "GA" in r["120030"]:
+        o = sorted(r["120030"], key=r["120030"].get)
+        return first2 and o[0] == "GA" and o[1] == "PSOBV"
+    return first2 and all(r["120030"]["PSOBV"] < v for a, v in r["120030"].items() if a != "PSOBV")
+
+
 def _cm(s, k):
     return g(s, "ablation", "case_mean", k)
 
@@ -192,11 +205,10 @@ CONDITIONS += [
      "ablation.contrasts/case_mean SSABV-SSA, LXBV-LXSSA, PSOBV-PSOC",
      lambda s: all(_wtl_abl(s, k)[0] > _wtl_abl(s, k)[2] == 0 and _cm(s, k)["p"] < 0.05 and _cm(s, k)["mean_dloss_pp"] < 0
                    for k in ("SSABV-SSA", "LXBV-LXSSA")) and _cm(s, "PSOBV-PSOC")["p"] >= 0.05),
-    ("C34", "budget: PSO-VNS has the best average rank on the six largest cases at all three budgets; first-place counts are "
+    ("C34", "budget: PSO-VNS has the best average rank on the six largest cases at 6,030 and 30,030 (GA at 120,030); first-place counts are "
             "generated for every budget and PSO-VNS is first in at least one case at 120,030",
      "feasbudget.rank, feasbudget.first_count",
-     lambda s: all((lambda r: all(r["PSOBV"] < v for a, v in r.items() if a != "PSOBV"))(g(s, "feasbudget", "rank", b))
-                   for b in ("6030", "30030", "120030"))
+     lambda s: _bud_best(s)
      and all(g(s, "feasbudget", "first_count", b, "PSOBV") >= 0 for b in ("6030", "30030", "120030"))
      and g(s, "feasbudget", "first_count", "120030", "PSOBV") >= 1),
     ("C35", "LX-SSA phase gives no gain over random sampling: LX-SSA-VNS vs RS-VNS case-mean p >= 0.05, run level T >= 60, W and L <= 5",
@@ -209,10 +221,12 @@ CONDITIONS += [
      "feasbudget.rank.120030, feasbudget.close_gap_pp.120030",
      lambda s: (lambda r, c: r["SSABV"] < r["PSOC"] and set(c["methods"]) == {"BVNS", "SSABV", "RSVNS", "LXBV", "DE"}
                 and 0 <= c["max_gap"] < 0.2)(g(s, "feasbudget", "rank", "120030"), g(s, "feasbudget", "close_gap_pp", "120030"))),
-    ("C38", "feasible starts (08): VNS alone has the lowest mean wake loss and the best average rank on the six largest cases; "
+    ("C38", "feasible starts: VNS alone has the best average rank and, among the methods without GA, the lowest mean wake loss "
+            "(with GA: GA lowest); "
             "PSO and DE never move from their best initial layout (final objective = first checkpoint in every run)",
      "feasbudget.feasible.*.loss, feasbudget.rank_feasible_init, feasinit.runs_moved_from_best_initial",
-     lambda s: (lambda f, r, m: min((a for a in f if f[a] and f[a].get("loss") is not None), key=lambda a: f[a]["loss"]) == "BVNS"
+     lambda s: (lambda f, r, m: min((a for a in f if f[a] and f[a].get("loss") is not None), key=lambda a: f[a]["loss"]) == ("GA" if "GA" in f else "BVNS")
+                and min((a for a in f if a != "GA" and f[a] and f[a].get("loss") is not None), key=lambda a: f[a]["loss"]) == "BVNS"
                 and min(r, key=r.get) == "BVNS" and m["PSOC"]["moved_grid6"] == 0 and m["DE"]["moved_grid6"] == 0
                 and m["PSOC"]["runs_grid6"] > 0 and m["DE"]["runs_grid6"] > 0)(
          g(s, "feasbudget", "feasible"), g(s, "feasbudget", "rank_feasible_init"), g(s, "feasinit", "runs_moved_from_best_initial"))),

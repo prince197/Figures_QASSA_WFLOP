@@ -73,4 +73,14 @@ See `rev5_ga_secondary_run.log` (wall time per mode on 4 worker processes; the m
 4-process-equivalent job during most of the runs, so the per-run `Seconds` are inflated and are not comparable with the
 timings of other batches).
 
-TIMINGS_PLACEHOLDER
+| Mode | Runs | Wall time (4 processes) | Sum of per-run Seconds | Median s per run |
+|---|---|---|---|---|
+| b120k | 180 | 2,282 s (38 min) | 9,083 s | 49.5 |
+| b30k | 180 | 504 s | 2,005 s | 10.8 |
+| hr | 40 | 307 s | 1,205 s | 97.6 (120,030); 6.7 (6,030 feasible) |
+| feas | 180 | 283 s | 1,128 s | 5.8 (incl. the packing initialization) |
+| spacing | 720 | 382 s | 1,527 s | 2.06 (5D), 2.07 (6D) |
+| total | 1,300 | 3,758 s (63 min) | 14,948 s (4.2 CPU-h) | |
+
+Runs made 2026-10-28 03:43-04:46 UTC; `verify` 2026-10-28 (about 1 min). Analysis: `mpce_results.py` about 2 min,
+`rev2_analysis.py` about 1 min, `rev5_ga_secondary_summary.py` about 1 min.
