@@ -93,7 +93,7 @@ PSO-VNS thus does not dominate the standard PSO: it is at least as good on avera
 \caption{PSO-VNS versus PSO on the benchmark: further tests (top) and subsets of cases (bottom). $\Delta L$: case-mean wake loss of PSO-VNS minus that of PSO (pp; negative = PSO-VNS better); margin $m=0.05$~pp.}
 \label{tab:psovns-pso}
 \footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.56\textwidth}>{\raggedright\arraybackslash}p{0.40\textwidth}@{}}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.585\textwidth}>{\raggedright\arraybackslash}p{0.40\textwidth}@{}}
 \toprule
 \multicolumn{2}{@{}l}{\emph{Further tests (68 cases)}} \\
 Case-mean Wilcoxon test $p$; Hodges--Lehmann estimate & 0.30; $-0.003$~pp \\
@@ -107,7 +107,7 @@ Share of the wake loss left at the switch removed in the last 3,000 evaluations,
 Runs infeasible at the switch repaired by the VNS phase & 26 \\
 \end{tabular}
 \par\smallskip
-\begin{tabular}{@{}lccccc@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lccccc@{}}
 \midrule
 \emph{Subsets of cases} & $n$ & Beyond $-m$\,/\,$+m$ & $\overline{\Delta L}$ & Case 90\% CI & Equivalent \\
 \midrule
@@ -118,7 +118,7 @@ Wake loss of PSO-VNS $\ge0.2$~pp & 44 & 11/8 & $-0.026$ & [$-$0.060, 0.008] & no
 Data Set~II, $N\ge10^{a}$ & 10 & \multicolumn{4}{l}{PSO-VNS lower in 10 of 10; $p_{\rm Holm}\le0.018$; gain 0.221\% of AEP} \\
 Data set $\times$ density$^{a}$ & 34 & \multicolumn{4}{l}{interaction $p=0.01$; the 7 Data Set~I cases beyond $m$ favor PSO} \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \par\vspace{2pt}\parbox{\textwidth}{\scriptsize Beyond: cases with $\Delta L<-m$ (PSO-VNS better by more than the margin; up to 0.41~pp) / $\Delta L>+m$ (PSO better; up to 0.27~pp); Equivalent: case-level 90\% interval inside $\pm m$ (verdicts at the three levels: Table~\ref{tab:equiv-main}). $^{a}$Post hoc, exploratory. Data Set~II, $N\ge10$: case-mean Wilcoxon test, Holm over all 28 case-mean tests. Density $\phi=N(\ell_{\min}/2r)^2$, the nominal share of the farm disc covered by the exclusion discs; interaction test over the 34 pairs of cases with identical $(r,N)$ in the two data sets. Details: Tables~\ref{S-tab:X-heterogeneity}, \ref{S-tab:X-beyond}, \ref{S-tab:X-bayes} and~\ref{S-tab:X-hl}.}
 \end{table}
 
