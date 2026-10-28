@@ -32,9 +32,12 @@ Inputs (all runs at 6,030 calls with random initialization unless stated)
   hrfix (24 shards): ALL Horns Rev 1 runs again after the direction-binning fix (commit 7676da9); once any hrfix
   shard exists, every Horns Rev row of every other source is dropped (see load()).
   iea37_published_results.csv (optional; columns case, participant/algorithm, AEP).
-  GA in the budget and feasible-initialization studies (load_ga_secondary; sections 5, 6 and tab:feasbudget only,
-  every other section unchanged; --no-ga-secondary leaves GA out): rev2_ga_s*of10.csv (rev2_ga.py ga: 6,030 calls,
-  random, 68 cases; only the six largest are used here), rev2_gahr_s*of2.csv (Horns Rev 16, 6,030 / 30,030 random)
+  GA (load_ga_secondary; --no-ga-secondary leaves GA out everywhere) in (a) the Type I supplement of section 1: per-case
+  tables tab:res-*, tab:friedman68-full, tab:coords / mpce_best_layouts_maxN.csv / summary main.best_layout_maxN, and
+  the figures avg_ranks, wakeloss_vs_n, feasibility_vs_n, convergence_mid/max, boxplots_mid/max, layouts_max (nine-method
+  pool, statistics in summary["main_ga"]; summary["main"], tab:friedman68, tab:wtl, the case tests and every macro of
+  the main comparison stay on the eight methods), and (b) the budget and feasible-initialization studies (sections 5,
+  6 and tab:feasbudget): rev2_ga_s*of10.csv (rev2_ga.py ga: 6,030 calls, random, 68 cases), rev2_gahr_s*of2.csv (Horns Rev 16, 6,030 / 30,030 random)
   and rev5_ga_<exp>_s*of*.csv from rev5_ga_secondary.py (feas, b30k, b120k: six largest cases; hr: Horns Rev 16 at
   120,030 random, 10 seeds, and 6,030 feasible) -- the design of feas / b30k / b120k / hrfix with the GA label.
 
@@ -1163,7 +1166,9 @@ def load_ga_secondary(data_dir, avail):
             continue
         k = max(complete)
         d = std_cols(pd.concat([pd.read_csv(f) for f in sorted(complete[k].values())], ignore_index=True))
-        d = d[(d.Algorithm == "GA").values & np.array([c in keep for c in zip(d.Dataset, d.Radius, d.Turbines)], bool)]
+        inc = (d.Dataset.isin(["1", "2"]).values if pre == "rev2_ga" else        # rev2_ga: all 68 cases (Type I supplement)
+               np.array([c in keep for c in zip(d.Dataset, d.Radius, d.Turbines)], bool))
+        d = d[(d.Algorithm == "GA").values & inc]
         d = d.drop_duplicates(KEY, keep="last").assign(Source=pre)
         if d.Dataset.eq("HR").any() and abs(float(d[d.Dataset == "HR"].Ideal.iloc[0]) - 148.80717812) > 1e-6:
             raise SystemExit(f"{pre}: Horns Rev wake-free AEP differs from mpce_hrfix (direction binning)")
@@ -1289,17 +1294,39 @@ def main(argv=None):
     log("  avg ranks: " + ", ".join(f"{LAB[a]} {v:.2f}" for a, v in sorted(FR["avg_rank"].items(), key=lambda t: t[1])))
     log(f"  W/T/L vs {fl}: " + ", ".join(f"{LAB[b]} {wtl_str(summary['main']['wtl'][b])}" for b in others))
 
+    # --- Type I supplement pool: the main methods + GA (stored rev2_ga runs; 68 cases, 6,030, random). Used for the
+    #     per-case tables, tab:friedman68-full, the best layouts and the supplement figures of this section only.
+    GA68 = None if GAX is None else GAX[GAX.Dataset.isin(["1", "2"]) & (GAX.Budget == 6030) & (GAX.Init == "random")]
+    if GA68 is not None and len(GA68) == 68 * 30:
+        SUP = with_ga(MAINP)
+        GG = pd.concat([G, GA68], ignore_index=True)
+        S9 = case_stats(GG, SUP)
+        FR9 = friedman_block(rank_matrix(S9, SUP), SUP)
+        others9 = [a for a in SUP if a != FOCUS]
+        CW9 = case_mean_wilcoxon(S9, FOCUS, others9)
+        feas9 = {a: float(GG[GG.Algorithm == a].Feasible.mean() * 100) for a in SUP}
+        below9 = {a: int((~S9[S9.Algorithm == a].Qualified).sum()) for a in SUP}
+        summary["main_ga"] = dict(methods=SUP, source="main runs + rev2_ga (GA)", friedman=FR9, case_mean_wilcoxon=CW9,
+                                  feasible_pct=feas9, cases_below_half_feasible=below9,
+                                  mean_loss_pct_qualified_cases={a: float(S9[(S9.Algorithm == a) & S9.Qualified].Loss.mean()) for a in SUP})
+        log("  with GA (supplement pool): avg ranks " + ", ".join(f"{LAB[a]} {v:.2f}" for a, v in sorted(FR9["avg_rank"].items(), key=lambda t: t[1])))
+    else:
+        SUP, GG, S9, FR9, others9, CW9, feas9 = MAINP, G, S, FR, others, CW, feas_pct
+        below9 = summary["main"]["cases_below_half_feasible"]
+        if GA68 is not None:
+            log(f"  GA 68-case runs incomplete ({len(GA68)}) -> supplement pool without GA")
+
     # --- per-case tables (supplementary)
     for ds in ("1", "2"):
         for r, nmax in RADII.items():
             lines = []
             for n in range(2, nmax + 1):
-                s = S[(S.Dataset == ds) & (S.Radius == r) & (S.Turbines == n)].set_index("Algorithm").reindex(MAINP)
-                ideal = G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n)].Ideal.iloc[0]
+                s = S9[(S9.Dataset == ds) & (S.Radius == r) & (S.Turbines == n)].set_index("Algorithm").reindex(SUP)
+                ideal = GG[(GG.Dataset == ds) & (GG.Radius == r) & (GG.Turbines == n)].Ideal.iloc[0]
                 qm = s.Mean.where(s.Qualified.astype(bool)).round(6)
                 best = set(qm.index[qm == qm.max()]) if qm.notna().any() else set()      # ties all bold
                 cells = []
-                for a in MAINP:
+                for a in SUP:
                     if not s.NFeas[a]:
                         cells.append(f"--$^{{0}}$"); continue
                     sd = s.SD[a]
@@ -1311,8 +1338,8 @@ def main(argv=None):
                     cells.append(c)
                 lines.append(f"{n} & {ideal:.1f} & " + " & ".join(cells) + " \\\\")
             supp.append(table("table*", f"{DSN[ds]}, {r}-m farm: benchmark objective, mean (SD) over the feasible runs of 30 seed-paired runs at 6,030 objective calls. Bold: highest mean among the methods with at least 15 feasible runs. A superscript gives the number of feasible runs when fewer than 30; ``--'' means no feasible run.",
-                              f"tab:res-{ds}-{r}", "c" * (2 + len(MAINP)),
-                              "$N$ & Wake-free & " + " & ".join(LAB[a] for a in MAINP), lines, resize=True, sep="2pt"))
+                              f"tab:res-{ds}-{r}", "c" * (2 + len(SUP)),
+                              "$N$ & Wake-free & " + " & ".join(LAB[a] for a in SUP), lines, resize=True, sep="2pt"))
 
     # --- minimum-spacing re-optimization (runs of the preliminary comparison with the original SSA / LX-SSA code; analyze_authors_runs.py)
     #     and constructible turbine counts (packing_capacity.py), copied into the supplement after the per-case tables
@@ -1411,19 +1438,20 @@ def main(argv=None):
 
     # --- Friedman + case-mean Wilcoxon table
     order = sorted(MAINP, key=lambda a: FR["avg_rank"][a])
+    order9 = sorted(SUP, key=lambda a: FR9["avg_rank"][a])
     lines = []
-    for a in order:
+    for a in order9:
         if a == FOCUS:
             pz = pw = rb = dl = "--"
         else:
-            pz = fmt_p(FR["p_holm_vs_focus"][a]); pw = fmt_p(CW[a]["p_holm"]); rb = f"{CW[a]['rb']:+.2f}"
-            dl = f"${CW[a]['mean_dloss_pp']:+.3f}$"
-        lines.append(f"{LAB[a]} & {FR['avg_rank'][a]:.2f} & {FR['sole_best_count'][a]} & {feas_pct[a]:.1f} & "
-                     f"{summary['main']['cases_below_half_feasible'][a]} & {pz} & {pw} & {rb} & {dl} \\\\")
+            pz = fmt_p(FR9["p_holm_vs_focus"][a]); pw = fmt_p(CW9[a]["p_holm"]); rb = f"{CW9[a]['rb']:+.2f}"
+            dl = f"${CW9[a]['mean_dloss_pp']:+.3f}$"
+        lines.append(f"{LAB[a]} & {FR9['avg_rank'][a]:.2f} & {FR9['sole_best_count'][a]} & {feas9[a]:.1f} & "
+                     f"{below9[a]} & {pz} & {pw} & {rb} & {dl} \\\\")
     supp.append(table(
         "table*", "Case-level analysis over the %d benchmark cases. Ranks of the mean feasible benchmark objective within each case (1 = best); a method with fewer than 15 feasible runs out of 30 in a case is ranked below all other methods, by its number of feasible runs (``$<$15'': number of such cases). Friedman $\\chi^2_F=%.1f$ (%d d.f.), $p=%s$; Iman--Davenport $F_F=%.1f$, $p=%s$. $p_z$: Holm-adjusted $p$ of the average-rank $z$ test against %s (best-ranked method: %s). Because mean-rank post hoc tests depend on the pool of compared methods \\cite{Benavoli2016}, pairwise two-sided Wilcoxon signed-rank tests on the per-case mean wake losses (\\%%) are also given: $p_W$ (Holm-adjusted over the %d comparisons), matched-pairs rank-biserial correlation $r_{\\rm rb}$ (positive = %s better) and mean difference $\\overline{\\Delta L}$ of the wake loss (percentage points, %s minus method, over the cases where both methods have at least 15 feasible runs). ``Best'': cases in which the method alone ranks first; ``Feas.'': percentage of feasible runs."
-        % (FR["n_cases"], FR["chi2"], len(MAINP) - 1, fmt_p(FR["p"]).strip("$"), FR["iman_davenport"],
-           fmt_p(FR["iman_davenport_p"]).strip("$"), fl, LAB[FR["best_ranked"]], len(others), fl, fl),
+        % (FR9["n_cases"], FR9["chi2"], len(SUP) - 1, fmt_p(FR9["p"]).strip("$"), FR9["iman_davenport"],
+           fmt_p(FR9["iman_davenport_p"]).strip("$"), fl, LAB[FR9["best_ranked"]], len(others9), fl, fl),
         "tab:friedman68-full", "lcccccccc",
         "Method & Avg.\\ rank & Best & Feas.\\ (\\%) & $<$15 & $p_z$ & $p_W$ & $r_{\\rm rb}$ & $\\overline{\\Delta L}$ (pp)",
         lines))
@@ -1540,13 +1568,13 @@ def main(argv=None):
 
     # --- figures: average ranks
     fig, ax = plt.subplots(figsize=(0.55 * TW_SUPP, 2.2))          # printed at 0.55 of the supplement width
-    for pos, a in enumerate(order[::-1]):
-        v = FR["avg_rank"][a]
+    for pos, a in enumerate(order9[::-1]):
+        v = FR9["avg_rank"][a]
         ax.plot([1, v], [pos, pos], color=GRID, lw=2, zorder=1)
         ax.scatter(v, pos, s=90 if a == FOCUS else 36, color=COL[a], marker=mk(a), zorder=zo(a), edgecolor="white", lw=0.6)
         ax.text(v + 0.17, pos, f"{v:.2f}", va="center", fontsize=7.5, color=INK)
-    ax.set_yticks(range(len(order))); ax.set_yticklabels([LAB[a] for a in order[::-1]])
-    ax.set_xlim(1, len(MAINP) + 0.3); ax.set_xlabel(f"Average rank over {FR['n_cases']} cases (1 = best)")
+    ax.set_yticks(range(len(order9))); ax.set_yticklabels([LAB[a] for a in order9[::-1]])
+    ax.set_xlim(1, len(SUP) + 0.3); ax.set_xlabel(f"Average rank over {FR9['n_cases']} cases (1 = best)")
     ax.grid(axis="y", visible=False)
     FG.save(fig, "avg_ranks")
 
@@ -1559,8 +1587,8 @@ def main(argv=None):
         for i, ds in enumerate(("1", "2")):
             for j, (r, nmax) in enumerate(RADII.items()):
                 ax = axes[i, j]
-                s = S[(S.Dataset == ds) & (S.Radius == r)]
-                for a in MAINP:
+                s = S9[(S9.Dataset == ds) & (S9.Radius == r)]
+                for a in SUP:
                     m = s[s.Algorithm == a].sort_values("Turbines")
                     y = m.Loss.where(m.Qualified) if what == "Loss" else 100 * m.NFeas / m.N
                     ax.plot(m.Turbines, y, color=COL[a], ls=ls(a), lw=lw(a, 1.0), marker=mk(a), ms=ms(a, 2.8), zorder=zo(a))
@@ -1572,7 +1600,7 @@ def main(argv=None):
                 ax.set_xticks(range(2, nmax + 1, 2 if (nmax > 10 or what == "Loss") else 1))
                 if i == 1: ax.set_xlabel("Number of turbines $N$")
                 if j == 0: ax.set_ylabel(ylab)
-        legend_row(fig, MAINP)
+        legend_row(fig, SUP)
         fig.tight_layout()
         FG.save(fig, name)
 
@@ -1582,12 +1610,12 @@ def main(argv=None):
         for i, ds in enumerate(("1", "2")):
             for j, r in enumerate(RADII):
                 ax = axes[i, j]; n = lv[r]
-                conv_panel(ax, G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n)], MAINP)
+                conv_panel(ax, GG[(GG.Dataset == ds) & (GG.Radius == r) & (GG.Turbines == n)], SUP)
                 log_axis(ax)
                 ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", color=INK)
                 if i == 1: ax.set_xlabel("Evaluations")
                 if j == 0: ax.set_ylabel("Best wake loss (% of ideal)")
-        legend_row(fig, MAINP)
+        legend_row(fig, SUP)
         fig.tight_layout()
         FG.save(fig, f"convergence_{tag}")
 
@@ -1597,16 +1625,16 @@ def main(argv=None):
         for i, ds in enumerate(("1", "2")):
             for j, r in enumerate(RADII):
                 ax = axes[i, j]; n = lv[r]
-                sub = G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n) & G.Feasible]
-                data = [sub[sub.Algorithm == a].LossPct.values for a in MAINP]
+                sub = GG[(GG.Dataset == ds) & (GG.Radius == r) & (GG.Turbines == n) & GG.Feasible]
+                data = [sub[sub.Algorithm == a].LossPct.values for a in SUP]
                 bp = ax.boxplot(data, widths=0.6, patch_artist=True, showfliers=True,
                                 flierprops=dict(marker=".", ms=3, mec=MUTED), medianprops=dict(color=INK, lw=1.2),
                                 whiskerprops=dict(color=MUTED, lw=0.8), capprops=dict(color=MUTED, lw=0.8))
-                for patch, a in zip(bp["boxes"], MAINP):
+                for patch, a in zip(bp["boxes"], SUP):
                     patch.set_facecolor(matplotlib.colors.to_rgba(COL[a], 0.4)); patch.set_edgecolor(COL[a]); patch.set_linewidth(1.0)
                 cnt = [len(d) for d in data]
-                ax.set_xticks(range(1, len(MAINP) + 1))
-                ax.set_xticklabels([LAB[a] + ("" if c == 30 else f" ({c})") for a, c in zip(MAINP, cnt)], rotation=45,
+                ax.set_xticks(range(1, len(SUP) + 1))
+                ax.set_xticklabels([LAB[a] + ("" if c == 30 else f" ({c})") for a, c in zip(SUP, cnt)], rotation=45,
                                    ha="right", rotation_mode="anchor", fontsize=7)
                 ax.set_title(f"{DSN[ds]}, $r$ = {r} m, $N$ = {n}", color=INK)
                 if j == 0: ax.set_ylabel("Wake loss (% of ideal)")
@@ -1620,7 +1648,7 @@ def main(argv=None):
     for i, ds in enumerate(("1", "2")):
         for j, (r, n) in enumerate(RADII.items()):
             ax = axes[i, j]
-            sub = G[(G.Dataset == ds) & (G.Radius == r) & (G.Turbines == n) & G.Feasible]
+            sub = GG[(GG.Dataset == ds) & (GG.Radius == r) & (GG.Turbines == n) & GG.Feasible]
             top = sub.sort_values("Objective").iloc[-1]
             fs = sub[sub.Algorithm == FOCUS]
             lx = fs.sort_values("Objective").iloc[-1] if len(fs) else None
