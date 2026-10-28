@@ -8,7 +8,7 @@ This section states the problem that all methods solve, with its wind, wake and 
 \item \emph{Wind direction.} The direction $\theta$ has the probability density $p_\theta$; it is the direction \emph{towards} which the wind blows, counter-clockwise from east (Fig.~\ref{fig:model}a). The meteorological directions $\theta_{\rm met}$ of Horns Rev~1 and IEA37 (wind \emph{from}, clockwise from north) are converted by $\theta=270^\circ-\theta_{\rm met}$.
 \item \emph{Constraints} (Section~\ref{sec:constraints}). The turbine distances $\ell_{ij}=\lVert(x_i-x_j,\,y_i-y_j)\rVert_2$ are at least $\ell_{\min}=4D=8R$~\cite{Kusiak2010,Bansal2017}, and the farm is a disc of radius $r=500$, 750 or 1000~m.
 \end{itemize}
-The spacing of $4D$ is the convention of the Kusiak--Song benchmark and is kept for comparability. It lies at the dense end of practice, as the installed Horns Rev~1 layout is a regular grid of about $7D$ (Section~\ref{sec:hornsrev-site}); our results therefore concern a packing-constrained regime, and Section~\ref{sec:spacing} examines larger spacings.
+The spacing $4D$ is the convention of the Kusiak--Song benchmark and is kept for comparability. It lies at the dense end of practice, as the installed Horns Rev~1 layout is a regular grid of about $7D$ (Section~\ref{sec:hornsrev-site}); our results therefore concern a packing-constrained regime, and Section~\ref{sec:spacing} examines larger spacings.
 
 We use the Kusiak--Song benchmark model unchanged and claim no modeling novelty; the contributions are the PSO-VNS algorithm and its controlled evaluation. The model rests on the following assumptions, which the subsections below state in detail:
 \begin{enumerate}
@@ -52,23 +52,23 @@ with shape $\zeta(\theta)$ and scale $\psi(\theta)$. The benchmark rose is piece
 Both are synthetic wind roses of the Kusiak--Song benchmark~\cite{Kusiak2010,Bansal2017}, not measurements at a site. The measured wind climates in this study are the 12-sector Weibull roses of the Horns Rev~1 block (Section~\ref{sec:hornsrev-site}) and of a Lillgrund block (Section~\ref{sec:lillgrund}), both optimized in 5$^\circ$ bins; IEA37 Case Study~1 uses 16 directions at one speed (Section~\ref{sec:setup-beyond}).
 % verified: analysis/wflop_model.py (DS1_W, DS1_PSI, DS2_PSI, DS2_W; k = 2); bins 6+7 of DS I: 0.2+0.6 = 0.8, towards 75-105 deg = from 165-195 deg
 
-Because a top-hat wake is narrow, the direction bins interact with the wake model: with 15$^\circ$ bins the wake of a distant pair of turbines can fall between two bin centers and then does not enter the objective; optimized layouts exploit these gaps (Section~\ref{S-sec:S-model-details}). Section~\ref{sec:direction} therefore reports which conclusions survive a 1$^\circ$ rose.
+Because a top-hat wake is narrow, the direction bins interact with the wake model: with 15$^\circ$ bins the wake of a distant pair of turbines can fall between two bin centers and not enter the objective; optimized layouts exploit these gaps (Section~\ref{S-sec:S-model-details}). Section~\ref{sec:direction} therefore reports which conclusions survive a 1$^\circ$ rose.
 
 \subsection{Wake Effect Model}
-Given the wind in a direction bin, the wake model determines the speed that reaches each turbine. In the Jensen model (Fig.~\ref{fig:model}b,c), the wake of turbine $j$ is a half cone with half-angle $\alpha=\arctan K$ (wake-spreading constant $K$), and its virtual vertex lies $R/K$ upstream of the rotor. Let $u_{ij}=(x_i - x_j)\cos\theta + (y_i - y_j)\sin\theta + R/K$ be the along-wind distance of turbine $i$ from this vertex and $v_{ij}=-(x_i - x_j)\sin\theta + (y_i - y_j)\cos\theta$ its lateral offset; turbine $i$ then lies in the wake if $\beta_{ij}=\cos^{-1}\!\bigl(u_{ij}/\sqrt{u_{ij}^2+v_{ij}^2}\bigr)<\alpha$. Its downstream distance is $d_{ij}=\lvert u_{ij}-R/K\rvert$, and with the thrust coefficient $C_T$, the free-stream speed $s_{\text{up}}$ and the wake speed $s_{\text{down}}$, the velocity deficit is
+The wake model determines the wind speed that reaches each turbine. In the Jensen model (Fig.~\ref{fig:model}b,c), the wake of turbine $j$ is a half cone with half-angle $\alpha=\arctan K$ (wake-spreading constant $K$), and its virtual vertex lies $R/K$ upstream of the rotor. Let $u_{ij}=(x_i - x_j)\cos\theta + (y_i - y_j)\sin\theta + R/K$ be the along-wind distance of turbine $i$ from this vertex and $v_{ij}=-(x_i - x_j)\sin\theta + (y_i - y_j)\cos\theta$ its lateral offset; turbine $i$ then lies in the wake if $\beta_{ij}=\cos^{-1}\!\bigl(u_{ij}/\sqrt{u_{ij}^2+v_{ij}^2}\bigr)<\alpha$. Its downstream distance is $d_{ij}=\lvert u_{ij}-R/K\rvert$, and with the thrust coefficient $C_T$, the free-stream speed $s_{\text{up}}$ and the wake speed $s_{\text{down}}$, the velocity deficit is
 \begin{equation}
     \Delta_{ij} = 1-\frac{s_{\text{down}}}{s_{\text{up}}}=\frac{1 - \sqrt{1 - C_T}}{\left(1 + K d_{ij}/R\right)^2}.
     \label{eq:deficit}
 \end{equation}
 The numerator is the deficit behind the rotor from actuator-disc momentum theory, and the factor $R^2/(R+Kd_{ij})^2$ spreads it over the growing wake (Fig.~\ref{fig:model}b). With $C_T=0.8$ and $K=0.075$, a turbine $\ell_{\min}=308$~m directly behind another loses 21.6\% of the wind speed, and one 770~m ($10D$) behind loses 8.8\%.
 % verified: (1-sqrt(0.2))/(1+0.075*308/38.5)^2 = 0.2159; (1-sqrt(0.2))/(1+0.075*770/38.5)^2 = 0.0884
-As in~\cite{Kusiak2010}, the top-hat wake is tested at the hub center only. The deficit therefore jumps at the cone edge, and it also reaches a turbine less than $R/K$ \emph{upstream} of $j$ near its axis (between $A$ and the rotor in Fig.~\ref{fig:model}c); this effect is non-physical but kept for comparability with the published results. When several wakes reach turbine $i$, their deficits are combined by the root-sum-square rule,
+As in~\cite{Kusiak2010}, the top-hat wake is tested at the hub center only. The deficit therefore jumps at the cone edge, and it also reaches a turbine less than $R/K$ \emph{upstream} of $j$ near its axis (between $A$ and the rotor in Fig.~\ref{fig:model}c); this effect is non-physical but kept for comparability with the published results. The deficits of several wakes are combined by the root-sum-square rule,
 \begin{equation}\label{eq5}
 \Delta_i(\theta) = \Bigl( \textstyle\sum_{j \ne i,\ \beta_{ij} < \alpha} \Delta_{ij}^2 \Bigr)^{1/2} .
 \end{equation}
-Because $C_T$ is constant, which overstates the deficits above rated speed, $\Delta_i(\theta)$ depends only on the layout and the direction, not on the free-stream speed $s$. The local wind speed in a direction bin, $s_{\rm local}=[1-\Delta_i(\theta)]\,s$, is therefore a scaled Weibull variable with the same shape $\zeta(\theta)$ and the scale $\psi_i(\theta)=\psi(\theta)[1-\Delta_i(\theta)]$. The hub-center test, finally, makes the objective jump wherever a hub crosses a cone edge in an evaluated direction. This discontinuity motivates the derivative-free local search of VNS (Section~\ref{sec:vns}) and handicaps the finite-difference gradients of MS-SLSQP.
+Because $C_T$ is constant, which overstates the deficits above rated speed, $\Delta_i(\theta)$ depends only on the layout and the direction, not on the free-stream speed $s$. The local wind speed in a direction bin, $s_{\rm local}=[1-\Delta_i(\theta)]\,s$, is therefore a scaled Weibull variable with the same shape $\zeta(\theta)$ and the scale $\psi_i(\theta)=\psi(\theta)[1-\Delta_i(\theta)]$. The hub-center test, finally, makes the objective jump wherever a hub crosses a cone edge in an evaluated direction. It motivates the derivative-free local search of VNS (Section~\ref{sec:vns}) and handicaps the finite-difference gradients of MS-SLSQP.
 
-We use the Jensen model for comparability with the published Kusiak--Song results; Sections~\ref{sec:iea37} and~\ref{sec:gaussian} test a Gaussian wake, for the reasons given in Section~\ref{S-sec:S-model-details}.
+We use the Jensen model for comparability with the published Kusiak--Song results; Sections~\ref{sec:iea37} and~\ref{sec:gaussian} test a Gaussian wake (see Section~\ref{S-sec:S-model-details}).
 
 \subsection{Power Model and Expected Energy}
 \label{sec:powermodel}
@@ -101,9 +101,9 @@ These components define the objective of the optimization problem. With the wake
 \end{aligned}
 \label{eq:wflop}
 \end{equation}
-which is equivalent to maximizing the expected farm power and hence the AEP. It is a problem in $2N$ variables ($2N\le30$ on the benchmark) with a discontinuous objective and $N(N-1)/2$ nonconvex spacing constraints; these two features make it hard and shape the methods of Sections~\ref{sec:prelim}--\ref{sec:hybrid} (Section~\ref{sec:psovns-motivation}).
+which is equivalent to maximizing the expected farm power and hence the AEP. It is a problem in $2N$ variables ($2N\le30$ on the benchmark) with a discontinuous objective and $N(N-1)/2$ nonconvex spacing constraints; these two features make it hard and shape the methods of Sections~\ref{sec:prelim}--\ref{sec:hybrid}.
 
-Except for MS-SLSQP, the optimizers handle the constraints by repair and penalty. After every position update, each coordinate is clipped to $[-r,r]$; this box repair enforces the bounding square, not the circle. The boundary and spacing violations are measured by
+All optimizers except MS-SLSQP handle the constraints by repair and penalty. After every position update, each coordinate is clipped to $[-r,r]$ (box repair; the square, not the circle). The boundary and spacing violations are
 \begin{equation*}
 g^{\rm b}_{i}=x_i^2+y_i^2-r^2,\qquad g^{\rm s}_{ij}=\ell_{\min}-\ell_{ij};
 \end{equation*}
