@@ -122,53 +122,35 @@
 \SuppRedirect{M-tab:friedman68}{tab:friedman68-full}
 \SuppRedirect{M-tab:hr-site}{tab:hr-site-full}
 
-\noindent Tables, figures, sections, algorithms and equations of this document are numbered S1, S2, \ldots; references without the prefix S (e.g., Table~\ref{M-tab:farm-I-stats} or \eqref{M-eq:penalty}) point to the main text. The main text compares nine methods (PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, GA, VNS and MS-SLSQP) on four types of wind farm: Type~I, the Kusiak--Song benchmark; Type~II, the Horns Rev~1 block; Type~III, the Lillgrund block; and Type~IV, IEA37 Case Study~1. The sections of this document follow the order of the main text:
+\noindent Tables, figures, sections, algorithms and equations of this document are numbered S1, S2, \ldots; references without the prefix S (e.g., Table~\ref{M-tab:farm-I-stats} or \eqref{M-eq:penalty}) point to the main text. The main text compares nine methods (PSO-VNS, PSO, SSA-VNS, SSA, LX-SSA, DE, GA, VNS and MS-SLSQP) on four types of wind farm: Type~I, the Kusiak--Song benchmark; Type~II, the Horns Rev~1 block; Type~III, the Lillgrund block; and Type~IV, IEA37 Case Study~1. This document supports that comparison with implementation details, full results, proofs and further checks. Each of its sections serves one or more sections of the main text:
 \begin{itemize}
-\item details of the evaluation protocol and of the implementation (Section~\ref{sec:S-protocol}),
-\item details of the results by wind farm type:
-\begin{itemize}
-\item Type~I: per-case results, case-level statistics and figures (Section~\ref{sec:S-tables}) and the nine-method analysis with GA (Section~\ref{sec:S-xp-ga}),
-\item Type~II: the Horns Rev~1 block (Section~\ref{sec:S-hr16}),
-\item Type~III: the Lillgrund block (Section~\ref{sec:S-xp-site}),
-\item Type~IV: IEA37 Case Study~1 (Section~\ref{sec:S-iea37}), including the exact-gradient SLSQP variants, which exist only for this smooth model (Section~\ref{sec:S-xp-grad}),
+\item Section~\ref{sec:S-protocol}: data, pseudocode and settings of the model, the methods and the evaluation protocol (Sections~\ref{M-sec:model}, \ref{M-sec:prelim} and~\ref{M-sec:setup});
+\item Section~\ref{sec:S-tables}: per-case results, case-level statistics and figures of the Type~I comparison (Section~\ref{M-sec:farm-I});
+\item Section~\ref{sec:S-ablation}: details of the ablation study (component analysis), the practical equivalence and the robustness of the statistical conclusions (Section~\ref{M-sec:ablation});
+\item Section~\ref{sec:S-beyond}: feasibility-preserving initialization, budget scaling, the full results of Types~II and IV and the computational cost (Sections~\ref{M-sec:beyond}, \ref{M-sec:farm-II}, \ref{M-sec:farm-IV} and~\ref{M-sec:runtime});
+\item Section~\ref{sec:S-robust}: robustness to the modeling assumptions, including the direction resolution of the wind roses (Section~\ref{M-sec:robustness});
+\item Section~\ref{sec:S-theory}: statements and proofs of the theoretical results used in Sections~\ref{M-sec:prelim}, \ref{M-sec:psovns-method}, \ref{M-sec:setup-stats} and~\ref{M-sec:feasinit};
+\item Section~\ref{sec:S-diag}: algorithm diagnostics behind the explanations of Sections~\ref{M-sec:feasinit} and~\ref{M-sec:abl-vns};
+\item Section~\ref{sec:S-literature}: why published Kusiak--Song results are not compared numerically (Section~\ref{M-sec:literature});
+\item Section~\ref{sec:S-repro}: a map from each result to the script that produces it (Section~\ref{M-sec:validation});
+\item Section~\ref{sec:S-xp-lap}: five additional experiments, namely an ablation of the Laplace step of LX-SSA, a real-coded GA, a re-optimization at minimum spacings $5D$ and $6D$, exact-gradient baselines on IEA37 and a second site, a Lillgrund block (Sections~\ref{M-sec:farm-I}, \ref{M-sec:spacing}, \ref{M-sec:farm-III}, \ref{M-sec:iea-grad} and~\ref{M-sec:abl-swarm});
+\item Section~\ref{sec:S-sa}: sensitivity analyses of the inference and of the site results (Sections~\ref{M-sec:setup-stats} and~\ref{M-sec:robustness}--\ref{M-sec:farm-IV}); and
+\item Section~\ref{sec:S-archive}: the audit of the archive and the all-run reliability analysis (Sections~\ref{M-sec:validation} and~\ref{M-sec:archive-reliability}).
 \end{itemize}
-\item details of the ablation study (component analysis), the practical equivalence and the robustness of the statistical conclusions (Section~\ref{sec:S-ablation}),
-\item details of the further analyses: feasibility-preserving initialization, budget scaling and computational cost (Section~\ref{sec:S-beyond}), and
-\item details of the robustness to the modeling assumptions, including the direction resolution of the wind roses (Section~\ref{sec:S-robust}),
-\end{itemize}
-followed by
-\begin{itemize}
-\item the theoretical details (Section~\ref{sec:S-theory}),
-\item the algorithm diagnostics (Section~\ref{sec:S-diag}),
-\item a note on published Kusiak--Song results (Section~\ref{sec:S-literature}),
-\item a map from each result to the script that produces it (Section~\ref{sec:S-repro}),
-\item five additional experiments: an ablation of the Laplace step of LX-SSA, a real-coded GA, a re-optimization at minimum spacings $5D$ and $6D$, exact-gradient baselines on IEA37 and a second site, a Lillgrund block (Section~\ref{sec:S-xp-lap}),
-\item the sensitivity analyses and experiments (Section~\ref{sec:S-sa}) and
-\item the audit of the archive (Section~\ref{sec:S-archive}).
-\end{itemize}
+By wind farm type, the details are in Sections~\ref{sec:S-tables} and~\ref{sec:S-xp-ga} (Type~I, the latter with GA as the ninth method), Section~\ref{sec:S-hr16} (Type~II, the Horns Rev~1 block), Section~\ref{sec:S-xp-site} (Type~III), and Sections~\ref{sec:S-iea37} and~\ref{sec:S-xp-grad} (Type~IV, IEA37 Case Study~1; the exact-gradient SLSQP variants exist only for this smooth model).
 
-Unless stated otherwise, all results are based on 30 seed-paired runs of 6,030 evaluations (objective calls, including the initial population and, for MS-SLSQP, the finite-difference gradient calls) with random initialization; the method names are those of the main text, and PSO denotes the standard PSO with the constriction coefficients~\eqref{M-eq:constriction}. All Horns Rev~1 results use the 5$^\circ$ direction binning of Section~\ref{sec:S-hrmodel}. The results hold for the discretized wind roses of the benchmark (24 bins of 15$^\circ$) and of Horns Rev~1 (5$^\circ$ bins); Section~\ref{sec:S-direction} re-evaluates the final layouts with 1$^\circ$ bins, and Section~\ref{sec:S-sa-fine} optimizes with them directly.
+Unless stated otherwise, all results are based on 30 seed-paired runs of 6,030 evaluations (objective calls, including the initial population and, for MS-SLSQP, the finite-difference gradient calls) with random initialization; the method names are those of the main text, and PSO denotes the standard PSO with the constriction coefficients~\eqref{M-eq:constriction}. All Horns Rev~1 results use the 5$^\circ$ direction binning of Section~\ref{sec:S-hrmodel}. The results thus hold for the discretized wind roses of the benchmark (24 bins of 15$^\circ$) and of Horns Rev~1 (5$^\circ$ bins); Section~\ref{sec:S-direction} re-evaluates the final layouts with 1$^\circ$ bins, and Section~\ref{sec:S-sa-fine} optimizes with them directly.
 
-All tables of Sections~\ref{sec:S-tables}--\ref{sec:S-robust} are generated from the published run data by \texttt{analysis/mpce\_results.py}, except those
-\begin{itemize}
-\item of Section~\ref{sec:S-inference} (\texttt{analysis/mpce\_inference\_extra.py}) and
-\item of Section~\ref{sec:S-direction} (\texttt{analysis/mpce\_direction.py});
-\end{itemize}
-the diagnostics of Section~\ref{sec:S-diag} come from instrumented reruns (\texttt{analysis/mpce\_diagnostics.py}), and every number of Section~\ref{sec:S-theory} is recomputed by \texttt{analysis/make\_theory\_figures.py}.
+All tables of Sections~\ref{sec:S-tables}--\ref{sec:S-robust} are generated from the published run data by \texttt{analysis/mpce\_results.py}, except those of Section~\ref{sec:S-inference} (\texttt{analysis/mpce\_inference\_extra.py}) and of Section~\ref{sec:S-direction} (\texttt{analysis/mpce\_direction.py}). The diagnostics of Section~\ref{sec:S-diag} come from instrumented reruns (\texttt{analysis/mpce\_diagnostics.py}), and every number of Section~\ref{sec:S-theory} is recomputed by \texttt{analysis/make\_theory\_figures.py}.
 
 \section{Evaluation Protocol and Implementation Details}
 \label{sec:S-protocol}
 \label{sec:S-impl}
-This section gives the data, the pseudocode and the settings needed to reproduce the protocol of Section~\ref{M-sec:setup}:
-\begin{itemize}
-\item the two wind data sets of the 68 benchmark cases, the salp-swarm methods compared as Phase-1 alternatives in the component analysis, the details of the ranking and the tests (Sections~\ref{sec:S-wind}--\ref{sec:S-stats}), and
-\item the implementation details that the main text does not state: iteration counts, MS-SLSQP, the feasibility-preserving initialization, the Horns Rev~1 model and the feasibility tolerance (Sections~\ref{sec:S-iter}--\ref{sec:S-tol}).
-\end{itemize}
-All settings are those of the code in \texttt{analysis/} (Section~\ref{sec:S-repro}).
+This section supports the problem model, the methods and the experimental setup of the main text (Sections~\ref{M-sec:model}, \ref{M-sec:prelim} and~\ref{M-sec:setup}) with the data, pseudocode and settings needed to reproduce the protocol. Sections~\ref{sec:S-wind}--\ref{sec:S-stats} give the two wind data sets of the 68 benchmark cases, the details of the model, the salp-swarm methods compared as Phase-1 alternatives in the component analysis and the details of the ranking and the tests. Sections~\ref{sec:S-iter}--\ref{sec:S-tol} then give the implementation details that the main text does not state: iteration counts, MS-SLSQP, the feasibility-preserving initialization, the Horns Rev~1 model and the feasibility tolerance. All settings are those of the code in \texttt{analysis/} (Section~\ref{sec:S-repro}).
 
 \subsection{Wind Data}
 \label{sec:S-wind}
-Table~\ref{tab:S-wind} lists the two wind data sets of the Kusiak--Song benchmark~\cite{Kusiak2010,Bansal2017}.
+The Type~I cases use two wind data sets, summarized in Section~\ref{M-sec:wind} of the main text; Table~\ref{tab:S-wind} lists them bin by bin, as published for the Kusiak--Song benchmark~\cite{Kusiak2010,Bansal2017}.
 \begin{table}[!htb]
 \centering
 \caption{Wind Data Sets I and II: probability $p_l$ of direction bin $l$ ($[15(l-1),15l)^\circ$, direction the wind blows towards, counter-clockwise from east) and Weibull scale $\psi$; $\zeta=2$ in all bins. The most probable bin is $l=7$ (90$^\circ$--105$^\circ$ towards, i.e., wind from 165$^\circ$--180$^\circ$ in the meteorological convention $\theta_{\rm met}=270^\circ-\theta$) for Data Set~I and $l=13$ (180$^\circ$--195$^\circ$ towards, i.e., wind from 75$^\circ$--90$^\circ$) for Data Set~II.}
@@ -193,7 +175,7 @@ DS II: $p_l$ & 0.1839 & 0.1115 & 0.0765 & 0.0080 & 0.0051 & 0.0019 & 0.0012 & 0.
 
 \subsection{Model Details}
 \label{sec:S-model-details}
-This subsection gives the details of the model of Section~\ref{M-sec:model} that the main text only summarizes.
+The model of Section~\ref{M-sec:model} is only summarized in the main text; this subsection gives the discretized objective, the treatment of the power curve and the reasons for the direction discretization and the wake model.
 
 \emph{Discretized expected power.} The integral~\eqref{M-eq8} is evaluated, as in~\cite{Kusiak2010}, by a Riemann sum over direction bins $\theta_0 = 0^\circ, \theta_1, \ldots, \theta_{N_\theta} = 360^\circ$ with probabilities $p_l$, and over the speed range between $s_{\text{cut-in}}$ and $s_{\text{rated}}$, divided into $N_s$ bins $s_0 = s_{\text{cut-in}}, s_1, \ldots, s_{N_s} = s_{\text{rated}}$ (benchmark: $N_\theta=24$ bins of 15$^\circ$ and $N_s=21$ bins of 0.5~m/s). With the bin centers $\bar\theta_l=(\theta_{l-1}+\theta_l)/2$ and the Weibull survival function $W_i(s,\theta)=\exp\{-[s/\psi_i(\theta)]^{\zeta(\theta)}\}$ of the local speed,
 \begin{equation}
@@ -206,17 +188,17 @@ E(P_i) ={}& \sum_{l=1}^{N_\theta} (\theta_l - \theta_{l-1})\, p_l \Bigg\{ P_{\te
 \end{equation}
 The bin-width factor $(\theta_l-\theta_{l-1})$ is kept in degrees, as in the benchmark studies~\cite{Kusiak2010}; with 24 bins of $15^\circ$ and $\sum_l p_l=1$, the benchmark objective $\sum_i E(P_i)$ is 15 times the expected farm power in kW.
 
-\emph{Power curve.} We use it as published: it is slightly negative just above the cut-in speed ($-7.0$~kW at 3.5~m/s, zero at 3.55~m/s), jumps from 1472 to 1500~kW at the rated speed and has no cut-out speed. We keep this linearized curve for comparability with the published Kusiak--Song results; its effect on the energy values is quantified with a cubic curve in Section~\ref{M-sec:powercurve}, and the Horns Rev~1 block uses the tabulated V80 power curve (Section~\ref{M-sec:hornsrev-site}).
+\emph{Power curve.} We use the power curve as published: it is slightly negative just above the cut-in speed ($-7.0$~kW at 3.5~m/s, zero at 3.55~m/s), jumps from 1472 to 1500~kW at the rated speed and has no cut-out speed. We keep this linearized curve for comparability with the published Kusiak--Song results; its effect on the energy values is quantified with a cubic curve in Section~\ref{M-sec:powercurve}, and the Horns Rev~1 block uses the tabulated V80 power curve (Section~\ref{M-sec:hornsrev-site}).
 
 \emph{Why the direction discretization matters.} The objective evaluates the wake only at the 24 bin centers $\bar\theta_l=(15l-7.5)^\circ$. A top-hat wake is narrow: by the half-cone geometry (Fig.~\ref{M-fig:model}c), turbine $j$ wakes a turbine $i$ at the distance $\ell_{ij}\ge R/K$ only for directions within an interval of width $2[\alpha+\arcsin(R/(\ell_{ij}\sqrt{1+K^2}))]$ around the direction from $j$ to $i$. With $K=0.075$ and $R=38.5$~m ($\alpha=4.29^\circ$, $R/K=513$~m), this width is below the bin spacing of 15$^\circ$ for $\ell_{ij}>685$~m and tends to $2\alpha=8.6^\circ$. If no bin center lies in this interval, the wake of the pair does not enter the objective (with bins of 5$^\circ$ or finer, every such interval contains a center). Optimized layouts exploit these gaps (with 1$^\circ$ sub-bins, the mean wake loss of PSO-VNS rises by about 1~pp); Section~\ref{M-sec:direction} reports which conclusions survive a 1$^\circ$ rose, for re-evaluated and for directly optimized layouts.
 % verified (numerically with analysis/wflop_model.jensen_deficits on a 0.001-deg grid): waked width of a pair rho apart = 2(alpha + arcsin(R/(rho sqrt(1+K^2)))) exactly for rho >= R/K (rho = 600: 15.915 deg; 1000: 12.979; 2000: 10.779); width = 15 deg at rho = 685.4 m; alpha = arctan 0.075 = 4.289 deg; R/K = 513.3 m; 2 alpha = 8.58 deg > 5 deg. For rho < R/K the non-physical upstream deficit widens the interval further.
 % CHECK-DIR [F03]: loss rise of every method, PSO-VNS 1.322 -> 2.335; [F05]: VNS-based methods and PSO rise most
 
-\emph{Why the Jensen model.} First, the Jensen model with the benchmark settings is needed for comparability with the published Kusiak--Song results~\cite{Kusiak2010,Bansal2017}, and it is cheap enough for the 49{,}010 optimization runs of this study (Table~\ref{M-tab:design}). Second, the research question concerns the optimizers and the protocol rather than the fidelity of the wake model; whether the conclusions carry over to another wake model is an empirical question. Third, we therefore test a Gaussian wake in two ways: the methods are re-optimized under the simplified Bastankhah Gaussian wake of IEA37 Case Study~1 (Section~\ref{M-sec:iea37}), and the final benchmark layouts are re-evaluated with the Gaussian wake of~\cite{Bastankhah2014} (Section~\ref{M-sec:gaussian}). Control-oriented models, which describe the wake deflection of yawed turbines for wake steering~\cite{Gebraad2016,Bastankhah2016}, add yaw angles as decision variables and turn the problem into a layout--control co-design, which is outside the scope of this study.
+\emph{Why the Jensen model.} First, the Jensen model with the benchmark settings is needed for comparability with the published Kusiak--Song results~\cite{Kusiak2010,Bansal2017}, and it is cheap enough for the 49{,}010 optimization runs of this study (Table~\ref{M-tab:design}). Second, the research question concerns the optimizers and the protocol rather than the fidelity of the wake model, so whether the conclusions carry over to another wake model is an empirical question. We therefore test a Gaussian wake in two ways: the methods are re-optimized under the simplified Bastankhah Gaussian wake of IEA37 Case Study~1 (Section~\ref{M-sec:iea37}), and the final benchmark layouts are re-evaluated with the Gaussian wake of~\cite{Bastankhah2014} (Section~\ref{M-sec:gaussian}). Control-oriented models, which describe the wake deflection of yawed turbines for wake steering~\cite{Gebraad2016,Bastankhah2016}, add yaw angles as decision variables and turn the problem into a layout--control co-design, which is outside the scope of this study.
 
 \subsection{Salp Swarm Algorithm and Its Laplacian Variant}
 \label{sec:S-ssa-alg}
-Algorithm~\ref{alg:S-ssa} gives the pseudocode of SSA~\cite{Mirjalili2017} and LX-SSA~\cite{Solanki2023} as described in Section~\ref{M-sec:ssa} of the main text, as used in Phase~1 of SSA-VNS and LX-SSA-VNS and as stand-alone methods; the evaluations per iteration are derived there, and the resulting iteration counts are given in Section~\ref{sec:S-iter}.
+SSA~\cite{Mirjalili2017} and LX-SSA~\cite{Solanki2023} serve both as stand-alone methods and as Phase~1 of SSA-VNS and LX-SSA-VNS. Algorithm~\ref{alg:S-ssa} gives their pseudocode as described in Section~\ref{M-sec:ssa} of the main text, where the evaluations per iteration are derived; the resulting iteration counts are given in Section~\ref{sec:S-iter}.
 
 \begin{algorithm}[!htb]
 \caption{SSA and LX-SSA (lines marked LX: LX-SSA only); evaluations per line in brackets}
@@ -251,13 +233,13 @@ Both methods are therefore tested as published in~\cite{Solanki2023}.
 
 \subsection{Ranking and Test Details}
 \label{sec:S-stats}
-For the paired run-level tests, a run is scored by a prioritized composite endpoint, feasibility first and then the benchmark objective:
+The statistical design of Section~\ref{M-sec:setup-stats} rests on a few conventions that the main text states only briefly. For the paired run-level tests, a run is scored by a prioritized composite endpoint, feasibility first and then the benchmark objective:
 \begin{itemize}
 \item a feasible run is scored by its objective,
 \item an infeasible run below every feasible run, and
 \item infeasible runs are ordered among themselves by their minimum spacing (larger is better; boundary violations are not used).
 \end{itemize}
-The ranking and the tests further use the following rules.
+The ranking and the tests further use the following rules:
 \begin{itemize}
 \item Paired differences with $\lvert d\rvert\le10^{-9}$ are treated as zero and dropped, both in the Wilcoxon signed-rank test and in the rank-biserial correlation $r_{\rm rb}$.
 \item Case means are rounded to $10^{-6}$ objective units before ranking, so that exact ties (e.g., all methods at the wake-free optimum for $N=2$) are not broken by floating-point noise.
@@ -276,7 +258,7 @@ Phase-1 iterations, where $c$ is the number of evaluations per iteration ($N_p$ 
 
 RS-VNS evaluates $\operatorname{round}(\omega B)=3{,}015$ random layouts (including the seeded initial population of 30), about the same effort as the 3,030 Phase-1 evaluations of the swarm hybrids; its random layouts, like all random initial layouts, are uniform in the bounding square $[-r,r]^{2N}$, so all $N$ turbines lie inside the circle only with probability $(\pi/4)^N$, and a sample that also satisfies the spacing constraint is far rarer (Table~\ref{tab:S-th-box}). Both random-sampling controls switch to VNS after these 3,015 evaluations (the swarm hybrids after 3,030). The disc-sampling control RSD-VNS evaluates the same 3,015 layouts; only its 2,985 layouts after the common initial population are drawn uniformly in the farm disc instead (Section~\ref{sec:S-ablation}).
 
-DE/rand/1/bin (scale factor 0.5, crossover rate 0.9) clips the mutant to the box before crossover and replaces a member immediately when its trial vector is better (asynchronous one-to-one selection).
+The DE variant, DE/rand/1/bin (scale factor 0.5, crossover rate 0.9), clips the mutant to the box before crossover and replaces a member immediately when its trial vector is better (asynchronous one-to-one selection).
 
 \subsection{MS-SLSQP}
 \label{sec:S-slsqp}
@@ -352,12 +334,12 @@ The penalty $F_p$ treats any positive violation as infeasible, whereas every rep
 
 \section{Type~I Farms (Kusiak--Song Benchmark): Details}
 \label{sec:S-tables}
-This section gives the per-case results, the full case-level statistics, the coordinates of the best layouts and further figures of the Type~I comparison (Section~\ref{M-sec:results}). These tables and figures cover the nine methods; the case-level analysis is that of Table~\ref{M-tab:farm-I-stats} of the main text, and Section~\ref{sec:S-xp-ga} compares GA with each other method (Table~\ref{tab:S-xp-ga}).
+This section supports the Type~I comparison of Section~\ref{M-sec:farm-I} with the per-case results, the full case-level statistics, the coordinates of the best layouts and further figures. All tables and figures cover the nine methods; the case-level analysis is that of Table~\ref{M-tab:farm-I-stats} of the main text, and Section~\ref{sec:S-xp-ga} compares GA with each other method (Table~\ref{tab:S-xp-ga}).
 
 \FloatBarrier
 \subsection{Per-Case Results}
 \label{sec:S-percase}
-Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard deviation of the benchmark objective of every method in every case.
+As the basis of all case-level analyses, Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard deviation of the benchmark objective of every method in every case, one table per wind data set and farm radius.
 \SuppTable{tab:res-1-500}
 \SuppTable{tab:res-1-750}
 \SuppTable{tab:res-1-1000}
@@ -368,21 +350,21 @@ Tables~\ref{tab:res-1-500}--\ref{tab:res-2-1000} give the mean and standard devi
 \FloatBarrier
 \subsection{Case-Level Statistics and Best Layouts}
 \label{sec:S-caselevel}
-Table~\ref{tab:friedman68-full} gives the full case-level statistics of the nine methods (tests against PSO-VNS; tests against GA: Table~\ref{tab:S-xp-ga}), and Table~\ref{tab:coords} lists the coordinates of the best layouts for the largest $N$ of each farm (shown in Fig.~\ref{fig:S-layouts}); when PSO-VNS is itself the best method of a farm, Table~\ref{tab:coords} has a single entry for it.
+From these case means, Table~\ref{tab:friedman68-full} gives the full case-level statistics of the nine methods (tests against PSO-VNS; tests against GA: Table~\ref{tab:S-xp-ga}), and Table~\ref{tab:coords} lists the coordinates of the best layouts for the largest $N$ of each farm (shown in Fig.~\ref{fig:S-layouts}); when PSO-VNS is itself the best method of a farm, Table~\ref{tab:coords} has a single entry for it.
 \SuppTable{tab:friedman68-full}
 \SuppTable{tab:coords}
 
 \FloatBarrier
 \subsection{Additional Figures}
 \label{sec:S-figs}
-Fig.~\ref{fig:S-ranks} shows the average ranks of Table~\ref{tab:friedman68-full}.
+The following figures visualize the Type~I results. Fig.~\ref{fig:S-ranks} shows the average ranks of Table~\ref{tab:friedman68-full}.
 \begin{figure}[!htb]
 \centering
 \pipefig{0.55\textwidth}{figures_mpce/avg_ranks.pdf}{5cm}
 \caption{Average rank of the nine methods over the 68 benchmark cases (feasibility-aware ranking of Table~\ref{tab:friedman68-full}; 1 = best).}
 \label{fig:S-ranks}
 \end{figure}
-Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} show the convergence, the distribution of the final wake loss, the feasibility and the best layouts of the nine methods.
+Figs.~\ref{fig:S-conv-max}--\ref{fig:S-layouts} then show the convergence, the distribution of the final wake loss, the feasibility and the best layouts of the nine methods.
 \begin{figure}[!htb]
 \centering
 \pipefig{\textwidth}{figures_mpce/convergence_max.pdf}{8cm}

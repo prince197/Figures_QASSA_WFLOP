@@ -2,11 +2,11 @@
 \label{sec:prelim}
 % Proposition environment (neither IEEEtran nor elsarticle defines one); guarded, so a main file may define it in its preamble instead.
 \makeatletter\@ifundefined{proposition}{\newtheorem{proposition}{Proposition}}{}\makeatother
-A population method keeps $N_p$ candidate vectors $\mathbf X^i\in\mathbb R^{n}$ with components $X^i_m$ and bounds $lb_m=-r$, $ub_m=r$; unless stated otherwise, one iteration costs $N_p$ objective evaluations. This section states the methods exactly as implemented (Algorithms~\ref{alg:pso}--\ref{alg:vns}); Table~\ref{tab:params} collects all settings.
+PSO-VNS and the comparison hybrids minimize the penalized wake loss $F_p$~\eqref{eq:penalty} with three building blocks: two swarm methods, PSO and SSA, which search with a population of layouts, and the basic VNS, which refines a single layout. This section states them exactly as implemented (Algorithms~\ref{alg:pso}--\ref{alg:vns}); Table~\ref{tab:params} collects all settings. A population method keeps $N_p$ candidate vectors $\mathbf X^i\in\mathbb R^{n}$ with components $X^i_m$ and bounds $lb_m=-r$, $ub_m=r$; unless stated otherwise, one iteration costs $N_p$ objective evaluations.
 
 \subsection{Particle Swarm Optimization}
 \label{sec:pso}
-We use the standard PSO, proposed by Kennedy and Eberhart~\cite{Kennedy1995}, in the inertia-weight form~\cite{Shi1998} with the constriction coefficients of Clerc and Kennedy~\cite{Clerc2002} (Algorithm~\ref{alg:pso}), with a global best, run for $T$ iterations $t=1,\ldots,T$. Particle $i$ has a position $\mathbf X^i$, a velocity $\mathbf V^i$ and a personal best $\mathbf P^i$, the swarm keeps the global best $\mathbf G$, and a particle moves by
+The first building block is the standard PSO of Kennedy and Eberhart~\cite{Kennedy1995} with a global best, in the inertia-weight form~\cite{Shi1998} and with the constriction coefficients of Clerc and Kennedy~\cite{Clerc2002} (Algorithm~\ref{alg:pso}); it runs for $T$ iterations $t=1,\ldots,T$. Particle $i$ has a position $\mathbf X^i$, a velocity $\mathbf V^i$ and a personal best $\mathbf P^i$; the swarm keeps the global best $\mathbf G$, and a particle moves by
 \begin{align}
 \mathbf V^i&\leftarrow w\,\mathbf V^i+c_1\boldsymbol\rho_1\circ\bigl(\mathbf P^i-\mathbf X^i\bigr)+c_2\boldsymbol\rho_2\circ\bigl(\mathbf G-\mathbf X^i\bigr),\label{eq:pso-v}\\
 \mathbf X^i&\leftarrow\mathbf X^i+\mathbf V^i,\label{eq:pso-x}
@@ -16,7 +16,7 @@ where $\boldsymbol\rho_1,\boldsymbol\rho_2$ are vectors of independent $U(0,1)$ 
 w=0.7298,\qquad c_1=c_2=\kappa\varphi_1=1.49618 .
 \label{eq:constriction}
 \end{equation}
-PSO denotes~\eqref{eq:pso-v} and~\eqref{eq:pso-x} with these coefficients, fixed a priori from the literature. It is run as implemented: velocities start at zero and are not clamped (no bound $\lvert V^i_m\rvert\le V_{\max}$), a coordinate clipped to the square (Section~\ref{sec:constraints}) keeps its velocity, and $\mathbf P^i$, $\mathbf G$ are updated after each evaluation (asynchronous global best).
+Throughout, PSO denotes~\eqref{eq:pso-v} and~\eqref{eq:pso-x} with these coefficients, which are fixed a priori from the literature. In the implementation, velocities start at zero and are not clamped (no bound $\lvert V^i_m\rvert\le V_{\max}$), a coordinate clipped to the square (Section~\ref{sec:constraints}) keeps its velocity, and $\mathbf P^i$, $\mathbf G$ are updated after each evaluation (asynchronous global best).
 
 \begin{algorithm}[!t]
 \caption{PSO for the WFLOP as implemented (complete procedure; $N_p(T+1)$ evaluations of $F_p$).}
@@ -42,16 +42,16 @@ PSO denotes~\eqref{eq:pso-v} and~\eqref{eq:pso-x} with these coefficients, fixed
 \end{algorithmic}
 \end{algorithm}
 
-\emph{Stability.} If $\mathbf P^i$ and $\mathbf G$ stay fixed (stagnation) and no bound is active, every coordinate follows a random linear recursion; for $c_1=c_2$, its mean and variance converge if and only if $\lvert w\rvert<1$ and $c_1+c_2<24(1-w^2)/(7-5w)$, the order-2 condition of Poli~\cite{Poli2009,Bonyadi2017}. These known results, restated for the implemented update with their proof in Proposition~\ref{S-prop:S-pso-stability}, are used only to check the setting, not claimed as new theory. The constriction setting satisfies the condition ($c_1+c_2=2.99<3.35$; Fig.~\ref{S-fig:S-th-stability}; Proposition~\ref{S-prop:S-constriction}): in the limit, a coordinate with $P^i_m\ne G_m$ is sampled with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the swarm keeps sampling around $\mathbf G$ unless $\mathbf P^i=\mathbf G$. Stability does not say how good $\mathbf G$ is, and clipping at the bounds breaks the second assumption (Lemma~\ref{S-lem:S-clip}).
+\emph{Stability.} Whether this setting lets the swarm converge can be checked before it is used. If $\mathbf P^i$ and $\mathbf G$ stay fixed (stagnation) and no bound is active, every coordinate follows a random linear recursion; for $c_1=c_2$, its mean and variance converge if and only if $\lvert w\rvert<1$ and $c_1+c_2<24(1-w^2)/(7-5w)$, the order-2 condition of Poli~\cite{Poli2009,Bonyadi2017}. These known results, restated for the implemented update with their proof in Proposition~\ref{S-prop:S-pso-stability}, are used only to check the setting, not claimed as new theory. The constriction setting satisfies the condition ($c_1+c_2=2.99<3.35$; Fig.~\ref{S-fig:S-th-stability}; Proposition~\ref{S-prop:S-constriction}): in the limit, a coordinate with $P^i_m\ne G_m$ is sampled with mean $(P^i_m+G_m)/2$ and standard deviation $1.04\,\lvert P^i_m-G_m\rvert$, so the swarm keeps sampling around $\mathbf G$ unless $\mathbf P^i=\mathbf G$. Stability does not say how good $\mathbf G$ is, and clipping at the bounds breaks the second assumption (Lemma~\ref{S-lem:S-clip}).
 % CHECK-THEORY [T02]-[T06], [T12]: stability summary (full statement and proof: S-prop:S-pso-stability in the supplement; order-1 via E[phi]=(c1+c2)/2; Poli's bound exact for c1=c2, analytic region = numerical region, T06); 24(1-0.7298^2)/(7-5*0.7298)=3.348; 2*1.49618=2.99; spectral radius of the second-moment matrix 0.944 (constriction) in Table S-th-settings
 % CHECK-THEORY [T05]: SD factor 1.04 = sqrt(V_inf/(p-g)^2) = sqrt(1.0874) (constriction); Lemma S-lem:S-clip (b): clipped coordinate stays at the bound while v' >= 0
-The scale factor $F=0.5$ of differential evolution (DE; Section~\ref{sec:setup-methods}) exceeds Zaharie's critical value (0.14 at $\mathrm{CR}=0.9$)~\cite{Zaharie2002}, so its weak results are not due to premature variance loss.
+A similar check applies to DE, one of the comparison methods (Section~\ref{sec:setup-methods}): its scale factor $F=0.5$ exceeds Zaharie's critical value (0.14 at $\mathrm{CR}=0.9$)~\cite{Zaharie2002}, so its weak results are not due to premature variance loss.
 % verified (Zaharie): critical F = sqrt((1-CR/2)/N_p) = sqrt((1-0.45)/30)=0.135 (N_p = 30, CR = 0.9, F = 0.5: Section setup); F above the critical value = no variance collapse; Cleghorn2018 cited for c1 = c2 only
 
 \subsection{Salp Swarm Algorithm and Its Laplacian Variant}
 \label{sec:ssa}
 \label{sec:S-ssa}
-The SSA was proposed by Mirjalili et al.~\cite{Mirjalili2017} (pseudocode: Algorithm~\ref{S-alg:S-ssa}). Its population of $N_p$ salps, sorted by $F_p$, consists of two halves:
+The second building block, the SSA, was proposed by Mirjalili et al.~\cite{Mirjalili2017} (pseudocode: Algorithm~\ref{S-alg:S-ssa}). Its population of $N_p$ salps is sorted by $F_p$ and split into two halves, which move relative to a food source:
 \begin{itemize}
 \item \emph{Food source.} The best solution found so far, i.e., the candidate with the best fitness (lowest $F_p$), is the food source $\mathbf H$; after every iteration, the best salp of the sorted population, the first leader, replaces $\mathbf H$ if it is better.
 \item \emph{Leaders.} The better half, $i\le N_p/2$, updates each coordinate around the food source by
@@ -61,12 +61,12 @@ X_m^i = H_m\pm\xi_1\big((ub_m-lb_m)\xi_2+lb_m\big),
 with either sign with probability $1/2$, $\xi_2\sim U(0,1)$ and $\xi_1=2\exp[-(4t/T)^2]$ decreasing with the iteration $t$ out of $T$: a leader samples $H_m+U(-\xi_1r,\xi_1r)$ in every coordinate, with $\xi_1\le0.037$ for $t\ge T/2$.
 \item \emph{Followers.} A follower $i>N_p/2$ moves to the midpoint of its position and the \emph{new} position of the preceding salp.
 \end{itemize}
-The leaders thus perturb $\mathbf H$ uniformly with a shrinking radius, and the followers only average~\cite{Castelli2022}. The SSA has known drawbacks, such as premature convergence and an imbalance between exploration and exploitation~\cite{Castelli2022,Solanki2023}. Solanki and Deep~\cite{Solanki2023} addressed them by proposing a new variant, the Laplacian SSA (LX-SSA). LX-SSA gives each follower a second candidate $Y_m^i=X_m^i+\gamma(H_m-X_m^i)$ with one Laplace step~\cite{Deep2007} for all coordinates,
+The leaders thus perturb $\mathbf H$ uniformly with a shrinking radius, and the followers only average~\cite{Castelli2022}. The SSA has known drawbacks, such as premature convergence and an imbalance between exploration and exploitation~\cite{Castelli2022,Solanki2023}. To address them, Solanki and Deep~\cite{Solanki2023} proposed a new variant, the Laplacian SSA (LX-SSA), which gives each follower a second candidate $Y_m^i=X_m^i+\gamma(H_m-X_m^i)$ with one Laplace step~\cite{Deep2007} for all coordinates,
 \begin{equation}
 \gamma=\phi-\chi\,\mathrm{sgn}\bigl(z-\tfrac12\bigr)\ln\bigl(1-2\lvert z-\tfrac12\rvert\bigr),\quad z\sim U(0,1),
 \label{eq:laplace}
 \end{equation}
-with the published, untuned values $\phi=0$ (centered on $\mathbf X^i$) and $\chi=1$ (mean step length equal to the distance to $\mathbf H$), and keeps the better candidate. As published, it evaluates both candidates of each follower and then re-evaluates the kept ones with the new population, so an iteration costs $2N_p$ evaluations (SSA: $N_p$) and LX-SSA runs half as many iterations as SSA (Table~\ref{tab:params}). Comparing the two tests LX-SSA as published, not the Laplace step alone (for the step itself, see the ablation in Section~\ref{sec:abl-swarm}); both use the code of the published LX-SSA study~\cite{Solanki2023}.
+with the published, untuned values $\phi=0$ (centered on $\mathbf X^i$) and $\chi=1$ (mean step length equal to the distance to $\mathbf H$), and keeps the better candidate. As published, LX-SSA evaluates both candidates of each follower and then re-evaluates the kept ones with the new population. An iteration thus costs $2N_p$ evaluations instead of the $N_p$ of SSA, and LX-SSA runs half as many iterations as SSA (Table~\ref{tab:params}). A comparison of the two therefore tests LX-SSA as published, not the Laplace step alone, which the ablation isolates (Section~\ref{sec:abl-swarm}); both methods use the code of the published LX-SSA study~\cite{Solanki2023}.
 % CHECK-THEORY [T11]: SSA xi_1(T/2) = 2 exp(-4) = 0.0366 ("xi_1 <= 0.037 for t >= T/2"); leader step xi_1((ub-lb) xi_2 + lb) = xi_1 r (2 xi_2 - 1) (S-th-feas note)
 % verified: analysis/authors_optimizers.py SSA/LXSSA: leaders = pop_size // 2 = 15; follower = (pop[i] + new_pop[i-1])/2; LX: one scalar gamma per follower, candidate = pop[i] + gamma (food - pop[i]); both clipped and evaluated, then whole population evaluated (2 N_p per iteration)
 
@@ -92,7 +92,7 @@ with the published, untuned values $\phi=0$ (centered on $\mathbf X^i$) and $\ch
 
 \subsection{Basic Variable Neighborhood Search}
 \label{sec:vns}
-The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}), improves one incumbent $\mathbf X$ with $k_{\max}=5$ $\ell_\infty$ shell neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$ ($\delta_0=0$), of the whole layout: shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it. As the top-hat wake makes $F_p$ discontinuous, the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}), a coordinate-wise optimality at one step length, not a local minimum.
+The third building block, the basic VNS~\cite{Mladenovic1997,Hansen2001}, works on a single layout rather than a population; we use the continuous form of~\cite{Mladenovic2008} (Algorithm~\ref{alg:vns}). It improves one incumbent $\mathbf X$ with $k_{\max}=5$ $\ell_\infty$ shell neighborhoods $\mathcal N_k(\mathbf X)=\{\mathbf X':\delta_{k-1}<\lVert \mathbf X'-\mathbf X\rVert_\infty\le\delta_k\}$, $\delta_k=0.1\,k\,r$ ($\delta_0=0$), of the whole layout. Shaking draws a uniform point of $\mathcal N_k(\mathbf X)$, clipped to the box, and a best-improvement local search improves it. As the top-hat wake makes $F_p$ discontinuous (Section~\ref{sec:model}), the local search is a compass search: it evaluates all $2n$ moves $\pm h\,\mathbf e_m$ ($\mathbf e_m$ the $m$th unit vector; 60 evaluations for $N=15$), moves to the best one if it strictly improves, and halves $h$ (from $h_0=0.05r$) when none does, until $h<h_{\min}=10^{-3}r$. A completed descent thus ends at a point that no move $\pm\bar h\,\mathbf e_m$, $\bar h=h_0/2^5=0.0015625\,r$, improves (Proposition~\ref{S-prop:S-ls}); this is coordinate-wise optimality at one step length, not a local minimum.
 % CHECK-THEORY [T12]: compass search final step h0/2^5 = 0.0015625 r (Proposition S-prop:S-ls); verified: analysis/original_vns.py (k_max = 5, rho_k = 0.1 k r, h0 = 0.05 r, h_min = 1e-3 r; move to the best of the 2 dim moves if it improves the current point, else halve h; shaking by rejection in the l_inf shell, then clip)
 
 \begin{algorithm}[!htb]
@@ -132,18 +132,18 @@ The basic VNS~\cite{Mladenovic1997,Hansen2001}, in the continuous form of~\cite{
 
 \section{The Proposed PSO-VNS}
 \label{sec:psovns-method}
-This section motivates PSO-VNS, states the algorithm and gives its properties. PSO-VNS combines the PSO of Algorithm~\ref{alg:pso}, in the constriction setting~\eqref{eq:constriction}, with the basic VNS of Algorithm~\ref{alg:vns} in two consecutive phases.
+The building blocks of Section~\ref{sec:prelim} are complementary: PSO searches with a population, and VNS refines one layout without derivatives. PSO-VNS combines the PSO of Algorithm~\ref{alg:pso}, in the constriction setting~\eqref{eq:constriction}, with the basic VNS of Algorithm~\ref{alg:vns} in two consecutive phases. This section motivates the design, states the algorithm and gives its properties.
 
 \subsection{Motivation}
 \label{sec:psovns-motivation}
-Three properties of the continuous WFLOP shape the design.
+Three observations, two about the problem of Section~\ref{sec:model} and one about PSO, shape the design.
 \begin{itemize}
 \item \emph{Feasible layouts are hard to reach by sampling.} The feasible region is a small, nonconvex part of the bounding box; for the largest benchmark cases, fewer than one uniform layout in $10^6$ is feasible (Monte Carlo estimate for $N=12$ and 15; Proposition~\ref{S-prop:S-box} and Table~\ref{S-tab:S-th-box}). A method that refines a single layout therefore needs a good, preferably feasible, start, and a population-based global search that moves whole layouts towards the feasible region is a natural source of such starts. PSO is widely used for the WFLOP~\cite{Pookpunt2013,Asaah2021}, has few parameters, and its stability under stagnation is understood~\cite{Poli2009,Bonyadi2017,Cleghorn2018}, so that a setting can be checked before it is used (Section~\ref{sec:pso}).
 \item \emph{PSO is a weak finisher.} Under a stable setting and while the best positions stay fixed, the expected position of a particle converges to a weighted average of its personal best and the global best~\cite{Trelea2003,VandenBergh2006}, a point that need not be a local optimum~\cite{Bonyadi2017}; late in a run, refinement thus relies on random sampling around the global best. The last improvements of a layout, however, are small moves of individual turbine coordinates, which a coordinate-wise local search makes systematically.
 \item \emph{The objective is discontinuous.} With the top-hat wake, $F_p$ jumps where a turbine enters or leaves a wake cone (Section~\ref{sec:model}), so gradient-based refinement is unreliable and a derivative-free local search is needed. The basic VNS~\cite{Mladenovic1997,Hansen2001}, in its continuous form~\cite{Mladenovic2008}, fits this need: its local search, a compass search, compares objective values only; its shaking in nested neighborhoods of the whole layout gives a systematic way to leave a local optimum (at the 6,030-evaluation budget studied here it rarely acts; Section~\ref{sec:abl-vns}); and its few parameters can be kept at their defaults.
 \end{itemize}
 
-\emph{The need for a new variant.} PSO and VNS have been combined before, with VNS as the local search applied within the PSO loop~\cite{Tasgetiren2007,Marinakis2017,Gumaida2019} (Section~\ref{sec:related-hybrid}). Such embedded designs spend local-search evaluations in every iteration, which makes the cost of each component hard to separate, and, to our knowledge, they have not been applied to the WFLOP. PSO-VNS instead runs the two methods in sequence: PSO for a share $\omega$ of the budget, then VNS from the best layout found. This design
+\emph{Sequential rather than embedded hybridization.} PSO and VNS have been combined before, with VNS as the local search applied within the PSO loop~\cite{Tasgetiren2007,Marinakis2017,Gumaida2019} (Section~\ref{sec:related-hybrid}). Such embedded designs spend local-search evaluations in every iteration, which makes the cost of each component hard to separate; moreover, to our knowledge, they have not been applied to the WFLOP. PSO-VNS instead runs the two methods in sequence: PSO for a share $\omega$ of the budget, then VNS from the best layout found. This design
 \begin{enumerate}
 \item[(i)] uses the swarm where it is strong, in reaching the feasible region from random starts, and the local search where the swarm is weak, in refining one layout;
 \item[(ii)] gives both phases fixed, exactly counted budgets;
@@ -153,7 +153,7 @@ Three properties of the continuous WFLOP shape the design.
 
 \subsection{Algorithm}
 \label{sec:psovns-alg}
-PSO-VNS (Algorithm~\ref{alg:hybrid}) is a new two-phase variant of the PSO--VNS hybrid. \emph{Phase~1} runs the PSO of Algorithm~\ref{alg:pso} from the seeded initial population for $T_1=\operatorname{round}((\omega B-N_p)/N_p)$ iterations, that is, $N_p(T_1+1)$ evaluations, and passes its global best layout $\mathbf G$ to Phase~2, feasible or not; the penalty then guides the local search towards feasibility. \emph{Phase~2} applies the basic VNS (Algorithm~\ref{alg:vns}) to $\mathbf G$: a compass-search descent, then, until the budget $B$ is used, shaking in the neighborhood $\mathcal N_k$ followed by a descent, accepting an improvement and returning to $k=1$, or else moving to the next, larger neighborhood. The best layout evaluated is returned.
+Algorithm~\ref{alg:hybrid} states PSO-VNS, a new two-phase variant of the PSO--VNS hybrid, in full. \emph{Phase~1} runs the PSO of Algorithm~\ref{alg:pso} from the seeded initial population for $T_1=\operatorname{round}((\omega B-N_p)/N_p)$ iterations, that is, $N_p(T_1+1)$ evaluations, and passes its global best layout $\mathbf G$ to Phase~2, whether feasible or not; if $\mathbf G$ is infeasible, the penalty guides the local search towards feasibility. \emph{Phase~2} applies the basic VNS (Algorithm~\ref{alg:vns}) to $\mathbf G$: a compass-search descent, then, until the budget $B$ is used, shaking in the neighborhood $\mathcal N_k$ followed by a descent, accepting an improvement and returning to $k=1$, or else moving to the next, larger neighborhood. The best layout evaluated is returned.
 
 \begin{algorithm}[!t]
 \caption{PSO-VNS for the WFLOP (complete procedure; every call of $F_p$ counts against the budget $B$).}
@@ -200,13 +200,15 @@ PSO-VNS (Algorithm~\ref{alg:hybrid}) is a new two-phase variant of the PSO--VNS 
 \end{algorithmic}
 \end{algorithm}
 
-With $\omega=0.5$ and $B=6{,}030$, PSO runs for $T_1=100$ iterations (99.5 rounded half to even) and VNS receives 3,000 evaluations (Table~\ref{tab:params}). None of these values was tuned; Section~\ref{sec:split} studies $\omega$. At this budget, PSO-VNS is essentially PSO plus one compass-search descent, and the neighborhoods matter only for small $N$ (Section~\ref{sec:abl-vns}).
+At the benchmark budget $B=6{,}030$ with $\omega=0.5$, PSO runs for $T_1=100$ iterations (99.5 rounded half to even) and VNS receives 3,000 evaluations (Table~\ref{tab:params}). None of these values was tuned, and Section~\ref{sec:split} studies the effect of $\omega$. As the ablation shows, PSO-VNS is at this budget essentially PSO plus one compass-search descent, and the neighborhoods matter only for small $N$ (Section~\ref{sec:abl-vns}).
 % CHECK-DIAG [D08]: essentially one compass-search descent (median shaking steps \NDShakesPSOVNS, first descent \NDDescentSharePSOVNS % of the Phase-2 improvement; 12 split cases x 10 seeds; same pattern for SSA-VNS, RS-VNS); [D20]: cycles \NDCycleEvalsPctPSOVNS % of the Phase-2 evaluations pooled (median run \NDCycleEvalsPctMedianPSOVNS %), accepted cycles \NDCycleSharePSOVNS % of the gain (\NDCycleAllSharePSOVNS % incl. the cycle cut off by the budget)
 % CHECK-DIAG [D09]: N >= 12: first descent unfinished in \NDDescentUnfinishedLargePSOVNS of \NDRunsLargePSOVNS runs, median run without shaking ("neighborhoods matter only for small N")
 % verified: Python round(99.5) = 100 (half to even); omega = 0.25/0.75/0.9 give 49/150/180
 
 \subsection{Properties and Computational Cost}
 \label{sec:psovns-props}
+Three properties of PSO-VNS follow from its construction and are used in the experiments.
+
 \emph{Exact prefix.} As the PSO coefficients do not depend on the iteration, Phase~1 reproduces exactly, for a given seed, the first $N_p(T_1+1)$ evaluations of a PSO run (Proposition~\ref{S-prop:S-prefix}); comparing PSO-VNS with PSO thus isolates the effect of Phase~2. This does not hold for SSA-VNS and LX-SSA-VNS, whose $\xi_1$ depends on $t/T_1$ (Section~\ref{sec:hybrid}).
 
 \emph{Cost.} A run uses exactly $B$ evaluations of $F_p$, including the initial population, and no gradients; the overhead of both phases is $\mathcal O(n)$ arithmetic per evaluation and $\mathcal O(N_pn)$ memory, small against a wake-model evaluation, so the run time is governed by $B$ (Section~\ref{sec:runtime}).
@@ -215,28 +217,29 @@ With $\omega=0.5$ and $B=6{,}030$, PSO runs for $T_1=100$ iterations (99.5 round
 
 \section{Comparison Hybrids and Random-Sampling Controls}
 \label{sec:hybrid}
+The exact prefix makes PSO the control for the second phase of PSO-VNS. To assess the first phase as well, the experiments compare PSO-VNS with hybrids that keep its second phase but replace the PSO by another swarm method or by random sampling of equal cost. This section defines them.
 
 \subsection{Two-Phase Template}
 \label{sec:template}
-The other hybrids and the random-sampling controls follow the sequential (relay) template of PSO-VNS (Section~\ref{sec:psovns-method}), so that they differ from it only in Phase~1. For a budget of $B$ evaluations and a split $\omega\in(0,1)$, Phase~1 starts from the seeded initial population, runs a population method for about $\omega B$ evaluations and passes its best layout to Phase~2, the basic VNS (Algorithm~\ref{alg:vns}), which applies the local search to it and then iterates until $B$ evaluations are used. Only Phase~1 differs:
+All hybrids and controls follow the sequential (relay) template of PSO-VNS (Section~\ref{sec:psovns-method}). For a budget of $B$ evaluations and a split $\omega\in(0,1)$, Phase~1 starts from the seeded initial population, runs a population method for about $\omega B$ evaluations and passes its best layout to Phase~2, the basic VNS (Algorithm~\ref{alg:vns}), which applies the local search to it and then iterates until $B$ evaluations are used. Only Phase~1 differs:
 \begin{itemize}
 \item PSO in \emph{PSO-VNS};
 \item SSA or LX-SSA in \emph{SSA-VNS} and \emph{LX-SSA-VNS} (with $\xi_1$ compressed to the Phase-1 iterations); and,
 \item in the controls, $\operatorname{round}(\omega B)$ layouts: the initial population, then layouts drawn uniformly in the farm disc (\emph{RSD-VNS}) or in its bounding square (\emph{RS-VNS}).
 \end{itemize}
-VNS alone is the limiting case in which Phase~1 is the initial population. Phase~1 runs for
+VNS alone is the limiting case in which Phase~1 consists of the initial population only. In the swarm hybrids, Phase~1 runs for
 \begin{equation*}
 T_1=\operatorname{round}((\omega B-N_p)/c_{\rm it})
 \end{equation*}
 iterations of $c_{\rm it}$ evaluations ($c_{\rm it}=N_p$ for PSO and SSA, $2N_p$ for LX-SSA).
 
-The budget is not shared between methods: every run has its own $B$ evaluations, split in the same way between the two phases ($\omega=0.5$; 3,030 Phase-1 evaluations for the swarms, 3,015 for the controls). The hybrids and controls thus differ only in how Phase~1 spends its half, and a swarm phase is useful only if it gives VNS a better start than random sampling; the ablation (Section~\ref{sec:ablation}) tests this against RSD-VNS, with RS-VNS as a weak minimum bar.
+The budget is not shared between methods. Every run has its own $B$ evaluations, split in the same way between the two phases ($\omega=0.5$; 3,030 Phase-1 evaluations for the swarms, 3,015 for the controls). The hybrids and controls thus differ only in how Phase~1 spends its half, and a swarm phase is useful only if it gives VNS a better start than random sampling. The ablation (Section~\ref{sec:ablation}) tests this against RSD-VNS, with RS-VNS as a weak minimum bar.
 
-Random layouts are rarely feasible: for the largest cases ($N=12$, 15), a layout drawn uniformly in the bounding square is feasible with probability below $10^{-6}$ (Monte Carlo; Proposition~\ref{S-prop:S-box} and Table~\ref{S-tab:S-th-box}), so the 3,015 samples of RS-VNS contain about $10^{-3}$ or fewer feasible layouts in expectation, and RS-VNS hands VNS the least-violating sample. The spacing dominates: 730 RS-VNS runs have no feasible sample, and disc sampling gives one in only 242 of them.
+RS-VNS is a weak bar because random layouts are rarely feasible. For the largest cases ($N=12$, 15), a layout drawn uniformly in the bounding square is feasible with probability below $10^{-6}$ (Monte Carlo; Proposition~\ref{S-prop:S-box} and Table~\ref{S-tab:S-th-box}), so the 3,015 samples of RS-VNS contain about $10^{-3}$ or fewer feasible layouts in expectation, and RS-VNS hands VNS the least-violating sample. The spacing dominates: 730 RS-VNS runs have no feasible sample, and disc sampling gives one in only 242 of them.
 % CHECK-DIAG [D17]: RS-VNS Phase-1 replay agrees with the runs and with (pi/4)^N; \NDRsRunsNoFeasSample (= \NRSRunsNoFeasSample) runs without any feasible Phase-1 sample
 % CHECK-FINAL [C60]: spacing binding (R3-6): of the \NRSRunsNoFeasSample RS-VNS runs without a feasible sample, disc sampling (RSD-VNS, same runs) rescues \NRsSquareExplains < \NRsSpacingDominates that stay without one ("mainly because of the spacing"); [C61]: controls switch at 3,015, swarms at 3,030; RSD-VNS definition: mpce_experiments.RSDVNS (first 30 = common initial population, then polar-uniform disc samples)
 
-Table~\ref{tab:params} lists the settings of all methods, the published defaults~\cite{Clerc2002,Mirjalili2017,Solanki2023,Storn1997,Mladenovic2008}; MS-SLSQP (SciPy's SLSQP~\cite{Kraft1988}) minimizes $L$ under the scaled constraints of~\eqref{eq:wflop} (Section~\ref{S-sec:S-slsqp}). At 30,030 and 120,030 evaluations (Section~\ref{sec:budget}), $T$ and $T_1$ follow the same rules.
+Table~\ref{tab:params} lists the settings of all compared methods, which are the published defaults~\cite{Clerc2002,Mirjalili2017,Solanki2023,Storn1997,Mladenovic2008}. The exception to the penalty approach is MS-SLSQP (SciPy's SLSQP~\cite{Kraft1988}), which minimizes $L$ under the scaled constraints of~\eqref{eq:wflop} (Section~\ref{S-sec:S-slsqp}). At the larger budgets of 30,030 and 120,030 evaluations (Section~\ref{sec:budget}), $T$ and $T_1$ follow the same rules.
 \begin{table}[!t]
 \centering
 \caption{Settings and evaluation budgets of all methods at the benchmark budget $B=6{,}030$ evaluations of $F_p$ (including the initial population and, for MS-SLSQP, the finite-difference calls); $N_p=30$; box repair by clipping to $[-r,r]$. Every run of every method uses exactly $B$ evaluations; the numbers of iterations differ because one iteration costs $N_p=30$ evaluations ($2N_p=60$ for LX-SSA), and a hybrid gives each of its two phases about half of $B$. A population method uses $N_p(T+1)$ evaluations, LX-SSA $N_p(2T+1)$.}
@@ -260,3 +263,4 @@ RS-VNS, RSD-VNS & -- & $3{,}015+3{,}015$ & $\omega=0.5$; initial population, the
 \end{tabular}
 \end{table}
 % verified: analysis/authors_optimizers.py (PSO, DE, SSA, LXSSA), analysis/original_vns.py (BVNS defaults), analysis/hybrid_lxssa_bvns.py (T1 = round((split B - Np)/per_iter)), supplement sec:S-iter and sec:S-slsqp (MS-SLSQP: maxiter 200 per start, ftol 1e-9, eps 1 m, scaled constraints, feasibility threshold -1e-9)
+With the methods and their budgets fixed, Section~\ref{sec:setup} describes the wind farm types on which they are compared, the comparison design and the statistical tests.
