@@ -70,4 +70,4 @@ Since finite differences limit MS-SLSQP and the IEA37 model has an analytic AEP 
 \item The budget is equal in charged evaluations, not in time: per run the exact-gradient methods take 2.3--5.6 times as long as PSO-VNS (medians; Table~\ref{S-tab:S-sa-time-sites}).
 \item The result rests on the feasibility labels reported by the runs: the rounded stored coordinates cannot decide 220 of the 240 strict labels, and none is decided infeasible at any tolerance (Section~\ref{sec:archive-reliability}; Table~\ref{S-tab:S-sa-feasbounds}). If every open label were infeasible, PSO-VNS (16 turbines) or GA (36 turbines) would lead (Table~\ref{S-tab:S-sa-feasworst}).
 \end{enumerate}
-These comparisons evaluate PSO-VNS as a whole; Section~\ref{sec:ablation} returns to the Type~I farms to identify which of its components produce its results.
+These comparisons evaluate PSO-VNS as a whole and leave open which of its two phases produces its results; Section~\ref{sec:ablation} addresses this question.
