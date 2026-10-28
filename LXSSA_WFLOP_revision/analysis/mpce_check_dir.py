@@ -1,6 +1,8 @@
 """Checks F01... of the direction-resolution, PyWake and IEA37-projection analyses (sensitivity analyses).
 
-Usage:  python3 analysis/mpce_check_dir.py [--summary analysis/mpce_summary_dir.json]
+Usage:  python3 analysis/mpce_check_dir.py [--summary analysis/mpce_summary_dir.json] [--macros analysis/mpce_numbers_dir.tex]
+        (pool with GA: --summary analysis/rev5_ga_summary_dir.json --macros analysis/rev5_ga_numbers_dir.tex, written by
+        rev5_ga_reeval.py; F02 then compares with the nine-method table of rev4_farm_tables.json)
 
 Each check is ONE sentence that the paper (main text or supplement) may write, with the \\NF... macros of
 mpce_numbers_dir.tex for every number; the condition is evaluated on the outputs of mpce_direction.py,
@@ -43,6 +45,19 @@ def macro(fn, name):
     return m.group(1) if m else None
 
 
+def main_reference(s):
+    """Reference of F02. Eight-method pool: mpce_summary.json (main comparison). Pool with GA (rev5_ga_reeval.py, nine
+    methods): the nine-method benchmark table of rev4_farm_tables.json (tab:farm-I-stats; same ranking rule, Friedman
+    block and case-mean Wilcoxon of mpce_results.py)."""
+    if "GA" in R(s, "rec")["friedman"]["avg_rank"]:
+        t = json.load(open(os.path.join(HERE, "rev4_farm_tables.json")))["tables"]["tab:farm-I-stats"]
+        return dict(avg_rank=t["avg_rank"], **{b: dict(mean_dloss_pp=v["mean_dloss_pp"], p=v["p_wilcoxon"])
+                                                for b, v in t["vs_psovns"].items()})
+    m = json.load(open(os.path.join(HERE, "mpce_summary.json")))["main"]
+    return dict(avg_rank=m["friedman"]["avg_rank"], **{b: dict(mean_dloss_pp=v["mean_dloss_pp"], p=v["p"])
+                                                       for b, v in m["case_mean_wilcoxon"].items()})
+
+
 def paper_num(name):
     v = macro(os.path.join(HERE, "mpce_numbers.tex"), name)
     return float(v.replace("\\ensuremath{-}", "-").replace("{,}", "")) if v else None
@@ -60,12 +75,12 @@ CHECKS = [
      and pair(s, "J1")["sign_changes_vs_recorded"] == 0 and R(s, "J1")["friedman"]["best_ranked"] == "PSOBV"),
     ("F02", "The 15-deg statistics of this analysis reproduce mpce_summary.json (average ranks of the eight methods, PSO-VNS - PSO "
             "case-mean difference and p, the MS-SLSQP gap).",
-     lambda s, P, I: (lambda m: all(abs(R(s, "rec")["friedman"]["avg_rank"][a] - m["main"]["friedman"]["avg_rank"][a]) < 1e-9
-                                    for a in m["main"]["friedman"]["avg_rank"])
-                      and abs(pair(s, "rec")["all"]["mean_dloss_pp"] - m["main"]["case_mean_wilcoxon"]["PSOC"]["mean_dloss_pp"]) < 1e-9
-                      and abs(pair(s, "rec")["all_wilcoxon"]["p"] - m["main"]["case_mean_wilcoxon"]["PSOC"]["p"]) < 1e-9
-                      and abs(R(s, "rec")["case_mean_wilcoxon"]["SLSQP"]["mean_dloss_pp"] - m["main"]["case_mean_wilcoxon"]["SLSQP"]["mean_dloss_pp"]) < 1e-9)
-     (json.load(open(os.path.join(HERE, "mpce_summary.json"))))),
+     lambda s, P, I: (lambda m: all(abs(R(s, "rec")["friedman"]["avg_rank"][a] - m["avg_rank"][a]) < 1e-9
+                                    for a in m["avg_rank"]) and set(m["avg_rank"]) == set(R(s, "rec")["friedman"]["avg_rank"])
+                      and abs(pair(s, "rec")["all"]["mean_dloss_pp"] - m["PSOC"]["mean_dloss_pp"]) < 1e-9
+                      and abs(pair(s, "rec")["all_wilcoxon"]["p"] - m["PSOC"]["p"]) < 1e-9
+                      and abs(R(s, "rec")["case_mean_wilcoxon"]["SLSQP"]["mean_dloss_pp"] - m["SLSQP"]["mean_dloss_pp"]) < 1e-9)
+     (main_reference(s))),
     # ------------------------------------------------------------------ benchmark: level shift
     ("F03", "With 1-deg sub-bins the mean wake loss of every one of the eight methods rises, by \\NFLossRiseMin to \\NFLossRiseMax pp "
             "(\\NFLossRiseRelMin to \\NFLossRiseRelMax % of its benchmark value); for PSO-VNS from \\NFLossPSOVNSFifteen % to "
@@ -273,12 +288,14 @@ CHECKS = [
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--summary", default=os.path.join(HERE, "mpce_summary_dir.json"))
+    ap.add_argument("--macros", default=os.path.join(HERE, "mpce_numbers_dir.tex"),
+                    help="macro file matching --summary (rev5_ga_numbers_dir.tex for rev5_ga_summary_dir.json)")
     args = ap.parse_args(argv)
     s = json.load(open(args.summary))
     pf = os.path.join(HERE, "pywake_check.csv")
     P = pd.read_csv(pf) if os.path.exists(pf) else None
     I = json.load(open(os.path.join(HERE, "iea37_projected.json")))
-    macros = open(os.path.join(HERE, "mpce_numbers_dir.tex")).read()
+    macros = open(args.macros).read()
     nfail = 0
     for cid, text, fn in CHECKS:
         try:
