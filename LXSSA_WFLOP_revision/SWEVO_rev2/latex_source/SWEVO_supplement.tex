@@ -44,6 +44,7 @@
 \let\SWorigNewcommand\newcommand\let\newcommand\renewcommand
 \input{analysis/rev5_ga_numbers_robust.tex}
 \let\newcommand\SWorigNewcommand
+\input{analysis/rev5_ga_inference_extra_macros.tex}% threshold and multiplicity macros with GA in the main pool
 \input{optA/phase4_macros_stub.tex}
 \input{optA/phase6_macros_stub.tex}
 % a missing or empty (0-byte) figure file gives a TBD box instead of a fatal pdfTeX error
@@ -464,12 +465,12 @@ PSO-VNS does not differ from PSO in the spread of its runs either: the per-case 
 \FloatBarrier
 \subsection{Robustness of the Statistical Conclusions}
 \label{sec:S-inference}
-Tables~\ref{tab:X-threshold}--\ref{tab:X-energy} check whether the statistical conclusions of the main text depend on choices of the analysis. \emph{Qualification threshold} (Tables~\ref{tab:X-threshold} and~\ref{tab:X-threshold-controls}): with each of the six thresholds \NXThrList{} feasible runs of 30 (the paper uses 15), PSO-VNS is best-ranked, the complete rank order of the eight methods (pool without GA) is the same, and all \NXThrNConcl{} conclusions listed in the tables are unchanged. % CHECK-EXTRA [X02]-[X09], [X31]
+Tables~\ref{tab:X-threshold}--\ref{tab:X-energy} check whether the statistical conclusions of the main text depend on choices of the analysis. \emph{Qualification threshold} (Tables~\ref{tab:X-threshold} and~\ref{tab:X-threshold-controls}): with each of the six thresholds \NXThrList{} feasible runs of 30 (the paper uses 15), PSO-VNS is best-ranked, the complete rank order of the nine methods is the same, and PSO and GA are the only methods not significantly different from PSO-VNS in rank. Of the \NXThrNConcl{} conclusions listed in the tables, all but one hold at every threshold: when all 30 runs must be feasible, PSO-VNS is significantly better than GA in the case-mean test ($p=0.014$; Holm over 8: $p=0.027$), because the four cases in which GA has fewer than 30 feasible runs enter as maximal differences in favor of PSO-VNS; at the other thresholds the test is not significant ($p=0.051$). % CHECK-EXTRA [X02]-[X09], [X31]
 
 \emph{Dependence between cases} (Tables~\ref{tab:X-cluster} and~\ref{tab:X-loco}): the 68 cases form \NXClusters{} (data set, radius) clusters with nested $N$. Every comparison that is significant on the case means favors the same method in all \NXClusters{} clusters except \NXClCaseSigNotUnanimous{}, and leaving out any one cluster changes, of the \NXLocoNPairs{} verdicts, only that of \NXLocoChanged{}; PSO-VNS is best-ranked in every leave-one-cluster-out run. These cluster analyses concern significance verdicts; equivalence at the cluster level is not shown for any pair (Table~\ref{tab:X-equiv-levels} and Section~\ref{sec:S-ablation}). % CHECK-EXTRA [X11], [X14], [X55]
 The case-level result that SSA-VNS is worse than RSD-VNS does not hold at the cluster level: RSD-VNS has the lower mean in \NXClSSAVNSvsRSDVNSOpp{} of \NXClustersNum{} clusters, the cluster-robust $t$ test gives $p=\NXClSSAVNSvsRSDVNSCRP$, the cluster-bootstrap interval \NXClSSAVNSvsRSDVNSCI~pp contains zero, and one leave-one-cluster-out run loses significance ($p$ up to \NXLocoSSAVNSvsRSDVNSPMax); we therefore state only that the SSA phase gives no gain over disc sampling. LX-SSA-VNS is worse than RSD-VNS in \NXClLXSSAVNSvsRSDVNSOpp{} of \NXClustersNum{} clusters with a cluster-bootstrap interval above zero (\NXClLXSSAVNSvsRSDVNSCI~pp) and no leave-one-cluster-out change, but the cluster-robust test is not significant ($p=\NXClLXSSAVNSvsRSDVNSCRP$). PSO-VNS beats RSD-VNS, and RSD-VNS beats RS-VNS, in all \NXClusters{} clusters (cluster-robust $p=\NXClPSOVNSvsRSDVNSCRP$ and \NXClRSDVNSvsRSVNSCRP). The small gain of SSA-VNS over the weak control RS-VNS is found in all clusters, but with cluster-robust $p=\NXClSSAVNSvsRSVNSCRP$. % CHECK-EXTRA [X16], [X17], [X32]-[X34]
 
-\emph{Multiplicity} (Table~\ref{tab:X-multiplicity}): with one Holm correction over all \NXMultN{} case-mean Wilcoxon tests of the main text (main comparison in the pool without GA; not over the other tests of the paper), \NXMultSigHolm{} of the \NXMultSigRaw{} unadjusted significant tests remain significant; the only ones lost are \NXMultLostHolm{} (under Benjamini--Hochberg only \NXMultLostBH), whereas the Data Set~II subgroup with $N\ge10$ ($p_{\rm Holm}\le\NXHolmPSOVNSvsPSOdsIILargeP$) and all four contrasts with RSD-VNS ($p_{\rm Holm}\le\NXHolmSSAVNSvsRSDVNSP$) survive. Thus $\omega=0.9$ is better than $\omega=0.5$ only unadjusted ($p_{\rm Holm}=\NXHolmSplitFiftyVsNinetyP$), and it beats $\omega=0.75$ at no level; the other split conclusions hold in all clusters (Table~\ref{tab:X-cluster-split}). % CHECK-EXTRA [X18]-[X21], [X35]-[X37]
+\emph{Multiplicity} (Table~\ref{tab:X-multiplicity}): with one Holm correction over all \NXMultN{} case-mean Wilcoxon tests of the main text (main comparison: PSO-VNS vs.\ each of the other eight methods; not over the other tests of the paper), \NXMultSigHolm{} of the \NXMultSigRaw{} unadjusted significant tests remain significant; the only ones lost are \NXMultLostHolm{} (under Benjamini--Hochberg only \NXMultLostBH), whereas the Data Set~II subgroup with $N\ge10$ ($p_{\rm Holm}\le\NXHolmPSOVNSvsPSOdsIILargeP$) and all four contrasts with RSD-VNS ($p_{\rm Holm}\le\NXHolmSSAVNSvsRSDVNSP$) survive. Thus $\omega=0.9$ is better than $\omega=0.5$ only unadjusted ($p_{\rm Holm}=\NXHolmSplitFiftyVsNinetyP$), and it beats $\omega=0.75$ at no level; the other split conclusions hold in all clusters (Table~\ref{tab:X-cluster-split}). % CHECK-EXTRA [X18]-[X21], [X35]-[X37]
 
 \emph{Subgroup and heterogeneity} (Tables~\ref{tab:X-subgroup}, \ref{tab:X-heterogeneity} and~\ref{tab:X-beyond}; exploratory, stated after the primary analysis): the advantage of PSO-VNS over PSO grows with $N$ only in Data Set~II (mean within-farm Spearman $\rho=\NXSpearDsIIStrat$, $p=\NXSpearDsIIStratP$), not in Data Set~I, where the trend has the opposite sign ($\rho=\NXSpearDsIStrat$, $p=\NXSpearDsIStratP$), and not over all cases once $N$ is compared only within a farm ($p=\NXSpearAllStratP$). % CHECK-EXTRA [X22]-[X24]
  With the density $\phi=\NXDensDef$, the two data sets form a crossover: within Data Set~II PSO-VNS gains with density (slope \NXDensSlopeDsII~pp per unit $\phi$, $p=\NXDensPDsII$), within Data Set~I PSO gains (slope \NXDensSlopeDsI~pp, $p=\NXDensPDsI$; interaction $p=\NXDensInterP$), and \NXHetClBeyond{} of the \NXClustersNum{} cluster means of PSO-VNS $-$ PSO exceed the margin, in opposite directions. % CHECK-EXTRA [X46], [X47]
@@ -483,15 +484,13 @@ The case-level result that SSA-VNS is worse than RSD-VNS does not hold at the cl
 % in the main text (optA/sw/06_type1.tex); the captions of tab:X-heterogeneity and tab:X-bayes refer to it and to
 % tab:equivalence (main-text numbers).
 \CaptureSuppTables{analysis/mpce_supp_inference.tex}
-\CaptureSuppTables{analysis/rev5_ga_tab_robust_supp.tex}% S-tab:robust and S-tab:X-modelshift with GA (replace the eight-method versions)
+\CaptureSuppTables{analysis/rev5_ga_tab_robust_supp.tex}\CaptureSuppTables{analysis/rev5_ga_inference_extra_tables.tex}% S-tab:robust and S-tab:X-modelshift with GA (replace the eight-method versions)
 \SuppTable{tab:X-equiv-levels}
-\SuppTableNote{tab:X-threshold}{Note: ranks and tests of the main comparison in the pool of the eight methods without GA; with GA: Tables~\ref{tab:friedman68-full} and~\ref{tab:S-xp-ga}.}
 \SuppTable{tab:X-threshold}
 \SuppTable{tab:X-threshold-controls}
 \SuppTable{tab:X-cluster}
 \SuppTable{tab:X-loco}
 \SuppTable{tab:X-cluster-split}
-\SuppTableNote{tab:X-multiplicity}{Note: the main-comparison rows are the seven comparisons of PSO-VNS in the pool without GA; PSO-VNS vs.\ GA: Table~\ref{tab:friedman68-full}.}
 \SuppTable{tab:X-multiplicity}
 \SuppTable{tab:X-subgroup}
 \SuppTable{tab:X-energy}
@@ -1054,9 +1053,9 @@ This section reports the sensitivity analyses and experiments. Two of them are o
 \end{itemize}
 % generated tables, copied from the repository's analysis/rev3_*_tables.tex (do not edit) and placed by label
 \CaptureSuppTables{analysis/rev3_inference_tables.tex}
-\CaptureSuppTables{analysis/rev5_ga_inference_tables.tex}% S-tab:S-sa-allrun with GA
+\CaptureSuppTables{analysis/rev5_ga_inference_tables.tex}\CaptureSuppTables{analysis/rev5_ga_imputation_tables.tex}% S-tab:S-sa-allrun with GA
 \CaptureSuppTables{analysis/rev3_sites_tables.tex}
-\CaptureSuppTables{analysis/rev5_ga_sites_tables.tex}% S-tab:S-xp-site and S-tab:S-sa-lg-eval with GA
+\CaptureSuppTables{analysis/rev5_ga_sites_tables.tex}\CaptureSuppTables{analysis/rev5_ga_time_tables.tex}% S-tab:S-xp-site and S-tab:S-sa-lg-eval with GA
 \CaptureSuppTables{analysis/rev3_constraint_tables.tex}
 \CaptureSuppTables{analysis/rev3_fine_tables.tex}
 \CaptureSuppTables{analysis/rev3_precision_tables.tex}
@@ -1103,8 +1102,7 @@ Seed $k$ seeds the same random stream in every case, so cases with equal $N$ sta
 
 \subsection{Imputed Cases and Zero Differences}
 \label{sec:S-sa-imput}
-In the case-mean Wilcoxon tests, a case in which only one method qualifies enters as a maximal difference in its favor, and zero differences are dropped (Section~\ref{sec:S-stats}). Dropping the imputed cases instead, or keeping the zeros in the ranking (Pratt), changes no verdict of the main comparison (pool without GA) or of the component contrasts with imputed cases (Table~\ref{tab:S-sa-imputation}). Script: \texttt{rev3\_inference.py}.
-\SuppTableNote{tab:S-sa-imputation}{Note: the main-comparison rows are the seven comparisons of PSO-VNS in the pool without GA (Holm over 7); PSO-VNS vs.\ GA: Table~\ref{tab:friedman68-full}.}
+In the case-mean Wilcoxon tests, a case in which only one method qualifies enters as a maximal difference in its favor, and zero differences are dropped (Section~\ref{sec:S-stats}). Dropping the imputed cases instead, or keeping the zeros in the ranking (Pratt), changes no verdict of the main comparison (PSO-VNS vs.\ each of the other eight methods; Holm over 8) or of the component contrasts with imputed cases (Table~\ref{tab:S-sa-imputation}). Script: \texttt{rev3\_inference.py}.
 \SuppTable{tab:S-sa-imputation}
 
 \subsection{Equal-Cluster Weighting}
