@@ -6,7 +6,7 @@ A population method keeps $N_p$ candidate vectors $\mathbf X^i\in\mathbb R^{n}$ 
 
 \subsection{Particle Swarm Optimization}
 \label{sec:pso}
-We use the canonical global-best PSO~\cite{Kennedy1995} in the inertia-weight form~\cite{Shi1998} (Algorithm~\ref{alg:pso}), run for $T$ iterations $t=1,\ldots,T$. Particle $i$ has a position $\mathbf X^i$, a velocity $\mathbf V^i$ and a personal best $\mathbf P^i$, the swarm keeps the global best $\mathbf G$, and a particle moves by
+We use the standard PSO, proposed by Kennedy and Eberhart~\cite{Kennedy1995}, in the inertia-weight form~\cite{Shi1998} with the constriction coefficients of Clerc and Kennedy~\cite{Clerc2002} (Algorithm~\ref{alg:pso}), with a global best, run for $T$ iterations $t=1,\ldots,T$. Particle $i$ has a position $\mathbf X^i$, a velocity $\mathbf V^i$ and a personal best $\mathbf P^i$, the swarm keeps the global best $\mathbf G$, and a particle moves by
 \begin{align}
 \mathbf V^i&\leftarrow w\,\mathbf V^i+c_1\boldsymbol\rho_1\circ\bigl(\mathbf P^i-\mathbf X^i\bigr)+c_2\boldsymbol\rho_2\circ\bigl(\mathbf G-\mathbf X^i\bigr),\label{eq:pso-v}\\
 \mathbf X^i&\leftarrow\mathbf X^i+\mathbf V^i,\label{eq:pso-x}

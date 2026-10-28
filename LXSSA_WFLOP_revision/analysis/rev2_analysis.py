@@ -8,7 +8,9 @@ shards rev2_<EXP>_s<i>of<k>.csv are merged, a complete shard set is preferred, a
 PARTIAL in the summary):
   spacing   rev2_spacing  (9 methods, 12 split cases, 5D / 6D) + the stored 4D main runs of the same 9 methods
             (fresh_grid / fresh_vgrid / fresh_bgrid / mpce_psoc / mpce_psobv / mpce_slsqp / mpce_rsdisc, loaded with
-            mpce_inference_extra.load, i.e. exactly the per-run data of the paper)
+            mpce_inference_extra.load, i.e. exactly the per-run data of the paper); GA added to the pool (after DE):
+            4D = the stored rev2_ga runs of the 12 split cases, 5D / 6D = rev5_ga_spacing (rev5_ga_secondary.py
+            spacing, the design of rev2_spacing.py with the GA label); --no-ga-spacing: without GA (nine methods)
   laplace   rev2_laplace  (LXNR, LXREP, LXU, LXC025, LXC05, LXC2; 12 split cases) + stored LXSSA / SSA runs
   ga        rev2_ga (GA, 68 cases) + stored runs of the 8 main methods; rev2_gahr (GA, Horns Rev 16) + mpce_hrfix;
             rev2_gaiea (GA, IEA37 16 / 36) + mpce_iea16/36 (+ PSO-VNS arms mpce_iea16p/36p)
@@ -60,6 +62,7 @@ HR10 = [a for a in MR.HR_ORDER]                                                 
 EXCL = [("1", 500, 10), ("2", 500, 10)]                                           # no feasible layout at 5D / 6D
 SPACINGS = ["4D", "5D", "6D"]
 CONTRASTS_SP = [("PSOBV", "PSOC"), ("SSABV", "RSDVNS")]
+GA_SPACING = True       # GA in the spacing pool (4D: rev2_ga, 5D / 6D: rev5_ga_spacing); --no-ga-spacing: the nine methods
 
 LAB = dict(MR.LAB)
 LAB.update(GA="GA", LXNR="LX-SSA, no re-evaluation", LXREP="LX-SSA, Laplace replaces midpoint",
@@ -75,12 +78,12 @@ def log(msg=""):
 
 
 # ------------------------------------------------------------------ data
-def read_rev2(exp, data_dir):
-    """Merge rev2_<exp>_s<i>of<k>.csv (Coordinates / Curve dropped). Returns (DataFrame or None, status)."""
-    files = glob.glob(os.path.join(data_dir, f"rev2_{exp}_s*of*.csv"))
+def read_rev2(exp, data_dir, prefix="rev2"):
+    """Merge <prefix>_<exp>_s<i>of<k>.csv (Coordinates / Curve dropped). Returns (DataFrame or None, status)."""
+    files = glob.glob(os.path.join(data_dir, f"{prefix}_{exp}_s*of*.csv"))
     by_k = {}
     for fn in files:
-        m = re.search(rf"rev2_{exp}_s(\d+)of(\d+)\.csv$", os.path.basename(fn))
+        m = re.search(rf"{prefix}_{exp}_s(\d+)of(\d+)\.csv$", os.path.basename(fn))
         if m:
             by_k.setdefault(int(m.group(2)), {})[int(m.group(1))] = fn
     if not by_k:
@@ -102,7 +105,7 @@ def read_rev2(exp, data_dir):
     df = MR.std_cols(pd.concat(parts, ignore_index=True))
     key = MR.KEY + (["Spacing"] if "Spacing" in df else [])
     df = df.drop_duplicates(key, keep="last").reset_index(drop=True)
-    df["Source"] = f"rev2_{exp}"
+    df["Source"] = f"{prefix}_{exp}"
     return df, dict(status=status, rows=int(len(df)), files=[os.path.basename(f) for f in sorted(use)],
                     methods=sorted(df.Algorithm.unique()))
 
@@ -246,12 +249,26 @@ def block_spacing(data_dir, summ, tex):
     summ["data"]["rev2_spacing"] = st
     if N is None:
         log("[spacing] rev2_spacing missing -> skipped"); return
+    SPP = list(SP9)
+    G4 = G56 = None
+    if GA_SPACING:                     # GA: 4D = stored rev2_ga runs (68 cases), 5D / 6D = rev5_ga_spacing (rev5_ga_secondary.py)
+        G4, st4 = read_rev2("ga", data_dir)
+        G56, st56 = read_rev2("spacing", data_dir, prefix="rev5_ga")
+        summ["data"]["rev5_ga_spacing"] = st56
+        if G4 is not None and G56 is not None:
+            SPP = SPP[:SPP.index("DE") + 1] + ["GA"] + SPP[SPP.index("DE") + 1:]
+            G4 = G4[(G4.Algorithm == "GA") & (G4.Budget == 6030) & (G4.Init == "random")
+                    & pd.Series([c in SPLITCASES for c in zip(G4.Dataset, G4.Radius, G4.Turbines)], index=G4.index)].copy()
+            G4["Spacing"] = "4D"
+            G56 = G56[G56.Algorithm == "GA"]
+        else:
+            log("[spacing] GA runs missing (rev2_ga / rev5_ga_spacing) -> GA not in the pool"); G4 = G56 = None
     A = main_runs()
-    M4 = A[A.Algorithm.isin(SP9) & pd.Series([c in SPLITCASES for c in zip(A.Dataset, A.Radius, A.Turbines)], index=A.index)].copy()
+    M4 = A[A.Algorithm.isin(SPP) & pd.Series([c in SPLITCASES for c in zip(A.Dataset, A.Radius, A.Turbines)], index=A.index)].copy()
     M4["Spacing"] = "4D"
-    D = pd.concat([M4, N[N.Algorithm.isin(SP9)]], ignore_index=True)
-    D, drop = pair_seeds(D, CASE + ["Spacing"], SP9)
-    out = dict(methods=SP9, cases=[list(c) for c in SPLITCASES], excluded_cells=[list(c) for c in EXCL],
+    D = pd.concat([M4, N[N.Algorithm.isin(SPP)]] + ([G4, G56] if G4 is not None else []), ignore_index=True)
+    D, drop = pair_seeds(D, CASE + ["Spacing"], SPP)
+    out = dict(methods=SPP, cases=[list(c) for c in SPLITCASES], excluded_cells=[list(c) for c in EXCL],
                excluded_note="(DS 1 and 2, 500 m, N = 10) have no feasible layout at 5D and 6D (packing capacity 8 / 7); "
                              "'excl' = these two cases removed from the case set (10 cases), 'all' = all 12 split cases. "
                              "Contrasts never use them at 5D / 6D (neither method qualifies -> dropped); at 4D they are "
@@ -262,16 +279,16 @@ def block_spacing(data_dir, summ, tex):
         Gs = D[D.Spacing == sp].reset_index(drop=True)
         if not len(Gs):
             out["spacing"][sp] = None; continue
-        S = MR.case_stats(Gs, SP9)
-        o = dict(completeness=completeness(Gs, SP9, CASE), source="stored main runs (4D)" if sp == "4D" else "rev2_spacing")
+        S = MR.case_stats(Gs, SPP)
+        o = dict(completeness=completeness(Gs, SPP, CASE), source="stored main runs (4D)" if sp == "4D" else "rev2_spacing")
         for tag, cs in (("excl", cases_ex), ("all", cases_all)):
             Gc = Gs[[c in cs for c in zip(Gs.Dataset, Gs.Radius, Gs.Turbines)]]
             Sc = S[[c in cs for c in zip(S.Dataset, S.Radius, S.Turbines)]]
-            fr = ranking(Sc, SP9, "PSOBV")
+            fr = ranking(Sc, SPP, "PSOBV")
             o[tag] = dict(n_cases=int(Sc[CASE].drop_duplicates().shape[0]), friedman=fr,
-                          feasible_pct={a: float(100 * Gc[Gc.Algorithm == a].Feasible.mean()) for a in SP9 if (Gc.Algorithm == a).any()},
-                          mean_loss_pct_qualified={a: float(Sc[(Sc.Algorithm == a) & Sc.Qualified].Loss.mean()) for a in SP9},
-                          n_qualified={a: int(Sc[(Sc.Algorithm == a)].Qualified.sum()) for a in SP9},
+                          feasible_pct={a: float(100 * Gc[Gc.Algorithm == a].Feasible.mean()) for a in SPP if (Gc.Algorithm == a).any()},
+                          mean_loss_pct_qualified={a: float(Sc[(Sc.Algorithm == a) & Sc.Qualified].Loss.mean()) for a in SPP},
+                          n_qualified={a: int(Sc[(Sc.Algorithm == a)].Qualified.sum()) for a in SPP},
                           contrasts={f"{a}-{b}": contrast(Gc, Sc, a, b) for a, b in CONTRASTS_SP})
         out["spacing"][sp] = o
         ex = o["excl"]
@@ -295,7 +312,7 @@ def block_spacing(data_dir, summ, tex):
         f = out["spacing"][sp][tag]["friedman"]
         return f["avg_rank"].get(a) if f else None
     lines = []
-    for a in SP9:
+    for a in SPP:
         c = []
         for sp in sps:
             c += [fnum(rk(sp, "excl", a), 2, False) + " (" + fnum(rk(sp, "all", a), 2, False) + ")",
@@ -310,7 +327,7 @@ def block_spacing(data_dir, summ, tex):
             + "".join(f"\\cmidrule(lr){{{2 + 2 * i}-{3 + 2 * i}}}" for i in range(len(sps))) + "\n"
             + "Method & " + " & ".join("Rank & Feas." for _ in sps))
     tex.append(MR.table(
-        "table*", "Minimum spacing $4D$, $5D$, $6D$: average rank and feasibility of the nine methods on the split cases (6{,}030 evaluations, 30 seed-paired runs)." + SPT,
+        "table*", "Minimum spacing $4D$, $5D$, $6D$: average rank and feasibility of the %s methods on the split cases (6{,}030 evaluations, 30 seed-paired runs)." % {9: "nine", 10: "ten"}.get(len(SPP), str(len(SPP))) + SPT,
         "tab:R2-spacing-rank", "l" + "cc" * len(sps), head, lines, sep="3pt", pos="!htb",
         note="Rank: average feasibility-aware rank (Table~\\ref{tab:friedman68} rule: a method with fewer than 15 feasible runs "
              "of 30 in a case ranks below the qualified methods, by number of feasible runs) over the 10 split cases "
@@ -793,7 +810,10 @@ def main(argv=None):
     ap.add_argument("--data-dir", default=HERE, help="folder of the rev2_*.csv files")
     ap.add_argument("--out-dir", default=HERE)
     ap.add_argument("--only", default=",".join(BLOCKS))
+    ap.add_argument("--no-ga-spacing", action="store_true", help="spacing block without GA (the nine methods of rev2_spacing)")
     args = ap.parse_args(argv)
+    global GA_SPACING
+    GA_SPACING = not args.no_ga_spacing
     t0 = time.time()
     os.makedirs(args.out_dir, exist_ok=True)
     summ = dict(generated=time.strftime("%Y-%m-%d %H:%M:%S"), data_dir=os.path.abspath(args.data_dir),

@@ -32,6 +32,11 @@ Inputs (all runs at 6,030 calls with random initialization unless stated)
   hrfix (24 shards): ALL Horns Rev 1 runs again after the direction-binning fix (commit 7676da9); once any hrfix
   shard exists, every Horns Rev row of every other source is dropped (see load()).
   iea37_published_results.csv (optional; columns case, participant/algorithm, AEP).
+  GA in the budget and feasible-initialization studies (load_ga_secondary; sections 5, 6 and tab:feasbudget only,
+  every other section unchanged; --no-ga-secondary leaves GA out): rev2_ga_s*of10.csv (rev2_ga.py ga: 6,030 calls,
+  random, 68 cases; only the six largest are used here), rev2_gahr_s*of2.csv (Horns Rev 16, 6,030 / 30,030 random)
+  and rev5_ga_<exp>_s*of*.csv from rev5_ga_secondary.py (feas, b30k, b120k: six largest cases; hr: Horns Rev 16 at
+  120,030 random, 10 seeds, and 6,030 feasible) -- the design of feas / b30k / b120k / hrfix with the GA label.
 
 Outputs (in --out-dir, default: this folder)
   mpce_tab_<name>.tex (one table per file, ready to \\input), mpce_supplementary.tex (per-case
@@ -76,7 +81,7 @@ DECISION_PAIRS = [("PSOBV", "PSOC"), ("PSOBV", "SSABV")]
 LAB = {"PSOBV": "PSO-VNS", "SSABV": "SSA-VNS", "SSABV25": "SSA-VNS (25\\%)", "SSABV75": "SSA-VNS (75\\%)",
        "PSOBV25": "PSO-VNS (25\\%)", "PSOBV75": "PSO-VNS (75\\%)", "PSOBV90": "PSO-VNS (90\\%)", "LXBV": "LX-SSA-VNS",
        "RSVNS": "RS-VNS", "RSDVNS": "RSD-VNS", "BVNS": "VNS", "SSA": "SSA", "LXSSA": "LX-SSA", "PSOC": "PSO", "PSO": "PSO (old)",
-       "DE": "DE", "SLSQP": "MS-SLSQP"}
+       "DE": "DE", "SLSQP": "MS-SLSQP", "GA": "GA"}
 # Colour follows the method, independent of the focus, and is the same in every figure of the paper (main text and
 # supplement). Colour-blind-safe Okabe-Ito palette (Okabe & Ito 2008) without its yellow (too light for lines on
 # white), extended by one dark wine (#882255, Tol) for the eighth method of the main comparison: PSO-VNS blue,
@@ -87,12 +92,13 @@ LAB = {"PSOBV": "PSO-VNS", "SSABV": "SSA-VNS", "SSABV25": "SSA-VNS (25\\%)", "SS
 # focus is additionally drawn with a star marker, a solid, thicker line and on top (see mk / ls / lw).
 COL = {"PSOBV": "#0072b2", "SSABV": "#56b4e9", "PSOC": "#009e73", "PSO": "#009e73", "SSA": "#d55e00",
        "DE": "#e69f00", "LXSSA": "#cc79a7", "SLSQP": "#000000", "BVNS": "#882255", "LXBV": "#5f5e5a",
-       "RSVNS": "#8d8b85", "RSDVNS": "#aeaba4"}
+       "RSVNS": "#8d8b85", "RSDVNS": "#aeaba4",
+       "GA": "#999933"}                     # GA (olive, Tol muted): budget figure only
 MRK = {"PSOBV": "p", "SSABV": "d", "SSA": "s", "PSOC": "^", "PSO": "^", "DE": "v", "BVNS": "D", "SLSQP": "P",
-       "LXSSA": "o", "LXBV": "X", "RSVNS": "h", "RSDVNS": "8"}
+       "LXSSA": "o", "LXBV": "X", "RSVNS": "h", "RSDVNS": "8", "GA": "<"}
 LS = {"PSOBV": (0, (7, 2)), "SSABV": (0, (3, 1.5)), "SSA": "--", "PSOC": "-.", "PSO": "-.", "DE": ":",
       "BVNS": (0, (5, 1)), "SLSQP": (0, (3, 1, 1, 1)), "LXSSA": (0, (1, 1)), "LXBV": (0, (4, 2, 1, 2)),
-      "RSVNS": (0, (6, 2, 2, 2)), "RSDVNS": (0, (2, 1.2))}
+      "RSVNS": (0, (6, 2, 2, 2)), "RSDVNS": (0, (2, 1.2)), "GA": (0, (8, 2, 1, 2))}
 
 
 def set_focus(f):
@@ -1124,6 +1130,48 @@ def load(data_dir, partial):
     return ALL, avail, fallbacks, new
 
 
+GA_PREFIXES = [("rev2_ga", "GA, 6,030 random (68 cases; six largest used)"),
+               ("rev2_gahr", "GA, Horns Rev 16, 6,030 / 30,030 random"),
+               ("rev5_ga_feas", "GA, six largest cases, 6,030 feasible"),
+               ("rev5_ga_b30k", "GA, six largest cases, 30,030 random"),
+               ("rev5_ga_b120k", "GA, six largest cases, 120,030 random"),
+               ("rev5_ga_hr", "GA, Horns Rev 16, 120,030 random (10 seeds) / 6,030 feasible")]
+
+
+def with_ga(methods):
+    """Method list with GA inserted after DE (order of the nine-method tables)."""
+    m = [a for a in methods if a != "GA"]
+    return m[:m.index("DE") + 1] + ["GA"] + m[m.index("DE") + 1:] if "DE" in m else m + ["GA"]
+
+
+def load_ga_secondary(data_dir, avail):
+    """GA runs of the budget / feasible-initialization design (cases7 = six largest benchmark cases + Horns Rev 16):
+    complete shard sets <prefix>_s<i>of<k>.csv of GA_PREFIXES, GA rows of those cases only. Returns a DataFrame
+    (std_cols; Source = prefix) or None. Statuses go to avail["ga_<prefix>"]."""
+    parts = []
+    keep = set(LARGE) | {HR16}
+    for pre, what in GA_PREFIXES:
+        files = glob.glob(os.path.join(data_dir, f"{pre}_s*of*.csv"))
+        by_k = {}
+        for fn in files:
+            m = re.search(rf"{pre}_s(\d+)of(\d+)\.csv$", os.path.basename(fn))
+            if m:
+                by_k.setdefault(int(m.group(2)), {})[int(m.group(1))] = fn
+        complete = {k: v for k, v in by_k.items() if set(v) == set(range(k))}
+        if not complete:
+            avail[f"ga_{pre}"] = dict(status="missing" if not by_k else "incomplete (ignored)", shards="0", rows=0)
+            continue
+        k = max(complete)
+        d = std_cols(pd.concat([pd.read_csv(f) for f in sorted(complete[k].values())], ignore_index=True))
+        d = d[(d.Algorithm == "GA").values & np.array([c in keep for c in zip(d.Dataset, d.Radius, d.Turbines)], bool)]
+        d = d.drop_duplicates(KEY, keep="last").assign(Source=pre)
+        if d.Dataset.eq("HR").any() and abs(float(d[d.Dataset == "HR"].Ideal.iloc[0]) - 148.80717812) > 1e-6:
+            raise SystemExit(f"{pre}: Horns Rev wake-free AEP differs from mpce_hrfix (direction binning)")
+        avail[f"ga_{pre}"] = dict(status="complete", shards=f"{k}/{k}", rows=int(len(d)), methods=["GA"], note=what)
+        parts.append(d)
+    return pd.concat(parts, ignore_index=True) if parts else None
+
+
 def common_seeds(ALL):
     """Keep, within every case x budget x initialization, only the seeds that every method of the group has
     (split variants *25 / *75 / *90 are not used to define the intersection)."""
@@ -1166,6 +1214,8 @@ def main(argv=None):
     ap.add_argument("--common-seeds", action="store_true")
     ap.add_argument("--skip-robust", action="store_true")
     ap.add_argument("--only-robust", action="store_true")
+    ap.add_argument("--no-ga-secondary", action="store_true",
+                    help="leave GA out of the budget / feasible-initialization sections and tab:feasbudget")
     args = ap.parse_args(argv)
     set_focus(args.focus)
     LOG.clear()
@@ -1176,6 +1226,11 @@ def main(argv=None):
     tabs, supp = {}, []
 
     ALL, avail, fallbacks, new = load(args.data_dir, args.partial)
+    # GA in the budget / feasible-initialization studies only: ALLG = ALL + GA rows (six largest cases, Horns Rev 16);
+    # every other section keeps using ALL / R6 / G (no GA)
+    GAX = None if args.no_ga_secondary else load_ga_secondary(args.data_dir, avail)
+    ALLG = ALL if GAX is None else pd.concat([ALL, GAX], ignore_index=True).drop_duplicates(KEY, keep="first").reset_index(drop=True)
+    SEC = M10 if GAX is None else with_ga(M10)          # method pool of sections 5 and 6
     log("=" * 78)
     log("DATA AVAILABILITY")
     for k, v in avail.items():
@@ -1195,6 +1250,7 @@ def main(argv=None):
                    colours=COL, data_availability=avail, fallbacks=fallbacks,
                    ranking_rule=RANK_RULE, labels={k: v.replace("\\%", "%") for k, v in LAB.items()})
     R6 = ALL[(ALL.Budget == 6030) & (ALL.Init == "random")]
+    R6G = ALLG[(ALLG.Budget == 6030) & (ALLG.Init == "random")]
     G = R6[R6.Dataset.isin(["1", "2"]) & R6.Algorithm.isin(MAIN)].reset_index(drop=True)
     missing_main = [a for a in MAIN if a not in set(G.Algorithm)]
     if missing_main:
@@ -1968,14 +2024,14 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
 
     # =========================================================== 5. feasible vs random initialization
     log("\n[5] Feasible initialization")
-    FE = ALL[(ALL.Init == "feasible") & (ALL.Budget == 6030)]
+    FE = ALLG[(ALLG.Init == "feasible") & (ALLG.Budget == 6030)]
     cases7 = LARGE + [HR16]
     if len(FE):
-        fm_ = [a for a in M10 if a in set(FE.Algorithm)]
+        fm_ = [a for a in SEC if a in set(FE.Algorithm)]
         rows, det = [], []
         for c in cases7:
             f = FE[(FE.Dataset == c[0]) & (FE.Radius == c[1]) & (FE.Turbines == c[2])]
-            rr = R6[(R6.Dataset == c[0]) & (R6.Radius == c[1]) & (R6.Turbines == c[2])]
+            rr = R6G[(R6G.Dataset == c[0]) & (R6G.Radius == c[1]) & (R6G.Turbines == c[2])]
             if not len(f):
                 continue
             crow = []
@@ -2044,7 +2100,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
 
     # =========================================================== 6. budget scaling
     log("\n[6] Budget scaling")
-    BD = ALL[(ALL.Init == "random") & ALL.Algorithm.isin(M10)]
+    BD = ALLG[(ALLG.Init == "random") & ALLG.Algorithm.isin(SEC)]
     BD = BD[[(d, r, n) in cases7 for d, r, n in zip(BD.Dataset, BD.Radius, BD.Turbines)]]
     have_b = [b for b in BUDGETS if b != 6030 and (BD.Budget == b).any()]
     if have_b:
@@ -2053,7 +2109,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
         bsum, rows_c = {}, []
         for b in bl:
             x = BD[BD.Budget == b]
-            mets = [a for a in M10 if a in set(x.Algorithm)]
+            mets = [a for a in SEC if a in set(x.Algorithm)]
             Sb = case_stats(x, mets)
             Sb["Budget"] = b
             rows_c.append(Sb)
@@ -2097,7 +2153,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
                                  focus_best_at_all_budgets=all(bsum[b]["best"] == FOCUS for b in bl),
                                  focus_best_grid6_at_all_budgets=all(bsum[b]["best_grid6"] == FOCUS for b in bl),
                                  note="HR16 at 120,030 calls uses 10 seeds (qualification: at least 5 feasible runs)")
-        ms_all = [a for a in M10 if a in set(BD.Algorithm)]
+        ms_all = [a for a in SEC if a in set(BD.Algorithm)]
         hdr = "Method & " + " & ".join(f"\\multicolumn{{4}}{{c}}{{{b:,} evaluations}}".replace(",", "{,}") for b in bl) + " \\\\\n & " + \
               " & ".join("Rank & Loss & Feas. & W/T/L" for _ in bl)
         lines = []
@@ -2322,7 +2378,7 @@ Contrast & Isolates & W/T/L & $p_W$ & $\overline{\Delta L}$ \\
 
     # =========================================================== 8b. main-text tables and figures in the manuscript layout
     log("\n[8b] Main-text tables (manuscript layout)")
-    main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args)
+    main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args, ALLG=ALLG, R6G=R6G, ga=GAX is not None)
 
     # =========================================================== 9. decision block (independent of --focus)
     log("\n[9] Decision block (PSO-VNS vs PSO and vs SSA-VNS; independent of --focus)")
@@ -2446,7 +2502,7 @@ def _complete(x, methods, cases, runs):
     return out
 
 
-def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
+def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args, ALLG=None, R6G=None, ga=False):
     """Tables of the manuscript whose layout differs from the per-section tables: merged feasible-initialization
     + budget table (tab:feasbudget), Horns Rev 16 table with ten methods and loss columns for all settings
     (tab:hr-site), compact IEA37 table (tab:iea37), single-column robustness table (tab:robust-final), and the
@@ -2454,10 +2510,13 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
     meth = [a for a in HR_ORDER if a in M10]
     cases6 = LARGE
     # ---------------- feasible initialization + budget (six largest benchmark cases)
-    rows, fb = [], dict(methods=meth, random={}, feasible={}, rank={}, complete={})
+    ALLG = ALL if ALLG is None else ALLG
+    R6G = R6 if R6G is None else R6G
+    methB = with_ga(meth) if ga else meth          # GA (after DE) only in this table
+    rows, fb = [], dict(methods=methB, random={}, feasible={}, rank={}, complete={})
     sel = lambda X: X[[(d, r, n) in cases6 for d, r, n in zip(X.Dataset, X.Radius, X.Turbines)]]
-    X6 = sel(R6[R6.Algorithm.isin(meth)])
-    F6 = sel(ALL[(ALL.Init == "feasible") & (ALL.Budget == 6030) & ALL.Algorithm.isin(meth)])
+    X6 = sel(R6G[R6G.Algorithm.isin(methB)])
+    F6 = sel(ALLG[(ALLG.Init == "feasible") & (ALLG.Budget == 6030) & ALLG.Algorithm.isin(methB)])
     def loss_feas(X, a):
         xa = X[X.Algorithm == a]
         if not len(xa):
@@ -2465,33 +2524,33 @@ def main_text_tables(ALL, R6, summary, tabs, FG, inst, hr, args):
         Sa = case_stats(xa, [a])
         return dict(loss=float(Sa[Sa.Qualified].Loss.mean()) if Sa.Qualified.any() else None,
                     feas=float(100 * xa.Feasible.mean()), n=int(len(xa)))
-    cr = _complete(X6, meth, cases6, 30)
-    methF = [a for a in meth if a not in NOFEAS]
-    cf = _complete(F6, methF, cases6, 30); cf.update({a: False for a in meth if a in NOFEAS})
+    cr = _complete(X6, methB, cases6, 30)
+    methF = [a for a in methB if a not in NOFEAS]
+    cf = _complete(F6, methF, cases6, 30); cf.update({a: False for a in methB if a in NOFEAS})
     fb["complete"]["random_6030"] = all(cr.values()); fb["complete"]["feasible_6030"] = all(cf[a] for a in methF)
     ranks = {}
     for b in BUDGETS:
-        Xb = sel(ALL[(ALL.Init == "random") & (ALL.Budget == b) & ALL.Algorithm.isin(meth)])
-        cb = _complete(Xb, meth, cases6, 30)
+        Xb = sel(ALLG[(ALLG.Init == "random") & (ALLG.Budget == b) & ALLG.Algorithm.isin(methB)])
+        cb = _complete(Xb, methB, cases6, 30)
         fb["complete"][f"rank_{b}"] = all(cb.values())
         if all(cb.values()):
-            Sb = case_stats(Xb, meth)
-            ranks[b] = rank_matrix(Sb, meth).mean(axis=0).to_dict()
+            Sb = case_stats(Xb, methB)
+            ranks[b] = rank_matrix(Sb, methB).mean(axis=0).to_dict()
             fb["rank"][b] = ranks[b]
-            fb.setdefault("mean_loss", {})[b] = {a: float(Sb[(Sb.Algorithm == a) & Sb.Qualified].Loss.mean()) for a in meth}
-            fb.setdefault("feas_pct", {})[b] = {a: float(100 * Xb[Xb.Algorithm == a].Feasible.mean()) for a in meth}
+            fb.setdefault("mean_loss", {})[b] = {a: float(Sb[(Sb.Algorithm == a) & Sb.Qualified].Loss.mean()) for a in methB}
+            fb.setdefault("feas_pct", {})[b] = {a: float(100 * Xb[Xb.Algorithm == a].Feasible.mean()) for a in methB}
             # cases (of the six) in which each method has the best (lowest) rank; ties for first counted for all
             # tied methods (first_count) or not at all (sole_first_count)
-            Rb_ = rank_matrix(Sb, meth)
+            Rb_ = rank_matrix(Sb, methB)
             top = Rb_.eq(Rb_.min(axis=1), axis=0)
-            fb.setdefault("first_count", {})[b] = {a: int(top[a].sum()) for a in meth}
-            fb.setdefault("sole_first_count", {})[b] = {a: int((top[a] & (top.sum(axis=1) == 1)).sum()) for a in meth}
+            fb.setdefault("first_count", {})[b] = {a: int(top[a].sum()) for a in methB}
+            fb.setdefault("sole_first_count", {})[b] = {a: int((top[a] & (top.sum(axis=1) == 1)).sum()) for a in methB}
             ml = fb["mean_loss"][b]
             close = [a for a in ("BVNS", "SSABV", "RSVNS", "LXBV", "DE") if a in ml and np.isfinite(ml[a])]
             fb.setdefault("close_gap_pp", {})[b] = dict(methods=close, gap={a: float(ml[a] - ml[FOCUS]) for a in close},
                                                        max_gap=float(max(ml[a] - ml[FOCUS] for a in close)) if close else None)
     f3 = lambda v: "--" if v is None or not np.isfinite(v) else f"{v:.3f}"      # data present, no qualified case
-    for a in meth:
+    for a in methB:
         r_ = loss_feas(X6, a) if cr[a] else None
         f_ = loss_feas(F6, a) if cf[a] else None
         fb["random"][a] = r_; fb["feasible"][a] = f_
